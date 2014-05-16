@@ -1,10 +1,11 @@
 
-function [cond,nRepeats,setup]=rdkSettings
+function [cond,nBlocks,setup]=rdkSettings
     %
     setup.screenDistMm=1000;
     setup.gammaCorrection=1.49;
+    setup.screenWidHeiMm=[]; % [] triggers autodetection (may silently fail)
     %
-    nRepeats=3;
+    nBlocks=3;
     %
     default.dirdeg=0;
     default.degps=3;
@@ -15,17 +16,17 @@ function [cond,nRepeats,setup]=rdkSettings
     default.apert.yDeg=0;
     default.ndots=1000;
     default.dotradiusdeg=.1;
-    default.black=0;
-    default.white=1;
-    default.gray=0.5;
+    default.colA=0;
+    default.colB=1;
+    default.colBack=0.5;
     default.durS=3;
     default.preS=.5;
     default.postS=.5;
-    default.nsteps=5;
-    default.coherefrac=.5; % [0 .. 1]
+    default.nSteps=3;
+    default.cohereFrac=.5; % [0 .. 1]
     default.contrast=1;
     default.fix.xy=[0 0];
-    default.fix.radiusdeg=.1;
+    default.fix.radiusdeg=.25;
     default.fix.rgb=[255 0 0];
     %
     nConds=0;
@@ -36,7 +37,7 @@ function [cond,nRepeats,setup]=rdkSettings
             nConds=nConds+1;
             cond(nConds)=default;
             cond(nConds).dirdeg=dirs(d);
-            cond(nConds).coherefrac=coh(c);
+            cond(nConds).cohereFrac=coh(c);
         end
     end
     %

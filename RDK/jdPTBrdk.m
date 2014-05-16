@@ -13,12 +13,12 @@ end
 function [E,stimwin]=prepExperiment
     Screen('CloseAll')
     warning off %#ok<WNOFF>
-    E.subjectID='123';%upper(input('Subject ID > ','s'));
+    E.subjectID=upper(input('Subject ID > ','s'));
     E.scriptinfo=getInfoCurrentScript;
     [~,E.psychtoolboxversion]=PsychtoolboxVersion;
     E.openglinfo=opengl('data');
     [E.cond,E.nBlocks,E.setup]=rdkSettings;
-    [E.physScr,stimwin]=openStimWindow(E.setup); % physScr contains info on all physical display properties and pointer to window
+    [E.physScr,stimwin]=jdPTBopenStimWindow(E.setup); % physScr contains info on all physical display properties, stimwin is a pointer to window
 end
 
 
@@ -62,46 +62,8 @@ function scriptinfo=getInfoCurrentScript
 end
 
 
-function [physScr,stimwin]=openStimWindow(setup)
-    physScr.oldVerbosityLevel = Screen('Preference', 'Verbosity', 3);
-    Screen('Preference','VisualDebuglevel', 0);
-    Screen('Preference','SkipSyncTests',0);
-    AssertOpenGL;
-    %HideCursor;
-    scr=Screen('screens');
-    physScr.scrNr=max(scr);
-    if physScr.scrNr==0
-        [physScr.widPx, physScr.heiPx]=Screen('WindowSize',physScr.scrNr);%deal(500,300)%
-        [physScr.widMm, physScr.heiMm]=Screen('DisplaySize',physScr.scrNr);
-    elseif physScr.scrNr>=1 %instelling voor 20" CRT in visuele lab
-        [physScr.widPx, physScr.heiPx]=Screen('WindowSize',physScr.scrNr);
-        physScr.widMm = 406;
-        physScr.heiMm = 305;
-    else
-        erstr=['Not handled: physScr.scrNr is ' num2str(physScr.scrNr)];
-        disp(['Error: ' erstr ]);
-        error(erstr);
-    end
-    physScr.whiteIdx=WhiteIndex(physScr.scrNr);
-    physScr.blackIdx=BlackIndex(physScr.scrNr);
-    physScr.distMm=setup.screenDistMm;
-    physScr.mm2px=physScr.widPx/physScr.widMm;
-    physScr.distPx=round(physScr.distMm*physScr.mm2px);
-    physScr.scrWidDeg=atan2d(physScr.widMm/2,physScr.distMm)*2;
-    physScr.deg2px=physScr.widPx/physScr.scrWidDeg;
-    [stimwin, physScr.winRect]=Screen('OpenWindow',physScr.scrNr,0); %[0 0 physScr.widPx physScr.heiPx],[],2);
-    physScr.frameDurS=Screen('GetFlipInterval',stimwin);
-    Screen('BlendFunction',stimwin,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
-    Screen('Textfont',stimwin,'Arial');
-    Screen('TextSize',stimwin,22);
-    physScr.oldGammaTab=Screen('ReadNormalizedGammaTable',physScr.scrNr);%#ok<*NASGU>
-    physScr.gammaTab=repmat((0:1/WhiteIndex(physScr.scrNr):1)',1,3).^setup.gammaCorrection;
-    Screen('LoadNormalizedGammaTable',physScr.scrNr,physScr.gammaTab);
-end
-
-
 function fillBackgroundStimWindow(stimwin,stim)
-    Screen('FillRect',stimwin,stim.gray);
+    Screen('FillRect',stimwin,stim.colBack);
 end
 
 
@@ -118,20 +80,16 @@ function stim=createStimBasedOnSettings(cond,physScr)
     stim.xPx=rand(1,N)*stim.widPx-stim.widPx/2;
     stim.yPx=rand(1,N)*stim.heiPx-stim.heiPx/2;
     stim.dotdirdeg=ones(1,N)*cond.dirdeg;
-    stim.coherefrac=cond.coherefrac;
-    nNoiseDots=round(N*(1-stim.coherefrac));
+    nNoiseDots=round(N*(1-cond.cohereFrac));
     stim.noiseDot=Shuffle([true(1,nNoiseDots) false(1,N-nNoiseDots)]);
     noiseDirs=rand(1,N)*360;
     stim.dotdirdeg(stim.noiseDot)=noiseDirs(stim.noiseDot);
     stim.dotsize=repmat(cond.dotradiusdeg*physScr.deg2px,1,N);
-    stim.dotage=floor(rand(1,N)*(cond.nsteps+1));
-    stim.maxage=cond.nsteps;
-    stim.gray=(physScr.blackIdx+physScr.whiteIdx)/2;
-    stim.lum.max=255;
-    stim.lum.min=0;
-    stim.lum.pol=Shuffle([ones(1,floor(N/2)) -ones(1,ceil(N/2))]);
+    stim.dotage=floor(rand(1,N)*(cond.nSteps+1));
+    stim.maxage=cond.nSteps;
+    stim.colBack=cond.colBack*physScr.whiteIdx;
     stim.pxpflip=cond.degps*physScr.deg2px*physScr.frameDurS;
-    stim.dotlums=calcLums(stim.lum,1);
+    stim.dotlums=repmat(Shuffle([repmat(cond.colA*physScr.whiteIdx,1,ceil(N/2)) repmat(cond.colB*physScr.whiteIdx,1,floor(N/2))]),3,1);
     stim.fix.xy=cond.fix.xy+[physScr.widPx/2 physScr.heiPx/2];
     stim.fix.rgb=cond.fix.rgb;
     stim.fix.dotsize=cond.fix.radiusdeg*physScr.deg2px;
@@ -162,16 +120,7 @@ function ok=applyTheAperture(x,y,apert,wid,hei)
         error(['Unknown apert option: ' apert ]);
     end
 end
-    
-
-
-function dotlums=calcLums(L,contrast)
-    % negative contrast means polarity will flip
-    dotlums=(L.pol*contrast+1)/2*(L.max-L.min)+L.min;
-    dotlums=repmat(dotlums,3,1);
-end
-    
-
+   
 
 function stim=stepStim(stim)
     % Reposition the dots, use shorthands for clarity
@@ -239,6 +188,9 @@ end
 
 
 function saveExperiment(data)
+    if isempty(data.subjectID)
+        data.subjectID='0';
+    end
     mkdir data;
     stop=false;
     i=1;
