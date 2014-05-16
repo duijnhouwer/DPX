@@ -1,7 +1,7 @@
 % revPhiBehav
 % Jacob Duijnhouwer, April 2014
 
-function RevPhiBehav
+function RDK
     [E,stimwin]=prepExperiment;
     E=runExperiment(E,stimwin);
     saveExperiment(E)
@@ -11,13 +11,14 @@ end
 % --- FUNCTIONS -----------------------------------------------------------
 
 function [E,stimwin]=prepExperiment
+    Screen('CloseAll')
     warning off %#ok<WNOFF>
     E.subjectID='123';%upper(input('Subject ID > ','s'));
     E.scriptinfo=getInfoCurrentScript;
     [~,E.psychtoolboxversion]=PsychtoolboxVersion;
     E.openglinfo=opengl('data');
-    [E.cond,E.nBlocks]=revPhiBehavSettings;
-    [E.physScr,stimwin]=openStimWindow(); % physScr contains info on all physical display properties and pointer to window
+    [E.cond,E.nBlocks,E.setup]=rdkSettings;
+    [E.physScr,stimwin]=openStimWindow(E.setup); % physScr contains info on all physical display properties and pointer to window
 end
 
 
@@ -61,7 +62,7 @@ function scriptinfo=getInfoCurrentScript
 end
 
 
-function [physScr,stimwin]=openStimWindow
+function [physScr,stimwin]=openStimWindow(setup)
     physScr.oldVerbosityLevel = Screen('Preference', 'Verbosity', 3);
     Screen('Preference','VisualDebuglevel', 0);
     Screen('Preference','SkipSyncTests',0);
@@ -83,15 +84,19 @@ function [physScr,stimwin]=openStimWindow
     end
     physScr.whiteIdx=WhiteIndex(physScr.scrNr);
     physScr.blackIdx=BlackIndex(physScr.scrNr);
-    physScr.distMm=1000;
+    physScr.distMm=setup.screenDistMm;
     physScr.mm2px=physScr.widPx/physScr.widMm;
-    physScr.deg2px=tand(1)*physScr.distMm*physScr.widPx/physScr.widMm;
     physScr.distPx=round(physScr.distMm*physScr.mm2px);
+    physScr.scrWidDeg=atan2d(physScr.widMm/2,physScr.distMm)*2;
+    physScr.deg2px=physScr.widPx/physScr.scrWidDeg;
     [stimwin, physScr.winRect]=Screen('OpenWindow',physScr.scrNr,0); %[0 0 physScr.widPx physScr.heiPx],[],2);
     physScr.frameDurS=Screen('GetFlipInterval',stimwin);
     Screen('BlendFunction',stimwin,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
     Screen('Textfont',stimwin,'Arial');
     Screen('TextSize',stimwin,22);
+    physScr.oldGammaTab=Screen('ReadNormalizedGammaTable',physScr.scrNr);%#ok<*NASGU>
+    physScr.gammaTab=repmat((0:1/WhiteIndex(physScr.scrNr):1)',1,3).^setup.gammaCorrection;
+    Screen('LoadNormalizedGammaTable',physScr.scrNr,physScr.gammaTab);
 end
 
 
@@ -100,62 +105,65 @@ function fillBackgroundStimWindow(stimwin,stim)
 end
 
 
-function stim=createStimBasedOnSettings(set,physScr)
-    N=set.ndots;
-    stim.nFlips.total=round(set.durS/physScr.frameDurS);
-    stim.nFlips.pre=round(set.preS/physScr.frameDurS);
-    stim.nFlips.post=round(set.postS/physScr.frameDurS);
-    stim.widPx=physScr.widPx;
-    stim.heiPx=physScr.heiPx;
-    stim.xPx=rand(1,N)*stim.widPx;
-    stim.yPx=rand(1,N)*stim.heiPx;
-    stim.dotsize=repmat(set.dotradiusdeg*physScr.deg2px,1,N);
-    stim.dotage=floor(rand(1,N)*set.nsteps);
-    stim.maxage=set.nsteps;
+function stim=createStimBasedOnSettings(cond,physScr)
+    N=cond.ndots;
+    stim.nFlips.total=round(cond.durS/physScr.frameDurS);
+    stim.nFlips.pre=round(cond.preS/physScr.frameDurS);
+    stim.nFlips.post=round(cond.postS/physScr.frameDurS);
+    stim.apert=cond.apert.type;
+    stim.widPx=cond.apert.widdeg*physScr.deg2px;
+    stim.heiPx=cond.apert.heideg*physScr.deg2px;
+    stim.pospx.x=physScr.widPx/2+cond.apert.xDeg*physScr.deg2px;
+    stim.pospx.y=physScr.heiPx/2+cond.apert.yDeg*physScr.deg2px;
+    stim.xPx=rand(1,N)*stim.widPx-stim.widPx/2;
+    stim.yPx=rand(1,N)*stim.heiPx-stim.heiPx/2;
+    stim.dotdirdeg=ones(1,N)*cond.dirdeg;
+    stim.coherefrac=cond.coherefrac;
+    nNoiseDots=round(N*(1-stim.coherefrac));
+    stim.noiseDot=Shuffle([true(1,nNoiseDots) false(1,N-nNoiseDots)]);
+    noiseDirs=rand(1,N)*360;
+    stim.dotdirdeg(stim.noiseDot)=noiseDirs(stim.noiseDot);
+    stim.dotsize=repmat(cond.dotradiusdeg*physScr.deg2px,1,N);
+    stim.dotage=floor(rand(1,N)*(cond.nsteps+1));
+    stim.maxage=cond.nsteps;
     stim.gray=(physScr.blackIdx+physScr.whiteIdx)/2;
     stim.lum.max=255;
     stim.lum.min=0;
-    stim.lum.pol=[ones(1,floor(N/2)) -ones(1,ceil(N/2))];
-    stim.nFlipsPerStep=set.nFlipsPerStep;
-    % make the speed trace
-    stim.dx=makeFilteredTrace(set.dxFilt,physScr.frameDurS,stim.nFlips,1);
-    stim.maxdx=set.maxDps*physScr.deg2px*physScr.frameDurS*set.nFlipsPerStep;
-    stim.dx=stim.dx*stim.maxdx;
-    % make the contrast trace
-    stim.contrast=makeFilteredTrace(set.contrastFilt,physScr.frameDurS,stim.nFlips,0);
-    % set the initial dot luminances
-    stim.dotlums=calcLums(stim.lum,stim.contrast(1));
+    stim.lum.pol=Shuffle([ones(1,floor(N/2)) -ones(1,ceil(N/2))]);
+    stim.pxpflip=cond.degps*physScr.deg2px*physScr.frameDurS;
+    stim.dotlums=calcLums(stim.lum,1);
+    stim.fix.xy=cond.fix.xy+[physScr.widPx/2 physScr.heiPx/2];
+    stim.fix.rgb=cond.fix.rgb;
+    stim.fix.dotsize=cond.fix.radiusdeg*physScr.deg2px;
 end
 
-function T=makeFilteredTrace(F,frameDurS,nFlips,prepostfraction)
-    npre=round(nFlips.pre*prepostfraction);
-    npost=round(nFlips.post*prepostfraction);
-    kernelWidFlips=round(F.sigmaSeconds*F.widSigmas/frameDurS);
-    sigmaFlips=F.widSigmas/frameDurS;
-    H=fspecial('gaussian',[1 kernelWidFlips],sigmaFlips);
-    if strcmpi(F.noise,'rand')
-        I=rand(1,nFlips.total-npre-npost)-.5;
-    elseif strcmpi(F.noise,'randn')
-        I=randn(1,nFlips.total-npre-npost);
-    elseif strcmpi(F.noise,'bin')
-        I=(rand(1,nFlips.total-npre-npost)>.5)*2-1;
-    else
-        error(['Unknown noise function: ''' F.noise '''.' ]);
-    end
-    %I=cumsum(I);
-    I=I-mean(I);
-    I=[zeros(1,npre) I zeros(1,npost)];
-    T=imfilter(I,H,0);
-    T=T/max(abs(T)); % [-1 .. 1]
-    % Apply compression 1 mean no compression, 0 means full compression,
-    % i.e., all values are either -1 or 1
-    T=sign(T).*(abs(T).^F.compression);
-end
 
 function drawStim(stimwin,stim)
-    xy=[stim.xPx(:)' ; stim.yPx(:)'];
-    Screen('DrawDots',stimwin,xy,stim.dotsize,stim.dotlums,[],1);
+    ok=applyTheAperture(stim.xPx,stim.yPx,stim.apert,stim.widPx);
+    xy=[stim.xPx(:) stim.yPx(:)];
+    % offset the stimulus
+    xy=xy';
+    xy(1,:)=xy(1,:)+stim.pospx.x;
+    xy(2,:)=xy(2,:)+stim.pospx.y;
+    % draw the stimulus
+    Screen('DrawDots',stimwin,xy(:,ok),stim.dotsize(ok),stim.dotlums(:,ok),[],1);
 end
+
+function drawFixDot(stimwin,fix)
+    Screen('DrawDots',stimwin,fix.xy',fix.dotsize,fix.rgb',[],1);
+end
+
+
+function ok=applyTheAperture(x,y,apert,wid,hei)
+    if strcmpi(apert,'CIRCLE')
+        r=wid/2;
+        ok=hypot(x,y)<r;
+    else
+        error(['Unknown apert option: ' apert ]);
+    end
+end
+    
+
 
 function dotlums=calcLums(L,contrast)
     % negative contrast means polarity will flip
@@ -165,61 +173,59 @@ end
     
 
 
-function stim=stepStim(stim,flipnr)
+function stim=stepStim(stim)
     % Reposition the dots, use shorthands for clarity
     x=stim.xPx;
     y=stim.yPx;
     w=stim.widPx;
     h=stim.heiPx;
-    dx=stim.dx(flipnr);
+    dx=cosd(stim.dotdirdeg)*stim.pxpflip;
+    dy=sind(stim.dotdirdeg)*stim.pxpflip;
     % Update dot lifetime
     stim.dotage=stim.dotage+1;
     expired=stim.dotage>stim.maxage;
-    x(expired)=rand(1,sum(expired))*w-dx;
-    y(expired)=rand(1,sum(expired))*h;
+    % give new position if expired
+    x(expired)=rand(1,sum(expired))*w-w/2-dx(expired);
+    y(expired)=rand(1,sum(expired))*h-h/2-dy(expired);
+    % give new random direction if expired and dot is noise
+    rndDirs=rand(size(x))*360;
+    stim.dotdirdeg(expired&stim.noiseDot)=rndDirs(expired&stim.noiseDot);
     stim.dotage(expired)=0;
     % Move the dots
     x=x+dx;
+    y=y+dy;
     if dx>0 
-        x(x>=w)=x(x>=w)-w;
+        x(x>=w/2)=x(x>=w/2)-w;
     elseif dx<0
-        x(x<0)=x(x<0)+w;
+        x(x<-w/2)=x(x<-w/2)+w;
+    end
+     if dy>0 
+        y(y>=h/2)=y(y>=h/2)-h;
+    elseif dy<0
+        y(y<-h/2)=y(y<-h/2)+h;
     end
     stim.xPx=x;
     stim.yPx=y;
-    % Update the colors
-    stim.dotlums=calcLums(stim.lum,stim.contrast(flipnr));
 end
 
 
 function [esc,resp]=showStimulus(physScr,stimwin,stim)
     vbl=Screen('Flip',stimwin);
-    resp.dx=NaN(1,stim.nFlips.total);
-    resp.dy=NaN(1,stim.nFlips.total);
-    resp.pollSec=NaN(1,stim.nFlips.total);
+    resp=[];
     for f=1:stim.nFlips.total
         esc=checkEscapeKey;
         if esc
             break;  
         end
-        %fillBackgroundStimWindow(stimwin,stim)
         drawStim(stimwin,stim);
-        if mod(f-1,stim.nFlipsPerStep)==0
-            stim=stepStim(stim,f);
-        end
+        drawFixDot(stimwin,stim.fix);
+        stim=stepStim(stim);
         vbl=Screen('Flip',stimwin,vbl+0.75*physScr.frameDurS);
-        resp=getResp(resp,f,physScr);
+        %resp=getResp(resp,f,physScr);
     end
 end
 
 
-function resp=getResp(resp,f,physScr)
-    [x,y]=GetMouse;
-    resp.dx(f)=x-physScr.widPx/2;
-    resp.dy(f)=y-physScr.heiPx/2;
-    resp.pollSec(f)=GetSecs;
-    SetMouse(physScr.widPx/2,physScr.heiPx/2);
-end
 
 
 function escapePressed=checkEscapeKey
@@ -253,6 +259,7 @@ function endExperiment(E)
     warning on %#ok<WNON>
     ShowCursor;
     Screen('Preference', 'Verbosity', E.physScr.oldVerbosityLevel);
+    Screen('LoadNormalizedGammaTable',E.physScr.scrNr,E.physScr.oldGammaTab);
     Screen('CloseAll');
 end
 
