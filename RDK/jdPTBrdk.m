@@ -1,7 +1,8 @@
-% revPhiBehav
-% Jacob Duijnhouwer, April 2014
+% jdPTBrdk
+% Random dot kinematogram
+% Jacob Duijnhouwer, May 2014
 
-function RDK
+function jdPTBrdk
     [E,stimwin]=prepExperiment;
     E=runExperiment(E,stimwin);
     saveExperiment(E)
