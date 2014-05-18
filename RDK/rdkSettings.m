@@ -1,46 +1,63 @@
 
-function [cond,nBlocks,setup]=rdkSettings
+function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     %
-    setup.screenDistMm=1000;
-    setup.gammaCorrection=1.49;
-    setup.screenWidHeiMm=[]; % [] triggers autodetection (may silently fail)
+    hardware.screenDistMm=1000;
+    hardware.gammaCorrection=1.49;
+    hardware.screenWidHeiMm=[]; % [] triggers autodetection (may fail silently)
     %
-    nBlocks=3;
+    outputfolder=fullfile(pwd,'data'); 
+    %
+    instruction.start='Indicate motion direction\nwith left and right arrow keys.\n\nPress a key, release to start.';
+    instruction.pause.txt='I N T E R M I S S I O N\n\nPress a key, release to continue.';
+    instruction.pause.nTrials=5;
+    %
+    nBlocks=1;
     %
     default.dirdeg=0;
-    default.degps=3;
-    default.apert.type='circle';
-    default.apert.widdeg=10;
-    default.apert.heideg=10;
-    default.apert.xDeg=0;
-    default.apert.yDeg=0;
-    default.ndots=1000;
-    default.dotradiusdeg=.1;
+    default.speedDps=3;
+    default.apertShape='circle';
+    default.apertWdeg=10;
+    default.apertHdeg=10;
+    default.apertXdeg=0;
+    default.apertYdeg=0;
+    default.dotsPerSqrDeg=10;
+    default.dotRadiusDeg=.1;
     default.colA=0;
     default.colB=1;
     default.colBack=0.5;
-    default.durS=3;
-    default.preS=.5;
-    default.postS=.5;
+    default.stimOnSecs=.75;
+    default.stimOnDelaySecs=.25;
+    default.maxReactionTimeSecs=3;
     default.nSteps=3;
-    default.cohereFrac=.5; % [0 .. 1]
+    default.cohereFrac=1; % negative coherence flips directions
     default.contrast=1;
-    default.fix.xy=[0 0];
-    default.fix.radiusdeg=.25;
-    default.fix.rgb=[255 0 0];
+    default.fixXYdeg=[0 0];
+    default.fixRadiusDeg=.25;
+    default.fixRGBfrac=[1 0 0];
+    default.respKeys='LeftArrow,RightArrow';
+    default.respEndsTrial=true; % end the trial when response is given
+    default.feedbackCorrectResp='LeftArrow'; % a key or a probablity randomly correct (e.g., when coherence is 0)
+    default.feedbackCorrectSecs=.025;
+    default.feedbackWrongSecs=.1;
+    default.feedbackVisual=true;
+    default.feedbackRadiusDeg=.5;
+    default.feedbackCorrectRGBfrac=[0 1 0];
+    default.feedbackWrongRGBfrac=[0 0 0];
     %
     nConds=0;
-    dirs=[0 180];
-    coh=0:.1:1;
-    for d=1:numel(dirs)
-        for c=1:numel(coh)
-            nConds=nConds+1;
-            cond(nConds)=default;
-            cond(nConds).dirdeg=dirs(d);
-            cond(nConds).cohereFrac=coh(c);
+    coh=-1:.5:1;
+    for c=1:numel(coh)
+        nConds=nConds+1;
+        cond(nConds)=default; %#ok<*AGROW>
+        cond(nConds).cohereFrac=coh(c);
+        if coh(c)<0
+            cond(nConds).feedbackCorrectResp='LeftArrow';
+        elseif coh(c)>0
+            cond(nConds).feedbackCorrectResp='RightArrow';
+        elseif coh(c)==0
+            cond(nConds).feedbackCorrectResp=0.5;
         end
     end
-    %
 end
 
 
