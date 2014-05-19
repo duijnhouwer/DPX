@@ -6,7 +6,7 @@
 function jdPTBrdk
     [E,windowPtr]=prepExperiment;
     E=runExperiment(E,windowPtr);
-    filename=jdPTBsaveData(E);
+    filename=jdPTBsaveData(E,'final');
     jdPTBdisplayTheEnd(windowPtr,filename);
     endExperiment(E);
 end
@@ -68,9 +68,9 @@ function stim=createStimBasedOnSettings(C,physScr)
         F2S=physScr.frameDurSecs; % frames to seconds
         F2I=physScr.whiteIdx; % fraction to index (for colors)
         % Check the settings values
-        if abs(C.cohereFrac)>1, error('cohereFrac exceeds [-1 .. 1]'); end
-        if any(C.fixRGBfrac>1 | C.fixRGBfrac<0), error('fixRGBfrac exceeds [0 .. 1]'); end
-        if C.stimOnSecs<0, error('stimOnSecs less than 0 seconds'); end
+        if abs(C.cohereFrac)>1, jdPTBerror('cohereFrac exceeds [-1 .. 1]'); end
+        if any(C.fixRGBfrac>1 | C.fixRGBfrac<0), jdPTBerror('fixRGBfrac exceeds [0 .. 1]'); end
+        if C.stimOnSecs<0, jdPTBerror('stimOnSecs less than 0 seconds'); end
         % Convert settings to stimulus properties
         N=max(0,round(C.dotsPerSqrDeg * C.apertWdeg * C.apertHdeg));
         stim.widPx = C.apertWdeg*D2P;
@@ -140,7 +140,7 @@ function ok=applyTheAperture(x,y,apert,wid,hei)
     elseif strcmpi(apert,'RECT')
         % no need to do anything
     else
-        error(['Unknown apert option: ' apert ]);
+        jdPTBerror(['Unknown apert option: ' apert ]);
     end
 end
 
@@ -235,13 +235,6 @@ function endExperiment(E)
     Screen('CloseAll');
 end
 
-
-function error(str)
-    warning on %#ok<WNON>
-    Screen('CloseAll');
-    ShowCursor;
-    builtin('error',str);
-end
 
 
 
