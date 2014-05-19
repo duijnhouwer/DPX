@@ -13,7 +13,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     %
     nBlocks=1;
     %
-    default.dirdeg=0;
+    default.dirDeg=0;
     default.speedDps=3;
     default.apertShape='circle';
     default.apertWdeg=10;
@@ -36,7 +36,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     default.fixRGBfrac=[1 0 0];
     default.respKeys='LeftArrow,RightArrow';
     default.respEndsTrial=true; % end the trial when response is given
-    default.feedbackCorrectResp='LeftArrow'; % a key or a probablity randomly correct (e.g., when coherence is 0)
+    default.feedbackCorrectResp='LeftArrow'; % a key or a num2str(probablity) randomly correct (e.g., '0.5' when coherence is 0 in 2AFC task)
     default.feedbackCorrectSecs=.025;
     default.feedbackWrongSecs=.1;
     default.feedbackVisual=true;
@@ -55,7 +55,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
         elseif coh(c)>0
             cond(nConds).feedbackCorrectResp='RightArrow';
         elseif coh(c)==0
-            cond(nConds).feedbackCorrectResp=0.5;
+            cond(nConds).feedbackCorrectResp='0.5';
         end
     end
 end

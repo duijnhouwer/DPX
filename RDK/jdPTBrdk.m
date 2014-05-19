@@ -3,7 +3,7 @@
 % Jacob Duijnhouwer, May 2014
 
 
-function jdPTBrdk(debug)
+function jdPTBrdk
     [E,windowPtr]=prepExperiment;
     E=runExperiment(E,windowPtr);
     filename=jdPTBsaveData(E);
@@ -60,53 +60,59 @@ end
 
 
 function stim=createStimBasedOnSettings(C,physScr)
-    % C is the struct with condition parameters (see rdkSettings)
-    % 
-    % shorthands for legibility
-    D2P=physScr.deg2px; % degrees to pixels
-    F2S=physScr.frameDurSecs; % frames to seconds
-    F2I=physScr.whiteIdx; % fraction to index (for colors)
-    % Check the settings values
-    if abs(C.cohereFrac)>1, error('cohereFrac exceeds [-1 .. 1]'); end
-    if any(C.fixRGBfrac>1 | C.fixRGBfrac<0), error('fixRGBfrac exceeds [0 .. 1]'); end
-    if C.stimOnSecs<0, error('stimOnSecs less than 0 seconds'); end
-    % Convert settings to stimulus properties
-    N=max(0,round(C.dotsPerSqrDeg * C.apertWdeg * C.apertHdeg));
-    stim.widPx = C.apertWdeg*D2P;
-    stim.heiPx = C.apertHdeg*D2P;
-    stim.onFlips = round(C.stimOnSecs/F2S);
-    stim.preFlips = round(C.stimOnDelaySecs/F2S);
-    stim.postFlips = round(C.maxReactionTimeSecs/F2S);
-    stim.apert = C.apertShape;
-    stim.pospx.x = physScr.widPx/2 + C.apertXdeg*D2P;
-    stim.pospx.y = physScr.heiPx/2 + C.apertYdeg*D2P;
-    stim.xPx = rand(1,N) * stim.widPx-stim.widPx/2;
-    stim.yPx = rand(1,N) * stim.heiPx-stim.heiPx/2;
-    stim.dotdirdeg = ones(1,N) * C.dirdeg;
-    nNoiseDots = max(0,min(N,round(N * (1-abs(C.cohereFrac)))));
-    stim.noiseDot = Shuffle([true(1,nNoiseDots) false(1,N-nNoiseDots)]);
-    noiseDirs = rand(1,N) * 360;
-    stim.dotdirdeg(stim.noiseDot) = noiseDirs(stim.noiseDot);
-    if C.cohereFrac<0, stim.dotdirdeg = stim.dotdirdeg + 180; end % negative coherence flips directions
-    stim.dotsize = repmat(C.dotRadiusDeg*D2P,1,N);
-    stim.dotage = floor(rand(1,N) * (C.nSteps + 1));
-    stim.maxage = C.nSteps;
-    stim.colBack = C.colBack*F2I;
-    stim.pxpflip = C.speedDps*D2P*F2S;
-    stim.dotlums = repmat(Shuffle([repmat(C.colA*F2I,1,ceil(N/2)) repmat(C.colB*F2I,1,floor(N/2))]),3,1);
-    stim.fix.xy = C.fixXYdeg + [physScr.widPx/2 physScr.heiPx/2];
-    stim.fix.rgb = C.fixRGBfrac*F2I;
-    stim.fix.size = C.fixRadiusDeg*D2P;
-    stim.keyNamesStr = C.respKeys;
-    stim.respEndsTrial = C.respEndsTrial;
-    stim.feedback.respCorrect = C.feedbackCorrectResp;
-    stim.feedback.durCorrectFlips = ceil(C.feedbackCorrectSecs/F2S);
-    stim.feedback.durWrongFlips = ceil(C.feedbackWrongSecs/F2S);
-    stim.feedback.visual.enable = C.feedbackVisual;
-    stim.feedback.visual.dotCorrect.size = C.feedbackRadiusDeg*D2P;
-    stim.feedback.visual.dotCorrect.rgb = C.feedbackCorrectRGBfrac*F2I;
-    stim.feedback.visual.dotWrong.size = C.feedbackRadiusDeg*D2P;
-    stim.feedback.visual.dotWrong.rgb = C.feedbackWrongRGBfrac*F2I;
+    try
+        % C is the struct with condition parameters (see rdkSettings)
+        %
+        % shorthands for legibility
+        D2P=physScr.deg2px; % degrees to pixels
+        F2S=physScr.frameDurSecs; % frames to seconds
+        F2I=physScr.whiteIdx; % fraction to index (for colors)
+        % Check the settings values
+        if abs(C.cohereFrac)>1, error('cohereFrac exceeds [-1 .. 1]'); end
+        if any(C.fixRGBfrac>1 | C.fixRGBfrac<0), error('fixRGBfrac exceeds [0 .. 1]'); end
+        if C.stimOnSecs<0, error('stimOnSecs less than 0 seconds'); end
+        % Convert settings to stimulus properties
+        N=max(0,round(C.dotsPerSqrDeg * C.apertWdeg * C.apertHdeg));
+        stim.widPx = C.apertWdeg*D2P;
+        stim.heiPx = C.apertHdeg*D2P;
+        stim.onFlips = round(C.stimOnSecs/F2S);
+        stim.preFlips = round(C.stimOnDelaySecs/F2S);
+        stim.postFlips = round(C.maxReactionTimeSecs/F2S);
+        stim.apert = C.apertShape;
+        stim.pospx.x = physScr.widPx/2 + C.apertXdeg*D2P;
+        stim.pospx.y = physScr.heiPx/2 + C.apertYdeg*D2P;
+        stim.xPx = rand(1,N) * stim.widPx-stim.widPx/2;
+        stim.yPx = rand(1,N) * stim.heiPx-stim.heiPx/2;
+        stim.dotdirdeg = ones(1,N) * C.dirDeg;
+        stim.cohereFrac = ones(1,N) * C.cohereFrac;
+        nNoiseDots = max(0,min(N,round(N * (1-abs(C.cohereFrac)))));
+        stim.noiseDot = Shuffle([true(1,nNoiseDots) false(1,N-nNoiseDots)]);
+        noiseDirs = rand(1,N) * 360;
+        stim.cohereFrac(stim.noiseDot) = noiseDirs(stim.noiseDot);
+        if C.cohereFrac<0, stim.cohereFrac = stim.cohereFrac + 180; end % negative coherence flips directions
+        stim.dotsize = repmat(C.dotRadiusDeg*D2P,1,N);
+        stim.dotage = floor(rand(1,N) * (C.nSteps + 1));
+        stim.maxage = C.nSteps;
+        stim.colBack = C.colBack*F2I;
+        stim.pxpflip = C.speedDps*D2P*F2S;
+        stim.dotlums = repmat(Shuffle([repmat(C.colA*F2I,1,ceil(N/2)) repmat(C.colB*F2I,1,floor(N/2))]),3,1);
+        stim.fix.xy = C.fixXYdeg + [physScr.widPx/2 physScr.heiPx/2];
+        stim.fix.rgb = C.fixRGBfrac*F2I;
+        stim.fix.size = C.fixRadiusDeg*D2P;
+        stim.keyNamesStr = C.respKeys;
+        stim.respEndsTrial = C.respEndsTrial;
+        stim.feedback.respCorrect = C.feedbackCorrectResp;
+        stim.feedback.durCorrectFlips = ceil(C.feedbackCorrectSecs/F2S);
+        stim.feedback.durWrongFlips = ceil(C.feedbackWrongSecs/F2S);
+        stim.feedback.visual.enable = C.feedbackVisual;
+        stim.feedback.visual.dotCorrect.size = C.feedbackRadiusDeg*D2P;
+        stim.feedback.visual.dotCorrect.rgb = C.feedbackCorrectRGBfrac*F2I;
+        stim.feedback.visual.dotWrong.size = C.feedbackRadiusDeg*D2P;
+        stim.feedback.visual.dotWrong.rgb = C.feedbackWrongRGBfrac*F2I;
+    catch me
+        disp(me);
+        Screen('CloseAll');
+    end
 end
 
 function drawStim(windowPtr,stim)
@@ -137,7 +143,7 @@ function ok=applyTheAperture(x,y,apert,wid,hei)
         error(['Unknown apert option: ' apert ]);
     end
 end
-   
+
 
 function stim=stepStim(stim)
     % Reposition the dots, use shorthands for clarity
@@ -145,8 +151,8 @@ function stim=stepStim(stim)
     y=stim.yPx;
     w=stim.widPx;
     h=stim.heiPx;
-    dx=cosd(stim.dotdirdeg)*stim.pxpflip;
-    dy=sind(stim.dotdirdeg)*stim.pxpflip;
+    dx=cosd(stim.cohereFrac)*stim.pxpflip;
+    dy=sind(stim.cohereFrac)*stim.pxpflip;
     % Update dot lifetime
     stim.dotage=stim.dotage+1;
     expired=stim.dotage>stim.maxage;
@@ -155,17 +161,17 @@ function stim=stepStim(stim)
     y(expired)=rand(1,sum(expired))*h-h/2-dy(expired);
     % give new random direction if expired and dot is noise
     rndDirs=rand(size(x))*360;
-    stim.dotdirdeg(expired&stim.noiseDot)=rndDirs(expired&stim.noiseDot);
+    stim.cohereFrac(expired&stim.noiseDot)=rndDirs(expired&stim.noiseDot);
     stim.dotage(expired)=0;
     % Move the dots
     x=x+dx;
     y=y+dy;
-    if dx>0 
+    if dx>0
         x(x>=w/2)=x(x>=w/2)-w;
     elseif dx<0
         x(x<-w/2)=x(x<-w/2)+w;
     end
-     if dy>0 
+    if dy>0
         y(y>=h/2)=y(y>=h/2)-h;
     elseif dy<0
         y(y<-h/2)=y(y<-h/2)+h;
@@ -185,8 +191,8 @@ function [esc,timing,resp]=showStimulus(physScr,windowPtr,stim)
     for f=1:N
         esc=jdPTBgetEscapeKey;
         if esc
-            break;  
-        end  
+            break;
+        end
         if f>=stim.preFlips && f<stim.preFlips+stim.onFlips
             drawStim(windowPtr,stim);
         end
@@ -199,9 +205,6 @@ function [esc,timing,resp]=showStimulus(physScr,windowPtr,stim)
             [resp.respnum,resp.keytime,resp.keyname]=jdPTBgetResponseKey(stim.keyNamesStr);
             if ~isempty(resp.respnum)
                 answerGiven=true;
-                %resp.number=respnum;
-                %resp.keyname=keyname;
-                %resp.timeSecs=keytime;
                 [feedbackDurationFlips,stim.fix,normalfixdot]=jdPTBfeedback(resp.keyname,stim.feedback,stim.fix);
                 feedbackEnds=f+feedbackDurationFlips;
                 if stim.respEndsTrial
@@ -234,10 +237,10 @@ end
 
 
 function error(str)
-   warning on %#ok<WNON>
-   Screen('CloseAll');
-   ShowCursor;
-   builtin('error',str);
+    warning on %#ok<WNON>
+    Screen('CloseAll');
+    ShowCursor;
+    builtin('error',str);
 end
 
 

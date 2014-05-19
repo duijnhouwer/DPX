@@ -75,7 +75,8 @@ function printText(instructStr,windowPtr,RGBfore,RGBback,translucency,dxdy)
         dx=dxdy(1);
         dy=dxdy(2);
         winRect=[max(0,dx) max(0,dy) min(w,w-dx) min(h,h-dy)];
-        DrawFormattedText(windowPtr, instructStr, 'center','center', RGB, [], [], [], 1.75, [], winRect)
+        vLineSpacing=1.75;
+        DrawFormattedText(windowPtr, instructStr, 'center','center', RGB, [], [], [], vLineSpacing, [], winRect);
     end
     Screen('Flip',windowPtr);
 end

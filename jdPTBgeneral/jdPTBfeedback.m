@@ -13,8 +13,9 @@ function [nflips,newdot,olddot]=jdPTBfeedback(correctKeyName,feedback,olddot)
     %   FEEDBACK is a struct with fields (audio and visual are optional
     %   fields, they need no be both present)
     %       feedback.respCorrect: the desired response, e.g., 'LeftArrow', or a
-    %           probablity of randomly counting correct (e.g. p=0.5 at
-    %           coherence=0 or with a p=1 when just want acknowledge that
+    %           string representing a probablity of randomly counting correct
+    %           (e.g. p='0.5' at coherence=0  in a two-alternative forced
+    %           choice task or '1' when one just wants to acknowledge that
     %           user has pressed a response button.
     %       feedback.durCorrectFlips: the number of flips the correct-feedback will last
     %       feedback.durWrongFlips: the number of flips the wrong-feedback will last
@@ -48,8 +49,8 @@ function [nflips,newdot,olddot]=jdPTBfeedback(correctKeyName,feedback,olddot)
     % See also jdPTBmakeWave
     
 
-    if isnumeric(feedback.respCorrect)
-        correct=rand<=feedback.respCorrect;
+    if ~isnan(str2double(feedback.respCorrect))
+        correct=rand<=str2double(feedback.respCorrect);
     elseif ischar(feedback.respCorrect)
         correct=strcmpi(feedback.respCorrect,correctKeyName);
     elseif isempty(feedback.respCorrect)
