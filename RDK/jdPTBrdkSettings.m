@@ -1,6 +1,6 @@
 
 
-function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
+function [cond,nBlocks,instruction,outputfolder,hardware]=jdPTBrdkSettings
     %
     hardware.screenDistMm=1000;
     hardware.gammaCorrection=1.49;
@@ -23,9 +23,9 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     default.apertYdeg=0;
     default.dotsPerSqrDeg=10;
     default.dotRadiusDeg=.1;
-    default.colA=0;
-    default.colB=1;
-    default.colBack=0.5;
+    default.dotRBGAfrac1=[0 0 0 1];
+    default.dotRBGAfrac2=[1 1 1 1];
+    default.backgroundRGBAfrac=[0.5 0.5 0.5 1];
     default.stimOnSecs=.75;
     default.stimOnDelaySecs=.25;
     default.maxReactionTimeSecs=3;
@@ -34,7 +34,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     default.contrast=1;
     default.fixXYdeg=[0 0];
     default.fixRadiusDeg=.25;
-    default.fixRGBfrac=[1 0 0];
+    default.fixRGBAfrac=[1 0 0 1];
     default.respKeys='LeftArrow,RightArrow';
     default.respEndsTrial=true; % end the trial when response is given
     default.feedbackCorrectResp='LeftArrow'; % a key or a num2str(probablity) randomly correct (e.g., '0.5' when coherence is 0 in 2AFC task)
@@ -42,8 +42,8 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=rdkSettings
     default.feedbackWrongSecs=.1;
     default.feedbackVisual=true;
     default.feedbackRadiusDeg=.5;
-    default.feedbackCorrectRGBfrac=[0 1 0];
-    default.feedbackWrongRGBfrac=[0 0 0];
+    default.feedbackCorrectRGBAfrac=[0 1 0 .5];
+    default.feedbackWrongRGBAfrac=[0 0 0 .5];
     %
     nConds=0;
     coh=-1:.2:1;

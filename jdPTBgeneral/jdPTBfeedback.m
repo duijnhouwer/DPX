@@ -7,7 +7,7 @@ function [nflips,newdot,olddot]=jdPTBfeedback(correctKeyName,feedback,olddot)
     %
     %   OLDDOT is a struct that represent a dot (typically fixation marker)
     %       olddot.fix.xy
-    %       olddot.fix.rgb
+    %       olddot.fix.rgba
     %       olddot.fix.size 
     %
     %   FEEDBACK is a struct with fields (audio and visual are optional
