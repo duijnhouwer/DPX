@@ -4,48 +4,21 @@
 
 
 function jdPTBrdk
-    [E,windowPtr]=jdPTBprepExperiment('winRect',[]);
-    E=runExperiment(E,windowPtr);
-    jdPTBsaveExperiment(E,'final',windowPtr);
+    try
+        [E,windowPtr]=jdPTBprepExperiment('winRect',[]);
+        E=jdPTBrunExperiment(E,windowPtr,@settings2stim,@showStim);
+        jdPTBsaveExperiment(E,'final',windowPtr);
+    catch me
+        jdPTBendExperiment;
+        error(me.message);
+    end
 end
 
 % --- FUNCTIONS -----------------------------------------------------------
 
-function E=runExperiment(E,windowPtr)
+function stim=settings2stim(C,physScr)
     try
-        conditionList=mod(randperm(E.nBlocks*numel(E.conditions)),numel(E.conditions))+1;
-        for tr=1:numel(conditionList)
-            condIdx=conditionList(tr);
-            stim=createStimBasedOnSettings(E.conditions(condIdx),E.physScr);
-            Screen('FillRect',windowPtr,stim.backRGBA);
-            if tr==1
-                jdPTBdisplayText(windowPtr,E.instruction.start,'rgbaback',stim.backRGBA);
-            elseif mod(tr,E.instruction.pause.nTrials)==0
-                jdPTBsaveExperiment(E,'intermediate');
-                jdPTBdisplayText(windowPtr,E.instruction.pause.txt,'rgbaback',stim.backRGBA);
-            end
-            [esc,timing,resp]=showStimulus(E.physScr,windowPtr,stim);
-            if esc
-                jdPTBerror('Cancelled by escape press');
-                break; % stop the experiment
-            else
-                E.trials(tr).condition=condIdx;
-                E.trials(tr).respNum=resp.number;
-                E.trials(tr).respSecs=resp.timeSecs;
-                E.trials(tr).startSecs=timing.startSecs;
-                E.trials(tr).stopSecs=timing.stopSecs;
-            end
-        end
-    catch me
-        jdPTBsaveExperiment(E,'crash');
-        jdPTBerror(me);
-    end
-end
-
-
-function stim=createStimBasedOnSettings(C,physScr)
-    try
-        % C is the struct with condition parameters (see rdkSettings)
+        % C is the struct with condition parameters (from Settings-file)
         %
         % shorthands for legibility
         D2P=physScr.deg2px; % degrees to pixels
@@ -96,7 +69,8 @@ function stim=createStimBasedOnSettings(C,physScr)
         stim.feedback.visual.dotWrong.size = C.feedbackRadiusDeg*D2P;
         stim.feedback.visual.dotWrong.rgba = C.feedbackWrongRGBAfrac*F2I;
     catch me
-        jdPTBerror(me)
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
@@ -110,24 +84,13 @@ function drawStim(windowPtr,stim)
         xy(1,:)=xy(1,:)+stim.pospx.x;
         xy(2,:)=xy(2,:)+stim.pospx.y;
         % draw the stimulus
-        Screen('DrawDots',windowPtr,xy(:,ok),stim.dotsize(ok),stim.dotcols(:,ok),[],2);    
+        Screen('DrawDots',windowPtr,xy(:,ok),stim.dotsize(ok),stim.dotcols(:,ok),[],2);
     catch me
-        jdPTBerror(me)
+        jdPTBendExperiment;
+        error(me.message);
     end
-end
-
-
-function drawFixDot(windowPtr,fix)
-    try
-        Screen('DrawDots',windowPtr,fix.xy(:),fix.size,fix.rgba(:),[],2);
-    catch me
-        jdPTBerror(me)
-    end
-end
-
-
-function ok=applyTheAperture(x,y,apert,wid,hei)
-    try
+    %
+    function ok=applyTheAperture(x,y,apert,wid,hei)
         if strcmpi(apert,'CIRCLE')
             r=min(wid,hei)/2;
             ok=hypot(x,y)<r;
@@ -136,10 +99,21 @@ function ok=applyTheAperture(x,y,apert,wid,hei)
         else
             jdPTBerror(['Unknown apert option: ' apert ]);
         end
-    catch me
-        jdPTBerror(me)
     end
 end
+
+
+function drawFixDot(windowPtr,fix)
+    try
+        Screen('DrawDots',windowPtr,fix.xy(:),fix.size,fix.rgba(:),[],2);
+    catch me
+        jdPTBendExperiment;
+        error(me.message);
+    end
+end
+
+
+
 
 
 function stim=stepStim(stim)
@@ -177,12 +151,13 @@ function stim=stepStim(stim)
         stim.xPx=x;
         stim.yPx=y;
     catch me
-        jdPTBerror(me)
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
 
-function [esc,timing,resp]=showStimulus(physScr,windowPtr,stim)
+function [esc,timing,resp]=showStim(physScr,windowPtr,stim)
     % Resp will be either a response structure or the string 'EscPressed'
     % when escape was pressed to quit the experiment
     try
@@ -229,7 +204,8 @@ function [esc,timing,resp]=showStimulus(physScr,windowPtr,stim)
         end
         timing.stopSecs=GetSecs;
     catch me
-        jdPTBerror(me)
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
