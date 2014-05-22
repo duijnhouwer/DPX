@@ -40,10 +40,10 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=jdPTBrdkSettings
     default.fixRGBAfrac=[1 0 0 1];
     default.respKeys='LeftArrow,RightArrow';
     default.respEndsTrial=true; % end the trial when response is given
+    default.feedbackVisual=true;
     default.feedbackCorrectResp='LeftArrow'; % a key or a num2str(probablity) randomly correct (e.g., '0.5' when coherence is 0 in 2AFC task)
     default.feedbackCorrectSecs=.025;
     default.feedbackWrongSecs=.1;
-    default.feedbackVisual=true;
     default.feedbackRadiusDeg=.5;
     default.feedbackCorrectRGBAfrac=[0 1 0 .5];
     default.feedbackWrongRGBAfrac=[0 0 0 .5];
@@ -59,7 +59,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=jdPTBrdkSettings
         elseif coh(c)>0
             cond(nConds).feedbackCorrectResp='RightArrow';
         elseif coh(c)==0
-            cond(nConds).feedbackCorrectResp='0.999';
+            cond(nConds).feedbackCorrectResp='.9';
         end
     end
 end

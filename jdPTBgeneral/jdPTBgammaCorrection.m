@@ -14,6 +14,17 @@ function jdPTBgammaCorrection(option,scrNr,gammaValue)
                 load(oldscrFilename); % loads oldscr into memory
                 Screen('LoadNormalizedGammaTable',oldscr.scrNr,oldscr.oldGammaTab);
                 delete(oldscrFilename); % delete the temporary file
+            else
+                % assume original gamma was linear
+                if exist('scrNr','var')
+                    newGammaTab=repmat((0:1/WhiteIndex(scrNr):1)',1,3);
+                    Screen('LoadNormalizedGammaTable',scrNr,newGammaTab);
+                else
+                    for scrNr=Screen('screens')
+                        newGammaTab=repmat((0:1/WhiteIndex(scrNr):1)',1,3);
+                        Screen('LoadNormalizedGammaTable',scrNr,newGammaTab);
+                    end
+                end
             end
         else
             jdPTBunknown('option',option);

@@ -6,7 +6,7 @@ function E=jdPTBrunExperiment(setting2stimFx,showStimFx)
     % function
     %
     try
-        [E,windowPtr]=prepExperiment;
+        [E,windowPtr]=prepareExperiment;
         conditionList=mod(randperm(E.nBlocks*numel(E.conditions)),numel(E.conditions))+1;
         for tr=1:numel(conditionList)
             condNr=conditionList(tr);
@@ -39,7 +39,7 @@ end
 
 
 
-function [E,windowPtr]=prepExperiment
+function [E,windowPtr]=prepareExperiment
     % EXAMPLES:
     %   prepExperiment without any arguments sets up experiment in
     %   full screen mode
