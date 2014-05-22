@@ -31,7 +31,7 @@ function [filename]=jdPTBsaveExperiment(E,optionstr,windowPtr)
             end
             filename=fullfile(E.outputfolder,[expName '_' E.subjectID '_' datestr(now,'yyyy-mm-dd-HH-MM-SS') '.mat']);
             save(filename,'E');
-            if ~isempty(windowPtr) && ~isempty(strfind(lower(optionstr),'noendtextscr'))
+            if ~isempty(windowPtr) && isempty(strfind(lower(optionstr),'noendtextscr'))
                 showFinalTextScreen(windowPtr,filename);
             end
             jdPTBendExperiment;
@@ -42,7 +42,8 @@ function [filename]=jdPTBsaveExperiment(E,optionstr,windowPtr)
     catch me
         filename=saveRecovery(E,'unknownExp');
         disp(['Saved data to ''' filename '''']);
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
@@ -58,7 +59,8 @@ function filename=saveRecovery(E,expName) %#ok<INUSL>
         end
         save(filename,'E');
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
@@ -68,11 +70,12 @@ function showFinalTextScreen(windowPtr,filename)
         if nargin==1
             str='[-:  T H E   E N D  :-]';
         else
-            str=['[-:  T H E   E N D  :-]\n\nThe data has been saved to:\n' filename];
+            str=['[-:  T H E   E N D  :-]\n\n\nThe data has been saved to:\n' filename];
         end
-        jdPTBdisplayText(windowPtr,str,'rgbback',[127 127 127],'rgb',[255 255 255]);
+        jdPTBdisplayText(windowPtr,str,'rgbaback',[127 127 127 255],'rgba',[255 255 255 255],'fadeInSecs',2.5);
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 

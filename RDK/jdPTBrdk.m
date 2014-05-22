@@ -4,14 +4,7 @@
 
 
 function jdPTBrdk
-    try
-        [E,windowPtr]=jdPTBprepExperiment('winRect',[]);
-        E=jdPTBrunExperiment(E,windowPtr,@settings2stim,@showStim);
-        jdPTBsaveExperiment(E,'final',windowPtr);
-    catch me
-        jdPTBendExperiment;
-        error(me.message);
-    end
+    jdPTBrunExperiment(@settings2stim,@showStim);
 end
 
 % --- FUNCTIONS -----------------------------------------------------------
@@ -25,9 +18,20 @@ function stim=settings2stim(C,physScr)
         F2S=physScr.frameDurSecs; % frames to seconds
         F2I=physScr.whiteIdx; % fraction to index (for colors)
         % Check the settings values
-        if abs(C.cohereFrac)>1, jdPTBerror('cohereFrac exceeds [-1 .. 1]'); end
-        if any(C.fixRGBAfrac>1 | C.fixRGBAfrac<0), jdPTBerror('fixRGBfrac exceeds [0 .. 1]'); end
-        if C.stimOnSecs<0, jdPTBerror('stimOnSecs less than 0 seconds'); end
+        errstr=[];
+        if abs(C.cohereFrac)>1
+            errstr=[ errstr 'cohereFrac exceeds [-1 .. 1] '];
+        end
+        if any(C.fixRGBAfrac>1 | C.fixRGBAfrac<0)
+            errstr=[ errstr 'fixRGBfrac exceeds [0 .. 1] '];
+        end
+        if C.stimOnSecs<0
+            errstr=[ errstr 'stimOnSecs less than 0 seconds ' ];
+        end
+        if ~isempty(errstr)
+            jdPTBendExperiment;
+            error(errstr);
+        end
         % Convert settings to stimulus properties
         N=max(0,round(C.dotsPerSqrDeg * C.apertWdeg * C.apertHdeg));
         stim.widPx = C.apertWdeg*D2P;
@@ -55,7 +59,7 @@ function stim=settings2stim(C,physScr)
         idx = rand(1,N)<.5;
         stim.dotcols(:,idx) = repmat(C.dotRBGAfrac1(:)*F2I,1,sum(idx));
         stim.dotcols(:,~idx) = repmat(C.dotRBGAfrac2(:)*F2I,1,sum(~idx));
-        stim.fix.xy = C.fixXYdeg + [physScr.widPx/2 physScr.heiPx/2];
+        stim.fix.xy = [C.fixXdeg C.fixYdeg] + [physScr.widPx/2 physScr.heiPx/2];
         stim.fix.rgba = C.fixRGBAfrac*F2I;
         stim.fix.size = C.fixRadiusDeg*D2P;
         stim.keyNamesStr = C.respKeys;
@@ -70,96 +74,12 @@ function stim=settings2stim(C,physScr)
         stim.feedback.visual.dotWrong.rgba = C.feedbackWrongRGBAfrac*F2I;
     catch me
         jdPTBendExperiment;
-        error(me.message);
+        disp(me.message);
+        keyboard
     end
 end
-
-function drawStim(windowPtr,stim)
-    try
-        ok=applyTheAperture(stim.xPx,stim.yPx,stim.apert,stim.widPx,stim.heiPx);
-        if ~any(ok), return; end
-        xy=[stim.xPx(:) stim.yPx(:)];
-        % offset the stimulus
-        xy=xy';
-        xy(1,:)=xy(1,:)+stim.pospx.x;
-        xy(2,:)=xy(2,:)+stim.pospx.y;
-        % draw the stimulus
-        Screen('DrawDots',windowPtr,xy(:,ok),stim.dotsize(ok),stim.dotcols(:,ok),[],2);
-    catch me
-        jdPTBendExperiment;
-        error(me.message);
-    end
-    %
-    function ok=applyTheAperture(x,y,apert,wid,hei)
-        if strcmpi(apert,'CIRCLE')
-            r=min(wid,hei)/2;
-            ok=hypot(x,y)<r;
-        elseif strcmpi(apert,'RECT')
-            % no need to do anything
-        else
-            jdPTBerror(['Unknown apert option: ' apert ]);
-        end
-    end
-end
-
-
-function drawFixDot(windowPtr,fix)
-    try
-        Screen('DrawDots',windowPtr,fix.xy(:),fix.size,fix.rgba(:),[],2);
-    catch me
-        jdPTBendExperiment;
-        error(me.message);
-    end
-end
-
-
-
-
-
-function stim=stepStim(stim)
-    try
-        % Reposition the dots, use shorthands for clarity
-        x=stim.xPx;
-        y=stim.yPx;
-        w=stim.widPx;
-        h=stim.heiPx;
-        dx=cosd(stim.cohereFrac)*stim.pxpflip;
-        dy=sind(stim.cohereFrac)*stim.pxpflip;
-        % Update dot lifetime
-        stim.dotage=stim.dotage+1;
-        expired=stim.dotage>stim.maxage;
-        % give new position if expired
-        x(expired)=rand(1,sum(expired))*w-w/2-dx(expired);
-        y(expired)=rand(1,sum(expired))*h-h/2-dy(expired);
-        % give new random direction if expired and dot is noise
-        rndDirs=rand(size(x))*360;
-        stim.cohereFrac(expired&stim.noiseDot)=rndDirs(expired&stim.noiseDot);
-        stim.dotage(expired)=0;
-        % Move the dots
-        x=x+dx;
-        y=y+dy;
-        if dx>0
-            x(x>=w/2)=x(x>=w/2)-w;
-        elseif dx<0
-            x(x<-w/2)=x(x<-w/2)+w;
-        end
-        if dy>0
-            y(y>=h/2)=y(y>=h/2)-h;
-        elseif dy<0
-            y(y<-h/2)=y(y<-h/2)+h;
-        end
-        stim.xPx=x;
-        stim.yPx=y;
-    catch me
-        jdPTBendExperiment;
-        error(me.message);
-    end
-end
-
 
 function [esc,timing,resp]=showStim(physScr,windowPtr,stim)
-    % Resp will be either a response structure or the string 'EscPressed'
-    % when escape was pressed to quit the experiment
     try
         vbl=Screen('Flip',windowPtr);
         N=stim.preFlips+stim.onFlips+stim.postFlips;
@@ -205,8 +125,82 @@ function [esc,timing,resp]=showStim(physScr,windowPtr,stim)
         timing.stopSecs=GetSecs;
     catch me
         jdPTBendExperiment;
-        error(me.message);
+        disp(me.message);
+        keyboard
     end
 end
+
+
+function drawStim(windowPtr,stim)
+    ok=applyTheAperture(stim.xPx,stim.yPx,stim.apert,stim.widPx,stim.heiPx);
+    if ~any(ok), return; end
+    xy=[stim.xPx(:) stim.yPx(:)];
+    % offset the stimulus
+    xy=xy';
+    xy(1,:)=xy(1,:)+stim.pospx.x;
+    xy(2,:)=xy(2,:)+stim.pospx.y;
+    % draw the stimulus
+    Screen('DrawDots',windowPtr,xy(:,ok),stim.dotsize(ok),stim.dotcols(:,ok),[],2);
+    %
+    function ok=applyTheAperture(x,y,apert,wid,hei)
+        if strcmpi(apert,'CIRCLE')
+            r=min(wid,hei)/2;
+            ok=hypot(x,y)<r;
+        elseif strcmpi(apert,'RECT')
+            % no need to do anything
+        else
+            jdPTBendExperiment;
+            error(['Unknown apert option: ' apert ]);
+        end
+    end
+end
+
+function drawFixDot(windowPtr,fix)
+    Screen('DrawDots',windowPtr,fix.xy(:),fix.size,fix.rgba(:),[],2);
+end
+
+
+function stim=stepStim(stim)
+    try
+        % Reposition the dots, use shorthands for clarity
+        x=stim.xPx;
+        y=stim.yPx;
+        w=stim.widPx;
+        h=stim.heiPx;
+        dx=cosd(stim.cohereFrac)*stim.pxpflip;
+        dy=sind(stim.cohereFrac)*stim.pxpflip;
+        % Update dot lifetime
+        stim.dotage=stim.dotage+1;
+        expired=stim.dotage>stim.maxage;
+        % give new position if expired
+        x(expired)=rand(1,sum(expired))*w-w/2-dx(expired);
+        y(expired)=rand(1,sum(expired))*h-h/2-dy(expired);
+        % give new random direction if expired and dot is noise
+        rndDirs=rand(size(x))*360;
+        stim.cohereFrac(expired&stim.noiseDot)=rndDirs(expired&stim.noiseDot);
+        stim.dotage(expired)=0;
+        % Move the dots
+        x=x+dx;
+        y=y+dy;
+        if dx>0
+            x(x>=w/2)=x(x>=w/2)-w;
+        elseif dx<0
+            x(x<-w/2)=x(x<-w/2)+w;
+        end
+        if dy>0
+            y(y>=h/2)=y(y>=h/2)-h;
+        elseif dy<0
+            y(y<-h/2)=y(y<-h/2)+h;
+        end
+        stim.xPx=x;
+        stim.yPx=y;
+    catch me
+        jdPTBendExperiment;
+        disp(me.message);
+        keyboard
+    end    
+end
+
+
 
 

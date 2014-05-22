@@ -1,8 +1,8 @@
-function str=jdPTBgetEscapeKey
-    str=[];
+function b=jdPTBgetEscapeKey
+    b=false;
     KbName('UnifyKeyNames');
     [keyIsDown,~,keyCode]=KbCheck;
     if keyIsDown && keyCode(KbName('Escape'))
-        str='EscPressed';
+        b=true;
     end
 end

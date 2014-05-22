@@ -5,6 +5,8 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=jdPTBrdkSettings
     hardware.screenDistMm=1000;
     hardware.gammaCorrection=1.49;
     hardware.screenWidHeiMm=[]; % [] triggers autodetection (may fail silently)
+    hardware.stereoMode='mono'; % 'mono','mirror'
+    hardware.window=[]; % [] is full screen , 'small' is small for debugging
     %
     outputfolder=fullfile(pwd,'data'); 
     %
@@ -47,7 +49,7 @@ function [cond,nBlocks,instruction,outputfolder,hardware]=jdPTBrdkSettings
     default.feedbackWrongRGBAfrac=[0 0 0 .5];
     %
     nConds=0;
-    coh=-1:.2:1;
+    coh=-1:1:1;
     for c=1:numel(coh)
         nConds=nConds+1;
         cond(nConds)=default; %#ok<*AGROW>

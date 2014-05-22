@@ -5,6 +5,7 @@ function jdPTBendExperiment
         ShowCursor;
         jdPTBgammaCorrection('restore');
         Screen('CloseAll');
+        ListenChar(0);
     catch me
         error(me.message);
     end

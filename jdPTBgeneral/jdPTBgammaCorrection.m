@@ -19,7 +19,8 @@ function jdPTBgammaCorrection(option,scrNr,gammaValue)
             jdPTBunknown('option',option);
         end
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 

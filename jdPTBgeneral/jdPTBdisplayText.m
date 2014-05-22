@@ -44,8 +44,10 @@ function fadeText(windowPtr,p,how)
         instructStr=p.instructStr;
         if strcmpi(how,'fadein')
             durSecs=abs(p.fadeInSecs);
+            finalOpac=1;
         else
             durSecs=-abs(p.fadeOutSecs);
+            finalOpac=0;
         end
         framedur=Screen('GetFlipInterval',windowPtr);
         nFlips=abs(durSecs)/framedur;
@@ -55,10 +57,15 @@ function fadeText(windowPtr,p,how)
                 opacity=1-opacity;
             end
             printText(instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
+            if jdPTBgetEscapeKey
+                printText(instructStr,windowPtr,p.rgba,p.rgbaback,finalOpac,p.dxdy);
+                break;
+            end
         end
     catch me
         jdPTBendExperiment;
-        error(me.message);
+        disp(me.message);
+        keyboard
     end
 end
 
