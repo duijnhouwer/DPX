@@ -10,8 +10,17 @@ function [E,windowPtr]=jdPTBprepExperiment(varargin)
     %   exclusively useful for debugging purposes
     %
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addParamValue('winRect',[],@(x)isempty(x) || isnumeric(x) && numel(x)==4); % [] default to full screen
+    p.addParamValue('winRect',[],@(x)isempty(x) || isnumeric(x) && numel(x)==4 || any(strcmpi(x,{'fullscreen','small'})));
     p.parse(varargin{:});
+    if ischar(p.Results.winRect)
+        if strcmpi(p.Results.winRect,'small')
+            window=[0 0 400 300]+20; % small screen for debugging purposes
+        else
+            window=[]; % full screen
+        end
+    else
+        window=p.Results.winRect;
+    end     
     st=dbstack; % get the functions that called this one
     scriptname=st(end).file; % this is the name of the current experiment (the script that called jdPTBprepExperiment)
     E=jdPTBgetGeneralInfo(scriptname);
@@ -21,7 +30,7 @@ function [E,windowPtr]=jdPTBprepExperiment(varargin)
         warning('off'); %#ok<WNOFF>
         HideCursor;
     end
-    [windowPtr,E.physScr]=openStimWindow('winRect',p.Results.winRect,'hardware',setup); % physScr contains info on all physical display properties, windowPtr is a pointer to window
+    [windowPtr,E.physScr]=openStimWindow('winRect',window,'hardware',setup); % physScr contains info on all physical display properties, windowPtr is a pointer to window
 end
 
 %--- SUBFUNCTIONS -----------------------------------------------------

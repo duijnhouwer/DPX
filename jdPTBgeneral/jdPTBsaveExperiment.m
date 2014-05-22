@@ -21,7 +21,7 @@ function [filename]=jdPTBsaveExperiment(E,optionstr,windowPtr)
             filename=saveRecovery(E,expName);
         elseif ~isempty(strfind(lower(optionstr),'crash'))
             filename=saveRecovery(E,expName);
-            endExperiment;
+            jdPTBendExperiment;
         elseif ~isempty(strfind(lower(optionstr),'final'))
             if isempty(E.subjectID)
                 E.subjectID='0';
@@ -34,7 +34,7 @@ function [filename]=jdPTBsaveExperiment(E,optionstr,windowPtr)
             if ~isempty(windowPtr) && ~isempty(strfind(lower(optionstr),'noendtextscr'))
                 showFinalTextScreen(windowPtr,filename);
             end
-            endExperiment;
+            jdPTBendExperiment;
         else
             jdPTBunknown('optionstr',optionstr);
         end
@@ -76,14 +76,3 @@ function showFinalTextScreen(windowPtr,filename)
     end
 end
 
-
-function endExperiment
-    try
-        warning on %#ok<WNON>
-        ShowCursor;
-        jdPTBgammaCorrection('restore');
-        Screen('CloseAll');
-    catch me
-        jdPTBerror(me);
-    end
-end

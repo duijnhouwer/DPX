@@ -34,7 +34,8 @@ function jdPTBdisplayText(windowPtr,text,varargin)
         Screen('Textfont',windowPtr,oldFontName);
         Screen('TextSize',windowPtr,oldTextSize);
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
@@ -56,7 +57,8 @@ function fadeText(windowPtr,p,how)
             printText(instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
         end
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
 
@@ -84,6 +86,7 @@ function printText(instructStr,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
         end
         Screen('Flip',windowPtr);
     catch me
-        jdPTBerror(me);
+        jdPTBendExperiment;
+        error(me.message);
     end
 end
