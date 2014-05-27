@@ -47,5 +47,12 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             end
             E.physScr.close;
         end
+        function addCondition(E,C,CnameStr)
+            if nargin==2
+                CnameStr=C.type;
+            end
+            E.conditions{end+1}=C;
+            E.conditionNames{end+1}=CnameStr;
+        end
     end
 end

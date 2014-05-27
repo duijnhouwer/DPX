@@ -3,16 +3,19 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     
     properties (Access=public)
         stims={};
+        stimNames={};
         durSecs=3;
     end
     properties (Access=private)
         nFlips;
         measuredFramerate=[];
         windowPtr=[];
+        type='dpxBasicCondition';
     end
     methods (Access=public)
         function C=dpxBasicCondition
             C.stims{1}=dpxFixMarker;
+            C.stimNames{1}='fixMarker';
         end
         function [esc]=init(C,physScr)
             for s=1:numel(C.stims)
@@ -47,6 +50,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                     C.stims{s}.step;
                 end
             end
+        end
+        function addStim(C,S,SnameStr)
+            if nargin==2
+                SnameStr=S.type;
+            end
+            C.stims{end+1}=S;
+            C.stimNames{end+1}=SnameStr;
         end
     end
 end

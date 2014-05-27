@@ -21,6 +21,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         measuredFrameRate;
         widPx;
         heiPx;
+        type='dpxStimWindow';
     end
     properties (Access=private)
         scrNr;
