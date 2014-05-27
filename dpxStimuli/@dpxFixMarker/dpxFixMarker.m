@@ -14,21 +14,25 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         onFlip;
         offFlip;
         flipCounter=0;
+        stereoMode;
+        scrCenterXYpx;
     end
     methods
         function S=dpxFixMarker
         end
-        function init(S,physScr)
-            if nargin~=2 || ~isobject(physScr)
-                error('Needs dpxStimWindow object');
+        function init(S,physScrValues)
+            if nargin~=2 || ~isstruct(physScrValues)
+                error('Needs get(dpxStimWindow-object) struct');
             end
             S.type='dpxFixMarker';
-            S.xyPx = [S.xDeg S.yDeg] + [physScr.widPx/2 physScr.heiPx/2];
-            S.rgba = S.RGBAfrac * physScr.whiteIdx;
-            S.wPx = S.wDeg * physScr.deg2px;
-            S.hPx = S.hDeg * physScr.deg2px;
-            S.onFlip = S.onSecs * physScr.measuredFrameRate;
-            S.offFlip = (S.onSecs + S.durSecs) * physScr.measuredFrameRate;
+            S.scrCenterXYpx = [physScrValues.widPx/2 physScrValues.heiPx/2];
+            S.xyPx = [S.xDeg S.yDeg];
+            S.rgba = S.RGBAfrac * physScrValues.whiteIdx;
+            S.wPx = S.wDeg * physScrValues.deg2px;
+            S.hPx = S.hDeg * physScrValues.deg2px;
+            S.onFlip = S.onSecs * physScrValues.measuredFrameRate;
+            S.offFlip = (S.onSecs + S.durSecs) * physScrValues.measuredFrameRate;
+            S.stereoMode = physScrValues.stereoMode;
             S.flipCounter=0;
         end
         function draw(S,windowPtr)
@@ -37,8 +41,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 return;
             else
                 if strcmpi(S.shape,'dot')
-                    diam=max(S.wPx,S.hPx);
-                    Screen('DrawDots',windowPtr,S.xyPx(:),diam,S.rgba(:),[],2); 
+                    drawDot(S,windowPtr);
                 elseif strcmpi(S.shape,'cross')
                     error('To be implemented');
                 else
@@ -46,5 +49,19 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 end
             end
         end
+    end
+end
+
+function drawDot(S,windowPtr)
+    diam=max(1,max(S.wPx,S.hPx));
+    if strcmpi(S.stereoMode,'mono')
+        Screen('DrawDots',windowPtr,S.xyPx(:),diam,S.rgba(:),S.scrCenterXYpx,2);
+    elseif strcmpi(S.stereoMode,'mirror')
+        for buffer=0:1
+            Screen('SelectStereoDrawBuffer', windowPtr, buffer);
+            Screen('DrawDots',windowPtr,S.xyPx(:),diam,S.rgba(:),S.scrCenterXYpx,2);
+        end
+    else
+        error(['Unknown stereoMode ''' S.stereoMode '''.']);
     end
 end

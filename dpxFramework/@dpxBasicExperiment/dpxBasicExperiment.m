@@ -14,7 +14,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     end
     methods (Access=public)
         function E=dpxBasicExperiment
-            E.physScr.winRectPx=[10 10 400 300];
+            %E.physScr.winRectPx=[10 10 400 300];
             E.conditions=dpxBasicCondition;
         end
         function run(E)
@@ -29,7 +29,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 end
                 condNr=conditionList(tr);
                 E.physScr.clear;
-                [esc]=E.conditions(condNr).init(E.physScr);
+                [esc]=E.conditions(condNr).init(get(E.physScr));
                 if esc
                     fprintf('\nEscape pressed during init\n');
                     break; % stop the experiment

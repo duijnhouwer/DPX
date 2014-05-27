@@ -8,8 +8,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     end
     properties (Access=private)
         nFlips;
-        measuredFramerate=[];
-        windowPtr=[];
+        physScrVals=struct;
         type='dpxBasicCondition';
     end
     methods (Access=public)
@@ -17,12 +16,11 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             C.stims{1}=dpxFixMarker;
             C.stimNames{1}='fixMarker';
         end
-        function [esc]=init(C,physScr)
+        function [esc]=init(C,physScrVals)
             for s=1:numel(C.stims)
-                C.stims{s}.init(physScr);
-                C.measuredFramerate=physScr.measuredFramerate;
-                C.windowPtr=physScr.windowPtr;
-                C.nFlips=round(C.durSecs*C.measuredFramerate);
+                C.stims{s}.init(physScrVals);
+                C.physScrVals=physScrVals;
+                C.nFlips=round(C.durSecs*C.physScrVals.measuredFrameRate);
                 esc=dpxGetEscapeKey;
                 if esc
                     break;
@@ -30,10 +28,11 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             end
         end
         function [esc]=show(C)
-            if isempty(C.windowPtr)
+            winPtr=C.physScrVals.windowPtr;
+            if isempty(winPtr)
                 error('dpxBasicCondition has not been init-ed');
             end
-            vbl=Screen('Flip',C.windowPtr);
+            vbl=Screen('Flip',winPtr);
             for f=1:C.nFlips
                 if mod(f,5)==0
                     esc=dpxGetEscapeKey;
@@ -43,11 +42,11 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 end
                 for s=numel(C.stims):-1:1
                     % draw first last so is on top
-                    C.stims{s}.draw(C.windowPtr);
+                    C.stims{s}.draw(winPtr);
                 end
-                vbl=Screen('Flip',C.windowPtr,vbl+0.75*(1/C.measuredFramerate));
+                vbl=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
                 for s=1:numel(C.stims)
-                    C.stims{s}.step;
+                    C.stims{s}.step(C.physScrVals);
                 end
             end
         end

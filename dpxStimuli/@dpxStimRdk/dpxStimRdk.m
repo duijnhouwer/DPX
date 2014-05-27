@@ -118,7 +118,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     end
 end
 
-% ---
+% --- HELP FUNCTION ------------------------------------------------------
 
 function ok=applyTheAperture(S)
     if strcmpi(S.apert,'CIRCLE')

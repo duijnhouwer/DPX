@@ -7,11 +7,14 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         durSecs=1;
         xDeg=0;
         yDeg=0;
+        zDeg=0;
         type='dpxBasicStim';
     end
     properties (Access=private)
         xCenterPx;
         yCenterPx;
+        zCenterPx;
+        scrCenterXYpx=[];
     end
     methods
         function S=dpxBasicStim
@@ -20,7 +23,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         end
         function draw(S,windowPtr)
         end
-        function step(S)
+        function step(S,physScrValues)
         end
     end
 end

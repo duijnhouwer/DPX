@@ -3,12 +3,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     
     properties (Access=public)
         stereoMode='mono';
-        winRectPx=[];
+        winRectPx=[10 10 400 300];
         distMm=600;
         interEyeMm=65;
         gamma=1;
         widHeiMm=[]; % leave [] for auto-detect
         backRGBA=[.5 .5 .5 1];
+        SkipSyncTests=1;
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -21,6 +22,10 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         measuredFrameRate;
         widPx;
         heiPx;
+        interEyePx=[]
+        leftEyeXYZpx;
+        rightEyeXYZpx;
+        cyclopEyeXYZpx;
         type='dpxStimWindow';
     end
     properties (Access=private)
@@ -32,14 +37,16 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             AssertOpenGL;
             S=initValues(S);
             Screen('Preference','VisualDebuglevel',0);
-            Screen('Preference','SkipSyncTests',0);
+            Screen('Preference','SkipSyncTests',S.SkipSyncTests);
         end
         function open(S)
-            S.windowPtr = Screen('OpenWindow',S.scrNr,[0 0 255],S.winRectPx,[],2,S.stereoCode);
+            if isempty(S.winRectPx)
+                HideCursor;
+            end
+            [S.windowPtr,S.winRectPx] = Screen('OpenWindow',S.scrNr,[0 0 0 0],S.winRectPx,[],2,S.stereoCode);
             dpxGammaCorrection('set',S.scrNr,S.gamma);
             S.measuredFrameRate = 1/Screen('GetFlipInterval',S.windowPtr);
             Screen('BlendFunction',S.windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
-            HideCursor;
         end
         function clear(S)
             % clear the window to background color
@@ -80,10 +87,10 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             initValues(S);
         end
         function set.stereoMode(S,value)
-            set.stereoMode=value;
+            S.stereoMode=value;
             if strcmpi(S.stereoMode,'mono')
                 S.stereoCode=0;
-            elseif strcmpi(S.stereoMode,'stereo')
+            elseif strcmpi(S.stereoMode,'mirror')
                 S.stereoCode=4;
             else
                 error(['Unknown stereoMode ''' S.stereoMode '''.']);
@@ -108,6 +115,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 S.backgrRGBA=value;
             end
         end
+        function set.interEyeMm(S,value)
+            if value<0
+                error('interEyeMm should be positive');
+            end
+            S.interEyeMm=value;
+            initValues(S);
+        end
     end
     methods (Access=private)
         function S=initValues(S)
@@ -130,6 +144,14 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             scrWidDeg = atan2d(S.widHeiMm(1)/2,S.distMm)*2;
             S.deg2px = S.widPx/scrWidDeg;
             S.nominalFrameRate=Screen('NominalFrameRate',S.scrNr);
+            S.interEyePx=S.interEyeMm*S.mm2px;
+            S.leftEyeXYZpx=[-S.interEyePx/2;S.distPx;0];
+            S.rightEyeXYZpx=[S.interEyePx/2;S.distPx;0];
+            S.cyclopEyeXYZpx=[0;S.distPx;0];         
         end
     end
 end
+
+
+
+        
