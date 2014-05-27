@@ -1,7 +1,7 @@
-function dpxRdkExperiment
+function jdDpxRdkExp
     
     E=dpxBasicExperiment;
-    E.physScr.winRectPx=[];
+    E.windowed;
     set(E.conditions.stims{1},'durSecs',2);
     tmp=dpxStimRdk;
     tmp.xDeg=-10;
