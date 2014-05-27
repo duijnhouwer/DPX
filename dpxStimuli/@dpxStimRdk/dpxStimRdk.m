@@ -2,7 +2,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         dpxStimRdk < dpxBasicStim
     
     properties (Access=public)
-        dirDeg=180;
+        dirDeg=0;
         speedDps=10;
         dotsPerSqrDeg=10;
         dotDiamDeg=.1;
