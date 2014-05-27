@@ -13,7 +13,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     end
     methods (Access=public)
         function C=dpxBasicCondition
-            C.stims{1}=dpxFixMarker;
+            C.stims{1}=dpxStimFix;
             C.stimNames{1}='fixMarker';
         end
         function [esc]=init(C,physScrVals)

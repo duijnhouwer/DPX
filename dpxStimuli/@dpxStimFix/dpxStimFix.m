@@ -1,5 +1,5 @@
 classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
-        dpxFixMarker < dpxBasicStim
+        dpxStimFix < dpxBasicStim
     
     properties (Access=public)
         shape;
@@ -8,7 +8,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     properties (Access=private)
     end
     methods
-        function S=dpxFixMarker
+        function S=dpxStimFix
             S.shape='dot';
             S.wDeg=.25;
             S.hDeg=.25;
@@ -18,7 +18,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             if nargin~=2 || ~isstruct(physScrVals)
                 error('Needs get(dpxStimWindow-object) struct');
             end
-            S.type='dpxFixMarker';
+            S.type='dpxStimFix';
             S.winCntrXYpx = [physScrVals.widPx/2 physScrVals.heiPx/2];
             S.xPx = S.xDeg * physScrVals.deg2px;
             S.yPx = S.yDeg * physScrVals.deg2px;
