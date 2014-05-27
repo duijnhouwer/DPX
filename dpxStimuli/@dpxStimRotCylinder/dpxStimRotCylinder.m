@@ -9,8 +9,6 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         dotRGBA1frac=[1 1 1 1];
         dotRGBA2frac=[0 0 0 1];
         axis='hori';
-        wDeg=15;
-        hDeg=10;
         dotDiamDeg=.15;
         stereoLumCorr=1;
     end
@@ -25,17 +23,12 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         depthPx;
         hordisp;
         dAz;
-        onFlip;
-        offFlip;
-        flipCounter;
         stimEyeDistPx;
         dotDiamPx;
-        wPx;
-        hPx;
-        Z; R;
+        %Z;
         Az;
-        Y;
-        X;
+        %Y;
+        %X;
         XYZ;
         scrCenterXYpx;
         leftEyeColor;
@@ -43,6 +36,8 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     end
     methods (Access='public')
         function S=dpxStimRotCylinder
+            S.wDeg=15;
+            S.hDeg=10;
         end
         function init(S,physScrVals)
             if nargin~=2 || ~isstruct(physScrVals)
@@ -66,33 +61,27 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             S.wPx=round(S.wDeg*physScrVals.deg2px);
             S.hPx=round(S.hDeg*physScrVals.deg2px);
             S.scrCenterXYpx=[physScrVals.widPx/2 physScrVals.heiPx/2];
-        
-            %         C.DotFills=S.Cyl(i).DotFills;
-            %         C.DotColorBlack=0;
-            %         C.DotColorWhite=255;
-            %         C.ColorCoordinationStr=S.Cyl(i).ColorCoordination;
-            %         C.Axis=S.Cyl(i).Axis;
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
-                S.X=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
-                S.R=S.hPx/2; %Y is going in the screen
+                x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                r=S.hPx/2; %Y is going in the screen
                 S.Az=2*pi*rand(1,S.nDots);
-                S.Y=round(S.depthPx+S.disparityFrac*S.R*cos(S.Az));
-                S.Z=round(-S.depthPx+S.R*sin(S.Az));
-                S.XYZ=[S.X;S.Y;S.Z];
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                z=round(-S.depthPx+r*sin(S.Az));
+                S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'vert')
-                S.Z=round(S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
-                S.R=S.hPx(2)/2;
+                z=round(S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                r=S.wPx/2;
                 S.Az=2*pi*rand(1,S.nDots);
-                S.Y=round(S.depthPx+S.disparityFrac*S.R*cos(S.Az));
-                S.X=round(S.xPx+S.R*sin(S.Az));
-                S.XYZ=[S.X;S.Y;S.Z];
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                x=round(S.xPx+r*sin(S.Az));
+                S.XYZ=[x;y;z];
             else
                 error(['Unknown axis option: ' S.axis]);
             end
             S.dAz=S.rotSpeedRad/physScrVals.measuredFrameRate;
             S.hordisp=getHorizontalDisparity(physScrVals,S.XYZ);
-            
+            S.physScrVals=physScrVals;
         end
         function draw(S,windowPtr)
             for buffer=0:1
@@ -108,26 +97,22 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 Screen('DrawDots', windowPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.scrCenterXYpx,1);
             end
         end
-        function step(S,physScrVals)
-            if nargin~=2 || ~isstruct(physScrVals)
-                error('Needs get(dpxStimWindow-object) struct');
-            end
+        function step(S)
             S.Az=S.Az+S.dAz;
             if strcmpi(S.axis,'hori')
-                S.X = S.X;
-                S.Y = round(S.depthPx+ S.disparityFrac *S.R*cos(S.Az));
-                S.Z = round(-S.depthPx+S.R*sin(S.Az));
-                S.XYZ=[S.X; S.Y; S.Z];
+                r = S.hPx/2;
+                y = round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                z = round(-S.depthPx+r*sin(S.Az));
+                S.XYZ=[S.XYZ(1,:);y;z];
             elseif strcmpi(S.axis,'vert')
-                S.Z = S.Z;
-                S.Y = round(S.depthPx+S.disparityFrac*S.R*cos(S.Az));
-                S.X = round(S.xPx+S.R*sin(S.Az));
-                S.XYZ=[S.X; S.Y; S.Z];
+                r = S.wPx/2;
+                y = round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                x = round(S.xPx+r*sin(S.Az));
+                S.XYZ=[x;y;S.XYZ(3,:)];
             else
                 error(['Unknown axis option: ' S.axis]);
             end
-            S.hordisp=getHorizontalDisparity(physScrVals,S.XYZ);
-            %S=updateDotColor(physscr,S);
+            S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
         end
     end
     methods

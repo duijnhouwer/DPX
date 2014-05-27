@@ -1,9 +1,8 @@
-function dpxRotCylExperiment
-    
+function jdDpxRotCylExp
     
     E=dpxBasicExperiment;
+    E.fullScreen;
     E.physScr.stereoMode='mirror';
-    E.physScr.winRectPx=[];%[50 100 400 300];
     set(E.conditions.stims{1},'durSecs',2);
     tmp=dpxStimRotCylinder;
     tmp.stereoLumCorr=-1;

@@ -53,8 +53,8 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             N=S.nDots;
             S.wPx = S.wDeg * D2P;
             S.hPx = S.hDeg * D2P;
-            S.xPx =  S.xDeg*D2P;
-            S.yPx =  S.yDeg*D2P;
+            S.xPx = S.xDeg*D2P;
+            S.yPx = S.yDeg*D2P;
             S.winCntrXYpx=[physScrVals.widPx/2  physScrVals.heiPx/2];
             S.dotXPx = rand(1,N) * S.wPx-S.wPx/2;
             S.dotYPx = rand(1,N) * S.hPx-S.hPx/2;
