@@ -1,4 +1,4 @@
-function [p,changed] = guisetstruct(p,prompt)
+function [p,changed] = dpxGuiSetStruct(p,prompt)
 % function p = guisetstruct(p,prompt)
 % Pass a struct; a list edit box will open with the current values of the
 % fields in the struct, the user can edit these, then click ok, and the
@@ -24,7 +24,7 @@ out = cellfun(@(x)(~(ischar(x)||isnumeric(x) ||islogical(x)) || size(x,1)>1),cur
 
 islog  = cellfun(@(x)(islogical(x)),current);
 isnum = cellfun(@(x)(isnumeric(x)),current);
-current(isnum|islog) = cellfun(@(x)(num2str(x)),current(isnum | islog),'Uniform',false);
+current(isnum|islog) = cellfun(@(x)(strtrim(sprintf('%g ',x))),current(isnum | islog),'Uniform',false);
 
 [current{out}] = deal('FIXED');
 

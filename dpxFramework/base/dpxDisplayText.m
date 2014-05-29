@@ -1,4 +1,4 @@
-function dpxDisplayText(windowPtr,text,varargin)
+function keyIsDown=dpxDisplayText(windowPtr,text,varargin)
     try
         w=WhiteIndex(windowPtr);
         p = inputParser;   % Create an instance of the inputParser class.
@@ -11,20 +11,23 @@ function dpxDisplayText(windowPtr,text,varargin)
         p.addParamValue('fontname','Arial',@(x)ischar(x));
         p.addParamValue('fontsize',22,@(x)isnumeric(x));
         p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
+        p.addParamValue('forceContinueAfterSecs',Inf,@isnumeric);
         p.parse(windowPtr,text,varargin{:});
         %
         oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
         oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
         [sourceFactorOld, destinationFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
+        startSecs=GetSecs;
         % Fade-in the instructions
         fadeText(windowPtr,p.Results,'fadein');
         % wait for input ...
         KbName('UnifyKeyNames');
         keyIsDown=false;
-        while ~keyIsDown
+        keyIsDown=false;
+        while ~keyIsDown && GetSecs-startSecs<p.Results.forceContinueAfterSecs
             [keyIsDown,~,keyCode]=KbCheck;
         end
-        if ~keyCode(KbName('Escape'))
+        if keyIsDown && ~keyCode(KbName('Escape'))
             % Only fade-out the text if a key other than escape is pressed (indicates hurry!)
             fadeText(windowPtr,p.Results,'fadeout');
             KbReleaseWait; % wait for key to be released
@@ -41,24 +44,18 @@ end
 
 function fadeText(windowPtr,p,how)
     try
-        instructStr=p.instructStr;
-        if strcmpi(how,'fadein')
-            durSecs=abs(p.fadeInSecs);
-            finalOpac=1;
-        else
-            durSecs=-abs(p.fadeOutSecs);
-            finalOpac=0;
+        if ~any(strcmpi(how,{'fadein','fadeout'}))
+            error(['Unknown fade option: ' how]);
         end
         framedur=Screen('GetFlipInterval',windowPtr);
-        nFlips=abs(durSecs)/framedur;
+        nFlips=p.fadeOutSecs/framedur;
         for f=1:nFlips
             opacity=1-(f-1)/(nFlips-1);
-            if durSecs>0
+            if strcmpi(how,'fadeout')
                 opacity=1-opacity;
             end
-            printText(instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
-            if dpxGetEscapeKey
-                printText(instructStr,windowPtr,p.rgba,p.rgbaback,finalOpac,p.dxdy);
+            printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
+            if KbCheck
                 break;
             end
         end

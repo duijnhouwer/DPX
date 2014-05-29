@@ -2,13 +2,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         dpxStimWindow < hgsetget
     
     properties (Access=public)
-        stereoMode='mono';
         winRectPx=[10 10 400 300];
+        widHeiMm=[]; % leave [] for auto-detect
         distMm=600;
         interEyeMm=65;
         gamma=1;
-        widHeiMm=[]; % leave [] for auto-detect
         backRGBA=[.5 .5 .5 1];
+        stereoMode='mono';
         SkipSyncTests=1;
     end
     properties (GetAccess=public,SetAccess=private)
@@ -59,19 +59,26 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             ShowCursor;
             dpxGammaCorrection('restore');
             Screen('CloseAll');
-            ListenChar(0);
+            try
+                ListenChar(0);
+            catch me
+                disp(me);
+            end 
             S.windowPtr=[];
         end
     end
     methods
         function set.winRectPx(S,value)
-            if numel(value)~=4 && ~isempty(value)
-                error('winRectPx needs to be empty ([]) or have 4 values ([topleft.x topleft.y lowerright.x lowerright.y])');
+            if ~isempty(value) && (~isnumeric(value) && numel(value)==4)
+                error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
             end
             S.winRectPx=value;
             initValues(S);
         end
         function set.distMm(S, value)
+            if ~isnumeric(value)
+                error('distMm needs to be numerical');
+            end
             if ~isempty(S.windowPtr)
                 error('Window already opened');
             end
@@ -82,6 +89,9 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             initValues(S);
         end
         function set.gamma(S,value)
+            if ~isnumeric(value) || isempty(value)
+                error('gamma needs to be positve number (typically between 0.4 and 2)');
+            end
             S.gamma=value;
             dpxGammaCorrection('set',S.scrNr,S.gamma);
             initValues(S);
@@ -93,13 +103,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             elseif strcmpi(S.stereoMode,'mirror')
                 S.stereoCode=4;
             else
-                error(['Unknown stereoMode ''' S.stereoMode '''.']);
+                error(['Unknown stereoMode ''' S.stereoMode '''. Valid options are ''mono'' and ''mirror''']);
             end
             initValues(S);
         end
         function set.widHeiMm(S,value)
-            if ~isempty(value) && numel(value)~=2
-                error('widHeiMm needs two values');
+            if ~isempty(value) && numel(value)~=2 || ~isnumeric(value)
+                error('widHeiMm needs two numerical values or be empty');
             end
             if ~isempty(S.windowPtr);
                 error('Can''t set widHeiMm when window is already open');
@@ -109,15 +119,15 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             end
         end
         function set.backRGBA(S,value)
-            if numel(value)~=4 || any(value>1) || any(value<0)
-                error('backgrRGBA needs 4 values between 0 and 1');
+            if numel(value)~=4 || any(value>1) || any(value<0) || ~isnumeric(value) || isempty(value)
+                error('backRGBA needs 4 numerical values between 0 and 1');
             else
-                S.backgrRGBA=value;
+                S.backRGBA=value;
             end
         end
         function set.interEyeMm(S,value)
-            if value<0
-                error('interEyeMm should be positive');
+            if isempty(value) || ~isnumeric(value) || value<0
+                error('interEyeMm should be a positive number');
             end
             S.interEyeMm=value;
             initValues(S);
@@ -147,11 +157,11 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             S.interEyePx=S.interEyeMm*S.mm2px;
             S.leftEyeXYZpx=[-S.interEyePx/2;S.distPx;0];
             S.rightEyeXYZpx=[S.interEyePx/2;S.distPx;0];
-            S.cyclopEyeXYZpx=[0;S.distPx;0];         
+            S.cyclopEyeXYZpx=[0;S.distPx;0];
         end
     end
 end
 
 
 
-        
+
