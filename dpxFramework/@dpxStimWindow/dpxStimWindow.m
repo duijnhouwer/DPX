@@ -9,7 +9,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         gamma=1;
         backRGBA=[.5 .5 .5 1];
         stereoMode='mono';
-        SkipSyncTests=1;
+        SkipSyncTests=0;
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -65,6 +65,9 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 disp(me);
             end 
             S.windowPtr=[];
+        end
+        function gui(S)
+            dpxToolStimWindowGui(S);
         end
     end
     methods

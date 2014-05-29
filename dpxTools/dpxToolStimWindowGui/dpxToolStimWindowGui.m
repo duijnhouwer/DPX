@@ -20,7 +20,11 @@ function varargout = dpxToolStimWindowGui(varargin)
 end
 
 function dpxToolStimWindowGui_OpeningFcn(hObject, eventdata, handles, varargin)
-    handles.stimWin = dpxStimWindow;
+    if isempty(varargin)
+        handles.stimWin = dpxStimWindow;
+    elseif isobject(varargin{1})
+        handles.stimWin = varargin{1};
+    end
     % Keep these two lines at the end so the handles structure is updated
     handles.output = hObject;
     guidata(hObject,handles);
