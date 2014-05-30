@@ -1,5 +1,4 @@
-classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
-        dpxStimWindow < hgsetget
+classdef dpxCoreWindow < hgsetget
     
     properties (Access=public)
         winRectPx=[10 10 400 300];
@@ -9,7 +8,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         gamma=1;
         backRGBA=[.5 .5 .5 1];
         stereoMode='mono';
-        SkipSyncTests=0;
+        SkipSyncTests=1;
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;

@@ -38,15 +38,11 @@ classdef dpxStimRdk < dpxBasicStim
             S.wDeg=10;
             S.hDeg=10;
         end
-        function init(S,physScrVals)
-            if nargin~=2 || ~isstruct(physScrVals)
-                error('Needs get(dpxStimWindow-object) structure');
-            end
-            if isempty(physScrVals.windowPtr)
-                error('dpxStimWindow object has not been initialized');
-            end
-            D2P=physScrVals.deg2px; % degrees to pixels
-            F2I=physScrVals.whiteIdx; % fraction to index (for colors)
+    end
+    methods (Access=protected)
+        function myInit(S)
+            D2P=S.physScrVals.deg2px; % degrees to pixels
+            F2I=S.physScrVals.whiteIdx; % fraction to index (for colors)
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
@@ -54,7 +50,7 @@ classdef dpxStimRdk < dpxBasicStim
             S.hPx = S.hDeg * D2P;
             S.xPx = S.xDeg*D2P;
             S.yPx = S.yDeg*D2P;
-            S.winCntrXYpx=[physScrVals.widPx/2  physScrVals.heiPx/2];
+            S.winCntrXYpx=[S.physScrVals.widPx/2  S.physScrVals.heiPx/2];
             S.dotXPx = rand(1,N) * S.wPx-S.wPx/2;
             S.dotYPx = rand(1,N) * S.hPx-S.hPx/2;
             S.dotDirDeg = ones(1,N) * S.dirDeg;
@@ -65,27 +61,18 @@ classdef dpxStimRdk < dpxBasicStim
             if S.cohereFrac<0, S.dotDirDeg = S.dotDirDeg + 180; end % negative coherence flips directions
             S.dotDiam = max(1,repmat(S.dotDiamDeg*D2P,1,N));
             S.dotAge = floor(rand(1,N) * (S.nSteps + 1));
-            S.pxPerFlip = S.speedDps * D2P / physScrVals.measuredFrameRate;
+            S.pxPerFlip = S.speedDps * D2P / S.physScrVals.measuredFrameRate;
             idx = rand(1,N)<.5;
             S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
-            S.onFlip = S.onSec * physScrVals.measuredFrameRate;
-            S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
-            S.physScrVals=physScrVals;
-            S.flipCounter=0;
         end
-        function draw(S,windowPtr)
-            S.flipCounter=S.flipCounter+1;
-            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-                return;
-            else
-                ok=applyTheAperture(S);
-                if ~any(ok), return; end
-                xy=[S.dotXPx(:) S.dotYPx(:)]';
-                Screen('DrawDots',windowPtr,xy(:,ok),S.dotDiam(ok),S.dotsRGBA(:,ok),S.winCntrXYpx,2);
-            end
+        function myDraw(S)
+            ok=applyTheAperture(S);
+            if ~any(ok), return; end
+            xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
+            Screen('DrawDots',S.physScrVals.windowPtr,xy(:,ok),S.dotDiam(ok),S.dotsRGBA(:,ok),S.winCntrXYpx,2);
         end
-        function step(S)
+        function myStep(S)
             % Reposition the dots, use shorthands for clarity
             x=S.dotXPx;
             y=S.dotYPx;

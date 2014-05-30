@@ -49,7 +49,7 @@ function stim=settings2stim(C,physScr)
         stim.fix.rgba = C.fixRGBAfrac*F2I;
         stim.fix.size = C.fixRadiusDeg*D2P;
         stim.keyNamesStr = C.respKeys;
-        stim.respEndsTrial = C.respEndsTrial;
+        stim.endsTrial = C.endsTrial;
         stim.feedback.respCorrect = C.feedbackCorrectResp;
         stim.feedback.durCorrectFlips = ceil(C.feedbackCorrectSecs/F2S);
         stim.feedback.durWrongFlips = ceil(C.feedbackWrongSecs/F2S);
@@ -120,7 +120,7 @@ function [esc,timing,resp]=showStim(physScr,windowPtr,stim)
                     anwergiven=true;
                     [feedbackDurationFlips,stim.fix,normalfixdot]=jdPTBfeedback(resp.keyName{1},stim.feedback,stim.fix);
                     feedbackEnds=f+feedbackDurationFlips;
-                    if stim.respEndsTrial
+                    if stim.endsTrial
                         endPrematurely=feedbackEnds;
                     end
                 end

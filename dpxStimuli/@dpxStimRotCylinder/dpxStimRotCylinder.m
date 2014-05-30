@@ -34,27 +34,29 @@ classdef dpxStimRotCylinder < dpxBasicStim
             S.wDeg=15;
             S.hDeg=10;
         end
-        function init(S,physScrVals)
-            if nargin~=2 || ~isstruct(physScrVals)
-                error('Needs get(dpxStimWindow-object) struct');
-            end
-            if isempty(physScrVals.windowPtr)
-                error('dpxStimWindow object has not been initialized');
-            end
+    end
+    methods (Access='protected')
+        function myInit(S)
+            %if nargin~=2 || ~isstruct(physScrVals)
+            %    error('Needs get(dpxStimWindow-object) struct');
+            %end
+            %if isempty(physScrVals.windowPtr)
+            %    error('dpxStimWindow object has not been initialized');
+            %end
             S.nDots = max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
-            S.onFlip = S.onSec * physScrVals.measuredFrameRate;
-            S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
-            S.flipCounter=0;
-            S.depthPx=round(S.yDeg*physScrVals.deg2px);
-            S.stimEyeDistPx=physScrVals.distPx-S.zCenterPx;
-            S.xCenterPx=round(S.xDeg*physScrVals.deg2px);
-            S.zCenterPx=round(S.zDeg*physScrVals.deg2px);
-            S.dotDiamPx=max(1,S.dotDiamDeg*physScrVals.deg2px);
-            S.dotRGBA1=S.dotRGBA1frac*physScrVals.whiteIdx;
-            S.dotRGBA2=S.dotRGBA2frac*physScrVals.whiteIdx;
-            S.wPx=round(S.wDeg*physScrVals.deg2px);
-            S.hPx=round(S.hDeg*physScrVals.deg2px);
-            S.winCntrXYpx=[physScrVals.widPx/2 physScrVals.heiPx/2];
+            %S.onFlip = S.onSec * physScrVals.measuredFrameRate;
+            %S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
+            %S.flipCounter=0;
+            S.depthPx=round(S.yDeg*S.physScrVals.deg2px);
+            S.stimEyeDistPx=S.physScrVals.distPx-S.zCenterPx;
+            S.xCenterPx=round(S.xDeg*S.physScrVals.deg2px);
+            S.zCenterPx=round(S.zDeg*S.physScrVals.deg2px);
+            S.dotDiamPx=max(1,S.dotDiamDeg*S.physScrVals.deg2px);
+            S.dotRGBA1=S.dotRGBA1frac*S.physScrVals.whiteIdx;
+            S.dotRGBA2=S.dotRGBA2frac*S.physScrVals.whiteIdx;
+            %S.wPx=round(S.wDeg*S.physScrVals.deg2px);
+            %S.hPx=round(S.hDeg*S.physScrVals.deg2px);
+            S.winCntrXYpx=[S.physScrVals.widPx/2 S.physScrVals.heiPx/2];
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
                 x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
@@ -73,15 +75,16 @@ classdef dpxStimRotCylinder < dpxBasicStim
             else
                 error(['Unknown axis option: ' S.axis]);
             end
-            S.dAz=S.rotSpeedDeg/180*pi/physScrVals.measuredFrameRate;
-            S.hordisp=getHorizontalDisparity(physScrVals,S.XYZ);
-            S.physScrVals=physScrVals;
+            S.dAz=S.rotSpeedDeg/180*pi/S.physScrVals.measuredFrameRate;
+            S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
+            %S.physScrVals=physScrVals;
         end
-        function draw(S,windowPtr)
-            S.flipCounter=S.flipCounter+1;
-            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-                return;
-            end
+        function myDraw(S)
+            %S.flipCounter=S.flipCounter+1;
+            %if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+            %    return;
+            %end
+            wPtr=S.physScrVals.windowPtr;
             for buffer=0:1
                 if buffer==0 % left eye
                     dispfieldstr='lX00'; % disparity field string
@@ -90,15 +93,15 @@ classdef dpxStimRotCylinder < dpxBasicStim
                     dispfieldstr='rX00'; % disparity field string
                     dotColor=S.rightEyeColor;
                 end
-                Screen('SelectStereoDrawBuffer', windowPtr, buffer);
+                Screen('SelectStereoDrawBuffer', wPtr, buffer);
                 idx=getDotsOnSide('whichside',S.sideToDraw,'dotangles',S.Az);
-                Screen('DrawDots', windowPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.winCntrXYpx,1);
+                Screen('DrawDots', wPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.winCntrXYpx,1);
             end
         end
-        function step(S)
-            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-                return;
-            end
+        function myStep(S)
+           % if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+           %     return;
+           % end
             S.Az=S.Az+S.dAz;
             if strcmpi(S.axis,'hori')
                 r = S.hPx/2;
@@ -182,8 +185,6 @@ function [leDotCols,reDotCols]=getColors(nDots,cols,correl)
         reDotCols=dotcols;
     elseif nrColors==2
         nomcol=rand(1,nDots)<.5;
-        cols1=repmat(cols(:,1),1,nDots);
-        cols2=repmat(cols(:,2),1,nDots);
         if correl==1
             dotcols=repmat(cols(:,1),1,nDots);
             dotcols(:,nomcol)=repmat(cols(:,2),1,sum(nomcol));

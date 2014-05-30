@@ -1,4 +1,4 @@
-classdef dpxBasicExperiment < hgsetget
+classdef dpxCoreExperiment < hgsetget
     properties (Access=public)
         expName;
         physScr;
@@ -21,14 +21,14 @@ classdef dpxBasicExperiment < hgsetget
         experimenterId;
         startTime;
         stopTime;
-        trials=struct('condition',[],'respNum',[],'respSec',[],'startSec',[],'stopSec',[]);
+        trials=struct('condition',[],'startSec',[],'stopSec',[],'resp',[]);
     end
     methods (Access=public)
-        function E=dpxBasicExperiment
-            E.physScr=dpxStimWindow;
+        function E=dpxCoreExperiment
+            E.physScr=dpxCoreWindow;
             E.conditions={};
             E.nRepeats=2;
-            E.expName='dpxBasicExperiment';
+            E.expName='dpxCoreExperiment';
             E.subjectId='0';
             E.txtStart='Press and release a key to start';
             E.txtPause='I N T E R M I S S I O N\n\nPress and release a key to start';
@@ -40,6 +40,8 @@ classdef dpxBasicExperiment < hgsetget
             end
         end
         function run(E)
+            % This is the last function to call in your experiment script,
+            % it starts the experiment and saves it when finished.
             E.startTime=now;
             E.createFileName;
             E.physScr.open;
@@ -52,22 +54,16 @@ classdef dpxBasicExperiment < hgsetget
                 end
                 condNr=conditionList(tr);
                 E.physScr.clear;
-                [esc]=E.conditions{condNr}.init(get(E.physScr));
-                if esc
-                    fprintf('\nEscape pressed during init\n');
-                    break;
-                end
+                E.conditions{condNr}.init(get(E.physScr));
                 [esc,timing,resp]=E.conditions{condNr}.show;
                 if esc
                     fprintf('\nEscape pressed during show\n');
                     break;
                 end
                 E.trials(tr).condition=condNr;
-                E.trials(tr).respNum=resp.keyNr;
-                E.trials(tr).respName=resp.keyName;
-                E.trials(tr).respSec=resp.keySec;
                 E.trials(tr).startSec=timing.startSec;
                 E.trials(tr).stopSec=timing.stopSec;
+                E.trials(tr).resp=resp;
             end
             E.stopTime=now;
             E.save;
@@ -113,6 +109,7 @@ classdef dpxBasicExperiment < hgsetget
             end
             data=dpxTblMerge(data); %#ok<NASGU>
             save(E.outputFullFileName,'data');
+            disp(['Data has been saved to: ''' E.outputFullFileName '''']);
         end
         function showStartScreen(E)
             str=[E.txtStart];
