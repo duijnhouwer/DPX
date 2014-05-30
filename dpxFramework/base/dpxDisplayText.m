@@ -1,68 +1,77 @@
-function keyIsDown=dpxDisplayText(windowPtr,text,varargin)
+function escPressed=dpxDisplayText(windowPtr,text,varargin)
     try
-        w=WhiteIndex(windowPtr);
         p = inputParser;   % Create an instance of the inputParser class.
         p.addRequired('windowPtr',@(x)isnumeric(x));
         p.addRequired('instructStr',@(x)ischar(x));
-        p.addParamValue('rgba',[w w w w],@(x)isnumeric(x) && numel(x)==4);
-        p.addParamValue('rgbaback',[0 0 0 w],@(x)isnumeric(x) && numel(x)==4);
-        p.addParamValue('fadeInSecs',0.25,@isnumeric);
-        p.addParamValue('fadeOutSecs',.5,@isnumeric);
-        p.addParamValue('fontname','Arial',@(x)ischar(x));
-        p.addParamValue('fontsize',22,@(x)isnumeric(x));
+        p.addParamValue('rgba',[1 1 1 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
+        p.addParamValue('rgbaback',[0 0 0 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
+        p.addParamValue('fadeInSec',0.25,@isnumeric);
+        p.addParamValue('fadeOutSec',.5,@isnumeric);
+        p.addParamValue('fontname','DefaultFontName',@(x)ischar(x));
+        p.addParamValue('fontsize',18,@(x)isnumeric(x));
         p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
-        p.addParamValue('forceContinueAfterSecs',Inf,@isnumeric);
+        p.addParamValue('forceContinueAfterSec',Inf,@isnumeric);
         p.parse(windowPtr,text,varargin{:});
         %
         oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
         oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
         [sourceFactorOld, destinationFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
-        startSecs=GetSecs;
+        startSec=GetSecs;
         % Fade-in the instructions
         fadeText(windowPtr,p.Results,'fadein');
         % wait for input ...
         KbName('UnifyKeyNames');
         keyIsDown=false;
-        keyIsDown=false;
-        while ~keyIsDown && GetSecs-startSecs<p.Results.forceContinueAfterSecs
-            [keyIsDown,~,keyCode]=KbCheck;
+        while ~keyIsDown
+            if GetSecs-startSec>p.Results.forceContinueAfterSec
+                keyIsDown=true; % emulate button press when time is up
+                keyCode=false(1,256);
+            else
+                [keyIsDown,~,keyCode]=KbCheck;
+            end
         end
-        if keyIsDown && ~keyCode(KbName('Escape'))
-            % Only fade-out the text if a key other than escape is pressed (indicates hurry!)
-            fadeText(windowPtr,p.Results,'fadeout');
+        escPressed=keyCode(KbName('Escape'));
+        if ~escPressed
+            % Dont fade out if escape is pressed
+            escPressed=fadeText(windowPtr,p.Results,'fadeout');
             KbReleaseWait; % wait for key to be released
+        else
+            keyboard
         end
         % Reset the original screen settings
         Screen('BlendFunction',windowPtr,sourceFactorOld,destinationFactorOld);
         Screen('Textfont',windowPtr,oldFontName);
         Screen('TextSize',windowPtr,oldTextSize);
     catch me
-        dpxEndExperiment;
         error(me.message);
     end
 end
 
-function fadeText(windowPtr,p,how)
+function escPressed=fadeText(windowPtr,p,how)
     try
+        escPressed=false;
         if ~any(strcmpi(how,{'fadein','fadeout'}))
             error(['Unknown fade option: ' how]);
         end
         framedur=Screen('GetFlipInterval',windowPtr);
-        nFlips=p.fadeOutSecs/framedur;
+        if strcmpi(how,'fadeout')
+            nFlips=floor(p.fadeOutSec/framedur)+1;
+        else
+            nFlips=floor(p.fadeInSec/framedur)+1;
+        end
         for f=1:nFlips
-            opacity=1-(f-1)/(nFlips-1);
+            opacity=(f-1)/(nFlips-1);
             if strcmpi(how,'fadeout')
                 opacity=1-opacity;
             end
             printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
-            if KbCheck
+            if dpxGetEscapeKey
+                escPressed=true;
                 break;
             end
         end
     catch me
-        dpxEndExperiment;
-        disp(me.message);
-        keyboard
+        error(me.message);
     end
 end
 
@@ -76,6 +85,8 @@ function printText(instructStr,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
         if nargin<5 || isempty(dxdy)
             dxdy=[0 0];
         end
+        RGBAfore=RGBAfore*WhiteIndex(windowPtr);
+        RGBAback=RGBAback*WhiteIndex(windowPtr);
         RGBAfore(4)=RGBAfore(4)*opacityFrac;
         for eye=[0 1]
             % works also in mono mode
@@ -90,7 +101,6 @@ function printText(instructStr,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
         end
         Screen('Flip',windowPtr);
     catch me
-        dpxEndExperiment;
         error(me.message);
     end
 end

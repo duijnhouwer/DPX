@@ -1,5 +1,4 @@
-classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
-        dpxStimRotCylinder < dpxBasicStim
+classdef dpxStimRotCylinder < dpxBasicStim
     
     properties (Access=public)
         dotsPerSqrDeg=10;
@@ -17,7 +16,6 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         xCenterPx;
         yCenterPx;
         zCenterPx;
-        rotSpeedRad;
         dotRGBA1;
         dotRGBA2;
         depthPx;
@@ -25,17 +23,14 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         dAz;
         stimEyeDistPx;
         dotDiamPx;
-        %Z;
         Az;
-        %Y;
-        %X;
         XYZ;
-        scrCenterXYpx;
         leftEyeColor;
         rightEyeColor;
     end
     methods (Access='public')
         function S=dpxStimRotCylinder
+            S.class='dpxStimRotCylinder';
             S.wDeg=15;
             S.hDeg=10;
         end
@@ -47,20 +42,19 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 error('dpxStimWindow object has not been initialized');
             end
             S.nDots = max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
-            S.onFlip = S.onSecs * physScrVals.measuredFrameRate;
-            S.offFlip = (S.onSecs + S.durSecs) * physScrVals.measuredFrameRate;
+            S.onFlip = S.onSec * physScrVals.measuredFrameRate;
+            S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
             S.flipCounter=0;
             S.depthPx=round(S.yDeg*physScrVals.deg2px);
             S.stimEyeDistPx=physScrVals.distPx-S.zCenterPx;
             S.xCenterPx=round(S.xDeg*physScrVals.deg2px);
             S.zCenterPx=round(S.zDeg*physScrVals.deg2px);
-            S.rotSpeedRad=S.rotSpeedDeg/180*pi;
             S.dotDiamPx=max(1,S.dotDiamDeg*physScrVals.deg2px);
             S.dotRGBA1=S.dotRGBA1frac*physScrVals.whiteIdx;
             S.dotRGBA2=S.dotRGBA2frac*physScrVals.whiteIdx;
             S.wPx=round(S.wDeg*physScrVals.deg2px);
             S.hPx=round(S.hDeg*physScrVals.deg2px);
-            S.scrCenterXYpx=[physScrVals.widPx/2 physScrVals.heiPx/2];
+            S.winCntrXYpx=[physScrVals.widPx/2 physScrVals.heiPx/2];
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
                 x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
@@ -79,11 +73,15 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             else
                 error(['Unknown axis option: ' S.axis]);
             end
-            S.dAz=S.rotSpeedRad/physScrVals.measuredFrameRate;
+            S.dAz=S.rotSpeedDeg/180*pi/physScrVals.measuredFrameRate;
             S.hordisp=getHorizontalDisparity(physScrVals,S.XYZ);
             S.physScrVals=physScrVals;
         end
         function draw(S,windowPtr)
+            S.flipCounter=S.flipCounter+1;
+            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+                return;
+            end
             for buffer=0:1
                 if buffer==0 % left eye
                     dispfieldstr='lX00'; % disparity field string
@@ -94,10 +92,13 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
                 end
                 Screen('SelectStereoDrawBuffer', windowPtr, buffer);
                 idx=getDotsOnSide('whichside',S.sideToDraw,'dotangles',S.Az);
-                Screen('DrawDots', windowPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.scrCenterXYpx,1);
+                Screen('DrawDots', windowPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.winCntrXYpx,1);
             end
         end
         function step(S)
+            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+                return;
+            end
             S.Az=S.Az+S.dAz;
             if strcmpi(S.axis,'hori')
                 r = S.hPx/2;
@@ -194,7 +195,7 @@ function [leDotCols,reDotCols]=getColors(nDots,cols,correl)
             reDotCols=repmat(cols(:,2),1,nDots);
             reDotCols(:,nomcol)=repmat(cols(:,1),1,sum(nomcol));
         else
-            error(['Correlation other than 1 and -1 not implemented yet.']);
+            error('Correlations other than 1 and -1 not implemented yet.');
         end
     elseif nrColors>2
         error('Current implementation designed for max 2 colors');

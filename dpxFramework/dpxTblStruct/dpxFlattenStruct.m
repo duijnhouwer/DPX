@@ -1,4 +1,4 @@
-function f=jdPTBflattenStruct(s)   
+function f=dpxFlattenStruct(s)   
     % f=jdPTBflattenStruct(s)   
     % Jacob, 2014-05-26
     % EXAMPLE
@@ -24,7 +24,7 @@ function f=flatten(s)
             f.(fn{i})=s.(fn{i});
         else
             tmp=flatten(s.(fn{i}));
-            f=jdPTBmergeStructs({f,tmp},{'',[fn{i} '_']});
+            f=dpxMergeStructs({f,tmp},{'',[fn{i} '_']});
         end
     end
 end

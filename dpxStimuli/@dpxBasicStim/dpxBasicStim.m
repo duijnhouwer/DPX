@@ -1,21 +1,20 @@
-classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
-        dpxBasicStim < hgsetget
+classdef dpxBasicStim < hgsetget
     
     properties (Access=public)
         enable=true;
-        onSecs=0;
-        durSecs=1;
+        onSec=0;
+        durSec=1;
         xDeg=0;
         yDeg=0;
         zDeg=0;
         wDeg=1;
         hDeg=1;
-        type='dpxBasicStim';
-        name='';
+        class='dpxBasicStim';
+        name=''; % defaults to class when added to condition
     end
     properties (Access=protected)
-        onFlips=0;
-        offFlips=0;
+        onFlip=0;
+        offFlip=0;
         xPx=0;
         yPx=0;
         zPx=0;
@@ -25,14 +24,30 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
         physScrVals=struct;
         flipCounter=0;
     end
-    methods
+    methods (Access=public)
         function S=dpxBasicStim
         end
         function init(S)
+            S.flipCounter=0;
         end
-        function draw(S,windowPtr)
+        function draw(S,windowPtr) %#ok<INUSD>
+            S.flipCounter=S.flipCounter+1;
+            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+                return;
+            end
         end
         function step(S)
+            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
+                return;
+            end
+        end
+    end
+    methods
+        function set.enable(S,value)
+            if ~islogical(value) || ~isnumeric(value)
+                error('Enable should be numeric or (preferably) logical');
+            end
+            S.enable=logical(value);
         end
     end
 end

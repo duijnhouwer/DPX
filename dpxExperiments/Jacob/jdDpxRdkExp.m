@@ -2,7 +2,7 @@ function jdDpxRdkExp
     
     E=dpxBasicExperiment;
     E.windowed;
-    set(E.conditions.stims{1},'durSecs',2);
+    set(E.conditions.stims{1},'durSec',2);
     tmp=dpxStimRdk;
     tmp.xDeg=-10;
     tmp.dirDeg=90;

@@ -12,7 +12,7 @@ function resp=dpxGetResponseKey(commaSeparatedKbNames)
     
     resp.number={-1}; % cell because in future more keys per answer
     resp.keyName={''};
-    resp.timeSecs={-1};
+    resp.timeSec={-1};
     if nargin==0 || isempty(commaSeparatedKbNames)
         return;
     end
@@ -24,7 +24,7 @@ function resp=dpxGetResponseKey(commaSeparatedKbNames)
             if keyCode(KbName(strtrim(kbNames{i})));
                 resp.number={i};
                 resp.keyName={kbNames{i}};
-                resp.timeSecs={keyTime};
+                resp.timeSec={keyTime};
                 break;
             end
         end

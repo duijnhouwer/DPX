@@ -16,14 +16,14 @@ function stim=settings2stim(C,physScr)
         checkConditionSettings(C);
         % shorthands for legibility
         D2P=physScr.deg2px; % degrees to pixels
-        F2S=physScr.frameDurSecs; % frames to seconds
+        F2S=physScr.frameDurSec; % frames to seconds
         F2I=physScr.whiteIdx; % fraction to index (for colors)
         % Convert settings to stimulus properties
         N=max(0,round(C.dotsPerSqrDeg * C.apertWdeg * C.apertHdeg));
         stim.widPx = C.apertWdeg*D2P;
         stim.heiPx = C.apertHdeg*D2P;
-        stim.onFlips = round(C.stimOnSecs/F2S);
-        stim.preFlips = round(C.stimOnDelaySecs/F2S);
+        stim.onFlips = round(C.stimOnSec/F2S);
+        stim.preFlips = round(C.stimOnDelaySec/F2S);
         stim.postFlips = round(C.maxReactionTimeSecs/F2S);
         stim.apert = C.apertShape;
         stim.pospx.x = physScr.widPx/2 + C.apertXdeg*D2P;
@@ -75,8 +75,8 @@ function checkConditionSettings(C)
     if any(C.fixRGBAfrac>1 | C.fixRGBAfrac<0)
         errstr=[ errstr 'fixRGBfrac exceeds [0 .. 1] '];
     end
-    if C.stimOnSecs<0
-        errstr=[ errstr 'stimOnSecs less than 0 seconds ' ];
+    if C.stimOnSec<0
+        errstr=[ errstr 'stimOnSec less than 0 seconds ' ];
     end
     if ~isempty(errstr)
         jdPTBendExperiment;
@@ -131,7 +131,7 @@ function [esc,timing,resp]=showStim(physScr,windowPtr,stim)
             if f>=endPrematurely
                 break;
             end
-            vbl=Screen('Flip',windowPtr,vbl+0.75*physScr.frameDurSecs);
+            vbl=Screen('Flip',windowPtr,vbl+0.75*physScr.frameDurSec);
             if f==1
                 timing.startSecs=GetSecs;
             end

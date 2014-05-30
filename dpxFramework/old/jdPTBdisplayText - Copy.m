@@ -6,8 +6,8 @@ function jdPTBdisplayText(windowPtr,text,varargin)
         p.addRequired('instructStr',@(x)ischar(x));
         p.addParamValue('rgba',[w w w w],@(x)isnumeric(x) && numel(x)==4);
         p.addParamValue('rgbaback',[0 0 0 w],@(x)isnumeric(x) && numel(x)==4);
-        p.addParamValue('fadeInSecs',0.25,@isnumeric);
-        p.addParamValue('fadeOutSecs',.5,@isnumeric);
+        p.addParamValue('fadeInSec',0.25,@isnumeric);
+        p.addParamValue('fadeOutSec',.5,@isnumeric);
         p.addParamValue('fontname','Arial',@(x)ischar(x));
         p.addParamValue('fontsize',22,@(x)isnumeric(x));
         p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
@@ -43,10 +43,10 @@ function fadeText(windowPtr,p,how)
     try
         instructStr=p.instructStr;
         if strcmpi(how,'fadein')
-            durSecs=abs(p.fadeInSecs);
+            durSecs=abs(p.fadeInSec);
             finalOpac=1;
         else
-            durSecs=-abs(p.fadeOutSecs);
+            durSecs=-abs(p.fadeOutSec);
             finalOpac=0;
         end
         framedur=Screen('GetFlipInterval',windowPtr);

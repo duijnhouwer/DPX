@@ -1,18 +1,15 @@
 function jdDpxRotCylExp
     
     E=dpxBasicExperiment;
-    E.fullScreen;
-    E.physScr.stereoMode='mirror';
-    set(E.conditions.stims{1},'durSecs',2);
-    tmp=dpxStimRotCylinder;
-    tmp.stereoLumCorr=-1;
-    tmp.xDeg=-8;
-    E.conditions.addStim(tmp,'inducer');
-    tmp=dpxStimRotCylinder;
-    tmp.xDeg=8;
-    tmp.sideToDraw='both';
-    E.conditions.addStim(tmp,'target');
-    E.condition.durSec=2;
+    E.windowed(false); % true, false, [0 0 410 310]+100
+    E.physScr.stereoMode='mono';    
+    for rotSpeed=[-120 120]
+        C=dpxBasicCondition;
+        C.durSec=2;
+        S=dpxStimRotCylinder;
+        set(S,'rotSpeedDeg',rotSpeed);
+        C.addStim(S);
+        E.addCondition(C);
+    end
     E.run;
-    
 end

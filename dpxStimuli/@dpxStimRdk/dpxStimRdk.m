@@ -1,5 +1,4 @@
-classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
-        dpxStimRdk < dpxBasicStim
+classdef dpxStimRdk < dpxBasicStim
     
     properties (Access=public)
         dirDeg;
@@ -26,6 +25,7 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
     methods (Access=public)
         function S=dpxStimRdk
             % Set the defaults in the constructure (here)
+            S.class='dpxStimRdk';
             S.dirDeg=0;
             S.speedDps=10;
             S.dotsPerSqrDeg=10;
@@ -45,7 +45,6 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             if isempty(physScrVals.windowPtr)
                 error('dpxStimWindow object has not been initialized');
             end
-            S.type='dpxStimRdk';
             D2P=physScrVals.deg2px; % degrees to pixels
             F2I=physScrVals.whiteIdx; % fraction to index (for colors)
             % Convert settings to stimulus properties
@@ -70,8 +69,8 @@ classdef (CaseInsensitiveProperties=true, TruncatedProperties=true) ...
             idx = rand(1,N)<.5;
             S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
-            S.onFlip = S.onSecs * physScrVals.measuredFrameRate;
-            S.offFlip = (S.onSecs + S.durSecs) * physScrVals.measuredFrameRate;
+            S.onFlip = S.onSec * physScrVals.measuredFrameRate;
+            S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
             S.physScrVals=physScrVals;
             S.flipCounter=0;
         end

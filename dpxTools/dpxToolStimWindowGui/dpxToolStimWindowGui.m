@@ -58,12 +58,13 @@ end
 
 function testButton_Callback(hObject, eventdata, handles)
     handles.stimWin.open;
-    for s={'Five','Four','Three','Two','One'}
-        butPressed=dpxDisplayText(handles.stimWin.windowPtr ...
-            ,[s{1} '\n\n(Any key to close)'] ...
-            ,'rgbaback',handles.stimWin.backRGBA*handles.stimWin.whiteIdx ...
-            ,'forceContinueAfterSecs',1,'fadeInSecs',0,'fadeOutSecs',1);
-        if butPressed
+    strings={'Five','Four','Three','Two','One'};
+    for s=1:numel(strings)
+        escPressed=dpxDisplayText(handles.stimWin.windowPtr ...
+            ,[strings{s} '\n\nWait or press Escape to close'] ...
+            ,'rgbaback',handles.stimWin.backRGBA ...
+            ,'forceContinueAfterSec',0,'fadeInSec',0,'fadeOutSec',1);
+        if escPressed
             break;
         end
     end
