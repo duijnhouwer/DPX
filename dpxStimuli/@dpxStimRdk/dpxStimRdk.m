@@ -25,7 +25,6 @@ classdef dpxStimRdk < dpxBasicStim
     methods (Access=public)
         function S=dpxStimRdk
             % Set the defaults in the constructure (here)
-            S.class='dpxStimRdk';
             S.dirDeg=0;
             S.speedDps=10;
             S.dotsPerSqrDeg=10;

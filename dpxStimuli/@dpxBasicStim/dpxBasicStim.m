@@ -1,4 +1,8 @@
-classdef dpxBasicStim < hgsetget
+classdef (CaseInsensitiveProperties=true ...
+        ,Description='a' ...
+        ,DetailedDescription='ab' ...
+        ,Abstract) ...
+        dpxBasicStim < hgsetget
     
     properties (Access=public)
         visible=true;
@@ -9,8 +13,10 @@ classdef dpxBasicStim < hgsetget
         zDeg=0;
         wDeg=1;
         hDeg=1;
-        class='dpxBasicStim';
         name=''; % defaults to class when added to condition
+    end
+    properties (SetAccess=public,GetAccess=protected)
+        initialPublicState=[];
     end
     properties (Access=protected)
         onFlip=0;
@@ -21,11 +27,34 @@ classdef dpxBasicStim < hgsetget
         wPx=0;
         hPx=0;
         winCntrXYpx=[];
-        physScrVals=struct;
+        physScrVals=[];
         flipCounter=0;
     end
     methods (Access=public)
         function S=dpxBasicStim
+        end
+        function lockInitialPublicState(S)
+            % addStim of the condition class will call this function to
+            % store a copy of all publicly settable parameters of this
+            % stimulus in initialPublicState. Before a repeat of the
+            % condition is presented, this struct is used to restore this
+            % stimulus to it's starting state. So when, for example, the
+            % field vibisle was toggled during one trail, is will be set to
+            % the intended start state at the beginning of the next trial
+            % of that conditon (repeat).
+            if ~isempty(S.initialPublicState)
+                error('lockInitialPublicState should be called only once on a stimulus, during addStim');
+            end
+            S.initialPublicState=dpxGetSetables(S);
+        end
+        function restoreInitialPublicState(S)
+            if isempty(S.initialPublicState)
+                error('lockInitialPublicState should have been called during addStim');
+            end
+            fns=fieldnames(S.initialPublicState);
+            for i=1:numel(fns)
+                S.(fns{i})=S.initialPublicState.(fns{i});
+            end
         end
         function init(S,physScrVals)
             if nargin~=2 || ~isstruct(physScrVals)
@@ -34,6 +63,7 @@ classdef dpxBasicStim < hgsetget
             if isempty(physScrVals.windowPtr)
                 error('dpxCoreWindow object has not been initialized');
             end
+            S.restoreInitialPublicState; % keep at top of init
             S.flipCounter=0;
             S.onFlip = S.onSec * physScrVals.measuredFrameRate;
             S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;

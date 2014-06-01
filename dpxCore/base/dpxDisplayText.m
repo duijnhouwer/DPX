@@ -32,11 +32,9 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
         end
         escPressed=keyCode(KbName('Escape'));
         if ~escPressed
-            % Dont fade out if escape is pressed
+            % Dont fade out if escape is pressed, hurry up instead
             escPressed=fadeText(windowPtr,p.Results,'fadeout');
             KbReleaseWait; % wait for key to be released
-        else
-            keyboard
         end
         % Reset the original screen settings
         Screen('BlendFunction',windowPtr,sourceFactorOld,destinationFactorOld);

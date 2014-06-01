@@ -1,4 +1,7 @@
-classdef dpxCoreCondition < hgsetget
+classdef (CaseInsensitiveProperties=true ...
+        ,Description='a' ...
+        ,DetailedDescription='ab') ...
+    dpxCoreCondition < hgsetget
     
     properties (Access=public)
         % The duration of this condition (unless prematurely ended by
@@ -68,9 +71,17 @@ classdef dpxCoreCondition < hgsetget
                     % draw stim in reverse order so stim1 is on top
                     C.stims{s}.draw;
                 end
-                % Get the response(s), this is also before the video-flip
-                % because the response might draw a visual stimulus
-                % itself for feedback
+                % Wait until it's time, then flip the video buffer
+                vbl=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
+                % Collect start or stop time of the trial in seconds, right
+                % after the flip for accuracy.
+                if f==1
+                    timingStruct.startSec=GetSecs;
+                elseif f==C.nFlips
+                    timingStruct.stopSec=GetSecs;
+                    break;
+                end
+                % Get the response(s)
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
                         C.resps{r}.getResponse;
@@ -78,25 +89,24 @@ classdef dpxCoreCondition < hgsetget
                             respStruct(r)=C.resps{r}.resp; %#ok<AGROW>
                             % Set the new end time of the trial. This way
                             % giving the response can stop the trial. If
-                            % this new time exceeds the original stop time,
-                            % this has no effect and the trial last the
-                            % set amount.
+                            % the new time exceeds the original stop time,
+                            % this has no effect and the trial lasts the
+                            % set initially amount.
                             stopTrialEarlyFlip=f+C.resps{r}.endsTrialAfterFlips;
-                            stimHandle=C.getStimNamed(C.resps{r}.feedbackStimToShow);
+                            stimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
                             if ~isempty(stimHandle)
+                                % Initialize the feedback stimulus so it
+                                % will be visible from now until
+                                % now+durSec. Because of this only simple
+                                % stimuli that do not require a lot of time
+                                % for initialization can be used. If this
+                                % is a problem a slight redesign of the
+                                % feedback system will be required.
+                                stimHandle.init(C.physScrVals);
                                 stimHandle.visible=true;
                             end
                         end
                     end
-                end
-                % Wait until it's time, then flip the video buffer
-                vbl=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
-                % Collect start or stop time of the trial in seconds
-                if f==1
-                    timingStruct.startSec=GetSecs;
-                elseif f==C.nFlips
-                    timingStruct.stopSec=GetSecs;
-                    break;
                 end
                 % If the response ends the trial, that happens here
                 if f>=stopTrialEarlyFlip
@@ -120,8 +130,15 @@ classdef dpxCoreCondition < hgsetget
         function addStim(C,S)
             % add a stimulus object to the condition
             if isempty(S.name)
-                S.name=S.class;
+                % If no name is provided (not recommended) use the class
+                % name of the object as the stimulus name that will show up
+                % in the output dpxTbl struct
+                S.name=class(S);
             end
+            % Store all values of the public (interface) variables of the stimulus so
+            % the condition can be reset during init before a repeat of the same
+            % conditon is shown;
+            S.lockInitialPublicState;            
             C.stims{end+1}=S;
             % Check that the name is not 'none', this is reserved name (see
             % dpxCoreResponse)
@@ -159,12 +176,16 @@ classdef dpxCoreCondition < hgsetget
             % Returns a handle to the stimulus whose name field corresponds
             % to the string in name
             stimHandle=[];
+            if strcmpi(name,'none')
+                return;
+            end
             for s=1:numel(C.stims)
                 if strcmpi(C.stims{s}.name,name)
                     stimHandle=C.stims{s};
-                    break;
+                    return;
                 end
             end
+            error(['No stimulus named ''' name ''' exists.']);
         end
     end
 end

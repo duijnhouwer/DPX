@@ -10,13 +10,17 @@ function jdDpxRotCylExp
         S=dpxStimFix;
         set(S,'name','fix');
         C.addStim(S);
-        % The response feedback stimulus
+        % The feedback stimulus for correct responses
         S=dpxStimFix;
-        set(S,'wDeg',3,'visible',false,'name','feedback');
+        set(S,'wDeg',2,'visible',false,'durSec',0.05,'RGBAfrac',[0 1 0 .5],'name','fbCorrect');
+        C.addStim(S);
+        % The feedback stimulus for wrong responses
+        S=dpxStimFix;
+        set(S,'wDeg',3,'visible',false,'durSec',0.15,'RGBAfrac',[1 0 0 .5],'name','fbWrong');
         C.addStim(S);
         % The response object
         R=dpxCoreResponse;
-        set(R,'correctKbNames','1','correctStimName','feedback','name','resp');
+        set(R,'correctKbNames','LeftArrow','correctStimName','fbCorrect','correctEndsTrialAfterSec',.05,'wrongStimName','fbWrong','wrongEndsTrialAfterSec',.15,'name','resp');
         C.addResp(R);
         % The cylinder stimulus
         S=dpxStimRotCylinder;

@@ -1,4 +1,8 @@
-classdef dpxCoreExperiment < hgsetget
+classdef (CaseInsensitiveProperties=true ...
+        ,Description='a' ...
+        ,DetailedDescription='ab') ...
+        dpxCoreExperiment < hgsetget
+    
     properties (Access=public)
         expName;
         physScr;

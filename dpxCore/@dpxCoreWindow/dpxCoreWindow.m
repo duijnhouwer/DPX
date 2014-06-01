@@ -1,4 +1,7 @@
-classdef dpxCoreWindow < hgsetget
+classdef (CaseInsensitiveProperties=true ...
+        ,Description='a' ...
+        ,DetailedDescription='ab') ...
+        dpxCoreWindow < hgsetget
     
     properties (Access=public)
         winRectPx=[10 10 400 300];
@@ -25,14 +28,13 @@ classdef dpxCoreWindow < hgsetget
         leftEyeXYZpx;
         rightEyeXYZpx;
         cyclopEyeXYZpx;
-        type='dpxStimWindow';
     end
     properties (Access=private)
         scrNr;
         stereoCode;
     end
     methods (Access=public)
-        function S=dpxStimWindow
+        function S=dpxCoreWindow
             AssertOpenGL;
             S=initValues(S);
             Screen('Preference','VisualDebuglevel',0);
@@ -48,8 +50,9 @@ classdef dpxCoreWindow < hgsetget
             Screen('BlendFunction',S.windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
         end
         function clear(S)
-            % clear the window to background color
-            if ~isempty(S.windowPtr);
+            % clear the window to background color, unless the background
+            % color is completely translucent (alpha==0)
+            if ~isempty(S.windowPtr) && S.backRGBA(4)>0
                 Screen('FillRect',S.windowPtr,S.backRGBA*S.whiteIdx);
             end
         end
@@ -62,7 +65,7 @@ classdef dpxCoreWindow < hgsetget
                 ListenChar(0);
             catch me
                 disp(me);
-            end 
+            end
             S.windowPtr=[];
         end
         function gui(S)

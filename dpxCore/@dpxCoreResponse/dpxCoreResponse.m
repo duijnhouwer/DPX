@@ -1,4 +1,7 @@
-classdef dpxCoreResponse < hgsetget
+classdef (CaseInsensitiveProperties=true ...
+        ,Description='a' ...
+        ,DetailedDescription='ab') ...
+        dpxCoreResponse < hgsetget
     
     properties (Access=public)
         % A comma separated list of keys-names that are valid responses
@@ -28,8 +31,6 @@ classdef dpxCoreResponse < hgsetget
         % onset.
         allowAfterSec=1;
         allowUntilSec=Inf;
-        % The class name
-        class='dpxCoreResponse';
         % The object name, when left empty, this will default to the
         % class-name when added to condition
         name='';
@@ -43,7 +44,7 @@ classdef dpxCoreResponse < hgsetget
         % measures, including analog readouts (e.g. mouse click). The
         % fields of resp will be output in the output file (dpxTbl format)
         resp;
-        feedbackStimToShow='none';
+        nameOfFeedBackStim='none';
         allowAfterNrFlips;
         allowUntilNrFlips;
         endsTrialAfterFlips;
@@ -63,10 +64,9 @@ classdef dpxCoreResponse < hgsetget
             R.flipCounter=0;
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
-            R.correctEndsTrialAfterSec=.25;
-            R.wrongEndsTrialAfterSec=1;
+            R.correctEndsTrialAfterSec=.05;
+            R.wrongEndsTrialAfterSec=.15;
             R.physScrVals=physScrVals;
-            R.class='dpxCoreResponseFeedback';
             R.name='';
             myInit(R);
         end
@@ -115,10 +115,10 @@ classdef dpxCoreResponse < hgsetget
                             correct=any(strcmpi(R.resp.keyName,R.correctKbNamesCell));
                         end
                         if correct
-                            R.feedbackStimToShow=R.correctStimName;
+                            R.nameOfFeedBackStim=R.correctStimName;
                             R.endsTrialAfterFlips=round(R.correctEndsTrialAfterSec*R.physScrVals.measuredFrameRate);
                         else
-                            R.feedbackStimToShow=R.wrongStimName;
+                            R.nameOfFeedBackStim=R.wrongStimName;
                             R.endsTrialAfterFlips=round(R.wrongEndsTrialAfterSec*R.physScrVals.measuredFrameRate);
                         end
                         break;

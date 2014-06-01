@@ -30,7 +30,6 @@ classdef dpxStimRotCylinder < dpxBasicStim
     end
     methods (Access='public')
         function S=dpxStimRotCylinder
-            S.class='dpxStimRotCylinder';
             S.wDeg=15;
             S.hDeg=10;
         end
