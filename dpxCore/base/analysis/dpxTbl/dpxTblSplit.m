@@ -15,8 +15,8 @@ function outstructs=dpxTblSplit(r,params)
     end
     if ischar(params)
         % params is a single fieldname string
-        for i=1:jdTblStructLevels(r,params);
-            outstructs{i}=jdTblStructSelect(r,params,'increasing',i);
+        for i=1:dpxTblLevels(r,params);
+            outstructs{i}=dpxTblSelect(r,params,'increasing',i);
         end
     elseif iscell(params)
         % params is a cell array of one or more fieldname strings
@@ -26,12 +26,12 @@ function outstructs=dpxTblSplit(r,params)
         rsub{level}=r;
         while 1
             n(level)=n(level)+1;
-            rsub{level+1}=jdTblStructSelect(rsub{level},params{level},'increasing',n(level));
+            rsub{level+1}=dpxTblSelect(rsub{level},params{level},'increasing',n(level));
             if ~rsub{level+1}.N==0
                 level=level+1;
                 if level==nParams % highest level reached, split on final param (fieldname) and store results for output
-                    for i=1:jdTblStructLevels(rsub{level},params{level});
-                        thisout=jdTblStructSelect(rsub{level},params{level},'increasing',i);
+                    for i=1:dpxTblLevels(rsub{level},params{level});
+                        thisout=dpxTblSelect(rsub{level},params{level},'increasing',i);
                         outstructs{end+1}=thisout; %#ok<AGROW>
                     end
                     level=level-1;
