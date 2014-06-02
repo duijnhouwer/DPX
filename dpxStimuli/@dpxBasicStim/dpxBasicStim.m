@@ -58,7 +58,7 @@ classdef (CaseInsensitiveProperties=true ...
         end
         function init(S,physScrVals)
             if nargin~=2 || ~isstruct(physScrVals)
-                error('Needs get(dpxStimWindow-object) struct');
+                error('Needs get(dpxCoreWindow-object) struct');
             end
             if isempty(physScrVals.windowPtr)
                 error('dpxCoreWindow object has not been initialized');
