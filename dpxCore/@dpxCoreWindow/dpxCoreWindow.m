@@ -28,150 +28,157 @@ classdef (CaseInsensitiveProperties=true ...
         leftEyeXYZpx;
         rightEyeXYZpx;
         cyclopEyeXYZpx;
+        limits=struct;
     end
-    properties (Access=private)
+    properties (Access=protected)
         scrNr;
         stereoCode;
     end
     methods (Access=public)
-        function S=dpxCoreWindow
+        function W=dpxCoreWindow
             % constructor
             AssertOpenGL;
-            S=initValues(S);
+            W=initValues(W);
             Screen('Preference','VisualDebuglevel',0);
-            Screen('Preference','SkipSyncTests',S.SkipSyncTests);
+            Screen('Preference','SkipSyncTests',W.SkipSyncTests);
         end
-        function open(S)
-            if isempty(S.winRectPx)
-                HideCursor;
-            end
-            [S.windowPtr,S.winRectPx] = Screen('OpenWindow',S.scrNr,[0 0 0 0],S.winRectPx,[],2,S.stereoCode);
-            dpxGammaCorrection('set',S.scrNr,S.gamma);
-            S.measuredFrameRate = 1/Screen('GetFlipInterval',S.windowPtr);
-            Screen('BlendFunction',S.windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
+        function open(W)
+            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0 0 0 0],W.winRectPx,[],2,W.stereoCode);
+            %dpxGammaCorrection('set',W.scrNr,W.gamma);
+            W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
+            % Set the blend function so we can use antialiasing of dots and
+            % lines.
+            Screen('BlendFunction',W.windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
+            % Query OpenGL about limits on parameters, this only works
+            % after the window has been opened using Screen('OpenWindow')
+            InitializeMatlabOpenGL(1); % this loads OpenGL constant labels as GL_XXX GLU_XXX etc.
+            W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
         end
-        function clear(S)
+        function clear(W)
             % clear the window to background color, unless the background
             % color is completely translucent (alpha==0)
-            if ~isempty(S.windowPtr) && S.backRGBA(4)>0
-                Screen('FillRect',S.windowPtr,S.backRGBA*S.whiteIdx);
+            if ~isempty(W.windowPtr) && W.backRGBA(4)>0
+                Screen('FillRect',W.windowPtr,W.backRGBA*W.whiteIdx);
             end
         end
-        function close(S)
+        function close(W)
             warning on %#ok<WNON>
             ShowCursor;
-            dpxGammaCorrection('restore');
+            %newGammaTab=repmat((0:1/WhiteIndex(scrNr):1)',1,3).^1/gammaValue;
+            set(W,'gamma',1);
+           % dpxGammaCorrection('restore');
             Screen('CloseAll');
             try
                 ListenChar(0);
             catch me
                 disp(me);
             end
-            S.windowPtr=[];
+            W.windowPtr=[];
         end
-        function gui(S)
-            dpxToolStimWindowGui(S);
+        function gui(W)
+            dpxToolStimWindowGui(W);
         end
     end
     methods
-        function set.winRectPx(S,value)
+        function set.winRectPx(W,value)
             if ~isempty(value) && (~isnumeric(value) && numel(value)==4)
                 error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
             end
-            S.winRectPx=value;
-            initValues(S);
+            W.winRectPx=value;
+            initValues(W);
         end
-        function set.distMm(S, value)
+        function set.distMm(W, value)
             if ~isnumeric(value)
                 error('distMm needs to be numerical');
             end
-            if ~isempty(S.windowPtr)
+            if ~isempty(W.windowPtr)
                 error('Window already opened');
             end
             if value<0
                 error('screen distance in mm should be positive');
             end
-            S.distMm=value;
-            initValues(S);
+            W.distMm=value;
+            initValues(W);
         end
-        function set.gamma(S,value)
+        function set.gamma(W,value)
             if ~isnumeric(value) || isempty(value)
-                error('gamma needs to be positve number (typically between 0.4 and 2)');
+                error('gamma needs to be positive number (typically between 0.4 and 2)');
             end
-            S.gamma=value;
-            dpxGammaCorrection('set',S.scrNr,S.gamma);
-            initValues(S);
+            W.gamma=value;
+            initValues(W);
         end
-        function set.stereoMode(S,value)
-            S.stereoMode=value;
-            if strcmpi(S.stereoMode,'mono')
-                S.stereoCode=0;
-            elseif strcmpi(S.stereoMode,'mirror')
-                S.stereoCode=4;
+        function set.stereoMode(W,value)
+            W.stereoMode=value;
+            if strcmpi(W.stereoMode,'mono')
+                W.stereoCode=0;
+            elseif strcmpi(W.stereoMode,'mirror')
+                W.stereoCode=4;
             else
-                error(['Unknown stereoMode ''' S.stereoMode '''. Valid options are ''mono'' and ''mirror''']);
+                error(['Unknown stereoMode ''' W.stereoMode '''. Valid options are ''mono'' and ''mirror''']);
             end
-            initValues(S);
+            initValues(W);
         end
-        function set.widHeiMm(S,value)
+        function set.widHeiMm(W,value)
             if ~isempty(value) && numel(value)~=2 || ~isnumeric(value)
                 error('widHeiMm needs two numerical values or be empty');
             end
-            if ~isempty(S.windowPtr);
+            if ~isempty(W.windowPtr);
                 error('Can''t set widHeiMm when window is already open');
             else
-                S.widHeiMm=value;
-                initValues(S);
+                W.widHeiMm=value;
+                initValues(W);
             end
         end
-        function set.backRGBA(S,value)
+        function set.backRGBA(W,value)
             if numel(value)~=4 || any(value>1) || any(value<0) || ~isnumeric(value) || isempty(value)
                 error('backRGBA needs 4 numerical values between 0 and 1');
             else
-                S.backRGBA=value;
+                W.backRGBA=value;
             end
         end
-        function set.interEyeMm(S,value)
+        function set.interEyeMm(W,value)
             if isempty(value) || ~isnumeric(value) || value<0
                 error('interEyeMm should be a positive number');
             end
-            S.interEyeMm=value;
-            initValues(S);
+            W.interEyeMm=value;
+            initValues(W);
         end
     end
     methods (Access=private)
-        function S=initValues(S)
-            S.scrNr=max(Screen('screens'));
-            if isempty(S.winRectPx)
-                [S.widPx, S.heiPx]=Screen('WindowSize',S.scrNr);
-                S.winRectPx=[0 0 S.widPx S.heiPx];
+        function W=initValues(W)
+            W.scrNr=max(Screen('screens'));
+            if isempty(W.winRectPx)
+                [W.widPx, W.heiPx]=Screen('WindowSize',W.scrNr);
+                W.winRectPx=[0 0 W.widPx W.heiPx];
             else
-                S.widPx = S.winRectPx(3)-S.winRectPx(1);
-                S.heiPx = S.winRectPx(4)-S.winRectPx(2);
+                W.widPx = W.winRectPx(3)-W.winRectPx(1);
+                W.heiPx = W.winRectPx(4)-W.winRectPx(2);
             end
-            if isempty(S.widHeiMm)
-                [w,h]=Screen('DisplaySize',S.scrNr);
-                if strcmpi(S.stereoMode,'mirror')
+            if isempty(W.widHeiMm)
+                [w,h]=Screen('DisplaySize',W.scrNr);
+                if strcmpi(W.stereoMode,'mirror')
                     w=w/2;
                 end
-                S.widHeiMm=[w h];
+                W.widHeiMm=[w h];
             end
-            if strcmpi(S.stereoMode,'mirror')
-                effectiveWidMm=S.widHeiMm(1)/2;
+            if strcmpi(W.stereoMode,'mirror')
+                effectiveWidMm=W.widHeiMm(1)/2;
             else
-                effectiveWidMm=S.widHeiMm(1);
+                effectiveWidMm=W.widHeiMm(1);
             end
-            S.whiteIdx = WhiteIndex(S.scrNr);
-            S.blackIdx = BlackIndex(S.scrNr);
-            S.mm2px = S.widPx/effectiveWidMm;
-            S.distPx = round(S.distMm*S.mm2px);
-            winWidDeg = atan2(effectiveWidMm/2,S.distMm)*2*180/pi;
-            S.deg2px = S.widPx/winWidDeg;
-            S.nominalFrameRate=Screen('NominalFrameRate',S.scrNr);
-            S.interEyePx=S.interEyeMm*S.mm2px;
-            S.leftEyeXYZpx=[-S.interEyePx/2;S.distPx;0];
-            S.rightEyeXYZpx=[S.interEyePx/2;S.distPx;0];
-            S.cyclopEyeXYZpx=[0;S.distPx;0];
+            W.whiteIdx = WhiteIndex(W.scrNr);
+            W.blackIdx = BlackIndex(W.scrNr);
+            W.mm2px = W.widPx/effectiveWidMm;
+            W.distPx = round(W.distMm*W.mm2px);
+            winWidDeg = atan2(effectiveWidMm/2,W.distMm)*2*180/pi;
+            W.deg2px = W.widPx/winWidDeg;
+            W.nominalFrameRate=Screen('NominalFrameRate',W.scrNr);
+            W.interEyePx=W.interEyeMm*W.mm2px;
+            W.leftEyeXYZpx=[-W.interEyePx/2;W.distPx;0];
+            W.rightEyeXYZpx=[W.interEyePx/2;W.distPx;0];
+            W.cyclopEyeXYZpx=[0;W.distPx;0];
+            newGammaTab=repmat((0:1/WhiteIndex(W.scrNr):1)',1,3).^W.gamma;
+            Screen('LoadNormalizedGammaTable',W.scrNr,newGammaTab);
         end
     end
 end
