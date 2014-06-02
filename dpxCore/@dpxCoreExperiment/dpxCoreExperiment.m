@@ -7,7 +7,7 @@ classdef (CaseInsensitiveProperties=true ...
         expName;
         physScr;
         nRepeats;
-        conditions;
+        conditions;s
         txtStart;
         txtPause;
         txtPauseNrTrials;
@@ -37,9 +37,7 @@ classdef (CaseInsensitiveProperties=true ...
             E.txtPauseNrTrials=100;
             E.txtEnd='[-: The End :-]';
             E.txtRBGAfrac=[1 1 1 1];
-            if ispc, E.outputFolder='C:\temp\dpxData';
-            elseif IsOSX || isunix, E.outputFolder='/tmp/dpxData';
-            end
+            E.outputFolder='';
         end
         function run(E)
             % This is the last function to call in your experiment script,
@@ -69,7 +67,8 @@ classdef (CaseInsensitiveProperties=true ...
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
                 end
-                if fprintf('\nEscape pressed during show\n');
+                if esc
+                    fprintf('\nEscape pressed during show\n');
                     break;
                 end
             end
@@ -82,7 +81,7 @@ classdef (CaseInsensitiveProperties=true ...
             E.conditions{end+1}=C;
         end
         function windowed(E,win)
-            if nargin==1
+            if nargin==1 || ~(islogical(win) && ~(isnumeric(win) && numel(win)==4))
                 error('windowed needs a logical or a 4-element win rect');
             end
             if islogical(win)
@@ -97,9 +96,6 @@ classdef (CaseInsensitiveProperties=true ...
     end
     methods (Access=protected)
         function save(E)
-            
-            return
-            
             N=numel(E.trials);
             data=cell(1,N);
             for t=1:N
@@ -125,7 +121,7 @@ classdef (CaseInsensitiveProperties=true ...
         function showStartScreen(E)
             str=[E.txtStart];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
-        end
+        end      
         function showPauseScreen(E)
             str=E.txtPause;
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
@@ -135,6 +131,17 @@ classdef (CaseInsensitiveProperties=true ...
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
         end
         function createFileName(E)
+            if isempty(E.outputFolder)
+                if ispc, E.outputFolder='C:\temp\dpxData';
+                elseif IsOSX || isunix, E.outputFolder='/tmp/dpxData';
+                else error('Unsupported OS');
+                end
+            end
+            if ~exist(E.outputFolder,'file')
+                try mkdir(E.outputFolder);
+                catch me, error([me.message ' : ' value]);
+                end
+            end
             E.subjectId=strtrim(upper(input('Subject ID > ','s')));
             if isempty(E.subjectId), E.subjectId='0'; end
             E.experimenterId=strtrim(upper(input('Experimenter ID > ','s')));
@@ -155,13 +162,6 @@ classdef (CaseInsensitiveProperties=true ...
         function set.outputFolder(E,value)
             if ~ischar(value)
                 error('outputFolder should be a string');
-            end
-            if ~exist(value,'file')
-                try
-                    mkdir(value);
-                catch me
-                    error([me.message ' : ' value]);
-                end
             end
             E.outputFolder=value;
         end
