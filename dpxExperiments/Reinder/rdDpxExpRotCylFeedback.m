@@ -12,12 +12,13 @@ function rdDpxExpRotCylFeedback(pos)
     else
         error(['unknown pos: ' pos]);
     end
+    E.txtPauseNrTrials=10;
     E.nRepeats=5;
     E.outputFolder='';
     E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000 ...
         ,'interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1] ...
         ,'stereoMode','mirror','SkipSyncTests',1);
-    E.windowed(false); % true, false, [0 0 410 310]+100
+    E.windowed(true); % true, false, [0 0 410 310]+100
     
     modes={'mono','stereo','antistereo'};
     for m=1:numel(modes)
