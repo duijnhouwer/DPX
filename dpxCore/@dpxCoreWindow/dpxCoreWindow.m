@@ -35,6 +35,7 @@ classdef (CaseInsensitiveProperties=true ...
     end
     methods (Access=public)
         function S=dpxCoreWindow
+            % constructor
             AssertOpenGL;
             S=initValues(S);
             Screen('Preference','VisualDebuglevel',0);
@@ -150,14 +151,22 @@ classdef (CaseInsensitiveProperties=true ...
             end
             if isempty(S.widHeiMm)
                 [w,h]=Screen('DisplaySize',S.scrNr);
+                if strcmpi(S.stereoMode,'mirror')
+                    w=w/2;
+                end
                 S.widHeiMm=[w h];
+            end
+            if strcmpi(S.stereoMode,'mirror')
+                effectiveWidMm=S.widHeiMm(1)/2;
+            else
+                effectiveWidMm=S.widHeiMm(1);
             end
             S.whiteIdx = WhiteIndex(S.scrNr);
             S.blackIdx = BlackIndex(S.scrNr);
-            S.mm2px = S.widPx/S.widHeiMm(1);
+            S.mm2px = S.widPx/effectiveWidMm;
             S.distPx = round(S.distMm*S.mm2px);
-            scrWidDeg = atan2d(S.widHeiMm(1)/2,S.distMm)*2;
-            S.deg2px = S.widPx/scrWidDeg;
+            winWidDeg = atan2(effectiveWidMm/2,S.distMm)*2*180/pi;
+            S.deg2px = S.widPx/winWidDeg;
             S.nominalFrameRate=Screen('NominalFrameRate',S.scrNr);
             S.interEyePx=S.interEyeMm*S.mm2px;
             S.leftEyeXYZpx=[-S.interEyePx/2;S.distPx;0];

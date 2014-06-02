@@ -25,8 +25,8 @@ classdef (CaseInsensitiveProperties=true ...
         wrongStimName='none';
         % Time that the trial continues after the answer has been given.
         % Can be different for correct and incorrect trials.
-        correctEndsTrialAfterSec;
-        wrongEndsTrialAfterSec;
+        correctEndsTrialAfterSec=0.05;
+        wrongEndsTrialAfterSec=0.05;
         % Time window in which the response can be given relative to trial
         % onset.
         allowAfterSec=1;
@@ -56,6 +56,8 @@ classdef (CaseInsensitiveProperties=true ...
         correctKbNamesCell={};
     end
     methods (Access=public)
+        function R=dpxCoreResponse
+        end
         function init(R,physScrVals)
             KbName('UnifyKeyNames');
             R.given=false;
@@ -64,8 +66,6 @@ classdef (CaseInsensitiveProperties=true ...
             R.flipCounter=0;
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
-            R.correctEndsTrialAfterSec=.05;
-            R.wrongEndsTrialAfterSec=.15;
             R.physScrVals=physScrVals;
             R.name='';
             myInit(R);

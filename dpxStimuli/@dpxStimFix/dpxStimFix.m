@@ -10,10 +10,10 @@ classdef dpxStimFix < dpxBasicStim
     methods
         function S=dpxStimFix
             S.shape='dot';
-            S.wDeg=.25;
-            S.hDeg=.25;
+            S.wDeg=.15;
+            S.hDeg=.15;
             S.RGBAfrac=[1 0 0 1];
-            S.durSec=2;
+            S.durSec=Inf;
         end
     end
     methods (Access=protected)
@@ -34,7 +34,7 @@ end
 
 function drawDot(S)
     wPtr=S.physScrVals.windowPtr;
-    diam=max(1,max(S.wPx,S.hPx));
+    diam=max(1,S.wPx);
     if strcmpi(S.physScrVals.stereoMode,'mono')
         Screen('DrawDots',wPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
     elseif strcmpi(S.physScrVals.stereoMode,'mirror')

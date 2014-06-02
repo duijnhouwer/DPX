@@ -13,12 +13,10 @@ classdef (CaseInsensitiveProperties=true ...
         txtPauseNrTrials;
         txtEnd;
         txtRBGAfrac;
+        outputFolder;
     end
     properties (Access=protected)
         outputFullFileName='./undefined.mat';
-    end
-    properties (SetAccess=public,GetAccess=protected)
-        outputFolder;
     end
     properties (GetAccess=public,SetAccess=protected)
         subjectId;
@@ -40,7 +38,7 @@ classdef (CaseInsensitiveProperties=true ...
             E.txtEnd='[-: The End :-]';
             E.txtRBGAfrac=[1 1 1 1];
             if ispc, E.outputFolder='C:\temp\dpxData';
-            elseif isosx || islinux, E.outputFolder='/tmp/dpxData';
+            elseif IsOSX || isunix, E.outputFolder='/tmp/dpxData';
             end
         end
         function run(E)
@@ -64,13 +62,15 @@ classdef (CaseInsensitiveProperties=true ...
                     E.conditions{condNr}.init(get(E.physScr));
                     [esc,timing,resp]=E.conditions{condNr}.show;
                     if esc
-                        fprintf('\nEscape pressed during show\n');
                         break;
                     end
                     E.trials(tr).condition=condNr;
                     E.trials(tr).startSec=timing.startSec;
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
+                end
+                if fprintf('\nEscape pressed during show\n');
+                    break;
                 end
             end
             E.stopTime=now;
