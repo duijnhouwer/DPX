@@ -36,25 +36,19 @@ classdef dpxStimRotCylinder < dpxBasicStim
     end
     methods (Access='protected')
         function myInit(S)
-            %if nargin~=2 || ~isstruct(physScrVals)
-            %    error('Needs get(dpxStimWindow-object) struct');
-            %end
-            %if isempty(physScrVals.windowPtr)
-            %    error('dpxStimWindow object has not been initialized');
-            %end
             S.nDots = max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
-            %S.onFlip = S.onSec * physScrVals.measuredFrameRate;
-            %S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
-            %S.flipCounter=0;
             S.depthPx=round(S.yDeg*S.physScrVals.deg2px);
             S.stimEyeDistPx=S.physScrVals.distPx-S.zCenterPx;
             S.xCenterPx=round(S.xDeg*S.physScrVals.deg2px);
             S.zCenterPx=round(S.zDeg*S.physScrVals.deg2px);
-            S.dotDiamPx=max(1,S.dotDiamDeg*S.physScrVals.deg2px);
+            S.dotDiamPx=S.dotDiamDeg*S.physScrVals.deg2px;
+            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScrVals.limits.GL_ALIASED_POINT_SIZE_RANGE);
+            if wasoutofrange
+                S.dotDiamDeg=S.dotDiamPx/S.physScrVals.deg2px;
+                warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
+            end
             S.dotRGBA1=S.dotRGBA1frac*S.physScrVals.whiteIdx;
             S.dotRGBA2=S.dotRGBA2frac*S.physScrVals.whiteIdx;
-            %S.wPx=round(S.wDeg*S.physScrVals.deg2px);
-            %S.hPx=round(S.hDeg*S.physScrVals.deg2px);
             S.winCntrXYpx=[S.physScrVals.widPx/2 S.physScrVals.heiPx/2];
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
@@ -76,7 +70,6 @@ classdef dpxStimRotCylinder < dpxBasicStim
             end
             S.dAz=S.rotSpeedDeg/180*pi/S.physScrVals.measuredFrameRate;
             S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
-            %S.physScrVals=physScrVals;
         end
         function myDraw(S)
             %S.flipCounter=S.flipCounter+1;
