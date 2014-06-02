@@ -49,25 +49,29 @@ classdef (CaseInsensitiveProperties=true ...
             E.startTime=now;
             E.createFileName;
             E.physScr.open;
-            conditionList=mod(randperm(E.nRepeats*numel(E.conditions)),numel(E.conditions))+1;
             E.showStartScreen;
-            for tr=1:numel(conditionList)
-                if mod(tr,E.txtPauseNrTrials)==0
-                    E.save;
-                    E.showPauseScreen;
+            tr=0;
+            for r=1:E.nRepeats
+                condList=randperm(numel(E.conditions));
+                for c=1:numel(condList)
+                    tr=tr+1;
+                    if mod(tr,E.txtPauseNrTrials)==0
+                        E.save;
+                        E.showPauseScreen;
+                    end
+                    condNr=condList(c);
+                    E.physScr.clear;
+                    E.conditions{condNr}.init(get(E.physScr));
+                    [esc,timing,resp]=E.conditions{condNr}.show;
+                    if esc
+                        fprintf('\nEscape pressed during show\n');
+                        break;
+                    end
+                    E.trials(tr).condition=condNr;
+                    E.trials(tr).startSec=timing.startSec;
+                    E.trials(tr).stopSec=timing.stopSec;
+                    E.trials(tr).resp=resp;
                 end
-                condNr=conditionList(tr);
-                E.physScr.clear;
-                E.conditions{condNr}.init(get(E.physScr));
-                [esc,timing,resp]=E.conditions{condNr}.show;
-                if esc
-                    fprintf('\nEscape pressed during show\n');
-                    break;
-                end
-                E.trials(tr).condition=condNr;
-                E.trials(tr).startSec=timing.startSec;
-                E.trials(tr).stopSec=timing.stopSec;
-                E.trials(tr).resp=resp;
             end
             E.stopTime=now;
             E.save;
@@ -93,6 +97,9 @@ classdef (CaseInsensitiveProperties=true ...
     end
     methods (Access=protected)
         function save(E)
+            
+            return
+            
             N=numel(E.trials);
             data=cell(1,N);
             for t=1:N

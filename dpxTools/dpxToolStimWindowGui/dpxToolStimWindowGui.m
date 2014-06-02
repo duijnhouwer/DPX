@@ -177,7 +177,7 @@ function displaySetup(hObject, eventdata, handles)
     xLeft=x*eyeRadiusPx-s.interEyePx;
     xRite=x*eyeRadiusPx+s.interEyePx;
     y=y*eyeRadiusPx;
-    z=z*eyeRadiusPx-s.distP;
+    z=z*eyeRadiusPx-s.distPx;
     mesh(z,xLeft,y,'EdgeColor',linecolor,'FaceColor','w','FaceAlpha',.5,'EdgeAlpha',.5);
     mesh(z,xRite,y,'EdgeColor',linecolor,'FaceColor','w','FaceAlpha',.5,'EdgeAlpha',.5);
     % annotate
