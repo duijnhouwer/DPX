@@ -1,20 +1,19 @@
-function v=dpxClamp(v,mini,maxi)
+function [cv,didclamp]=dpxClamp(v,range)
 
-% v=dpxClamp(v,mini,maxi)
-% Scale and offset vector v so it spans the range [mini ... maxi]
+% [CV,DIDCLAMP]=dpxClamp(V,RANGE)
+% Scale and offset vector V so it spans min(RANGE) to max(RANGE)
 %
 % See also: dpxClip
 %
 % jacob, 2013-10-10
 
-if mini>maxi
-    maxi=tmp;
-    maxi=mini;
-    mini=tmp;
+mini=min(range);
+maxi=max(range);
+cv=v-min(v);
+cv=cv./max(cv);
+cv=cv*(maxi-mini);
+cv=cv+mini;
+if nargout>1
+    didclamp=any(cv~=v);
 end
-v=v-min(v);
-v=v./max(v);
-v=v*(maxi-mini);
-v=v+mini;
-
 

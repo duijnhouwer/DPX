@@ -30,7 +30,7 @@ function dpxGammaCorrection(option,scrNr,gammaValue)
             error(['Unknown dpxGammaCorrection option ' option]);
         end
     catch me
-        dpxEndExperiment;
+        dpxEndExperiment; 
         error(me.message);
     end
 end
