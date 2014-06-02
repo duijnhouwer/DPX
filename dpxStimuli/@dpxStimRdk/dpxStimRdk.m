@@ -16,7 +16,7 @@ classdef dpxStimRdk < dpxBasicStim
         dotXPx;
         dotYPx;
         dotDirDeg=[];
-        dotDiam;
+        dotDiamPx;
         dotAge;
         pxPerFlip; % the speed in pixels per flip
         dotsRGBA;
@@ -45,8 +45,8 @@ classdef dpxStimRdk < dpxBasicStim
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
-            S.wPx = S.wDeg * D2P;
-            S.hPx = S.hDeg * D2P;
+            S.wPx = S.wDeg*D2P;
+            S.hPx = S.hDeg*D2P;
             S.xPx = S.xDeg*D2P;
             S.yPx = S.yDeg*D2P;
             S.winCntrXYpx=[S.physScrVals.widPx/2  S.physScrVals.heiPx/2];
@@ -58,7 +58,11 @@ classdef dpxStimRdk < dpxBasicStim
             noiseDirs = rand(1,N) * 360;
             S.dotDirDeg(S.noiseDots) = noiseDirs(S.noiseDots);
             if S.cohereFrac<0, S.dotDirDeg = S.dotDirDeg + 180; end % negative coherence flips directions
-            S.dotDiam = max(1,repmat(S.dotDiamDeg*D2P,1,N));
+            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScr.limits.GL_ALIASED_POINT_SIZE_RANGE);
+            if wasoutofrange
+                S.dotDiamDeg=S.dotDiamPx/S.physScrVals.deg2px;
+                warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
+            end
             S.dotAge = floor(rand(1,N) * (S.nSteps + 1));
             S.pxPerFlip = S.speedDps * D2P / S.physScrVals.measuredFrameRate;
             idx = rand(1,N)<.5;
@@ -69,7 +73,7 @@ classdef dpxStimRdk < dpxBasicStim
             ok=applyTheAperture(S);
             if ~any(ok), return; end
             xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-            Screen('DrawDots',S.physScrVals.windowPtr,xy(:,ok),S.dotDiam(ok),S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+            Screen('DrawDots',S.physScrVals.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
         end
         function myStep(S)
             % Reposition the dots, use shorthands for clarity
