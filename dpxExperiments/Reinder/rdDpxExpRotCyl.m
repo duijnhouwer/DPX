@@ -2,11 +2,11 @@ function rdDpxExpRotCyl(pos,fb)
    
     E=dpxCoreExperiment;
     % handle the position option
-    if strcmpi(pos,'left') && strcmpi(fb,'feedback')
+    if strcmpi(pos,'left')
         flippos=1;
         E.txtStart='Kijk naar de rode stip.\nIs de LINKER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
         E.expName='rdDpxExpRotCylFeedbackLeft';
-    elseif strcmpi(pos,'right') && strcmpi(fb,'feedback')
+    elseif strcmpi(pos,'right')
         flippos=-1;
         E.txtStart='Kijk naar de rode stip.\nIs de RECHTER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
         E.expName='rdDpxExpRotCylFeedbackRight';  
@@ -33,7 +33,7 @@ function rdDpxExpRotCyl(pos,fb)
     E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
     E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
     E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
-    E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
+    E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
     
     % Add stimuli and responses to the conditions, add the conditions to
     % the experiement, and run
@@ -43,16 +43,16 @@ function rdDpxExpRotCyl(pos,fb)
             for rotSpeed=[-120 120]
                 C=dpxCoreCondition;
                 set(C,'durSec',1.5);
-                % The fixation dot
-                S=dpxStimFix;
-                set(S,'wDeg',.15,'name','fix');
+                % The fixation cross
+                S=dpxStimCross;
+                set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
                 C.addStim(S);
                 % The feedback stimulus for correct responses
-                S=dpxStimFix;
+                S=dpxStimDot;
                 set(S,'wDeg',.3,'visible',false,'durSec',0.05,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
                 C.addStim(S);
                 % The feedback stimulus for wrong responses
-                S=dpxStimFix;
+                S=dpxStimDot;
                 set(S,'wDeg',.3,'visible',false,'durSec',0.15,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
                 C.addStim(S);
                 % The response object
