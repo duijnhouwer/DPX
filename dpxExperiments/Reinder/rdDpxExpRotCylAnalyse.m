@@ -1,4 +1,4 @@
-function rdDpxExpRotCylFeedbackAnalyse(D)
+function rdDpxExpRotCylAnalyse(D)
     
     if nargin==0 || isempty(D)
         fnames=dpxUIgetfiles;
