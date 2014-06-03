@@ -66,6 +66,10 @@ classdef (CaseInsensitiveProperties=true ...
                        break; 
                     end
                 end
+                % Step the stimuli (e.g., move the random dots)
+                for s=1:numel(C.stims)
+                    C.stims{s}.step;
+                end
                 % Draw the stimuli
                 for s=numel(C.stims):-1:1
                     % draw stim in reverse order so stim1 is on top
@@ -112,10 +116,6 @@ classdef (CaseInsensitiveProperties=true ...
                 if f>=stopTrialEarlyFlip
                     timingStruct.stopSec=GetSecs;
                     break;
-                end
-                % Step the stimuli (e.g., move the random dots)
-                for s=1:numel(C.stims)
-                    C.stims{s}.step;
                 end
             end
             for s=1:numel(C.stims)

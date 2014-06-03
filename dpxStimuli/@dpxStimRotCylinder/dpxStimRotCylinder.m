@@ -10,6 +10,8 @@ classdef dpxStimRotCylinder < dpxBasicStim
         axis='hori';
         dotDiamDeg=.15;
         stereoLumCorr=1;
+        fogFrac;
+        dotDiamScaleFrac;
     end
     properties (Access=private)
         nDots;
@@ -27,11 +29,15 @@ classdef dpxStimRotCylinder < dpxBasicStim
         XYZ;
         leftEyeColor;
         rightEyeColor;
+        fog;
+        dotDiamScale;
     end
     methods (Access='public')
         function S=dpxStimRotCylinder
             S.wDeg=15;
             S.hDeg=10;
+            S.fogFrac=0;
+            S.dotDiamScaleFrac=0;
         end
     end
     methods (Access='protected')
@@ -69,13 +75,8 @@ classdef dpxStimRotCylinder < dpxBasicStim
                 error(['Unknown axis option: ' S.axis]);
             end
             S.dAz=S.rotSpeedDeg/180*pi/S.physScrVals.measuredFrameRate;
-            S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
         end
         function myDraw(S)
-            %S.flipCounter=S.flipCounter+1;
-            %if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-            %    return;
-            %end
             wPtr=S.physScrVals.windowPtr;
             for buffer=0:1
                 if buffer==0 % left eye
@@ -86,14 +87,19 @@ classdef dpxStimRotCylinder < dpxBasicStim
                     dotColor=S.rightEyeColor;
                 end
                 Screen('SelectStereoDrawBuffer', wPtr, buffer);
+                % Only draw the dots on teh sides we want to see
                 idx=getDotsOnSide('whichside',S.sideToDraw,'dotangles',S.Az);
-                Screen('DrawDots', wPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),S.dotDiamPx, dotColor(:,idx), S.winCntrXYpx,1);
+                % apply the fog
+                cols=dotColor;
+                cols(4,:)=cols(4,:).*S.fog;
+                % apply the dot-diam scaling
+                diam=S.dotDiamScale*S.dotDiamPx;
+                idx=idx & diam>=1;
+                % Draw the dots
+                Screen('DrawDots', wPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),diam(idx),cols(:,idx), S.winCntrXYpx,1);
             end
         end
         function myStep(S)
-           % if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-           %     return;
-           % end
             S.Az=S.Az+S.dAz;
             if strcmpi(S.axis,'hori')
                 r = S.hPx/2;
@@ -109,6 +115,8 @@ classdef dpxStimRotCylinder < dpxBasicStim
                 error(['Unknown axis option: ' S.axis]);
             end
             S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
+            S.fog=1-(sign(S.fogFrac)*cos(S.Az)+1)/2*abs(S.fogFrac);
+            S.dotDiamScale=1-(sign(S.dotDiamScaleFrac)*cos(S.Az)+1)/2*abs(S.dotDiamScaleFrac);
         end
     end
     methods
@@ -117,6 +125,18 @@ classdef dpxStimRotCylinder < dpxBasicStim
                 error('stereoLumCorr should be correlation between -1 and 1.');
             end
             S.stereoLumCorr=value;
+        end
+        function set.fogFrac(S,value)
+            if value<-1 || value>1
+                error('fogFrac should be a signed fraction between -1 and 1.');
+            end
+            S.fogFrac=value;
+        end
+         function set.dotDiamScaleFrac(S,value)
+            if value<-1 || value>1
+                error('dotDiamScaleFrac should be a signed fraction between -1 and 1.');
+            end
+            S.dotDiamScaleFrac=value;
         end
     end
 end

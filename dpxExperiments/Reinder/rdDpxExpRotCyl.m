@@ -4,18 +4,19 @@ function rdDpxExpRotCyl(pos,fb)
     % handle the position option
     if strcmpi(pos,'left')
         flippos=1;
-        E.txtStart='Kijk naar de rode stip.\nIs de LINKER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
-        E.expName='rdDpxExpRotCylFeedbackLeft';
+        E.txtStart='Kijk naar de rode stip.\n\nIs de LINKER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
+        E.expName='rdDpxExpRotCylLeft';
     elseif strcmpi(pos,'right')
         flippos=-1;
-        E.txtStart='Kijk naar de rode stip.\nIs de RECHTER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
-        E.expName='rdDpxExpRotCylFeedbackRight';  
+        E.txtStart='Kijk naar de rode stip.\n\nIs de RECHTER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
+        E.expName='rdDpxExpRotCylRight';  
     else
         error(['unknown pos mode ' pos]);
     end
     % Then the feedback option, make expname (used in output filename)
     if strcmpi(fb,'feedback')
-        E.txtStart=[ E.txtStart '\nFeedback Flits:\nGroen GOED\nRood FOUT'];
+        E.expName=[E.expName 'Feedback'];
+        E.txtStart=[ E.txtStart '\n\nFeedback Flits:\nGroen GOED, Rood FOUT'];
         fbCorrectStr='fbCorrect';
         fbWrongStr='fbWrong';
     else
@@ -25,8 +26,8 @@ function rdDpxExpRotCyl(pos,fb)
         fbWrongStr='fbCorrect';
     end
     
-    E.txtPauseNrTrials=10;
-    E.nRepeats=5;
+    E.txtPauseNrTrials=11;
+    E.nRepeats=1;
     E.outputFolder='';
     
     % Set the stimulus window option
@@ -37,7 +38,7 @@ function rdDpxExpRotCyl(pos,fb)
     
     % Add stimuli and responses to the conditions, add the conditions to
     % the experiement, and run
-    modes={'mono','stereo','antistereo'};
+    modes={'mono','stereo','both'};
     for m=1:numel(modes)
         for dsp=[-1:.5:1]
             for rotSpeed=[-120 120]
@@ -73,27 +74,30 @@ function rdDpxExpRotCyl(pos,fb)
                 S=dpxStimRotCylinder;
                 set(S,'dotsPerSqrDeg',12,'xDeg',flippos*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                     ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
-                    ,'onSec',0,'durSec',1,'stereoLumCorr',1 ...
+                    ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                     ,'name','fullCyl');
                 C.addStim(S);
                 % The half cylinder stimulus
                 if strcmpi(modes{m},'mono')
                     lumcorr=1;
-                    fog=1;
+                    dFog=dsp;
+                    dScale=dsp;
                     dispa=0;
                 elseif strcmpi(modes{m},'stereo')
                     lumcorr=1;
-                    fog=0;
+                    dFog=0;
+                    dScale=0;
                     dispa=dsp;
-                elseif strcmpi(modes{m},'antistereo')
-                    lumcorr=-1;
-                    fog=0;
+                elseif strcmpi(modes{m},'both')
+                    lumcorr=1;
+                    dFog=dsp;
+                    dScale=dsp;
                     dispa=dsp;
                 end
                 S=dpxStimRotCylinder;
                 set(S,'dotsPerSqrDeg',12,'xDeg',flippos*-1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                     ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
-                    ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr ...
+                    ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                     ,'name','halfCyl');
                 C.addStim(S);
                 %

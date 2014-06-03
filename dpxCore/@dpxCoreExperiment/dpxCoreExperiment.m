@@ -7,7 +7,7 @@ classdef (CaseInsensitiveProperties=true ...
         expName;
         physScr;
         nRepeats;
-        conditions;s
+        conditions;
         txtStart;
         txtPause;
         txtPauseNrTrials;
@@ -51,7 +51,7 @@ classdef (CaseInsensitiveProperties=true ...
                 condList=randperm(numel(E.conditions));
                 for c=1:numel(condList)
                     tr=tr+1;
-                    if mod(tr,E.txtPauseNrTrials)==0
+                    if mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
                         E.save;
                         E.showPauseScreen;
                     end

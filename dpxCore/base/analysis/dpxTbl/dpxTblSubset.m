@@ -1,4 +1,4 @@
-function f=jdTblStructSubset(r,indices)
+function f=dpxTblSubset(r,indices)
 
 % function F=jdTblStructSelectIndices(R,IDXS) 
 % Of a pdxTbl R, return the subset F corresponding to R at the
