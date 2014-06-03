@@ -26,15 +26,15 @@ function rdDpxExpRotCyl(pos,fb)
         fbWrongStr='fbCorrect';
     end
     
-    E.txtPauseNrTrials=11;
-    E.nRepeats=1;
+    E.txtPauseNrTrials=10;
+    E.nRepeats=100;
     E.outputFolder='';
     
     % Set the stimulus window option
     E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
     E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
     E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
-    E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
+    E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
     
     % Add stimuli and responses to the conditions, add the conditions to
     % the experiement, and run
@@ -43,7 +43,7 @@ function rdDpxExpRotCyl(pos,fb)
         for dsp=[-1:.5:1]
             for rotSpeed=[-120 120]
                 C=dpxCoreCondition;
-                set(C,'durSec',1.5);
+                set(C,'durSec',2.5);
                 % The fixation cross
                 S=dpxStimCross;
                 set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
