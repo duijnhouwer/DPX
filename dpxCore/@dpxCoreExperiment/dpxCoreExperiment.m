@@ -139,7 +139,7 @@ classdef (CaseInsensitiveProperties=true ...
         end      
         function showPauseScreen(E)
             str=E.txtPause;
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',.01);
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',-1);
         end
         function showSavingScreen(E)
             str=E.txtSave;
