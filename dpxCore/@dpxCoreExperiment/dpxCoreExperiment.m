@@ -44,6 +44,7 @@ classdef (CaseInsensitiveProperties=true ...
             % it starts the experiment and saves it when finished.
             E.startTime=now;
             E.createFileName;
+            E.signalFile('save');
             E.physScr.open;
             E.showStartScreen;
             tr=0;
@@ -76,6 +77,7 @@ classdef (CaseInsensitiveProperties=true ...
             E.stopTime=now; 
             E.showFinalSaveScreen;
             E.save;
+            E.signalFile('delete');
             E.showEndScreen;
             E.physScr.close;
         end
@@ -155,7 +157,7 @@ classdef (CaseInsensitiveProperties=true ...
             if isempty(E.outputFolder)
                 if ispc, E.outputFolder='C:\temp\dpxData';
                 elseif IsOSX || isunix, E.outputFolder='/tmp/dpxData';
-                else error('Unsupported OS');
+                else error('Unsupported OS!');
                 end
             end
             if ~exist(E.outputFolder,'file')
@@ -178,6 +180,18 @@ classdef (CaseInsensitiveProperties=true ...
                 error([me.message ' : ' absFileName]);
             end
             delete(absFileName);
+        end
+        function signalFile(E,opt)
+            % handy when using shared dropbox folder
+            signalFile=['DPX_RUNNING_' upper(dpxGetUserName) '.MAT'];
+            signalFile=dpxSanitizeFileName(signalFile,'_');
+            if strcmpi(opt,'save')
+                save(fullfile(E.outputFolder,signalFile),'');
+            elseif strcmpi(opt,'delete')
+                delete(fullfile(E.outputFolder,signalFile));
+            else
+                error(['Unknown signalFile option ' opt]);
+            end
         end
     end
     methods
