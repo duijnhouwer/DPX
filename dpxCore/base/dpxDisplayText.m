@@ -1,82 +1,74 @@
 function escPressed=dpxDisplayText(windowPtr,text,varargin)
-    try
-        p = inputParser;   % Create an instance of the inputParser class.
-        p.addRequired('windowPtr',@(x)isnumeric(x));
-        p.addRequired('instructStr',@(x)ischar(x));
-        p.addParamValue('rgba',[1 1 1 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
-        p.addParamValue('rgbaback',[0 0 0 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
-        p.addParamValue('fadeInSec',0.25,@isnumeric);
-        p.addParamValue('fadeOutSec',.5,@isnumeric); % 0 = instant fade, <0 leave text on screen
-        p.addParamValue('fontname','DefaultFontName',@(x)ischar(x));
-        p.addParamValue('fontsize',25,@(x)isnumeric(x));
-        p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
-        p.addParamValue('forceContinueAfterSec',Inf,@isnumeric);
-        p.parse(windowPtr,text,varargin{:});
-        %
-        oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
-        oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
-        [sourceFactorOld, destinationFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
-        startSec=GetSecs;
-        % Fade-in the instructions
-        fadeText(windowPtr,p.Results,'fadein');
-        % wait for input ...
-        KbName('UnifyKeyNames');
-        keyIsDown=false;
-        while ~keyIsDown
-            if GetSecs-startSec>p.Results.forceContinueAfterSec
-                keyIsDown=true; % emulate button press when time is up
-                keyCode=false(1,256);
-            else
-                [keyIsDown,~,keyCode]=KbCheck;
-            end
+    p = inputParser;   % Create an instance of the inputParser class.
+    p.addRequired('windowPtr',@(x)isnumeric(x));
+    p.addRequired('instructStr',@(x)ischar(x));
+    p.addParamValue('rgba',[1 1 1 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
+    p.addParamValue('rgbaback',[0 0 0 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
+    p.addParamValue('fadeInSec',0.25,@isnumeric);
+    p.addParamValue('fadeOutSec',.5,@isnumeric); % 0 = instant fade, <0 leave text on screen
+    p.addParamValue('fontname','DefaultFontName',@(x)ischar(x));
+    p.addParamValue('fontsize',25,@(x)isnumeric(x));
+    p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
+    p.addParamValue('forceAfterSec',Inf,@isnumeric);
+    p.parse(windowPtr,text,varargin{:});
+    %
+    oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
+    oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
+    [sourceFactorOld, destinationFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
+    startSec=GetSecs;
+    % Fade-in the instructions
+    fadeText(windowPtr,p.Results,'fadein');
+    % wait for input ...
+    KbName('UnifyKeyNames');
+    keyIsDown=false;
+    while ~keyIsDown
+        if GetSecs-startSec>p.Results.forceAfterSec
+            keyIsDown=true; % emulate button press when time is up
+            keyCode=false(1,256);
+        else
+            [keyIsDown,~,keyCode]=KbCheck;
         end
-        escPressed=keyCode(KbName('Escape'));
-        if ~escPressed
-            % Dont fade out if escape is pressed, hurry up instead
-            escPressed=fadeText(windowPtr,p.Results,'fadeout');
-            KbReleaseWait; % wait for key to be released
-        end
-        % Reset the original screen settings
-        Screen('BlendFunction',windowPtr,sourceFactorOld,destinationFactorOld);
-        Screen('Textfont',windowPtr,oldFontName);
-        Screen('TextSize',windowPtr,oldTextSize);
-    catch me
-        error(me.message);
     end
+    escPressed=keyCode(KbName('Escape'));
+    if ~escPressed
+        % Dont fade out if escape is pressed, hurry up instead
+        escPressed=fadeText(windowPtr,p.Results,'fadeout');
+        KbReleaseWait; % wait for key to be released
+    end
+    % Reset the original screen settings
+    Screen('BlendFunction',windowPtr,sourceFactorOld,destinationFactorOld);
+    Screen('Textfont',windowPtr,oldFontName);
+    Screen('TextSize',windowPtr,oldTextSize);
 end
 
 function escPressed=fadeText(windowPtr,p,how)
-    try
-        escPressed=false;
-        if ~any(strcmpi(how,{'fadein','fadeout'}))
-            error(['Unknown fade option: ' how]);
+    escPressed=false;
+    if ~any(strcmpi(how,{'fadein','fadeout'}))
+        error(['Unknown fade option: ' how]);
+    end
+    framedur=Screen('GetFlipInterval',windowPtr);
+    if strcmpi(how,'fadeout')
+        if p.fadeOutSec<0
+            return;
         end
-        framedur=Screen('GetFlipInterval',windowPtr);
+        nFlips=floor(p.fadeOutSec/framedur)+1;
+    else
+        if p.fadeInSec<=0
+            printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,1,p.dxdy);
+            return;
+        end
+        nFlips=floor(p.fadeInSec/framedur)+1;
+    end
+    for f=1:nFlips
+        opacity=(f-1)/(nFlips-1);
         if strcmpi(how,'fadeout')
-            if p.fadeOutSec<0
-                return;
-            end
-            nFlips=floor(p.fadeOutSec/framedur)+1;
-        else
-            if p.fadeInSec<=0
-                printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,1,p.dxdy);
-                return;
-            end
-            nFlips=floor(p.fadeInSec/framedur)+1;
+            opacity=1-opacity;
         end
-        for f=1:nFlips
-            opacity=(f-1)/(nFlips-1);
-            if strcmpi(how,'fadeout')
-                opacity=1-opacity;
-            end
-            printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
-            if dpxGetEscapeKey
-                escPressed=true;
-                break;
-            end
+        printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
+        if dpxGetEscapeKey
+            escPressed=true;
+            break;
         end
-    catch me
-        error(me.message);
     end
 end
 

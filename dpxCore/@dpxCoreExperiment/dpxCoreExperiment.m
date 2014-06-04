@@ -139,7 +139,7 @@ classdef (CaseInsensitiveProperties=true ...
         end
         function showSaveScreen(E)
             str=[E.txtPause '\n\nSaving data ...'];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceContinueAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showPauseScreen(E)
             str=[E.txtPause '\n\nPress and release a key to continue'];
@@ -147,7 +147,7 @@ classdef (CaseInsensitiveProperties=true ...
         end
         function showFinalSaveScreen(E)
             str=[E.txtEnd '\n\nSaving data ...\n\n'];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceContinueAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
             str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
