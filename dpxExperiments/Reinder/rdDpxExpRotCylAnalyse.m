@@ -24,31 +24,30 @@ function D=rdDpxExpRotCylAnalyse(D)
     
     labels={'mono','stereo','both'};
     subplot(1,2,1);
-    h(1)=plotPsychoCurves(M,'halfCyl_fogFrac','DownArrow','r');
-    h(2)=plotPsychoCurves(S,'halfCyl_disparityFrac','DownArrow',[0 .5 0]);
-    h(3)=plotPsychoCurves(B,'halfCyl_fogFrac','DownArrow','b');
+    h(1)=plotPsychoCurves(M,'halfCyl_fogFrac','DownArrow','r-','LineWidth',3);
+    h(2)=plotPsychoCurves(S,'halfCyl_disparityFrac','DownArrow','Color',[0 .5 0],'LineWidth',2);
+    h(3)=plotPsychoCurves(B,'halfCyl_fogFrac','DownArrow','b','LineWidth',1);
     legend(h,labels);
     subplot(1,2,2);
-    h(1)=plotPsychoCurves(M,'halfCyl_rotSpeedDeg','DownArrow','r');
-    h(2)=plotPsychoCurves(S,'halfCyl_rotSpeedDeg','DownArrow',[0 .5 0]);
-    h(3)=plotPsychoCurves(B,'halfCyl_rotSpeedDeg','DownArrow','b');
+    h(1)=plotPsychoCurves(M,'halfCyl_rotSpeedDeg','DownArrow','r-','LineWidth',3);
+    h(2)=plotPsychoCurves(S,'halfCyl_rotSpeedDeg','DownArrow','Color',[0 .5 0],'LineWidth',2);
+    h(3)=plotPsychoCurves(B,'halfCyl_rotSpeedDeg','DownArrow','b','LineWidth',1);
     legend(h,labels);
     
 end
 
-function  h=plotPsychoCurves(D,fieldstr,keyname,col)
+function  h=plotPsychoCurves(D,fieldstr,keyname,varargin)
     E=dpxTblSplit(D,fieldstr);
     for e=1:numel(E)
         x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>
         y(e)=mean(strcmpi(E{e}.trial_resp_keyName,keyname));
     end
-    h=plot(x,y*100,'o-');
+    h=plot(x,y*100,varargin{:});
     axis([min(x) max(x) 0 100]);
     dpxPlotHori(50,'k--');
     dpxPlotVert(0,'k--');
     xlabel(fieldstr(fieldstr~='_'));
     ylabel(keyname);
-    set(h,'Color',col);
     hold on;
 end
 
