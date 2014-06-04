@@ -43,7 +43,7 @@ classdef (CaseInsensitiveProperties=true ...
             Screen('Preference','SkipSyncTests',W.SkipSyncTests);
         end
         function open(W)
-            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0 0 0 0],W.winRectPx,[],2,W.stereoCode);
+            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,[],2,W.stereoCode);
             W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
             % Set the blend function so we can use antialiasing of dots and
             % lines.

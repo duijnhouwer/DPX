@@ -8,7 +8,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
         p.addParamValue('fadeInSec',0.25,@isnumeric);
         p.addParamValue('fadeOutSec',.5,@isnumeric);
         p.addParamValue('fontname','DefaultFontName',@(x)ischar(x));
-        p.addParamValue('fontsize',22,@(x)isnumeric(x));
+        p.addParamValue('fontsize',25,@(x)isnumeric(x));
         p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
         p.addParamValue('forceContinueAfterSec',Inf,@isnumeric);
         p.parse(windowPtr,text,varargin{:});
