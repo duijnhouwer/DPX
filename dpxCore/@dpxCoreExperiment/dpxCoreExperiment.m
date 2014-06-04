@@ -55,7 +55,7 @@ classdef (CaseInsensitiveProperties=true ...
                     if mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
                         E.showSaveScreen;
                         E.save;
-                        E.showPauseScreen; 
+                        E.showPauseScreen;
                     end
                     condNr=condList(c);
                     E.physScr.clear;
@@ -74,7 +74,7 @@ classdef (CaseInsensitiveProperties=true ...
                     break;
                 end
             end
-            E.stopTime=now; 
+            E.stopTime=now;
             E.showFinalSaveScreen;
             E.save;
             E.signalFile('delete');
@@ -119,7 +119,7 @@ classdef (CaseInsensitiveProperties=true ...
                     C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                 end
             end
-            for t=1:N    
+            for t=1:N
                 D.trial=dpxFlattenStruct(E.trials(t));
                 condNr=D.trial.condition;
                 D=dpxMergeStructs({D,C(condNr)},'overwrite');
@@ -127,10 +127,10 @@ classdef (CaseInsensitiveProperties=true ...
                 D.N=1;
                 data{t}=D;
             end
-            data=dpxTblMerge(data); %#ok<NASGU>   
+            data=dpxTblMerge(data); %#ok<NASGU>
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            save(absFileName,'data');    
+            save(absFileName,'data');
             disp(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)
@@ -165,26 +165,26 @@ classdef (CaseInsensitiveProperties=true ...
                 catch me, error([me.message ' mkdir ' E.outputFolder]);
                 end
             end
-            E.subjectId=strtrim(upper(input('Subject ID > ','s')));
-            if isempty(E.subjectId), E.subjectId='0'; end
-            E.experimenterId=strtrim(upper(input('Experimenter ID > ','s')));
-            if isempty(E.experimenterId), E.experimenterId=E.subjectId; end
+            E.subjectId=dpxGetValidId('Subject ID > ');
+            E.experimenterId=dpxGetValidId('Experimenter ID > ');
             E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
-            absFileName=fullfile(E.outputFolder,E.outputFileName);
-            if exist(absFileName,'file')
-                error(['A file with name ' absFileName ' already exists.']); %shouyld be extremely rare/impossible because of datastr
+            testfile=fullfile(E.outputFolder,E.outputFileName);
+            if exist(testfile,'file')
+                % Extremely rare/impossible because of date+time in name
+                error(['A file with name ' testfile ' already exists.']);
             end
             try % test saving to the file before running the experiment
-                save(absFileName);
+                save(testfile);
+                delete(testfile);
             catch me
-                error([me.message ' : ' absFileName]);
+                error([me.message ' : ' testfile]);
             end
-            delete(absFileName);
         end
         function signalFile(E,opt)
-            % handy when using shared dropbox folder
-            signalFile=['DPX_RUNNING_' upper(dpxGetUserName) '.MAT'];
-            signalFile=dpxSanitizeFileName(signalFile,'_');
+            % handy when using shared dropbox folder, indicates that someone is
+            % running the experiment and on which computer.
+            signalFile=['DPX=RUNNING ' E.expName ' cmptr '  dpxGetUserName ' sbjct ' E.subjectId ' xprmntr ' E.experimenterId '.mat'];
+            signalFile=dpxSanitizeFileName(signalFile,'');
             if strcmpi(opt,'save')
                 save(fullfile(E.outputFolder,signalFile),'');
             elseif strcmpi(opt,'delete')
