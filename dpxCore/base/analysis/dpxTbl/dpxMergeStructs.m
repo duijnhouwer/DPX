@@ -1,5 +1,5 @@
-function u=dpxMergeStructs(s,str)
-    % U=dpxMergeStructs(S,[STR])
+function u=jdPTBmergeStructs(s,str)
+    % U=jdPTBmergeStructs(S,[STR])
     % Merge the structures in cell-array of structures S,
     % Either all structures need to have with unique fieldnames, or make them
     % unique in one of three ways:
@@ -9,19 +9,20 @@ function u=dpxMergeStructs(s,str)
     %   2 STR 'auto' [default] numbered labels are generated if any fields in S are
     %     in conflict
     %   3 STR 'force' generates numbered labels
+    %   4 STR 'overwrite' fields are overwritten by subsequent fields with
+    %   the same name. This option primary purpose is efficiency, and would
+    %   typically be used when you are absolutely certain that no fields in
+    %   the structs are in conflict.
     %
-    % Created: 2014-05-24, Jacob
-    % Edit: 2014-06-04, Optimizations, this function gets called often and consumes a
-    % a lot of time. I took conditional outside the for loops. jacob
-    %
+    % Jacob, 2014-05-24
     %
     % EXAMPLE:
     %   monkey=struct('furry',true,'animal',true);
     %   banana=struct('fruit',true,'color','yellow','curvature',2.72)
-    %   dpxMergeStructs({monkey banana})
-    %   dpxMergeStructs({monkey banana},{'monkey ','food '})
+    %   jdPTBmergeStructs({monkey banana})
+    %   jdPTBmergeStructs({monkey banana},{'monkey ','food '})
     %
-    % See also dpxFlattenStruct
+    % See also jdPTBflattenStruct
     
     if nargin==1 || ischar(str) && strcmpi(str,'auto');
         str='auto';
@@ -29,16 +30,18 @@ function u=dpxMergeStructs(s,str)
         if useLabels
             labels=generateNumberedLabels(numel(s));
         end
-    elseif ischar(str) && strmcpi(str,'force')
+    elseif ischar(str) && strcmpi(str,'force')
         useLabels=true;
         labels=generateNumberedLabels(numel(s));
+    elseif ischar(str) && strcmpi(str,'overwrite')
+        useLabels=false;
+        labels=cell(1,numel(s));
     elseif iscell(str)
         useLabels=true;
         labels=str;
         str='providedlist';
-        if numel(labels)~=numel(s) || numel(labels)~=numel(unique(labels)) ...
-                || any(~cellfun(@ischar,labels)) || any(cellfun(@isempty,labels))
-            error('When naming structs, EACH structs needs a UNIQUE, NON-EMPTY label of type CHAR (CASE-INSENSITIVE');
+        if numel(labels)~=numel(s) || numel(labels)~=numel(unique(labels)) || any(~cellfun(@ischar,labels))
+            error('When naming structs, EACH structs needs a UNIQUE label of type CHAR (CASE-INSENSITIVE');
         end
     else
         error('Incorrect value for argument STR');
@@ -48,13 +51,11 @@ function u=dpxMergeStructs(s,str)
         for i=1:numel(s)
             L=labels{i};
             fns=fieldnames(s{i});
-            if L(end)==' '
-                for f=1:numel(fns)
+            for f=1:numel(fns)
+                if ~isempty(L) && L(end)==' '
+                    % camelback
                     newfieldStr=[L(1:end-1) upper(fns{f}(1)) fns{f}(2:end) ];
-                    u.(newfieldStr)=s{i}.(fns{f});
-                end
-            else
-                for f=1:numel(fns)
+                else
                     newfieldStr=[L fns{f}];
                     u.(newfieldStr)=s{i}.(fns{f});
                 end
@@ -63,8 +64,9 @@ function u=dpxMergeStructs(s,str)
     else
         for i=1:numel(s)
             fns=fieldnames(s{i});
-            for f=1:numel(fns)
-                u.(fns{f})=s{i}.(fns{f});
+            for f=1:numel(fns)       
+                newfieldStr=fns{f};
+                u.(newfieldStr)=s{i}.(fns{f});
             end
         end
     end

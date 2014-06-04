@@ -6,7 +6,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
         p.addParamValue('rgba',[1 1 1 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
         p.addParamValue('rgbaback',[0 0 0 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
         p.addParamValue('fadeInSec',0.25,@isnumeric);
-        p.addParamValue('fadeOutSec',.5,@isnumeric);
+        p.addParamValue('fadeOutSec',.5,@isnumeric); % 0 = instant fade, <0 leave text on screen
         p.addParamValue('fontname','DefaultFontName',@(x)ischar(x));
         p.addParamValue('fontsize',25,@(x)isnumeric(x));
         p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
@@ -53,8 +53,15 @@ function escPressed=fadeText(windowPtr,p,how)
         end
         framedur=Screen('GetFlipInterval',windowPtr);
         if strcmpi(how,'fadeout')
+            if p.fadeOutSec<0
+                return;
+            end
             nFlips=floor(p.fadeOutSec/framedur)+1;
         else
+            if p.fadeInSec<=0
+                printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,1,p.dxdy);
+                return;
+            end
             nFlips=floor(p.fadeInSec/framedur)+1;
         end
         for f=1:nFlips

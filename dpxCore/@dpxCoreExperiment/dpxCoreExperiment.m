@@ -12,11 +12,12 @@ classdef (CaseInsensitiveProperties=true ...
         txtPause;
         txtPauseNrTrials;
         txtEnd;
+        txtSave;
         txtRBGAfrac;
         outputFolder;
     end
     properties (Access=protected)
-        outputFullFileName='./undefined.mat';
+        outputFileName='undefined.mat';
     end
     properties (GetAccess=public,SetAccess=protected)
         subjectId;
@@ -33,7 +34,8 @@ classdef (CaseInsensitiveProperties=true ...
             E.expName='dpxCoreExperiment';
             E.subjectId='0';
             E.txtStart='Press and release a key to start';
-            E.txtPause='I N T E R M I S S I O N\n\nPress and release a key to start';
+            E.txtSave='I N T E R M I S S I O N\n\nSaving data ...';
+            E.txtPause='I N T E R M I S S I O N\n\nPress and release a key to continue';
             E.txtPauseNrTrials=100;
             E.txtEnd='[-: The End :-]';
             E.txtRBGAfrac=[1 1 1 1];
@@ -98,27 +100,38 @@ classdef (CaseInsensitiveProperties=true ...
     end
     methods (Access=protected)
         function save(E)
+            % Convert the data
             N=numel(E.trials);
             data=cell(1,N);
-            for t=1:N
-                D.exp=get(E);
-                D.exp=rmfield(D.exp,{'physScr','conditions','outputFullFileName','outputFolder','trials'});
-                D.stimwin=dpxGetSetables(E.physScr);
-                D.trial=E.trials(t);
-                condNr=D.trial.condition;
-                for s=1:numel(E.conditions{condNr}.stims)
-                    stimname=E.conditions{condNr}.stims{s}.name;
+            D.exp=get(E);
+            D.exp=rmfield(D.exp,{'physScr','conditions','outputFileName','outputFolder','trials'});
+            D.stimwin=dpxGetSetables(E.physScr);
+            for c=1:numel(E.conditions)
+                for s=1:numel(E.conditions{c}.stims)
+                    stimname=E.conditions{c}.stims{s}.name;
                     % this is why unique stimuli names are required
-                    D.(stimname)=dpxGetSetables(E.conditions{condNr}.stims{s});
+                    TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
                 end
-                D=dpxFlattenStruct(D);
+                if c==1
+                    % preallocate
+                    C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
+                else
+                    C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
+                end
+            end
+            for t=1:N    
+                D.trial=dpxFlattenStruct(E.trials(t));
+                condNr=D.trial.condition;
+                D=dpxMergeStructs({D,C(condNr)},'overwrite');
                 D=dpxStructMakeSingleValued(D);
                 D.N=1;
                 data{t}=D;
             end
-            data=dpxTblMerge(data); %#ok<NASGU>
-            save(E.outputFullFileName,'data');
-            disp(['Data has been saved to: ''' E.outputFullFileName '''']);
+            data=dpxTblMerge(data); %#ok<NASGU>   
+            % Save the data
+            absFileName=fullfile(E.outputFolder,E.outputFileName);
+            save(absFileName,'data');    
+            disp(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)
             str=[E.txtStart];
@@ -126,14 +139,14 @@ classdef (CaseInsensitiveProperties=true ...
         end      
         function showPauseScreen(E)
             str=E.txtPause;
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',.01);
         end
         function showSavingScreen(E)
-            str='Intermission:Saving\n\nPlease Stand By';
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+            str=E.txtSave;
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceContinueAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
-            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFullFileName];
+            str=[E.txtEnd '\n\nData has been saved to:\n' fullfile(E.outputFolder,E.outputFileName)];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
         end
         function createFileName(E)
@@ -145,23 +158,24 @@ classdef (CaseInsensitiveProperties=true ...
             end
             if ~exist(E.outputFolder,'file')
                 try mkdir(E.outputFolder);
-                catch me, error([me.message ' : ' value]);
+                catch me, error([me.message ' mkdir ' E.outputFolder]);
                 end
             end
             E.subjectId=strtrim(upper(input('Subject ID > ','s')));
             if isempty(E.subjectId), E.subjectId='0'; end
             E.experimenterId=strtrim(upper(input('Experimenter ID > ','s')));
             if isempty(E.experimenterId), E.experimenterId=E.subjectId; end
-            E.outputFullFileName=fullfile(E.outputFolder,[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat']);
-            if exist(E.outputFullFileName,'file')
-                error(['A file with name ' E.outputFullFileName ' already exists.']); %shouyld be extremely rare/impossible because of datastr
+            E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
+            absFileName=fullfile(E.outputFolder,E.outputFileName);
+            if exist(absFileName,'file')
+                error(['A file with name ' absFileName ' already exists.']); %shouyld be extremely rare/impossible because of datastr
             end
             try % test saving to the file before running the experiment
-                save(E.outputFullFileName);
+                save(absFileName);
             catch me
-                error([me.message ' : ' E.outputFullFileName]);
+                error([me.message ' : ' absFileName]);
             end
-            delete(E.outputFullFileName);
+            delete(absFileName);
         end
     end
     methods

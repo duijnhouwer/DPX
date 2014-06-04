@@ -96,7 +96,9 @@ classdef dpxStimRotCylinder < dpxBasicStim
                 diam=S.dotDiamScale*S.dotDiamPx;
                 idx=idx & diam>=1;
                 % Draw the dots
-                Screen('DrawDots', wPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),diam(idx),cols(:,idx), S.winCntrXYpx,1);
+                if sum(idx)>0
+                    Screen('DrawDots', wPtr,S.XYZ([1 3],idx)+S.hordisp.(dispfieldstr)([1 3],idx),diam(idx),cols(:,idx), S.winCntrXYpx,1);
+                end
             end
         end
         function myStep(S)

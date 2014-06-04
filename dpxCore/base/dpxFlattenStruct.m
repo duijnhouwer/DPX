@@ -1,5 +1,5 @@
 function f=dpxFlattenStruct(s)   
-    % f=jdPTBflattenStruct(s)   
+    % f=dpxFlattenStruct(s)   
     % Jacob, 2014-05-26
     % EXAMPLE
     %    s.a=1;
