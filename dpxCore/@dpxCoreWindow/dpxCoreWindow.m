@@ -44,7 +44,6 @@ classdef (CaseInsensitiveProperties=true ...
         end
         function open(W)
             [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0 0 0 0],W.winRectPx,[],2,W.stereoCode);
-            %dpxGammaCorrection('set',W.scrNr,W.gamma);
             W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
             % Set the blend function so we can use antialiasing of dots and
             % lines.
@@ -64,9 +63,7 @@ classdef (CaseInsensitiveProperties=true ...
         function close(W)
             warning on %#ok<WNON>
             ShowCursor;
-            %newGammaTab=repmat((0:1/WhiteIndex(scrNr):1)',1,3).^1/gammaValue;
             set(W,'gamma',1);
-           % dpxGammaCorrection('restore');
             Screen('CloseAll');
             try
                 ListenChar(0);
