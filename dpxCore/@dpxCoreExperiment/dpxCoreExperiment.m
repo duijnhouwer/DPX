@@ -12,7 +12,6 @@ classdef (CaseInsensitiveProperties=true ...
         txtPause;
         txtPauseNrTrials;
         txtEnd;
-        txtSave;
         txtRBGAfrac;
         outputFolder;
     end
@@ -34,8 +33,7 @@ classdef (CaseInsensitiveProperties=true ...
             E.expName='dpxCoreExperiment';
             E.subjectId='0';
             E.txtStart='Press and release a key to start';
-            E.txtSave='I N T E R M I S S I O N\n\nSaving data ...';
-            E.txtPause='I N T E R M I S S I O N\n\nPress and release a key to continue';
+            E.txtPause='I N T E R M I S S I O N';
             E.txtPauseNrTrials=100;
             E.txtEnd='[-: The End :-]';
             E.txtRBGAfrac=[1 1 1 1];
@@ -54,7 +52,7 @@ classdef (CaseInsensitiveProperties=true ...
                 for c=1:numel(condList)
                     tr=tr+1;
                     if mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
-                        E.showSavingScreen;
+                        E.showSaveScreen;
                         E.save;
                         E.showPauseScreen; 
                     end
@@ -76,7 +74,7 @@ classdef (CaseInsensitiveProperties=true ...
                 end
             end
             E.stopTime=now; 
-            E.showSavingScreen;
+            E.showFinalSaveScreen;
             E.save;
             E.showEndScreen;
             E.physScr.close;
@@ -136,17 +134,21 @@ classdef (CaseInsensitiveProperties=true ...
         function showStartScreen(E)
             str=[E.txtStart];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
-        end      
+        end
+        function showSaveScreen(E)
+            str=[E.txtPause '\n\nSaving data ...'];
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceContinueAfterSec',0,'fadeOutSec',-1);
+        end
         function showPauseScreen(E)
-            str=E.txtPause;
+            str=[E.txtPause '\n\nPress and release a key to continue'];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',-1);
         end
-        function showSavingScreen(E)
-            str=E.txtSave;
+        function showFinalSaveScreen(E)
+            str=[E.txtEnd '\n\nSaving data ...\n\n'];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceContinueAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
-            str=[E.txtEnd '\n\nData has been saved to:\n' fullfile(E.outputFolder,E.outputFileName)];
+            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
         end
         function createFileName(E)
