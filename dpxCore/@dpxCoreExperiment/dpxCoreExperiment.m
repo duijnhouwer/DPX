@@ -52,8 +52,9 @@ classdef (CaseInsensitiveProperties=true ...
                 for c=1:numel(condList)
                     tr=tr+1;
                     if mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
+                        E.showSavingScreen;
                         E.save;
-                        E.showPauseScreen;
+                        E.showPauseScreen; 
                     end
                     condNr=condList(c);
                     E.physScr.clear;
@@ -72,7 +73,8 @@ classdef (CaseInsensitiveProperties=true ...
                     break;
                 end
             end
-            E.stopTime=now;
+            E.stopTime=now; 
+            E.showSavingScreen;
             E.save;
             E.showEndScreen;
             E.physScr.close;
@@ -124,6 +126,10 @@ classdef (CaseInsensitiveProperties=true ...
         end      
         function showPauseScreen(E)
             str=E.txtPause;
+            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+        end
+        function showSavingScreen(E)
+            str='Intermission:Saving\n\nPlease Stand By';
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
         end
         function showEndScreen(E)

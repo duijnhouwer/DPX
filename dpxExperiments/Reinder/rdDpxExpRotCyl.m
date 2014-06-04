@@ -1,4 +1,7 @@
 function rdDpxExpRotCyl(pos,fb)
+%%input needed is: position of the halve cylinder, and whether this is a
+%%feedback exercise or not.
+%%i.e. rdDpxExpRotCyl('left','feedback')
    
     E=dpxCoreExperiment;
     % handle the position option
@@ -26,15 +29,15 @@ function rdDpxExpRotCyl(pos,fb)
         fbWrongStr='fbCorrect';
     end
     
-    E.txtPauseNrTrials=10;
-    E.nRepeats=100;
-    E.outputFolder='';
+    E.txtPauseNrTrials=151;
+    E.nRepeats=16;
+    E.outputFolder='/Users/laurens/Dropbox/DPX/Data';
     
     % Set the stimulus window option
     E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
     E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
     E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
-    E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
+    E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
     
     % Add stimuli and responses to the conditions, add the conditions to
     % the experiement, and run
@@ -50,7 +53,7 @@ function rdDpxExpRotCyl(pos,fb)
                 C.addStim(S);
                 % The feedback stimulus for correct responses
                 S=dpxStimDot;
-                set(S,'wDeg',.3,'visible',false,'durSec',0.05,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
+                set(S,'wDeg',.3,'visible',false,'durSec',0.10,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
                 C.addStim(S);
                 % The feedback stimulus for wrong responses
                 S=dpxStimDot;

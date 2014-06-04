@@ -155,7 +155,7 @@ classdef (CaseInsensitiveProperties=true ...
         function addResp(C,R)
             % add a response object to the condition
             if isempty(R.name)
-                R.name=R.class;
+                R.name=class(R);
             end
             C.resps{end+1}=R;
             % Check that the name is not 'none', this is an reserved name
