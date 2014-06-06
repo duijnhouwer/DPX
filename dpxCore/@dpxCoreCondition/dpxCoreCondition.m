@@ -19,8 +19,6 @@ classdef (CaseInsensitiveProperties=true ...
         nFlips;
         % Structure that will hold copies of the getable values in physScr 
         physScrVals=struct;
-        % The label (string) for this class
-        class='dpxCoreCondition';
     end
     methods (Access=public)
         function C=dpxCoreCondition
@@ -53,8 +51,9 @@ classdef (CaseInsensitiveProperties=true ...
             winPtr=C.physScrVals.windowPtr;
             escPressed=false;
             stopTrialEarlyFlip=Inf;
+            % Initialize the responses with the null response
             for r=1:numel(C.resps)
-                respStruct(r)=C.resps{r}.resp; %#ok<AGROW>
+                respStruct.(C.resps{r}.name)=C.resps{r}.resp; 
             end
             vbl=Screen('Flip',winPtr);
             % loop over all video-flips (frames) of the trial
@@ -90,7 +89,7 @@ classdef (CaseInsensitiveProperties=true ...
                     if ~C.resps{r}.given
                         C.resps{r}.getResponse;
                         if C.resps{r}.given
-                            respStruct(r)=C.resps{r}.resp; %#ok<AGROW>
+                            respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                             % Set the new end time of the trial. This way
                             % giving the response can stop the trial. If
                             % the new time exceeds the original stop time,

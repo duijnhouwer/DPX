@@ -1,7 +1,20 @@
 function escPressed=dpxDisplayText(windowPtr,text,varargin)
+    % escPressed=dpxDisplayText(windowPtr,text,varargin)
+    % 
+    % EXAMPLES:
+    %
+    % Display 'Press a key' that fades in 1 s and that fades out and
+    % continues the after a key press and release
+    % dpxDisplayText(windowPtr,'Press a key' ,'fadeOutSec',.5,,'fadeOutSec',-1);
+    %
+    % Display 'Saving...' that fades in for .5 s and then continues without
+    % clearing the screen (text stays visible)
+    % dpxDisplayText(windowPtr,'Saving...',,'fadeInSec',.5,'forceAfterSec',0,'fadeOutSec',-1);
+    %
+
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('windowPtr',@(x)isnumeric(x));
-    p.addRequired('instructStr',@(x)ischar(x));
+    p.addRequired('str',@(x)ischar(x));
     p.addParamValue('rgba',[1 1 1 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
     p.addParamValue('rgbaback',[0 0 0 1],@(x)isnumeric(x) && numel(x)==4 && all(x<=1) && all(x>=0));
     p.addParamValue('fadeInSec',0.25,@isnumeric);
@@ -14,7 +27,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     %
     oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
     oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
-    [sourceFactorOld, destinationFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
+    [srcFactorOld, destFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
     startSec=GetSecs;
     % Fade-in the instructions
     fadeText(windowPtr,p.Results,'fadein');
@@ -36,7 +49,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
         KbReleaseWait; % wait for key to be released
     end
     % Reset the original screen settings
-    Screen('BlendFunction',windowPtr,sourceFactorOld,destinationFactorOld);
+    Screen('BlendFunction',windowPtr,srcFactorOld,destFactorOld);
     Screen('Textfont',windowPtr,oldFontName);
     Screen('TextSize',windowPtr,oldTextSize);
 end
@@ -54,7 +67,7 @@ function escPressed=fadeText(windowPtr,p,how)
         nFlips=floor(p.fadeOutSec/framedur)+1;
     else
         if p.fadeInSec<=0
-            printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,1,p.dxdy);
+            printText(p.str,windowPtr,p.rgba,p.rgbaback,1,p.dxdy);
             return;
         end
         nFlips=floor(p.fadeInSec/framedur)+1;
@@ -64,7 +77,7 @@ function escPressed=fadeText(windowPtr,p,how)
         if strcmpi(how,'fadeout')
             opacity=1-opacity;
         end
-        printText(p.instructStr,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
+        printText(p.str,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
         if dpxGetEscapeKey
             escPressed=true;
             break;
@@ -74,7 +87,7 @@ end
 
 
 
-function printText(instructStr,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
+function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
     try
         if nargin<4 || isempty(opacityFrac)
             opacityFrac=1;
@@ -94,7 +107,7 @@ function printText(instructStr,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
             dy=dxdy(2);
             winRect=[max(0,dx) max(0,dy) min(w,w-dx) min(h,h-dy)];
             vLineSpacing=1.75;
-            DrawFormattedText(windowPtr, instructStr, 'center','center', RGBAfore, [], [], [], vLineSpacing, [], winRect);
+            DrawFormattedText(windowPtr, str, 'center','center', RGBAfore, [], [], [], vLineSpacing, [], winRect);
         end
         Screen('Flip',windowPtr);
     catch me

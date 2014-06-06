@@ -67,7 +67,6 @@ classdef (CaseInsensitiveProperties=true ...
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
             R.physScrVals=physScrVals;
-            R.name='';
             myInit(R);
         end
         function getResponse(R)
