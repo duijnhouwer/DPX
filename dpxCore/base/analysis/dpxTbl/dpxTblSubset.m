@@ -8,7 +8,7 @@ function f=dpxTblSubset(r,indices)
 
 %%% Handle varargin list%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 p = inputParser;   % Create an instance of the inputParser class.
-p.addRequired('r', @jdTblStructIs);
+p.addRequired('r', @dpxTblIs);
 p.addRequired('indices',@(x)isnumeric(x) | islogical(x));
 p.parse(r,indices);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

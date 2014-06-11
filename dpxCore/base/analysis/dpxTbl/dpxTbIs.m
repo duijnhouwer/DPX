@@ -1,6 +1,6 @@
-function [b n fields]=jdTblStructIs(T,varargin)
+function [b,n,fields]=dpxTblIs(T,varargin)
 
-%  [b n fields]=jdTblStructIs(t,varargin)
+%  [b n fields]=dpxTblIs(t,varargin)
 % Checks whether input t is a TblStruct.
 % A TblStruct is a struct whose members are all of equal length
 % except for the special and required field 'N' which contains that length
@@ -26,10 +26,10 @@ if ~isfield(T,'N')
    n=[];
    fields=[];
    if p.Results.verbosity==1
-       warning('Not a jdTblStruct because N field is missing.');
+       warning('Not a dpxTbl because N field is missing.');
    end
    if p.Results.verbosity>=2
-       error('Not a jdTblStruct because N field is missing.');
+       error('Not a dpxTbl because N field is missing.');
    end
    return;
 end
@@ -48,7 +48,7 @@ if std(lengthsarray)~=0
     b=false;
     n=[];
     if p.Results.verbosity>=1
-       warning('Not a jdTblStruct because not all lengths are equal.');
+       warning('Not a dpxTbl because not all lengths are equal.');
     end
     if p.Results.verbosity>=2
         keyboard;
@@ -61,7 +61,7 @@ if lengthsarray(1)~=T.N
     b=false;
     n=[];
     if p.Results.verbosity>=1
-        warning('Not a jdTblStruct because the field lengths are not of the length specified in N.');
+        warning('Not a dpxTbl because the field lengths are not of the length specified in N.');
     end
     if p.Results.verbosity>=2
         keyboard;
@@ -73,7 +73,7 @@ end
 % corresponding data field
 if any(strcmpi(fields,'Cyclopean'))
     if numel(T.Cyclopean.pointers)~=T.N
-        error('Number of pointers in Cyclopean substruct should equal jdTblStructs N');
+        error('Number of pointers in Cyclopean substruct should equal dpxTbls N');
     end
     uPointers=unique(T.Cyclopean.pointers);
     if min(uPointers)~=1 || any(diff(uPointers)~=1)

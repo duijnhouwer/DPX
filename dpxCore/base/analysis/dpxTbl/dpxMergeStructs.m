@@ -1,4 +1,4 @@
-function u=jdPTBmergeStructs(s,str)
+function u=dpxMergeStructs(s,str)
     % U=jdPTBmergeStructs(S,[STR])
     % Merge the structures in cell-array of structures S,
     % Either all structures need to have with unique fieldnames, or make them
