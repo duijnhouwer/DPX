@@ -69,7 +69,7 @@ for m=1:numel(modes)
             set(R,'kbNames','UpArrow,DownArrow');
             set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
             set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-            set(R,'name','resp');
+            set(R,'name','rightHand');
             if dsp<0
                 R.correctKbNames='UpArrow';
             elseif dsp>0
