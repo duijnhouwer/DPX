@@ -5,6 +5,8 @@ function rdDpxExpRotHalfCyl(pos,fb)
 %%feedback exercise or not.
 %%i.e. rdDpxExpRotCyl('left','feedback')
 
+a=pi;
+
 
 if nargin==1
     fb='feedback';
