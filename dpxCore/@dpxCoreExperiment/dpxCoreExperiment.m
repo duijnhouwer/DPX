@@ -42,7 +42,9 @@ classdef (CaseInsensitiveProperties=true ...
         function run(E)
             % This is the last function to call in your experiment script,
             % it starts the experiment and saves it when finished.
+            dpxCheckUpdates;
             E.startTime=now;
+            E.sysInfo=E.dpxSystemInfo;
             E.createFileName;
             E.signalFile('save');
             E.physScr.open;

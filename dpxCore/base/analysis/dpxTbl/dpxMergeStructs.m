@@ -40,8 +40,8 @@ function u=dpxMergeStructs(s,str)
         useLabels=true;
         labels=str;
         str='providedlist';
-        if numel(labels)~=numel(s) || numel(labels)~=numel(unique(labels)) || any(~cellfun(@ischar,labels))
-            error('When naming structs, EACH structs needs a UNIQUE label of type CHAR (CASE-INSENSITIVE');
+        if numel(labels)~=numel(s) || any(~cellfun(@ischar,labels))
+            error('When naming structs, EACH structs needs a label of type CHAR (CASE-INSENSITIVE');
         end
     else
         error('Incorrect value for argument STR');
