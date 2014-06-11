@@ -3,6 +3,8 @@ classdef (CaseInsensitiveProperties=true ...
         ,DetailedDescription='ab') ...
     dpxCoreCondition < hgsetget
     
+% some change baskdjasd
+
     properties (Access=public)
         % The duration of this condition (unless prematurely ended by
         % a response, see below)
