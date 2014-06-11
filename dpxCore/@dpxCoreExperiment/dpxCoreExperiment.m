@@ -106,6 +106,7 @@ classdef (CaseInsensitiveProperties=true ...
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'physScr','conditions','outputFileName','outputFolder','trials'});
             D.stimwin=dpxGetSetables(E.physScr);
+            D=dpxFlattenStruct(D);
             for c=1:numel(E.conditions)
                 for s=1:numel(E.conditions{c}.stims)
                     stimname=E.conditions{c}.stims{s}.name;
@@ -120,9 +121,9 @@ classdef (CaseInsensitiveProperties=true ...
                 end
             end
             for t=1:N
-                D.trial=dpxFlattenStruct(E.trials(t));
-                condNr=D.trial.condition;
-                D=dpxMergeStructs({D,C(condNr)},'overwrite');
+                TMP=dpxFlattenStruct(E.trials(t));
+                condNr=TMP.condition;
+                D=dpxMergeStructs({D,TMP,C(condNr)},'overwrite');
                 D=dpxStructMakeSingleValued(D);
                 D.N=1;
                 data{t}=D;

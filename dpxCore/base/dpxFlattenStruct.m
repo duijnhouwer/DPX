@@ -7,7 +7,7 @@ function f=dpxFlattenStruct(s)
     %    s.b.b=3;
     %    s.c.a.a=4;
     %    s.c.a.a=5;
-    %    f=jdPTBflattenStruct(s)
+    %    f=dpxFlattenStruct(s)
     %
     
     if nargin==0 || ~isstruct(s)
