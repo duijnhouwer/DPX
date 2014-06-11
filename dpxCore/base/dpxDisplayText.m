@@ -39,7 +39,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
             keyIsDown=true; % emulate button press when time is up
             keyCode=false(1,256);
         else
-            [keyIsDown,~,keyCode]=KbCheck;
+            [keyIsDown,~,keyCode]=KbCheck(-1);
         end
     end
     escPressed=keyCode(KbName('Escape'));

@@ -22,7 +22,7 @@ function jdPTBdisplayText(windowPtr,text,varargin)
         KbName('UnifyKeyNames');
         keyIsDown=false;
         while ~keyIsDown
-            [keyIsDown,~,keyCode]=KbCheck;
+            [keyIsDown,~,keyCode]=KbCheck(-1);
         end
         if ~keyCode(KbName('Escape'))
             % Only fade-out the text if a key other than escape is pressed (indicates hurry!)

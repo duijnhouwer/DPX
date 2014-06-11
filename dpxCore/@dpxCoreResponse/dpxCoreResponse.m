@@ -84,7 +84,7 @@ classdef (CaseInsensitiveProperties=true ...
             R.resp=struct('keyNr',-1,'keyName','none','keySec',-1);
         end
         function myGetResponse(R)
-            [keyIsDown,keyTime,keyCode]=KbCheck;
+            [keyIsDown,keyTime,keyCode]=KbCheck(-1);
             if keyIsDown
                 % A key has been pressed, see if it is one of the defined
                 % KbNames for this condition.

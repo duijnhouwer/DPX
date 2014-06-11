@@ -18,7 +18,7 @@ function resp=jdPTBgetResponseKey(commaSeparatedKbNames)
     end
     kbNames=regexp(commaSeparatedKbNames,',','split');
     KbName('UnifyKeyNames');
-    [keyIsDown,keyTime,keyCode]=KbCheck;
+    [keyIsDown,keyTime,keyCode]=KbCheck(-1);
     if keyIsDown
         for i=1:numel(kbNames)
             if keyCode(KbName(strtrim(kbNames{i})));

@@ -58,7 +58,7 @@ function [E,windowPtr]=prepareExperiment
     end
     %ListenChar(2);
     GetSecs; % just to load MEX into memory
-    KbCheck; % just to load MEX into memory
+    KbCheck(-1); % just to load MEX into memory
     [windowPtr,E.physScr]=openStimWindow('hardware',screen); % physScr contains info on all physical display properties, windowPtr is a pointer to window
 end
 
