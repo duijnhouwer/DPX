@@ -6,10 +6,6 @@ function rdDpxExpRotHalfCyl(pos,fb)
 %%i.e. rdDpxExpRotCyl('left','feedback')
 
 
-a=pi;
-
-k='keiroak'
-
 if nargin==1
     fb='feedback';
 end
