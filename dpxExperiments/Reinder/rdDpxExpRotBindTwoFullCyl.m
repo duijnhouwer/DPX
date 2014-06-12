@@ -10,7 +10,7 @@ E.txtStart='Kijk naar het rode kruisje.\n\nWelke richting draaien de voorvlakken
 E.expName='rdDpxExpBindTwoFull';
 
 E.txtPauseNrTrials=151;
-E.nRepeats=10;
+E.nRepeats=5;
 E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp3BindTwoFull';
 
 fb='';
@@ -49,7 +49,7 @@ for m=1:numel(modes)
                 set(R,'kbNames','UpArrow,DownArrow');
                 set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
                 set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-                set(R,'name','respRight');
+                set(R,'name','rightHand');
                 if rotSpeed>0 && dsp>0
                     R.correctKbNames='UpArrow';
                 elseif rotSpeed>0 && dsp<0
@@ -67,7 +67,7 @@ for m=1:numel(modes)
                 set(R,'kbNames','LeftShift,LeftControl');
                 set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
                 set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-                set(R,'name','respLeft');
+                set(R,'name','leftHand');
                 if rotSpeed>0 && dsp>0
                     R.correctKbNames='LeftShift';
                 elseif rotSpeed>0 && dsp<0

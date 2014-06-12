@@ -10,7 +10,7 @@ function D=rdDpxExpRotCylAnalyse(D)
     D=dpxTblMerge(D);
     oldN=D.N;
     % Remove all trials in which no response was given
-    D=dpxTblSubset(D,D.trial_resp_keyNr>0);
+    D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
     disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
     %
     mono=D.halfCyl_disparityFrac==0;
@@ -40,7 +40,7 @@ function  h=plotPsychoCurves(D,fieldstr,keyname,varargin)
     E=dpxTblSplit(D,fieldstr);
     for e=1:numel(E)
         x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>
-        y(e)=mean(strcmpi(E{e}.trial_resp_keyName,keyname));
+        y(e)=mean(strcmpi(E{e}.resp_rightHand_keyName,keyname));
     end
     h=plot(x,y*100,varargin{:});
     axis([min(x) max(x) 0 100]);
