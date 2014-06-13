@@ -11,7 +11,7 @@ classdef (CaseInsensitiveProperties=true ...
         gamma=1;
         backRGBA=[.5 .5 .5 1];
         stereoMode='mono';
-        SkipSyncTests=1;
+        SkipSyncTests=0;
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -39,10 +39,10 @@ classdef (CaseInsensitiveProperties=true ...
             % constructor
             AssertOpenGL;
             W=initValues(W);
-            Screen('Preference','VisualDebuglevel',0);
-            Screen('Preference','SkipSyncTests',W.SkipSyncTests);
         end
         function open(W)
+            Screen('Preference','VisualDebuglevel',0);
+            Screen('Preference','SkipSyncTests',W.SkipSyncTests);
             [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,[],2,W.stereoCode);
             W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
             % Set the blend function so we can use antialiasing of dots and
@@ -52,6 +52,9 @@ classdef (CaseInsensitiveProperties=true ...
             % after the window has been opened using Screen('OpenWindow')
             InitializeMatlabOpenGL(1); % this loads OpenGL constant labels as GL_XXX GLU_XXX etc.
             W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
+            % Bump the priority of the matlab process
+            priorityLevel=MaxPriority(W.windowPtr);
+            Priority(priorityLevel);
         end
         function clear(W)
             % clear the window to background color, unless the background

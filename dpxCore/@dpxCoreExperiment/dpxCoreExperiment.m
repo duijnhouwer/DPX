@@ -24,6 +24,7 @@ classdef (CaseInsensitiveProperties=true ...
         startTime;
         stopTime;
         trials=struct('condition',[],'startSec',[],'stopSec',[],'resp',[]);
+        sysInfo;
     end
     methods (Access=public)
         function E=dpxCoreExperiment
@@ -41,10 +42,9 @@ classdef (CaseInsensitiveProperties=true ...
         end
         function run(E)
             % This is the last function to call in your experiment script,
-            % it starts the experiment and saves it when finished.
-            dpxCheckUpdates;
+            % it starts the experiment and saves it when finished. 
             E.startTime=now;
-            E.sysInfo=E.dpxSystemInfo;
+            E.sysInfo=dpxSystemInfo;
             E.createFileName;
             E.signalFile('save');
             E.physScr.open;
@@ -103,11 +103,10 @@ classdef (CaseInsensitiveProperties=true ...
     methods (Access=protected)
         function save(E)
             % Convert the data
-            N=numel(E.trials);
-            data=cell(1,N);
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'physScr','conditions','outputFileName','outputFolder','trials'});
             D.stimwin=dpxGetSetables(E.physScr);
+            D.stimwin.measuredFrameRate=E.physScr.measuredFrameRate;
             D=dpxFlattenStruct(D);
             for c=1:numel(E.conditions)
                 for s=1:numel(E.conditions{c}.stims)
@@ -119,16 +118,17 @@ classdef (CaseInsensitiveProperties=true ...
                     % preallocate
                     C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
                 else
-                    C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
+                    C(c)=dpxFlattenStruct(TMP);
                 end
             end
-            for t=1:N
+            % Get the settings for all trials
+            data=cell(1,numel(E.trials));
+            for t=1:numel(E.trials)
                 TMP=dpxFlattenStruct(E.trials(t));
                 condNr=TMP.condition;
-                D=dpxMergeStructs({D,TMP,C(condNr)},'overwrite');
-                D=dpxStructMakeSingleValued(D);
-                D.N=1;
-                data{t}=D;
+                data{t}=dpxMergeStructs({D,TMP,C(condNr)},'overwrite');
+                data{t}=dpxStructMakeSingleValued(data{t});
+                data{t}.N=1;
             end
             data=dpxTblMerge(data); %#ok<NASGU>
             % Save the data

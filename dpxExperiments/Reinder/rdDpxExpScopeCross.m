@@ -4,7 +4,7 @@ function rdDpxExpScopeCross
 E=dpxCoreExperiment;
 E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
 E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
-E.windowed(false);
+E.windowed(true);
 C=dpxCoreCondition;
 set(C,'durSec',3600);
 S=dpxStimCross;

@@ -1,53 +1,73 @@
-function M=dpxTblMerge(T)
+function M=dpxTblMerge(T,varargin)
 
-% Merge the dpxTbls in cell array T into one dpxTbl M. All TblStructs in T
+% Merge the dpxTbls in cell array T into one dpxTbl M. All dpxTbls in T
 % must be compatible, i.e., have the same fields.
 % 2012-10-12: T can also be a regular array of dpxTbls, does not need
 % to be a cell.
+
+p=inputParser;
+p.addOptional('missingfields','warnskip',@(x)any(strcmpi(x,{'warnskip','silentskip','error'})));
+p.parse(varargin{:});
 
 if ~iscell(T) && numel(T)==1
     M=T;
     return;
 end
 if ~iscell(T) && numel(T)>1
-    % convert to cell array (other way around, if cell convert to regular
-    % array makes more sense, but the code below had already been written
-    % to deal with cell arrays
     TT=cell(1,numel(T));
-    for i=1:numel(T)
-        TT{i}=T(i);
+    for f=1:numel(T)
+        TT{f}=T(f);
     end
     T=TT;
     clear('TT');
 end
 
 bad=[];
-for i=1:length(T)
-    if ~dpxTblIs(T{i}, 'verbosity', 1)
-        bad(end+1)=i;
+for f=1:length(T)
+    if ~dpxTblIs(T{f}, 'verbosity', 1)
+        bad(end+1)=f;
     end
 end
 if ~isempty(bad)
     error(['Elements ' num2str(bad) ' of input cell array are not dpxTbls.']);
 end
 
-M=T{1};
+
 F=fieldnames(T{1});
-for t=2:length(T)
+for t=1:numel(T)
+    newfields=fieldnames(T{t});
+    E=intersect(F,newfields,'stable');
+    if numel(F)~=numel(E)
+        if strcmpi(p.Results.missingfields,'error')
+            error(['In the input array dpxTbls number ' num2str(t) ' was inconsistent with earlier elements.']);
+        elseif strcmpi(p.Results.missingfields,'warnskip')
+            warning(['Ignoring non-intersecting fields of dpxTbl-input array element #' num2str(t) '.']);
+        end
+    end
+    F=E;
+end
+
+% copy the output fields of the first dpxTbl to the output M
+for f=1:numel(F)
+    M.(F{f})=T{1}.(F{f});
+end
+% merge the remaining dpxTbl in the input array with the output M
+for t=2:numel(T)
     thistab=T{t};
-    for f=1:length(F)
+    for f=1:numel(F)
         thisname=F{f};
         if strcmp(thisname,'N')
             M.N=M.N+thistab.N;
         elseif strcmp(thisname,'Cyclopean')
+            % not sure this works anymore .... jd 2014-06-13
             nCyclopeansCurrent=numel(M.Cyclopean.data);
             M.Cyclopean.pointers=[ M.Cyclopean.pointers(:)' T{t}.Cyclopean.pointers(:)'+nCyclopeansCurrent ];
-            for i=1:numel(T{t}.Cyclopean.data)
-                M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{i};
+            for cf=1:numel(T{t}.Cyclopean.data)
+                M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{cf};
             end
         else
             if iscell(thistab.(thisname))
-                M.(thisname)={ M.(thisname){:} thistab.(thisname){:} };
+                M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
             elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname))
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
             elseif isstruct(thistab.(thisname))

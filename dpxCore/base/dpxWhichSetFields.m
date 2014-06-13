@@ -9,7 +9,9 @@ function setFields=dpxWhichSetFields(obj)
         try
             obj.(allFields{i})=obj.(allFields{i});
         catch me
-            okToSet(i)=false;
+            if strcmpi(me.identifier,'MATLAB:class:SetProhibited')
+                okToSet(i)=false;
+            end
         end  
     end
     setFields=allFields(okToSet);
