@@ -1,54 +1,137 @@
 function D=rdDpxExpRotCylAnalyse(D)
-    
-    if nargin==0 || isempty(D)
-        fnames=dpxUIgetfiles;
-        for f=1:numel(fnames)
-            load(fnames{f});
-            D{f}=data;
-        end
+if nargin==0 || isempty(D)
+    fnames=dpxUIgetfiles;
+    for f=1:numel(fnames)
+        load(fnames{f});
+        D{f}=data;
     end
-    D=dpxTblMerge(D);
-    oldN=D.N;
-    % Remove all trials in which no response was given
-    D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
-    disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
-    %
-    mono=D.halfCyl_disparityFrac==0;
-    stereo=D.halfCyl_fogFrac==0 & D.halfCyl_dotDiamScaleFrac==0;
-    M=dpxTblSubset(D,mono | mono&stereo);
-    S=dpxTblSubset(D,stereo | mono&stereo);
+end
+D=dpxTblMerge(D);
+oldN=D.N;
+exp=whichExp(D);
+% Remove all trials in which no response was given
+D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
+disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
+%
+mono=D.(exp.stereoCue)==0;
+stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
+antistereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==-1;
+M=dpxTblSubset(D,mono | mono&stereo);
+S=dpxTblSubset(D,stereo | mono&stereo);
+if strcmp(exp.Id,'fullFb') || strcmp(exp.Id,'halfFb');
     B=dpxTblSubset(D,~mono&~stereo | mono&stereo);
-    %
-    dpxFindFig('rdDpxExpRotCylAnalyse');
-    clf;
-    
-    labels={'mono','stereo','both'};
-    subplot(1,2,1);
-    h(1)=plotPsychoCurves(M,'halfCyl_fogFrac','DownArrow','r-','LineWidth',3);
-    h(2)=plotPsychoCurves(S,'halfCyl_disparityFrac','DownArrow','Color',[0 .5 0],'LineWidth',2);
-    h(3)=plotPsychoCurves(B,'halfCyl_fogFrac','DownArrow','b','LineWidth',1);
-    legend(h,labels);
-    subplot(1,2,2);
-    h(1)=plotPsychoCurves(M,'halfCyl_rotSpeedDeg','DownArrow','r-','LineWidth',3);
-    h(2)=plotPsychoCurves(S,'halfCyl_rotSpeedDeg','DownArrow','Color',[0 .5 0],'LineWidth',2);
-    h(3)=plotPsychoCurves(B,'halfCyl_rotSpeedDeg','DownArrow','b','LineWidth',1);
-    legend(h,labels);
-    
+    varLbl='both';
+else
+    AS=dpxTblSubset(D,antistereo | mono&antistereo);
+    varLbl='anti-stereo';
+end
+dpxFindFig('rdDpxExpRotCylAnalyse');
+clf;
+
+labels={'mono','stereo',varLbl};
+subplot(1,2,1);
+h(1)=plotPsychoCurves(M,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'r-','LineWidth',3);
+h(2)=plotPsychoCurves(S,exp.stereoCue,exp.resp,exp.Id,exp.speed,'Color',[0 .5 0],'LineWidth',2);
+if exist('B','var');
+    h(3)=plotPsychoCurves(B,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'b','LineWidth',1);
+elseif exist('AS','var');
+    h(3)=plotPsychoCurves(AS,exp.stereoCue,exp.resp,exp.Id,exp.speed,'b','LineWidth',1);
+end
+title(exp.name)
+ylabel(exp.corPerc)
+legend(h,labels);
+subplot(1,2,2);
+h(1)=plotPsychoCurves(M,exp.speed,'DownArrow',[],[],'r-','LineWidth',3);
+h(2)=plotPsychoCurves(S,exp.speed,'DownArrow',[],[],'Color',[0 .5 0],'LineWidth',2);
+if exist('B','var');
+    h(3)=plotPsychoCurves(B,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+elseif exist('AS','var');
+    h(3)=plotPsychoCurves(AS,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+end
+legend(h,labels);
+
 end
 
-function  h=plotPsychoCurves(D,fieldstr,keyname,varargin)
-    E=dpxTblSplit(D,fieldstr);
+function  h=plotPsychoCurves(D,fieldstr,keyname,bind,speed,varargin)
+E=dpxTblSplit(D,fieldstr);
+if strcmp(bind,'bind')
+    for e=1:numel(E)
+        x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>
+        for s=1:numel(E{e}.(speed))
+            if E{e}.(speed)(s)>0
+                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
+            else
+                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
+            end
+        end
+        y(e)=mean(corKey);
+    end
+else
     for e=1:numel(E)
         x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>
         y(e)=mean(strcmpi(E{e}.resp_rightHand_keyName,keyname));
     end
-    h=plot(x,y*100,varargin{:});
-    axis([min(x) max(x) 0 100]);
-    dpxPlotHori(50,'k--');
-    dpxPlotVert(0,'k--');
-    xlabel(fieldstr(fieldstr~='_'));
-    ylabel(keyname);
-    hold on;
+end
+h=plot(x,y*100,varargin{:});
+axis([min(x) max(x) 0 100]);
+dpxPlotHori(50,'k--');
+dpxPlotVert(0,'k--');
+xlabel(fieldstr(fieldstr~='_'));
+hold on;
 end
 
+function exp=whichExp(data)
+if strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylFeedback') || strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylLeftFeedback');
+    exp.Id='fullFb';
+    exp.name=['subject ' data.exp_subjectId{1} ': one full cylinder w/ feedback'];
+    exp.monoCueFog='fullCyl_fogFrac';
+    exp.monoCueDiam='fullCyl_dotDiamScaleFrac';
+    exp.stereoCue='fullCyl_disparityFrac';
+    exp.lummCor='fullCyl_stereoLumCorr';
+    exp.speed='fullCyl_rotSpeedDeg';
+    exp.resp='DownArrow';
+    exp.corPerc='reported front plane down';
+elseif strcmpi(data.exp_expName(1),'rdDpxExpRotHalfCylLeftFeedback')  || strcmpi(data.exp_expName(1),'rdDpxExpRotHalfCylRightFeedback');
+    exp.Id='halfFb';
+    exp.name=['subject ' data.exp_subjectId{1} ': half cylinder w/ feedback'];
+    exp.monoCueFog='halfCyl_fogFrac';
+    exp.monoCueDiam='halfCyl_dotDiamScaleFrac';
+    exp.stereoCue='halfCyl_disparityFrac';
+    exp.lummCor='halfCyl_stereoLumCorr';
+    exp.speed='halfCyl_rotSpeedDeg';
+    exp.resp='DownArrow';
+    exp.corPerc='reported convex';
+elseif strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylRight');
+    exp.Id='base';
+    exp.name=['subject ' data.exp_subjectId{1} ': shape of half cylinder w/o feedback'];
+    exp.monoCueFog='halfInducerCyl_fogFrac';
+    exp.monoCueDiam='halfInducerCyl_dotDiamScaleFrac';
+    exp.stereoCue='halfInducerCyl_disparityFrac';
+    exp.lummCor='halfInducerCyl_stereoLumCorr';
+    exp.speed='halfInducerCyl_rotSpeedDeg';
+    exp.resp='DownArrow';
+    exp.corPerc='reported convex';
+elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft') || strcmpi(data.exp_expName(1),'rdDpxExpBindingCylRight')
+    exp.Id='bind';
+    exp.name=['subject ' data.exp_subjectId{1} ': percept of full cyl (context-driven)'];
+    exp.monoCueFog='halfInducerCyl_fogFrac';
+    exp.monoCueDiam='halfInducerCyl_dotDiamScaleFrac';
+    exp.stereoCue='halfInducerCyl_disparityFrac';
+    exp.lummCor='halfInducerCyl_stereoLumCorr';
+    exp.speed='halfInducerCyl_rotSpeedDeg';
+    exp.resp='DownArrow';
+    exp.corPerc='perception of full bound to phys of inducer';
+elseif strcmpi(data.exp_expName(1),'rdDpxExpRotCylShuffled');
+    exp.Id='twoFull';
+    exp.name=['subject ' data.exp_subjectId{1} ': Direction of full cyl (context-driven)'];
+    exp.monoCueFog='halfInducerCyl_fogFrac';
+    exp.monoCueDiam='halfInducerCyl_dotDiamScaleFrac';
+    exp.stereoCue='halfInducerCyl_disparityFrac';
+    exp.lummCor='halfInducerCyl_stereoLumCorr';
+    exp.speed='halfInducerCyl_rotSpeedDeg';
+    exp.resp='DownArrow';
+    exp.corPerc='Perceived direction of full';
+    
+end
+end
 
