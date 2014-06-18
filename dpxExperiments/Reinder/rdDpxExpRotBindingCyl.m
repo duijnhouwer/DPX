@@ -35,7 +35,7 @@ elseif strcmpi(pos,'right')
     else
         error(['unknown type of experiment ' BB]);
     end
-
+    
 else
     error(['unknown pos mode ' pos]);
 end
@@ -45,7 +45,6 @@ end
 E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.'];
 fbCorrectStr='fbCorrect';
 fbWrongStr='fbCorrect';
-
 
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(BB,'base')
@@ -64,8 +63,8 @@ E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
 % the experiement, and run
 modes={'mono','stereo','anti-stereo'};
 for m=1:numel(modes)
-    for dsp=[-1:0.2:1]
-        for rotSpeed=[-120 120]
+    for dsp=[-1:.2:1]
+        for rotSpeed=[-120;120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
             % The fixation cross
@@ -76,7 +75,7 @@ for m=1:numel(modes)
             S=dpxStimDot;
             set(S,'wDeg',.3,'visible',false,'durSec',0.20,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
-
+            
             % The response object
             R=dpxCoreResponse;
             set(R,'kbNames','UpArrow,DownArrow');
@@ -98,6 +97,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','fullTargetCyl');
+            %             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
             C.addStim(S);
             % The half cylinder stimulus
             if strcmpi(modes{m},'mono')
@@ -121,6 +121,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfInducerCyl');
+            %             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
             C.addStim(S);
             %
             E.addCondition(C);
