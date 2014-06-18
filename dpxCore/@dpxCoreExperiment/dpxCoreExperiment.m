@@ -186,11 +186,11 @@ classdef (CaseInsensitiveProperties=true ...
         function signalFile(E,opt)
             % handy when using shared dropbox folder, indicates that someone is
             % running the experiment and on which computer.
-            if strtrim(a)=='0'
+            if strtrim(E.subjectId)=='0'
                 return; % don't signal test runs
             end
             fname=['DPX=RUNNING ' E.expName ' C-'  dpxGetUserName ' S-' E.subjectId ' X-' E.experimenterId '.mat'];
-            fname=dpxSanitizeFileName(fname,'');
+            fname=dpxSanitizeFileName(fname,'fname');
             if strcmpi(opt,'save')
                 save(fullfile(E.outputFolder,fname),'');
             elseif strcmpi(opt,'delete')
