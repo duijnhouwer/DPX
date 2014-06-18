@@ -27,14 +27,15 @@ function revisionNr=dpxVersion(varargin)
     fp=mfilename('fullpath');
     oldwd=pwd;
     DPXPATH=fp(1:strfind(fp,'dpxCore')-1);
-    cd(DPXPATH);
+
     try
+        cd(DPXPATH);
         str=evalc('!svn info');
+        cd(oldwd);
         revisionNr=extractNumber(str);
     catch me
         warning(me.message);
     end
-    cd(oldwd);
     
     try
         if p.Results.checkonline || p.Results.offerupdate
@@ -42,13 +43,15 @@ function revisionNr=dpxVersion(varargin)
             str=evalc('!svn info https://duijnhouwer-psychtoolbox-experiments.googlecode.com/svn/trunk');
             onlineVersion=extractNumber(str);
             if onlineVersion==revisionNr
-                disp(['You have the latest DPX.']);
+                disp('You have the latest DPX.');
             elseif onlineVersion>revisionNr
                 disp(['An updated DPX (' num2str(onlineVersion) ') is available online.']);
                 if p.Results.offerupdate
                     a=input(['Do you wish to update your local DPX to revision ' num2str(onlineVersion) '? [y/N] > '],'s');
                     if strcmpi(strtrim(a),'y')
-                        eval(['!svn update ' DPXPATH]);
+                        cd(DPXPATH);
+                        eval(['!svn update "' DPXPATH '"']);
+                        cd(oldwd);
                     end
                     revisionNr=dpxVersion('checkonline',false);
                     disp(['You now have the latest DPX revision (' num2str(revisionNr) ').']);
@@ -60,6 +63,7 @@ function revisionNr=dpxVersion(varargin)
     catch me
         warning(me.message);
     end
+    
 end
 
 function num=extractNumber(str)
