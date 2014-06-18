@@ -8,7 +8,7 @@ function rdDpxExpRotBindingCyl(pos,BB)
 
 E=dpxCoreExperiment;
 E.txtPauseNrTrials=111;
-E.nRepeats=5;
+E.nRepeats=10;
 
 fb='';
 
@@ -35,8 +35,7 @@ elseif strcmpi(pos,'right')
     else
         error(['unknown type of experiment ' BB]);
     end
-    E.txtStart='Kijk naar de rode stip.\n\nIs de RECHTER cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
-    E.expName='rdDpxExpBaseLineCylRight';
+
 else
     error(['unknown pos mode ' pos]);
 end
@@ -65,7 +64,7 @@ E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
 % the experiement, and run
 modes={'mono','stereo','anti-stereo'};
 for m=1:numel(modes)
-    for dsp=[-1:.2:1]
+    for dsp=[-1:0.2:1]
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
