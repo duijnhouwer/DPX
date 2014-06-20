@@ -65,6 +65,7 @@ if strcmp(bind,'bind')
             end
         end
         y(e)=mean(corKey);
+        clear corKey
     end
 else
     for e=1:numel(E)
@@ -110,7 +111,7 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.ex
     exp.lummCor='halfInducerCyl_stereoLumCorr';
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
-    exp.corPerc='reported convex';
+    exp.corPerc='reported percept, % convex';
 elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft') || strcmpi(data.exp_expName(1),'rdDpxExpBindingCylRight')
     exp.Id='bind';
     exp.name=['subject ' data.exp_subjectId{1} ': percept of full cyl (context-driven)'];
@@ -120,18 +121,7 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft') || strcmpi(data.exp
     exp.lummCor='halfInducerCyl_stereoLumCorr';
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
-    exp.corPerc='perception of full bound to phys of inducer';
-elseif strcmpi(data.exp_expName(1),'rdDpxExpRotCylShuffled');
-    exp.Id='twoFull';
-    exp.name=['subject ' data.exp_subjectId{1} ': Direction of full cyl (context-driven)'];
-    exp.monoCueFog='halfInducerCyl_fogFrac';
-    exp.monoCueDiam='halfInducerCyl_dotDiamScaleFrac';
-    exp.stereoCue='halfInducerCyl_disparityFrac';
-    exp.lummCor='halfInducerCyl_stereoLumCorr';
-    exp.speed='halfInducerCyl_rotSpeedDeg';
-    exp.resp='DownArrow';
-    exp.corPerc='Perceived direction of full';
-    
+    exp.corPerc='correct perception of target base on phys of inducer';
 end
 end
 
