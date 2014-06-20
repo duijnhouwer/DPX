@@ -55,7 +55,7 @@ E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
 % the experiement, and run
 modes={'mono','stereo','both'};
 for m=1:numel(modes)
-    for dsp=[-1:.5:1]
+    for dsp=[0:.5:1]
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
