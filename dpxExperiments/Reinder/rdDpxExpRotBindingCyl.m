@@ -64,7 +64,7 @@ E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
 modes={'mono','stereo','anti-stereo'};
 for m=1:numel(modes)
     for dsp=[-1:.2:1]
-        for rotSpeed=[-120;120]
+        for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
             % The fixation cross
@@ -97,7 +97,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','fullTargetCyl');
-            %             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
+                        set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
             C.addStim(S);
             % The half cylinder stimulus
             if strcmpi(modes{m},'mono')
@@ -121,7 +121,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfInducerCyl');
-            %             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
+                        set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
             C.addStim(S);
             %
             E.addCondition(C);
