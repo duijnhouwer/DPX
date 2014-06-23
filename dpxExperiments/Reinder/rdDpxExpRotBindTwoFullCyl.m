@@ -31,7 +31,7 @@ E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
 modes={'mono','stereo','anti-stereo'};
 for m=1:numel(modes)
     for flippos=[-1 1];
-        for dsp=[-1:.2:1]
+        for dsp=[0:.2:1]
             for rotSpeed=[-120 120]
                 C=dpxCoreCondition;
                 set(C,'durSec',2.5);
