@@ -19,13 +19,13 @@ classdef (CaseInsensitiveProperties=true ...
         initialPublicState=[];
     end
     properties (Access=protected)
-        onFlip=0;
-        offFlip=0;
-        xPx=0;
-        yPx=0;
-        zPx=0;
-        wPx=0;
-        hPx=0;
+        onFlip;
+        offFlip;
+        xPx;
+        yPx;
+        zPx;
+        wPx;
+        hPx;
         winCntrXYpx=[];
         physScrVals=[];
         flipCounter=0;

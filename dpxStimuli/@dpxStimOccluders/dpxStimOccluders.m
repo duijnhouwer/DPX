@@ -9,7 +9,7 @@ classdef dpxStimOccluders < dpxBasicStim
         barConfig='even';
         disparityFrac=1;
         NrEncoding=5;
-        
+        PicDir='C:\Users\Reinder\Documents\School\Masterstage Stereoblind\DPX\dpxExperiments\Reinder\rdDpxFaceStimuli';
     end
     properties(GetAccess=public, SetAccess=private)
         StimArray;
@@ -18,8 +18,7 @@ classdef dpxStimOccluders < dpxBasicStim
     methods (Access=protected)
         function myInit(S)
             %load pictures from picture folder
-            PicDir='C:\Users\Reinder\Documents\School\Masterstage Stereoblind\DPX\dpxExperiments\Reinder\rdDpxFaceStimuli';
-            Pics=dir(PicDir);
+            Pics=dir(S.PicDir);
             Pics=(Pics(3:end));
             PicNames=repmat({Pics.name},S.NReps,1);
             NTotalPics=numel(PicNames);
@@ -31,7 +30,7 @@ classdef dpxStimOccluders < dpxBasicStim
             
             for iStim = 1:NTotalPics;
                 S.StimArray(iStim).name=StimList{iStim};
-                PicFile=fullfile(PicDir,StimList{iStim});
+                PicFile=fullfile(S.PicDir,StimList{iStim});
                 S.StimArray(iStim).ImMatrix=imread(PicFile);
             end
             BlockStart=1;
