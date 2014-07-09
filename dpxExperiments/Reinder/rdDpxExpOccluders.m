@@ -1,9 +1,14 @@
 function rdDpxExpOccluders()
-E=DpxCoreExperiment
+
+if IsWin
+    DisableKeysForKbCheck([233]);
+end
+
+E=dpxCoreExperiment;
 
 E.txtStart='textstart';
 E.expName='rdDpxExpOccluders';
-E.repeats=10;
+E.nRepeats=10;
 E.txtPauseNrTrials=5;
 E.nRepeats=5;
 E.outputFolder='';
@@ -16,8 +21,8 @@ E.windowed(true);
 barConfigs={'even','uneven'};
 for B=1:numel(barConfigs)
     for dsp=[-1:1]
-        C=dpxCoreCondition
-        set(C,'durSec',5+1+0.6+'responsetijd?')
+        C=dpxCoreCondition;
+        set(C,'durSec',5+1+0.6)%+'responsetijd?')
         %responsetijd moet afgepakt indien antwoord
         
         %fix cross
@@ -30,22 +35,16 @@ for B=1:numel(barConfigs)
         set(R,'KbNames','1!,0)');
         set(R,'name','recall');
         C.addResp(R);
+        
         %first pictures, encoding
         S=dpxStimOccluders;
         set(S,'NrEncoding',5,'NrBars',4,'barConfig',barConfigs{B}...
             ,'disparityFrac',dsp,'durSec',5,'name','EncodePics');
         C.addStim(S);
         
-        %second pictures, recall
-        S=dpxStimRecallOccluders;
-        set(S,'NrRecall',5,'NrBars',4,'barConfig',barConfigs{B}...
-            ,'disparityFrac',dsp,'onSec',5+1,'durSec',0.6...
-            ,'name','EncodePics');
-        C.addStim(S);
-        
         E.addCondition(C);
     end
 end
-E.Run;
+E.run
 end
 
