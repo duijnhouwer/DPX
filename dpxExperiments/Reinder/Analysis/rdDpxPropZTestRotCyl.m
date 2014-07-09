@@ -18,7 +18,11 @@ mono=D.(exp.stereoCue)==0;
 stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
 EE=dpxTblSubset(D,stereo | mono&stereo);
 
-EE=dpxTblSplit(D,exp.stereoCue);
+EE=dpxTblSplit(EE,exp.stereoCue);
+
+if rebecca
+    geen stereo en antistereo splitten
+end
 
 
 i=1;
