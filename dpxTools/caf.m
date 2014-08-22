@@ -1,2 +1,4 @@
-ca
-cf
+function caf
+    ca;
+    cf;
+end

@@ -1,1 +1,1 @@
-clear all%disp 'All variables and classes cleared.'
+% shorthand for clear allclear all
