@@ -1,11 +1,13 @@
 function jdDpxRdkExp
-    
     E=dpxCoreExperiment;
-    E.windowed(true); % true, false, [0 0 410 310]+100
+    E.windowed(false); % true, false, [0 0 410 310]+100
     E.physScr.stereoMode='mono';
     for x=[-12 12]
         C=dpxCoreCondition;
-        C.addStim(dpxStimFix);
+        S=dpxStimDot;
+        S.wDeg=1;
+        S.hDeg=1;
+        C.addStim(S);
         C.addResp(dpxCoreResponse);
         C.durSec=2;
         S=dpxStimRdk;
@@ -13,7 +15,5 @@ function jdDpxRdkExp
         C.addStim(S);
         E.addCondition(C);
     end
-    E.run;
-    
-    
+    E.run; 
 end

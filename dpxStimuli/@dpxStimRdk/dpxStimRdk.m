@@ -40,7 +40,7 @@ classdef dpxStimRdk < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.physScrVals.deg2px; % degrees to pixels
+            D2P=S.physScrVals.deg2px; % xDeg * D2P = xPix
             F2I=S.physScrVals.whiteIdx; % fraction to index (for colors)
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
@@ -53,7 +53,7 @@ classdef dpxStimRdk < dpxBasicStim
             noiseDirs = rand(1,N) * 360;
             S.dotDirDeg(S.noiseDots) = noiseDirs(S.noiseDots);
             if S.cohereFrac<0, S.dotDirDeg = S.dotDirDeg + 180; end % negative coherence flips directions
-            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScr.limits.GL_ALIASED_POINT_SIZE_RANGE);
+            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScrVals.limits.GL_ALIASED_POINT_SIZE_RANGE);
             if wasoutofrange
                 S.dotDiamDeg=S.dotDiamPx/S.physScrVals.deg2px;
                 warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);

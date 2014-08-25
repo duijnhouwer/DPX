@@ -54,8 +54,12 @@ classdef (CaseInsensitiveProperties=true ...
             escPressed=false;
             stopTrialEarlyFlip=Inf;
             % Initialize the responses with the null response
-            for r=1:numel(C.resps)
-                respStruct.(C.resps{r}.name)=C.resps{r}.resp; 
+            if numel(C.resps)==0
+                respStruct=[];
+            else
+                for r=1:numel(C.resps)
+                    respStruct.(C.resps{r}.name)=C.resps{r}.resp;
+                end
             end
             vbl=Screen('Flip',winPtr);
             % loop over all video-flips (frames) of the trial
