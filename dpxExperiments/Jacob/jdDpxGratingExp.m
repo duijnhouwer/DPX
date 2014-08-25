@@ -1,7 +1,8 @@
 function jdDpxGratingExp
     E=dpxCoreExperiment;
-    E.windowed(false) ; % [0 0 810 610]+100); % true, false, [0 0 410 310]+100
-    E.physScr.stereoMode='mono';
+    E.windowed(true) ; % [0 0 810 610]+100); % true, false, [0 0 410 310]+100
+    E.txtStart='Press and release a key to start\nthen start the LasAF pattern';
+    E.txtPauseNrTrials=0;
     %
     % settings
     %

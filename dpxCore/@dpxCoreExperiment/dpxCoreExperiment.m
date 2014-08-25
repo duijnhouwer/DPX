@@ -33,10 +33,10 @@ classdef (CaseInsensitiveProperties=true ...
             E.nRepeats=2;
             E.expName='dpxCoreExperiment';
             E.subjectId='0';
-            E.txtStart='Press and release a key to start';
+            E.txtStart='Press and release a key to start'; % if 'DAQ-startpulse'', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtPause='I N T E R M I S S I O N';
             E.txtPauseNrTrials=100;
-            E.txtEnd='[-: The End :-]';
+            E.txtEnd='[-: The End :-]'; % if 'DAQ-stoppulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
             E.outputFolder='';
         end
@@ -54,7 +54,7 @@ classdef (CaseInsensitiveProperties=true ...
                 condList=randperm(numel(E.conditions));
                 for c=1:numel(condList)
                     tr=tr+1;
-                    if mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
+                    if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList) 
                         E.showSaveScreen;
                         E.save;
                         E.showPauseScreen;
@@ -137,8 +137,15 @@ classdef (CaseInsensitiveProperties=true ...
             disp(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)
-            str=[E.txtStart];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+            if strcmpi(E.txtStart,'DAQ-startpulse')
+                % magic value for E.txtStart, wait for pulse on DAQ device
+                str=['Waiting for ' E.txtEnd ];
+                dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',Inf);
+                E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
+            else
+                dpxDisplayText(E.physScr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+            end
         end
         function showSaveScreen(E)
             str=[E.txtPause '\n\nSaving data ...'];
@@ -149,6 +156,14 @@ classdef (CaseInsensitiveProperties=true ...
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',-1);
         end
         function showFinalSaveScreen(E)
+            if strcmpi(E.txtEnd,'DAQ-stoppulse')
+                % magic value for E.txtStart, wait for pulse on DAQ device
+                maxWaitSec=60;
+                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds'];
+                dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
+                E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
+            end
             str=[E.txtEnd '\n\nSaving data ...\n\n'];
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
