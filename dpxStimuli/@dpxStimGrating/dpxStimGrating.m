@@ -7,7 +7,8 @@ classdef dpxStimGrating < dpxBasicStim
         squareWave; % logical
         maskStr; % 'none', 'gaussian', 'circle'
         maskPars; % see myInit for how this is used, depends on maskStr value
-        contrastFrac; % fraction of max screen contrast [maxBlack..maxWhite]      
+        contrastFrac; % fraction of max screen contrast [maxBlack..maxWhite] 
+        grayFrac; % point between maxBlack and maxWhite
     end
     properties (Access=protected)
         visibleSizePx;
@@ -27,7 +28,8 @@ classdef dpxStimGrating < dpxBasicStim
             S.squareWave=true;
             S.maskStr='circle';
             S.maskPars=1;
-            S.contrastFrac=1; % [0 .. 1]
+            S.grayFrac=.5;
+            S.contrastFrac=1;
             S.wDeg=10;
             S.hDeg=10;
         end
@@ -43,23 +45,24 @@ classdef dpxStimGrating < dpxBasicStim
             spacePx=meshgrid(-texHalfLenPx:texHalfLenPx + S.pxPerCycle, 1);
             white=S.physScrVals.whiteIdx;
             black=S.physScrVals.blackIdx;
-            gray=round((white+black)/2);
-            grating=gray + S.contrastFrac*(white-gray)*cosd(S.cyclesPerPx*spacePx*360);
+            midgray=round((white+black)*S.grayFrac);
+            maxAmplitude=min(white-midgray,abs(midgray-black));
+            grating=midgray + S.contrastFrac*maxAmplitude*cosd(S.cyclesPerPx*spacePx*360);
             if S.squareWave
-                grating(grating>=gray)=gray+S.contrastFrac*(white-gray);
-                grating(grating<gray)=gray-S.contrastFrac*(white-gray);
+                grating(grating>=midgray)=midgray+S.contrastFrac*maxAmplitude;
+                grating(grating<midgray)=midgray-S.contrastFrac*maxAmplitude;
             end
             S.gratingTexture=Screen('MakeTexture', S.physScrVals.windowPtr, grating);
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
             if strcmpi(S.maskStr,'gaussian')
-                mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * gray;
+                mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * midgray;
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 sigmaPx=S.maskPars*D2P;
                 mask(:, :, 2)=white * (1 - exp(-((x/sigmaPx).^2)-((y/sigmaPx).^2)));
                 S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask);
             elseif strcmpi(S.maskStr,'circle')
-                mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * gray;
+                mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * midgray;
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 rampPx=S.maskPars*D2P;
                 mask(:,:,2)=white*(1-dpxClip((hypot(x,y)-texHalfLenPx)*-1./rampPx,[0 1]));
@@ -88,6 +91,15 @@ classdef dpxStimGrating < dpxBasicStim
         end
         function myStep(S)
         end
+    end
+    methods
+       % function set.grayFrac(S,value)
+       %     if isempty(value)
+       %     if ~isnumeric(value) || ~isempty(value) && (value<0 || value>1)
+       %         error('grayFrac should be a fraction');
+       %     end
+       %     E.grayFrac=value;
+       % end
     end
 end
 

@@ -158,9 +158,10 @@ classdef (CaseInsensitiveProperties=true ...
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
-                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds'];
+                maxWaitSec=120;
+                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds)'];
                 dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
-                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',60);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
                 E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
             end
             str=[E.txtEnd '\n\nSaving data ...\n\n'];

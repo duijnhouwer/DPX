@@ -88,7 +88,7 @@ end
 
 
 function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
-    try
+    %try
         if nargin<4 || isempty(opacityFrac)
             opacityFrac=1;
         end
@@ -110,7 +110,7 @@ function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
             DrawFormattedText(windowPtr, str, 'center','center', RGBAfore, [], [], [], vLineSpacing, [], winRect);
         end
         Screen('Flip',windowPtr);
-    catch me
-        error(me.message);
-    end
+    %catch me
+    %    error(me.message);
+    %end
 end
