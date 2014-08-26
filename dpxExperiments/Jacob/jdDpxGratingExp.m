@@ -1,22 +1,23 @@
 function jdDpxGratingExp
     E=dpxCoreExperiment;
-    E.windowed(true) ; % [0 0 810 610]+100); % true, false, [0 0 410 310]+100
-    E.txtStart='Press and release a key to start\nthen start the LasAF pattern';
+    E.expName='squarewaves';
+    E.windowed(true) ; % [0 0 810 610]+100); % true, false
+    E.txtStart='AAA DAQ-pulse';
+    E.txtEnd='AAA DAQ-pulse';
     E.txtPauseNrTrials=0;
     %
-    % settings
+    % Settings
     %
     dirDegs=0:45:315;
     contrastFracs=1;
     cyclesPerDeg=.05;
     cyclesPerSecond=1;
-    E.nRepeats=5;
-    stimSec=4;
-    isiSec=4;
+    E.nRepeats=2;
+    stimSec=1;
+    isiSec=1;
     %
-    nrTrials=numel(dirDegs) * numel(contrastFracs) * numel(cyclesPerDeg) * numel(cyclesPerSecond) * E.nRepeats
-    disp(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec+5))) ' s recording pattern in LasAF.']);
-    input('<< Press a key when done >>');
+    nrTrials=numel(dirDegs) * numel(contrastFracs) * numel(cyclesPerDeg) * numel(cyclesPerSecond) * E.nRepeats;
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec+5))) ' s recording pattern in LasAF.']);
     for direc=dirDegs(:)'
         for cont=contrastFracs(:)'
             for sf=cyclesPerDeg(:)'
