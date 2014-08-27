@@ -52,7 +52,7 @@ classdef dpxStimGrating < dpxBasicStim
                 grating(grating>=midgray)=midgray+S.contrastFrac*maxAmplitude;
                 grating(grating<midgray)=midgray-S.contrastFrac*maxAmplitude;
             end
-            S.gratingTexture=Screen('MakeTexture', S.physScrVals.windowPtr, grating);
+            S.gratingTexture=Screen('MakeTexture', S.physScrVals.windowPtr, grating, -S.dirDeg);
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
             if strcmpi(S.maskStr,'gaussian')
@@ -60,13 +60,13 @@ classdef dpxStimGrating < dpxBasicStim
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 sigmaPx=S.maskPars*D2P;
                 mask(:, :, 2)=white * (1 - exp(-((x/sigmaPx).^2)-((y/sigmaPx).^2)));
-                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask);
+                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask, -S.dirDeg);
             elseif strcmpi(S.maskStr,'circle')
                 mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * midgray;
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 rampPx=S.maskPars*D2P;
                 mask(:,:,2)=white*(1-dpxClip((hypot(x,y)-texHalfLenPx)*-1./rampPx,[0 1]));
-                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask);
+                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask, -S.dirDeg);
             elseif strcmpi(S.maskStr,'none')
                 S.maskTexture=[];
             else

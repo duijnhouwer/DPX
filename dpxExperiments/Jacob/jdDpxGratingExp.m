@@ -12,8 +12,8 @@ function jdDpxGratingExp
     E.physScr.gamma=0.69;
     E.physScr.backRGBA=[.25 .25 .25 1];
     E.windowed(false) ; % [0 0 810 610]+100); % true, false
-    E.txtStart='askjd DAQ-pulse';
-    E.txtEnd='asdn DAQ-pulse';
+    E.txtStart='asd DAQ-pulse';
+    E.txtEnd='asd DAQ-pulse';
     E.txtPauseNrTrials=0;
     %
     % Settings
@@ -27,7 +27,7 @@ function jdDpxGratingExp
     isiSec=.5;
     %
     nrTrials=numel(dirDegs) * numel(contrastFracs) * numel(cyclesPerDeg) * numel(cyclesPerSecond) * E.nRepeats;
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+5)) ' s recording pattern in LasAF. (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' seconds.)']);
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+5)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s.)']);
     %
     for direc=dirDegs(:)'
         for cont=contrastFracs(:)'

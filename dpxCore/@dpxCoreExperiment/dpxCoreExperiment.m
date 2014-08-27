@@ -139,7 +139,8 @@ classdef (CaseInsensitiveProperties=true ...
         function showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
-                str=['Waiting for ' E.txtEnd ];
+                str=['Waiting for ' E.txtEnd ' ... '];
+                dpxDispFancy(str);
                 dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
@@ -159,7 +160,8 @@ classdef (CaseInsensitiveProperties=true ...
             if strcmpi(E.txtEnd,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
                 maxWaitSec=120;
-                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds)'];
+                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds) ... '];
+                dpxDispFancy(str);
                 dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
                 E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
