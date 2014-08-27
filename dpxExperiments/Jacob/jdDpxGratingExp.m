@@ -18,13 +18,13 @@ function jdDpxGratingExp
     %
     % Settings
     %
-    dirDegs=0:90:315;
+    dirDegs=[0 180];
     contrastFracs=[.25 .5 1];
     cyclesPerDeg=[.05 .1 .2];
     cyclesPerSecond=[.5 1 2];
     E.nRepeats=2;
-    stimSec=2;
-    isiSec=.5;
+    stimSec=4;
+    isiSec=4;
     %
     nrTrials=numel(dirDegs) * numel(contrastFracs) * numel(cyclesPerDeg) * numel(cyclesPerSecond) * E.nRepeats;
     dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+5)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s.)']);
@@ -35,6 +35,9 @@ function jdDpxGratingExp
                 for tf=cyclesPerSecond(:)'
                     C=dpxCoreCondition;
                     C.durSec=stimSec+isiSec;
+                    if direc==0
+                        C.overrideBackRGBA=[1 0 0 1];
+                    end
                     %
                     S=dpxStimGrating;
                     %
@@ -47,7 +50,7 @@ function jdDpxGratingExp
                     S.squareWave=true;
                     S.maskStr='circle';
                     S.maskPars=2;
-                    S.onSec=isiSec;
+                    S.onSec=isiSec/2;
                     S.durSec=stimSec;
                     %
                     C.addStim(S);

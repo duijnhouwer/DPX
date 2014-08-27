@@ -1,6 +1,6 @@
 function escPressed=dpxDisplayText(windowPtr,text,varargin)
     % escPressed=dpxDisplayText(windowPtr,text,varargin)
-    % 
+    %
     % EXAMPLES:
     %
     % Display 'Press a key' that fades in 1 s and that fades out and
@@ -11,7 +11,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     % clearing the screen (text stays visible)
     % dpxDisplayText(windowPtr,'Saving...',,'fadeInSec',.5,'forceAfterSec',0,'fadeOutSec',-1);
     %
-
+    
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('windowPtr',@(x)isnumeric(x));
     p.addRequired('str',@(x)ischar(x));
@@ -33,6 +33,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     fadeText(windowPtr,p.Results,'fadein');
     % wait for input ...
     KbName('UnifyKeyNames');
+    FlushEvents('keyDown');
     keyIsDown=false;
     while ~keyIsDown
         if GetSecs-startSec>p.Results.forceAfterSec
@@ -43,8 +44,9 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
         end
     end
     escPressed=keyCode(KbName('Escape'));
-    if ~escPressed
+    if escPressed
         % Dont fade out if escape is pressed, hurry up instead
+    else
         escPressed=fadeText(windowPtr,p.Results,'fadeout');
         KbReleaseWait; % wait for key to be released
     end
@@ -88,29 +90,25 @@ end
 
 
 function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
-    %try
-        if nargin<4 || isempty(opacityFrac)
-            opacityFrac=1;
-        end
-        if nargin<5 || isempty(dxdy)
-            dxdy=[0 0];
-        end
-        RGBAfore=RGBAfore*WhiteIndex(windowPtr);
-        RGBAback=RGBAback*WhiteIndex(windowPtr);
-        RGBAfore(4)=RGBAfore(4)*opacityFrac;
-        for eye=[0 1]
-            % works also in mono mode
-            Screen('SelectStereoDrawBuffer', windowPtr, eye);
-            Screen('FillRect',windowPtr,RGBAback);
-            [w,h]=Screen('WindowSize',windowPtr);
-            dx=dxdy(1);
-            dy=dxdy(2);
-            winRect=[max(0,dx) max(0,dy) min(w,w-dx) min(h,h-dy)];
-            vLineSpacing=1.75;
-            DrawFormattedText(windowPtr, str, 'center','center', RGBAfore, [], [], [], vLineSpacing, [], winRect);
-        end
-        Screen('Flip',windowPtr);
-    %catch me
-    %    error(me.message);
-    %end
+    if nargin<4 || isempty(opacityFrac)
+        opacityFrac=1;
+    end
+    if nargin<5 || isempty(dxdy)
+        dxdy=[0 0];
+    end
+    RGBAfore=RGBAfore*WhiteIndex(windowPtr);
+    RGBAback=RGBAback*WhiteIndex(windowPtr);
+    RGBAfore(4)=RGBAfore(4)*opacityFrac;
+    for eye=[0 1]
+        % works also in mono mode
+        Screen('SelectStereoDrawBuffer', windowPtr, eye);
+        Screen('FillRect',windowPtr,RGBAback);
+        [w,h]=Screen('WindowSize',windowPtr);
+        dx=dxdy(1);
+        dy=dxdy(2);
+        winRect=[max(0,dx) max(0,dy) min(w,w-dx) min(h,h-dy)];
+        vLineSpacing=1.75;
+        DrawFormattedText(windowPtr, str, 'center','center', RGBAfore, [], [], [], vLineSpacing, [], winRect);
+    end
+    Screen('Flip',windowPtr);
 end

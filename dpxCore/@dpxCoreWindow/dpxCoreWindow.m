@@ -1,4 +1,4 @@
-classdef (CaseInsensitiveProperties=true ...
+classdef (CaseInsensitiveProperties=false ...
         ,Description='a' ...
         ,DetailedDescription='ab') ...
         dpxCoreWindow < hgsetget
@@ -56,13 +56,13 @@ classdef (CaseInsensitiveProperties=true ...
             priorityLevel=MaxPriority(W.windowPtr);
             Priority(priorityLevel);
         end
-        %function clear(W)
-        %    % clear the window to background color, unless the background
-        %    % color is completely translucent (alpha==0)
-        %    if ~isempty(W.windowPtr) && W.backRGBA(4)>0
-        %        Screen('FillRect',W.windowPtr,W.backRGBA*W.whiteIdx);
-        %    end
-        %end
+        function clear(W)
+            % clear the window to background color, unless the background
+            % color is completely translucent (alpha==0)
+            if ~isempty(W.windowPtr) && W.backRGBA(4)>0
+                Screen('FillRect',W.windowPtr,W.backRGBA*W.whiteIdx);
+            end
+        end
         function close(W)
             warning on %#ok<WNON>
             ShowCursor;

@@ -1,4 +1,4 @@
-classdef (CaseInsensitiveProperties=true ...
+classdef (CaseInsensitiveProperties=false ...
         ,Description='a' ...
         ,DetailedDescription='ab') ...
         dpxCoreCondition < hgsetget
@@ -8,7 +8,12 @@ classdef (CaseInsensitiveProperties=true ...
         % The duration of this condition (unless prematurely ended by
         % a response, see below)
         durSec=2;
-        overrideBackRGBA=false; %
+        % Leave this 'false' to use the backRGBA defined in the
+        % dpxCoreWindow class, or set it to a 4-element RGBA vector. The
+        % advantage of this design is that the RGBA for the background
+        % doesn't have to be defined for each condition as most of the time
+        % the background will be the same for all conditions
+        overrideBackRGBA=false; 
     end
     properties (SetAccess=protected,GetAccess=public)
         % Cell array of stimulus objects (e.g. dpxStimFix) to be added using addStim

@@ -1,4 +1,4 @@
-classdef (CaseInsensitiveProperties=true ...
+classdef (CaseInsensitiveProperties=false ...
         ,Description='a' ...
         ,DetailedDescription='ab') ...
         dpxCoreExperiment < hgsetget
@@ -49,27 +49,57 @@ classdef (CaseInsensitiveProperties=true ...
             E.signalFile('save');
             E.physScr.open;
             E.showStartScreen;
+            % Set the trial counter to zero
             tr=0;
+            % Loop over the blocks
             for r=1:E.nRepeats
+                % make a random list of conditions for this block
                 condList=randperm(numel(E.conditions));
-                for c=1:numel(condList)
+                % loop over the list
+                for cNr=condList(:)'
+                    % increment the trial counter
                     tr=tr+1;
+                    % Show the pause screen if appropriate (and make a
+                    % intermediate backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList) 
                         E.showSaveScreen;
                         E.save;
-                        E.showPauseScreen;
+                        E.showPauseScreen; 
                     end
-                    condNr=condList(c);
+                    % Initialize this condition, this needs information
+                    % about the screen. We pass it the values using get,
+                    % not the object itself.
+                    E.conditions{cNr}.init(get(E.physScr));
+                    % Background RGBA can be be defined in one place, by
+                    % settings the backRGBA property of the window class.
+                    % However it is possible to override these values in
+                    % any or all conditions, if different background colors
+                    % or shades are required. Override the window objects
+                    % backRGBA if an RGBA value has been defined in this
+                    % condition.
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        defaultBackRGBA=E.physScr.backRGBA;
+                        E.physScr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                    end
                     E.physScr.clear;
-                    E.conditions{condNr}.init(get(E.physScr));
-                    [esc,timing,resp]=E.conditions{condNr}.show;
+                    % Show this condition until its duration has passed, or
+                    % until escape is pressed
+                    [esc,timing,resp]=E.conditions{cNr}.show;
                     if esc
                         break;
                     end
-                    E.trials(tr).condition=condNr;
+                    % Store the condition number, the start and stop time,
+                    % and the response output (which may be empty if no
+                    % response is required).
+                    E.trials(tr).condition=cNr;
                     E.trials(tr).startSec=timing.startSec;
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
+                    % Reset the window object's backRGBA to its default, if
+                    % an RGBA has been defined in this condition 
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.physScr.backRGBA=defaultBackRGBA;
+                    end
                 end
                 if esc
                     fprintf('\nEscape pressed during show\n');
