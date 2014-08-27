@@ -1,13 +1,14 @@
 classdef (CaseInsensitiveProperties=true ...
         ,Description='a' ...
         ,DetailedDescription='ab') ...
-    dpxCoreCondition < hgsetget
+        dpxCoreCondition < hgsetget
     
-
+    
     properties (Access=public)
         % The duration of this condition (unless prematurely ended by
         % a response, see below)
         durSec=2;
+        overrideBackRGBA=false; %
     end
     properties (SetAccess=protected,GetAccess=public)
         % Cell array of stimulus objects (e.g. dpxStimFix) to be added using addStim
@@ -18,7 +19,7 @@ classdef (CaseInsensitiveProperties=true ...
     properties (Access=protected)
         % The duration of the trial in flips, calculated in init
         nFlips;
-        % Structure that will hold copies of the getable values in physScr 
+        % Structure that will hold copies of the getable values in physScr
         physScrVals=struct;
     end
     methods (Access=public)
@@ -67,7 +68,7 @@ classdef (CaseInsensitiveProperties=true ...
                 if mod(f,5)==0
                     escPressed=dpxGetEscapeKey;
                     if escPressed
-                       break; 
+                        break;
                     end
                 end
                 % Step the stimuli (e.g., move the random dots)
@@ -142,7 +143,7 @@ classdef (CaseInsensitiveProperties=true ...
             % Store all values of the public (interface) variables of the stimulus so
             % the condition can be reset during init before a repeat of the same
             % conditon is shown;
-            S.lockInitialPublicState;            
+            S.lockInitialPublicState;
             C.stims{end+1}=S;
             % Check that the name is not 'none', this is reserved name (see
             % dpxCoreResponse)
@@ -190,6 +191,16 @@ classdef (CaseInsensitiveProperties=true ...
                 end
             end
             error(['No stimulus named ''' name ''' exists.']);
+        end
+    end
+    methods
+        function set.overrideBackRGBA(C,value)
+            ok=(islogical(value) && value==false) || (isnumeric(value) && numel(value)==4 && all(value<=1) && all(value>=0));
+            if ~ok
+                error('overrideBackRGBA needs to be false or a 4-element vector of numerical values between 0 and 1');
+            else
+                C.overrideBackRGBA=value;
+            end
         end
     end
 end
