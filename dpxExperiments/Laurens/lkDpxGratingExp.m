@@ -35,9 +35,6 @@ function lkDpxGratingExp
                 for tf=cyclesPerSecond(:)'
                     C=dpxCoreCondition;
                     C.durSec=stimSec+isiSec;
-                    if direc==0
-                        C.overrideBackRGBA=[1 0 0 1];
-                    end
                     %
                     S=dpxStimGrating;
                     %
