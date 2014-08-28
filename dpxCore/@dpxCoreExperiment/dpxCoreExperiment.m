@@ -249,9 +249,7 @@ classdef (CaseInsensitiveProperties=false ...
     end
     methods
         function set.outputFolder(E,value)
-            if ~ischar(value)
-                error('outputFolder should be a string');
-            end
+            error(dpxTestFolderNameValidity);
             E.outputFolder=value;
         end
     end
