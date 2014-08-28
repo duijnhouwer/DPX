@@ -249,7 +249,7 @@ classdef (CaseInsensitiveProperties=false ...
     end
     methods
         function set.outputFolder(E,value)
-            error(dpxTestFolderNameValidity);
+            error(dpxTestFolderNameValidity(value));
             E.outputFolder=value;
         end
     end
