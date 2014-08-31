@@ -44,6 +44,10 @@ classdef (CaseInsensitiveProperties=false ...
             % This is the last function to call in your experiment script,
             % it starts the experiment and saves it when finished. 
             E.startTime=now;
+            % Load GetSecs' MEX into memory by calling it once so the first
+            % real call will be more accurate.
+            GetSecs;
+            %
             E.sysInfo=dpxSystemInfo;
             E.createFileName;
             E.signalFile('save');
@@ -172,7 +176,7 @@ classdef (CaseInsensitiveProperties=false ...
                 str=['Waiting for ' E.txtEnd ' ... '];
                 dpxDispFancy(str);
                 dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
-                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',Inf);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
             else
                 dpxDisplayText(E.physScr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);

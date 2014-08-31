@@ -15,7 +15,7 @@ function fullnames=dpxUIgetfiles(varargin)
     global OPTIONS;
     p = inputParser;   % Create an instance of the inputParser class.
     p.addParamValue('filterspec','*.*',@ischar);
-    p.addParamValue('dialogtitle','Selected files',@ischar);
+    p.addParamValue('dialogtitle','Select files',@ischar);
     p.addParamValue('dir',dpxGetLastDirStr,@ischar);
     p.addParamValue('reload',false,@(x)islogical(x) || x==1 || x==0); % previous selection as default
     p.addParamValue('multifolder',true,@(x)islogical(x) || x==1 || x==0); % interactively and iteratively select from multiple folders
