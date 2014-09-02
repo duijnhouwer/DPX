@@ -18,7 +18,7 @@ function lkDpxGratingExp
     %
     % Settings
     %
-    dirDegs=[0 180];
+    dirDegs=[0:45:315];
     contrastFracs=[.25 .5 1];
     cyclesPerDeg=[.05 .1 .2];
     cyclesPerSecond=[.5 1 2];
