@@ -51,7 +51,7 @@ classdef (CaseInsensitiveProperties=false ...
                 C.resps{r}.init(physScrVals);
             end
         end
-        function [escPressed,timingStruct,respStruct]=show(C)
+        function [escPressed,timingStruct,respStruct,nrMissedFlips]=show(C)
             if isempty(C.physScrVals)
                 error('dpxCoreCondition has not been initialized');
             end
@@ -68,6 +68,7 @@ classdef (CaseInsensitiveProperties=false ...
             end
             vbl=Screen('Flip',winPtr);
             % loop over all video-flips (frames) of the trial
+            nrMissedFlips=0;
             for f=1:C.nFlips
                 % Check the esc key (only every Nth flip to save overhead)
                 if mod(f,5)==0
@@ -86,7 +87,10 @@ classdef (CaseInsensitiveProperties=false ...
                     C.stims{s}.draw;
                 end
                 % Wait until it's time, then flip the video buffer
-                vbl=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
+                if dDeadlineSecs>0
+                    nrMissedFlips=nrMissedFlips+1; % Screen flip? "... The automatic detection of deadline-miss is not fool-proof ..."
+                end
                 % Collect start or stop time of the trial in seconds, right
                 % after the flip for accuracy.
                 if f==1
