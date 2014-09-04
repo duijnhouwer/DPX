@@ -36,7 +36,10 @@ classdef (CaseInsensitiveProperties=false ...
     end
     methods (Access=public)
         function W=dpxCoreWindow
-            % constructor
+            % dpxCoreWindow
+            % Part of DPX suite
+            % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
+            % Jacob Duijnhouwer, 2014
             AssertOpenGL;
             W=initValues(W);
         end
@@ -54,7 +57,18 @@ classdef (CaseInsensitiveProperties=false ...
             W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
             % Bump the priority of the matlab process
             priorityLevel=MaxPriority(W.windowPtr);
-            Priority(priorityLevel);
+            oldpriority=Priority(priorityLevel);
+            % see if bumping the priority worked
+            freshpriority=Priority(priorityLevel);
+            if priorityLevel~=freshpriority
+                if IsLinux
+                    warning('To enable use of Priority(), you must run the script PsychLinuxConfiguration at least once and follow its instructions.');
+                    ans=input('Do you wish to run ''''PsychLinuxConfiguration'''' now? ([N]/y) ','s');
+                    if strcmpi(strtrim(ans),'y')
+                        PsychLinuxConfiguration;
+                    end
+                end
+            end
         end
         function clear(W)
             % clear the window to background color, unless the background

@@ -30,6 +30,10 @@ classdef (CaseInsensitiveProperties=false ...
     end
     methods (Access=public)
         function E=dpxCoreExperiment
+            % dpxCoreExperiment
+            % Part of DPX suite
+            % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
+            % Jacob Duijnhouwer, 2014
             E.physScr=dpxCoreWindow;
             E.conditions={};
             E.nRepeats=2;

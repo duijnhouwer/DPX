@@ -88,8 +88,12 @@ classdef (CaseInsensitiveProperties=false ...
                 end
                 % Wait until it's time, then flip the video buffer
                 [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
+                % If this flip missed the deadline, increase the
+                % nrMissedFlips counter. Note that the Screen flip?
+                % documentation states that "... The automatic detection of
+                % deadline-miss is not fool-proof ..."
                 if dDeadlineSecs>0
-                    nrMissedFlips=nrMissedFlips+1; % Screen flip? "... The automatic detection of deadline-miss is not fool-proof ..."
+                    nrMissedFlips=nrMissedFlips+1; 
                 end
                 % Collect start or stop time of the trial in seconds, right
                 % after the flip for accuracy.

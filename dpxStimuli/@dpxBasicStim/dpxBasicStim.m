@@ -39,9 +39,9 @@ classdef (CaseInsensitiveProperties=true ...
             % stimulus in initialPublicState. Before a repeat of the
             % condition is presented, this struct is used to restore this
             % stimulus to it's starting state. So when, for example, the
-            % field vibisle was toggled during one trail, is will be set to
-            % the intended start state at the beginning of the next trial
-            % of that conditon (repeat).
+            % field visibility was toggled during one trail, is will be set
+            % to the intended start state at the beginning of the next
+            % trial of that conditon (repeat).
             if ~isempty(S.initialPublicState)
                 error('lockInitialPublicState should be called only once on a stimulus, during addStim');
             end

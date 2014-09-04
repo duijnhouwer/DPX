@@ -27,12 +27,15 @@ function revisionNr=dpxVersion(varargin)
     fp=mfilename('fullpath');
     oldwd=pwd;
     DPXPATH=fp(1:strfind(fp,'dpxCore')-1);
-
+    
     try
         cd(DPXPATH);
         str=evalc('!svn info');
         cd(oldwd);
         revisionNr=extractNumber(str);
+        if isnan(revisionNr)
+            warning(str);
+        end
     catch me
         warning(me.message);
     end
@@ -63,11 +66,19 @@ function revisionNr=dpxVersion(varargin)
     catch me
         warning(me.message);
     end
-    
 end
+
 
 function num=extractNumber(str)
     match=regexp(str,'[\n\r]Revision:[ \w]*([^\n\r]*)','match');
-    match=regexp(match,' ','split');
-    num=str2double(match{1}{2});
+    if isempty(match)
+        num=nan;
+    else
+        match=regexp(match,' ','split');
+        if isempty(match)
+            num=nan;
+        else
+            num=str2double(match{1}{2});
+        end
+    end
 end
