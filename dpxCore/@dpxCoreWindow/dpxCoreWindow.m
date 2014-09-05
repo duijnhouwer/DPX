@@ -1,7 +1,4 @@
-classdef (CaseInsensitiveProperties=false ...
-        ,Description='a' ...
-        ,DetailedDescription='ab') ...
-        dpxCoreWindow < hgsetget
+classdef dpxCoreWindow < hgsetget
     
     properties (Access=public)
         winRectPx=[10 10 400 300];
@@ -55,16 +52,21 @@ classdef (CaseInsensitiveProperties=false ...
             % after the window has been opened using Screen('OpenWindow')
             InitializeMatlabOpenGL(1); % this loads OpenGL constant labels as GL_XXX GLU_XXX etc.
             W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
+            % Load GetSecs' MEX into memory by calling it once so the first real call will be more accurate.
+            GetSecs;
+            WaitSecs(0);
             % Bump the priority of the matlab process
-            priorityLevel=MaxPriority(W.windowPtr);
-            oldpriority=Priority(priorityLevel);
-            % see if bumping the priority worked
-            freshpriority=Priority(priorityLevel);
-            if priorityLevel~=freshpriority
+            maxPri=MaxPriority(W.windowPtr); % max priority value for this system
+            oldPri=Priority(maxPri); %#ok<NASGU>
+            % see if bumping the priority worked, if it did work, the
+            % reported oldPriority that Priority returns, the value it had
+            % before it changed it, should now be the MaxPriority...
+            oldPri=Priority(maxPri);
+            if oldPri~=maxPri
                 if IsLinux
                     warning('To enable use of Priority(), you must run the script PsychLinuxConfiguration at least once and follow its instructions.');
-                    ans=input('Do you wish to run ''''PsychLinuxConfiguration'''' now? ([N]/y) ','s');
-                    if strcmpi(strtrim(ans),'y')
+                    answer=input('Do you wish to run ''''PsychLinuxConfiguration'''' now? ([N]/y) ','s');
+                    if strcmpi(strtrim(answer),'y')
                         PsychLinuxConfiguration;
                     end
                 end

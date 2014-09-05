@@ -215,5 +215,21 @@ classdef (CaseInsensitiveProperties=false ...
                 C.overrideBackRGBA=value;
             end
         end
+        function set.durSec(C,value)
+            if ~isnumeric(value)
+                error('Condition duration (durSec) has to be a numeric value');
+            elseif value<=0
+                error('Condition duration (durSec) has to be longer than zero');
+            elseif value>3600*24*7
+                % user probably defined the duration to be infinite (Inf)
+                % and uses the response to quit the trials. The for-loop in
+                % show does not take end-values larger than intmax without
+                % complaining with a warning. Therefore, silently truncate
+                % the value here to a week in seconds, likely enough for
+                % any experiment.
+                value=3600*24*7;
+            end
+            C.durSec=value;
+        end
     end
 end

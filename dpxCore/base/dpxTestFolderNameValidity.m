@@ -6,7 +6,7 @@ function errstr = dpxTestFolderNameValidity(foldername)
     %   error(dpxTestFolderNameValidity(foldername)); % error([]) is ignored
     
     errstr=[];
-    if ~ischar(foldername)
+    if ~ischar(foldername) || isempty(foldername)
         errstr='foldername should be a string (char)';
     elseif exist(foldername,'file')~=7
         try

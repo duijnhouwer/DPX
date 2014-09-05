@@ -10,7 +10,7 @@ function lkDpxGratingAdaptExp
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
     E.physScr.gamma=0.69;
     E.physScr.backRGBA=[.25 .25 .25 1];
-    E.windowed(true) ; % [0 0 810 610]+100); % true, false
+    E.windowed(false) ; % [0 0 810 610]+100); % true, false
     E.txtStart='asd DAQ-pulse';
     E.txtEnd='asd DAQ-pulse';
     E.txtPauseNrTrials=0;

@@ -48,15 +48,15 @@ classdef (CaseInsensitiveProperties=false ...
             E.outputFolder='';
         end
         function run(E)
+            try
             % This is the last function to call in your experiment script,
-            % it starts the experiment and saves it when finished. 
+            % it starts the experiment and saves it when finished.
             E.startTime=now;
             E.unifyConditions;
             E.createConditionSequence;
-            GetSecs; % Load GetSecs' MEX into memory by calling it once so the first real call will be more accurate.
-            E.physScr.open;
             E.sysInfo=dpxSystemInfo;
-            E.createFileName;
+            E.createFileName; % this function also asks for subject and experimenter IDs
+            E.physScr.open;
             E.signalFile('save');
             E.showStartScreen;
             % Set the trial counter to zero
@@ -112,6 +112,10 @@ classdef (CaseInsensitiveProperties=false ...
             E.signalFile('delete');
             E.showEndScreen;
             E.physScr.close;
+            catch me
+                sca; % screen reset
+                error(me.message);
+            end
         end
         function addCondition(E,C)
             E.conditions{end+1}=C;
@@ -204,12 +208,6 @@ classdef (CaseInsensitiveProperties=false ...
             dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
         end
         function createFileName(E)
-            if isempty(E.outputFolder)
-                if ispc, E.outputFolder='C:\temp\dpxData';
-                elseif IsOSX || isunix, E.outputFolder='/tmp/dpxData';
-                else error('Unsupported OS!');
-                end
-            end
             if ~exist(E.outputFolder,'file')
                 try mkdir(E.outputFolder);
                 catch me, error([me.message ' mkdir ' E.outputFolder]);
@@ -314,6 +312,12 @@ classdef (CaseInsensitiveProperties=false ...
     end
     methods
         function set.outputFolder(E,value)
+            if isempty(value)
+                if IsWin, value='C:\temp\dpxData';
+                elseif IsOSX || IsLinux, value='/tmp/dpxData';
+                else error('Unsupported OS!');
+                end
+            end
             error(dpxTestFolderNameValidity(value));
             E.outputFolder=value;
         end

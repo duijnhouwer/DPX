@@ -1,8 +1,4 @@
-classdef (CaseInsensitiveProperties=true ...
-        ,Description='a' ...
-        ,DetailedDescription='ab' ...
-        ,Abstract) ...
-        dpxBasicStim < hgsetget
+classdef (Abstract) dpxBasicStim < hgsetget
     
     properties (Access=public)
         visible=true;
@@ -32,6 +28,15 @@ classdef (CaseInsensitiveProperties=true ...
     end
     methods (Access=public)
         function S=dpxBasicStim
+            % dpxBasicStim - Abstract class for dpxStim classes.
+            %
+            % Abstract means no objects can be created from this class, it
+            % only serves to be inherited. The names of all derived classes
+            % should be of the format dpxStimXXXXX.
+            %
+            % See also: dpxBasicResp, dpxStimRDK
+            %
+            % Jacob Duijnhouwer, 20140905
         end
         function lockInitialPublicState(S)
             % addStim of the condition class will call this function to
