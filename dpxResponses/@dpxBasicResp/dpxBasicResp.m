@@ -1,7 +1,4 @@
-classdef (CaseInsensitiveProperties=false ...
-        ,Description='a' ...
-        ,DetailedDescription='ab') ...
-        dpxCoreResponse < hgsetget
+classdef dpxBasicResp < hgsetget
     
     properties (Access=public)
         % The names of the stimuli that will be displayed as positive or
@@ -44,7 +41,23 @@ classdef (CaseInsensitiveProperties=false ...
         correctKbNamesCell={};
     end
     methods (Access=public)
-        function R=dpxCoreResponsee
+        function R=dpxBasicResp
+            % dpxBasicResp - Abstract class for dpxResp classes.
+            %
+            % Classes for registering participant-responses, e.g.
+            % dpxRespKeyboard, inherit basic properties and methods from
+            % this abstract class. Abstract means no objects can be created
+            % from this class, it only serves to be inherited. The names of
+            % all derived classes should be of the format dpxRespXXXXX.
+            %
+            % Until 20140905 only a keyboard response functionality was
+            % present in the form of class 'dpxCoreResponse'. That class
+            % has since been split into this abstract class and the derived
+            % class dpxRespKeyboard.
+            %
+            % See also: dpxBasicStim, dpxRespKeyboard
+            %
+            % Jacob Duijnhouwer, 20140905
         end
         function init(R,physScrVals)
             R.given=false;
