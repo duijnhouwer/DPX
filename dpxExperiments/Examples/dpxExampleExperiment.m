@@ -28,11 +28,16 @@ function dpxExampleExperiment
     % Make an object E of the class dpxCoreExperiment now ...
     E=dpxCoreExperiment;
     
+    % Set the name, this will be used as the stem of the output filename.
+    % If no name is provided, the experiment will take the name of the
+    % experiment class, in this (if not all) case(s): dpxCoreExperiment.
+    E.expName='dpxExampleExperiment';
+    
     % Define the folder to which to save the output. This defaults to
     % '/tmp/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows, so
     % you can leave this commented out if your happy with that, or provide
     % a valid path for your system.
-    % E.outputFolder='~/Desktop';
+    E.outputFolder='C:\dpxData\';
     
     % 'physScr' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
@@ -63,88 +68,91 @@ function dpxExampleExperiment
     % windowed mode is convenient when designing an experiment as it
     % doesn't obscure the view of the matlab environment. When ommited from
     % your function, windowed defaults to false.
-    E.windowed(true); % true, false, [0 0 410 310]+100
+    E.windowed(false); % true, false, [0 0 410 310]+100
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
-    dirDeg=[0 180];
     cohFrac=-1:.25:1;
     
-    for d=1:numel(dirDeg)
-        for c=1:numel(cohFrac)
-            
-            % The experiment will have numel(dirDeg) times numel(cohFrac)
-            % condition. Create these conditions one at a time in this loop
-            
-            C=dpxCoreCondition;
-            
-            % Set the duration of the condition (trial). In this example,
-            % we make it infinite and have the response finish the trial.
-            C.durSec=Inf;
-            
-            % Create and add a default fixation-dot 'stimulus'. We add this
-            % stimulus first because the stimuli are drawn in a
-            % first-added-last-drawn order. This way the fixation dot will
-            % be on top.
-            S=dpxStimDot;
-            S.wDeg=0.5;
-            C.addStim(S);
-            
-            % Add the random dot motion stimulus to this condition, and set
-            % the properties. Remember, to get a list of all properties and
-            % their current values of a stimulus object (or any object for
-            % that matter) use get with the object as the argument (e.g.
-            % get(S)). You don't have to memorize the properties. Moreover,
-            % all these properties and their value per trial will be stored
-            % in the data-file.
-            
-            % [The RDK is one of the earliest stimuli I've programmed for
-            % DPX. The design is that new stimuli can be added as modules,
-            % little files that inherit from dpxBasicStim like dpxStimRdk
-            % does, or that inherit from an existing stimulus (say you want
-            % the RDK to have some additional exotic behavior, don't tweak
-            % the dpxStimRdk file, but instead inherit from that class into
-            % a new class, say dpxStimRdkExotic, and add the properties and
-            % override the methods as required. This way the stimulus
-            % modules (classes) stay clean and backward compatible.]
-            S=dpxStimRdk;
-            % We will use default settings except for, of course, the
-            % direction and the coherence
-            S.dirDeg=dirDeg(d);
-            S.cohereFrac=cohFrac(c);
-            % We want the stimulus to go on 100 ms after the start of the
-            % trial and last for half a second
-            S.onSec=0.1;
-            S.durSec=0.5;
-            % Provide a name for this stimulus, this is how the stimulus
-            % will be called in the data-file. If no name is provided, the
-            % name will default to the class-name (dpxStimRdk). In an
-            % experiment, no two stimuli can have the same name, not even
-            % if they are in different conditions.
-            S.name='motionStim'; % no spaces allowed in name
-            % Add the stimulus to the condition
-            C.addStim(S);
-            
-
-            % Create and add a response object to record the keyboard
-            % presses.
-            R=dpxRespKeyboard;
-            % A comma separated list of keys-names that are valid responses To
-            % find out the name of key press type 'KbName('UnifyKeyNames')' on
-            % the command line and press Enter. Then, type 'KbName' followed by
-            % Enter and, after a second, press the key you want to use.
-            R.kbNames='LeftArrow,RightArrow';
-            R.correctKbNames='1.0';
-            R.allowAfterSec=0.6; % allow the response no sooner than the end of the RDK stim
-            R.correctEndsTrialAfterSec=0;
-            C.addResp(R);            
-            
-            % Add this condition to the experiment
-            E.addCondition(C);
-        end  
+    for c=1:numel(cohFrac)
+        
+        % The experiment will have numel(cohFrac) condition. We will now
+        % create these conditions one at a time in this loop. Tip: use
+        % nested for loop for multiple stimulus dimensions.
+        
+        C=dpxCoreCondition;
+        
+        % Set the duration of the condition (trial). In this example,
+        % we make it infinite and have the response finish the trial.
+        C.durSec=Inf;
+        
+        % Create and add a default fixation-dot 'stimulus'. We add this
+        % stimulus first because the stimuli are drawn in a
+        % first-added-last-drawn order. This way the fixation dot will
+        % be on top.
+        S=dpxStimDot;
+        S.wDeg=0.5;
+        C.addStim(S);
+        
+        % Add the random dot motion stimulus to this condition, and set
+        % the properties. Remember, to get a list of all properties and
+        % their current values of a stimulus object (or any object for
+        % that matter) use get with the object as the argument (e.g.
+        % get(S)). You don't have to memorize the properties. Moreover,
+        % all these properties and their value per trial will be stored
+        % in the data-file.
+        
+        % [The RDK is one of the earliest stimuli I've programmed for
+        % DPX. The design is that new stimuli can be added as modules,
+        % little files that inherit from dpxBasicStim like dpxStimRdk
+        % does, or that inherit from an existing stimulus (say you want
+        % the RDK to have some additional exotic behavior, don't tweak
+        % the dpxStimRdk file, but instead inherit from that class into
+        % a new class, say dpxStimRdkExotic, and add the properties and
+        % override the methods as required. This way the stimulus
+        % modules (classes) stay clean and backward compatible.]
+        S=dpxStimRdk;
+        % We will use default settings except for the coherence. Note,
+        % dpxStimRdk takes the sign of the coherence to multiply the
+        % direction with. So if the property dirDeg is 0 (right) a
+        % condition with negative coherence will move left.
+        S.cohereFrac=cohFrac(c);
+        % We want the stimulus to go on 100 ms after the start of the
+        % trial and last for half a second
+        S.onSec=0.1;
+        S.durSec=0.5;
+        % Provide a name for this stimulus, this is how the stimulus
+        % will be called in the data-file. If no name is provided, the
+        % name will default to the class-name (dpxStimRdk). In an
+        % experiment, no two stimuli can have the same name, not even
+        % if they are in different conditions.
+        S.name='motionStim'; % no spaces allowed in name
+        % Add the stimulus to the condition
+        C.addStim(S);
+                
+        % Create and add a response object to record the keyboard
+        % presses.
+        R=dpxRespKeyboard;
+        R.name='keyboard';
+        % A comma separated list of keys-names that are valid responses To
+        % find out the name of key press type 'KbName('UnifyKeyNames')' on
+        % the command line and press Enter. Then, type 'KbName' followed by
+        % Enter and, after a second, press the key you want to use.
+        R.kbNames='LeftArrow,RightArrow';
+        R.allowAfterSec=0.6; % allow the response no sooner than the end of the RDK stim
+        R.correctEndsTrialAfterSec=0;
+        C.addResp(R);
+        
+        % Add this condition to the experiment
+        E.addCondition(C);
     end
-    % Start the experiment. It will run until all trials are finished,
-    % or until Escape is pressed. If the program stops but the window
-    % stays visible, type the shorthand 'cf' and press Enter.
+    % Set the number of repeats of each condition, aka blocks.
+    E.nRepeats=3;
+    % Start the experiment. It will run until all trials are finished, or
+    % until Escape is pressed. If the program crashes for whatever reason
+    % and the window remains visible (obscuring the matlab environment),
+    % type the shorthand 'cf' and press Enter.
     E.run;
+    %
+    dpxDispFancy('TIP: use dpxExampleExperimentAnalysis to analyse this data');
 end

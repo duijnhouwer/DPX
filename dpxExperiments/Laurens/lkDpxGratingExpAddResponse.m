@@ -53,7 +53,11 @@ function varargout = lkDpxGratingExpAddResponse_OutputFcn(hObject, eventdata, ha
 function browseStimfileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for stimulus file ...');
     try
-        [filestr, pathstr]=uigetfile('*.mat','Select a lkDpxGratingExp output file ...');
+        currentPath=fileparts(get(handles.stimField,'String'));
+        if isempty(currentPath)
+            currentPath='.';
+        end
+        [filestr, pathstr]=uigetfile('*.mat','Select a lkDpxGratingExp output file ...',currentPath);
         if filestr==0 % user canceled
             return;
         end
@@ -77,7 +81,11 @@ function browseStimfileButton_Callback(hObject, eventdata, handles)
 function browseResponseFileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for response file ...');
     try
-        [filestr, pathstr]=uigetfile('*_ses.mat','Select a MountainPro SES file ...');
+        currentPath=fileparts(get(handles.respField,'String'));
+        if isempty(currentPath)
+            currentPath='.';
+        end
+        [filestr, pathstr]=uigetfile('*_ses.mat','Select a MountainPro SES file ...',currentPath);
         if filestr==0 % user canceled
             return;
         end

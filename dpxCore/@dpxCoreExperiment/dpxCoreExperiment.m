@@ -168,7 +168,7 @@ classdef (CaseInsensitiveProperties=false ...
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
             save(absFileName,'data');
-            disp(['Data has been saved to: ''' absFileName '''']);
+            dpxDispFancy(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')
