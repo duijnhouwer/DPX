@@ -35,7 +35,7 @@ classdef dpxStimDynDotQrt < dpxBasicStim
         function myInit(S)
             D2P=S.physScrVals.deg2px; % xDeg * D2P = xPix
             %
-            S.nDisks=numel(S.dXsDeg);
+            S.nDisks=numel(S.dXsDeg); % typically 4 but could be any integer
             for i=1:S.nDisks
                 % calculate the rectangle into which to draw this disk
                 topleftx=S.winCntrXYpx(1) + S.xPx + S.dXsDeg(i)*D2P - S.diamsDeg(i)*D2P/2;
