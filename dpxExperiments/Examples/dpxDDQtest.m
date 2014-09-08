@@ -68,7 +68,7 @@ function dpxExampleExperiment
     % windowed mode is convenient when designing an experiment as it
     % doesn't obscure the view of the matlab environment. When ommited from
     % your function, windowed defaults to false.
-    E.windowed(true); % true, false, [0 0 410 310]+100
+    E.windowed(false); % true, false, [0 0 410 310]+100
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
@@ -94,42 +94,13 @@ function dpxExampleExperiment
         S.wDeg=0.5;
         C.addStim(S);
         
-        % Add the random dot motion stimulus to this condition, and set
-        % the properties. Remember, to get a list of all properties and
-        % their current values of a stimulus object (or any object for
-        % that matter) use get with the object as the argument (e.g.
-        % get(S)). You don't have to memorize the properties. Moreover,
-        % all these properties and their value per trial will be stored
-        % in the data-file.
+        %
+        S=dpxStimDynDotQrt;
+        S.durSec=Inf;
+        S.xDeg=-10;
         
-        % [The RDK is one of the earliest stimuli I've programmed for
-        % DPX. The design is that new stimuli can be added as modules,
-        % little files that inherit from dpxBasicStim like dpxStimRdk
-        % does, or that inherit from an existing stimulus (say you want
-        % the RDK to have some additional exotic behavior, don't tweak
-        % the dpxStimRdk file, but instead inherit from that class into
-        % a new class, say dpxStimRdkExotic, and add the properties and
-        % override the methods as required. This way the stimulus
-        % modules (classes) stay clean and backward compatible.]
-        S=dpxStimRdk;
-        % We will use default settings except for the coherence. Note,
-        % dpxStimRdk takes the sign of the coherence to multiply the
-        % direction with. So if the property dirDeg is 0 (right) a
-        % condition with negative coherence will move left.
-        S.cohereFrac=cohFrac(c);
-        % We want the stimulus to go on 100 ms after the start of the
-        % trial and last for half a second
-        S.onSec=0.1;
-        S.durSec=0.5;
-        % Provide a name for this stimulus, this is how the stimulus
-        % will be called in the data-file. If no name is provided, the
-        % name will default to the class-name (dpxStimRdk). In an
-        % experiment, no two stimuli can have the same name, not even
-        % if they are in different conditions.
-        S.name='motionStim'; % no spaces allowed in name
-        % Add the stimulus to the condition
         C.addStim(S);
-
+            
         % Create and add a response object to record the keyboard
         % presses.
         R=dpxRespKeyboard;
