@@ -125,5 +125,4 @@ function dpxExampleExperiment
     % type the shorthand 'cf' and press Enter.
     E.run;
     %
-    dpxDispFancy('TIP: use dpxExampleExperimentAnalysis to analyse this data');
 end
