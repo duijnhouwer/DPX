@@ -26,8 +26,8 @@ classdef dpxBasicResp < hgsetget
         given;
         % A structure representing the respones, this is defined in myInit,
         % and can be changed in derived classes for different response
-        % measures, including analog readouts (e.g. mouse click). The
-        % fields of resp will be output in the output file (dpxTbl format)
+        % measures, such as key-names or mouse-click positions. The fields
+        % of resp will automatically be output in the dpxTbl output file.
         resp;
         nameOfFeedBackStim='none';
         allowAfterNrFlips;
