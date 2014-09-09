@@ -84,7 +84,7 @@ function dpxExampleExperiment
         
         % Set the duration of the condition (trial). In this example,
         % we make it infinite and have the response finish the trial.
-        C.durSec=Inf;
+        C.durSec=2.5;
         
         % Create and add a default fixation-dot 'stimulus'. We add this
         % stimulus first because the stimuli are drawn in a
@@ -96,29 +96,26 @@ function dpxExampleExperiment
         
         %
         S=dpxStimDynDotQrt;
-        S.durSec=Inf;
+        S.onSec=.5;
+        S.durSec=2;
         S.xDeg=-10;
         
         C.addStim(S);
             
         % Create and add a response object to record the keyboard
         % presses.
-        R=dpxRespKeyboard;
-        R.name='keyboard';
-        % A comma separated list of keys-names that are valid responses To
-        % find out the name of key press type 'KbName('UnifyKeyNames')' on
-        % the command line and press Enter. Then, type 'KbName' followed by
-        % Enter and, after a second, press the key you want to use.
-        R.kbNames='LeftArrow,RightArrow';
-        R.allowAfterSec=0.6; % allow the response no sooner than the end of the RDK stim
-        R.correctEndsTrialAfterSec=0;
+        R=dpxRespContiMouse;
+        R.allowAfterSec=0;
+        R.allowUntilSec=C.durSec;
+        R.name='mouse';
+        R.mouseId=8;
         C.addResp(R);
         
         % Add this condition to the experiment
         E.addCondition(C);
     end
     % Set the number of repeats of each condition, aka blocks.
-    E.nRepeats=3;
+    E.nRepeats=1;
     % Start the experiment. It will run until all trials are finished, or
     % until Escape is pressed. If the program crashes for whatever reason
     % and the window remains visible (obscuring the matlab environment),

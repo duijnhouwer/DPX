@@ -49,72 +49,73 @@ classdef (CaseInsensitiveProperties=false ...
         end
         function run(E)
             try
-            % This is the last function to call in your experiment script,
-            % it starts the experiment and saves it when finished.
-            E.startTime=now;
-            E.unifyConditions;
-            E.createConditionSequence;
-            E.sysInfo=dpxSystemInfo;
-            E.createFileName; % this function also asks for subject and experimenter IDs
-            E.physScr.open;
-            E.signalFile('save');
-            E.showStartScreen;
-            % Set the trial counter to zero
-            tr=0;
-            for cNr=E.internalCondSeq(:)'
-                % increment the trial counter
-                tr=tr+1;
-                % Show the pause screen if appropriate (and make a
-                % intermediate backup save)
-                if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
-                    E.showSaveScreen;
-                    E.save;
-                    E.showPauseScreen;
+                % This is the last function to call in your experiment script,
+                % it starts the experiment and saves it when finished.
+                E.startTime=now;
+                E.unifyConditions;
+                E.createConditionSequence;
+                E.sysInfo=dpxSystemInfo;
+                E.createFileName; % this function also asks for subject and experimenter IDs
+                E.physScr.open;
+                E.signalFile('save');
+                E.showStartScreen;
+                % Set the trial counter to zero
+                tr=0;
+                for cNr=E.internalCondSeq(:)'
+                    % increment the trial counter
+                    tr=tr+1;
+                    E.showProgressCli(tr);
+                    % Show the pause screen if appropriate (and make a
+                    % intermediate backup save)
+                    if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
+                        E.showSaveScreen;
+                        E.save;
+                        E.showPauseScreen;
+                    end
+                    % Initialize this condition, this needs information
+                    % about the screen. We pass it the values using get,
+                    % not the object itself.
+                    E.conditions{cNr}.init(get(E.physScr));
+                    % Technically backRGBA is a condition property, but to save
+                    % the need to define it for all conditions I keep it in
+                    % the window class, with an optional override in the
+                    % condition class. Deal with that override now.
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        defaultBackRGBA=E.physScr.backRGBA;
+                        E.physScr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                    end
+                    E.physScr.clear;
+                    % Show this condition until its duration has passed, or
+                    % until escape is pressed
+                    [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
+                    if esc
+                        fprintf('\nEscape pressed during show\n');
+                        break;
+                    end
+                    % Store the condition number, the start and stop time,
+                    % and the response output (which may be empty if no
+                    % response is required).
+                    E.trials(tr).trialnr=tr;
+                    E.trials(tr).condition=cNr;
+                    E.trials(tr).startSec=timing.startSec;
+                    E.trials(tr).stopSec=timing.stopSec;
+                    E.trials(tr).resp=resp;
+                    E.trials(tr).nrMissedFlips=nrMissedFlips;
+                    % If an overriding RGBA has been defined in this condition,
+                    % reset the window object's backRGBA to its default,
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.physScr.backRGBA=defaultBackRGBA;
+                    end
                 end
-                % Initialize this condition, this needs information
-                % about the screen. We pass it the values using get,
-                % not the object itself.
-                E.conditions{cNr}.init(get(E.physScr));
-                % Technically backRGBA is a condition property, but to save
-                % the need to define it for all conditions I keep it in
-                % the window class, with an optional override in the
-                % condition class. Deal with that override now.
-                if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                    defaultBackRGBA=E.physScr.backRGBA;
-                    E.physScr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
-                end
-                E.physScr.clear;
-                % Show this condition until its duration has passed, or
-                % until escape is pressed
-                [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
-                if esc
-                    fprintf('\nEscape pressed during show\n');
-                    break;
-                end
-                % Store the condition number, the start and stop time,
-                % and the response output (which may be empty if no
-                % response is required).
-                E.trials(tr).trialnr=tr;
-                E.trials(tr).condition=cNr;
-                E.trials(tr).startSec=timing.startSec;
-                E.trials(tr).stopSec=timing.stopSec;
-                E.trials(tr).resp=resp;
-                E.trials(tr).nrMissedFlips=nrMissedFlips;
-                % If an overriding RGBA has been defined in this condition,
-                % reset the window object's backRGBA to its default,
-                if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                    E.physScr.backRGBA=defaultBackRGBA;
-                end
-            end
-            E.stopTime=now;
-            E.showFinalSaveScreen;
-            E.save;
-            E.signalFile('delete');
-            E.showEndScreen;
-            E.physScr.close;
+                E.stopTime=now;
+                E.showFinalSaveScreen;
+                E.save;
+                E.signalFile('delete');
+                E.showEndScreen;
+                E.physScr.close;
             catch me
-                sca; % screen reset
-                error(me.message);
+                caf; % screen reset
+                rethrow(me)
             end
         end
         function addCondition(E,C)
@@ -123,7 +124,7 @@ classdef (CaseInsensitiveProperties=false ...
         function windowed(E,win)
             if nargin==1 && (~islogical(win) && ~(isnumeric(win) && numel(win)==4))
                 error('windowed needs a second argument that is logical or a 4-element win rect');
-            end     
+            end
             if islogical(win)
                 if win
                     win=[10 20 500 375];
@@ -308,6 +309,17 @@ classdef (CaseInsensitiveProperties=false ...
             elseif any(E.internalCondSeq-round(E.internalCondSeq))
                 error('All elements of the conditionSequence should be integers');
             end
+        end
+        function showProgressCli(E,tr)
+            N=numel(E.internalCondSeq);
+            maxDigits=ceil(log10(N));
+            numformat=['%.' num2str(maxDigits) 'd'];
+            tstr=datestr(now-E.startTime,'HH:MM:SS');
+            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Running time %s.'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            if tr>1
+                fprintf(repmat('\b',1,numel(str)));
+            end
+            fprintf('%s',str);
         end
     end
     methods

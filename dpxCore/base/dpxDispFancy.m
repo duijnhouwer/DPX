@@ -15,6 +15,7 @@ elseif nargin==3
     nv=1;
 end
 
+fprintf('\n')
 msg=[repmat(sym,1,nh) ' ' msg ' ' repmat(sym,1,nh) ];
 disp(repmat(sym,nv,round(numel(msg)/numel(sym))));
 disp(msg);

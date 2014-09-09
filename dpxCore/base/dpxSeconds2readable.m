@@ -1,4 +1,4 @@
-function str=dpxSeconds2readable(seconds,format)
+function [str]=dpxSeconds2readable(seconds,format)
 
 % str=seconds2readable(seconds,format)
 % Return a legible time format string.
@@ -39,7 +39,6 @@ if strcmpi(format,'shortest')
 else
     error(['Unknown format: ' format]);
 end
-
 
 function s=pops(d)
 % pop a plural s, or not

@@ -15,7 +15,7 @@ classdef dpxBasicResp < hgsetget
         % Time window in which the response can be given relative to trial
         % onset.
         allowAfterSec=1;
-        allowUntilSec=Inf;
+        allowUntilSec=120;
         % The object name, when left empty, this will default to the
         % class-name when added to condition
         name='';
@@ -61,15 +61,15 @@ classdef dpxBasicResp < hgsetget
         end
         function init(R,physScrVals)
             R.given=false;
-            R.allowAfterNrFlips=R.allowAfterSec*physScrVals.measuredFrameRate;
-            R.allowUntilNrFlips=R.allowUntilSec*physScrVals.measuredFrameRate;
+            R.allowAfterNrFlips=round(R.allowAfterSec*physScrVals.measuredFrameRate);
+            R.allowUntilNrFlips=round(R.allowUntilSec*physScrVals.measuredFrameRate);
             R.flipCounter=0;
             R.physScrVals=physScrVals;
             myInit(R);
         end
         function getResponse(R)
             R.flipCounter=R.flipCounter+1;
-            if R.flipCounter>=R.allowAfterNrFlips && R.flipCounter<R.allowUntilSec;
+            if R.flipCounter>=R.allowAfterNrFlips && R.flipCounter<R.allowUntilNrFlips;
                 myGetResponse(R);
             end
         end
