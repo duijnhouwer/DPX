@@ -1,19 +1,17 @@
 classdef dpxStimDynDotQrt < dpxBasicStim
     
     properties (Access=public)
-        dXsDeg;
-        dYsDeg;
-        delayOnsSec;
-        delayOffsSec;
+        flashSec;
         diamsDeg;
-        cycleDurSec;
         RGBAsFrac;
+        oriDeg;
+        antiJump;
+        bottomLeftTopRightFirst; 
     end
     properties (Access=protected)
-        nDisks;
         rectsPx; % rectangles containing the disks in pixels
         diamsPx;
-        isVisibles;
+        showOddPair;
         RGBAs;
         diamPx;
         flipInCycle;
@@ -24,52 +22,76 @@ classdef dpxStimDynDotQrt < dpxBasicStim
             % Part of DPX toolkit
             % Type: get(dpxStimDynDotQrt) for more info
             % Type: edit dpxStimDynDotQrt for full info
-            % Jacob Duijnhouwer, 2014-09-08   
-            S.dXsDeg=[-2 2 2 -2];
-            S.dYsDeg=[-2 -2 2 2];
-            S.delayOnsSec=[0 .25 0 .25];
-            S.delayOffsSec=[.25 .5 .25 .5];
-            S.diamsDeg=[2 2 2 2];
-            S.cycleDurSec=.5;
+            %
+            % Note: bottomLeftTopRightFirst nomemclature is based on
+            % oriDeg=0 orientation with both wDeg and hDeg positive.
+            %
+            % Jacob Duijnhouwer, 2014-09-08
+            S.flashSec=.25;
+            S.diamsDeg=[1 1 1 1];
             S.RGBAsFrac={[1 1 1 1],[1 1 1 1],[1 1 1 1],[1 1 1 1]};
+            S.oriDeg=0;
+            S.antiJump=false;
+            S.bottomLeftTopRightFirst=true;
         end
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.physScrVals.deg2px; % xDeg * D2P = xPix
+            D2P=S.physScrVals.deg2px; % xDeg * D2P = xPx
             %
-            S.nDisks=numel(S.dXsDeg); % typically 4 but could be any integer
-            S.isVisibles=false(1,S.nDisks);
+            X=[-1 1 1 -1]/2*D2P*S.wDeg;
+            Y=[1 1 -1 -1]/2*D2P*S.hDeg;
+            if ~S.bottomLeftTopRightFirst
+                X=-X;
+            end
+            if ~S.antiJump
+                XY=[X(:) Y(:)];
+                R=[cosd(S.oriDeg) -sind(S.oriDeg); sind(S.oriDeg) cosd(S.oriDeg)];
+                XY=XY*R;
+            else
+                XY=[X(:) Y(:)];
+                if S.bottomLeftTopRightFirst
+                    a=S.oriDeg+2*atan2d(S.wDeg,S.hDeg);
+                else
+                    a=S.oriDeg-2*atan2d(S.wDeg,S.hDeg);
+                end
+                R=[cosd(a) -sind(a); sind(a) cosd(a)];
+                XY=XY*R;
+            end
             S.diamPx=S.diamsDeg * D2P; % to optimize Screen('FillOval')
-            for i=1:S.nDisks
+            for i=1:4
                 % calculate the rectangle into which to draw this disk
-                topleftx=S.winCntrXYpx(1) + S.xPx + S.dXsDeg(i)*D2P - S.diamPx(i)/2;
-                toplefty=S.winCntrXYpx(2) + S.yPx + S.dYsDeg(i)*D2P - S.diamPx(i)/2;
-                botritex=S.winCntrXYpx(1) + S.xPx + S.dXsDeg(i)*D2P + S.diamPx(i)/2;
-                botritey=S.winCntrXYpx(2) + S.yPx + S.dYsDeg(i)*D2P + S.diamPx(i)/2;
+                topleftx=S.winCntrXYpx(1) + S.xPx + XY(i,1) - S.diamPx(i)/2;
+                toplefty=S.winCntrXYpx(2) + S.yPx + XY(i,2) - S.diamPx(i)/2;
+                botritex=S.winCntrXYpx(1) + S.xPx + XY(i,1) + S.diamPx(i)/2;
+                botritey=S.winCntrXYpx(2) + S.yPx + XY(i,2) + S.diamPx(i)/2;
                 S.rectsPx{i}=[topleftx toplefty botritex botritey];
                 % scale the colors to this computer's whiteindex
                 S.RGBAs{i}=S.RGBAsFrac{i} * S.physScrVals.whiteIdx;
             end
             S.flipInCycle=0;
+            S.showOddPair=true;
         end
         function myDraw(S)
-            for i=1:S.nDisks
-                if S.isVisibles(i)
-                    Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{i}, S.rectsPx{i}, S.diamPx(i));
-                end
+          %  Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, [10 400 100 500])
+          %  return
+            if S.showOddPair
+                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, S.rectsPx{1}, S.diamPx(1));
+                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{3}, S.rectsPx{3}, S.diamPx(3));
+            else
+                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{2}, S.rectsPx{2}, S.diamPx(2));
+                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{4}, S.rectsPx{4}, S.diamPx(4));
             end
         end
         function myStep(S)
             S2F=S.physScrVals.measuredFrameRate;
             S.flipInCycle=S.flipInCycle+1;
-            for i=1:S.nDisks
-                S.isVisibles(i)=S.flipInCycle>=S.delayOnsSec(i)*S2F && S.flipInCycle<S.delayOffsSec(i)*S2F;
-            end
-            if S.flipInCycle>=round(S.cycleDurSec*S2F)
+            S.showOddPair=S.flipInCycle<S.flashSec*S2F;
+            if S.flipInCycle>=round(S.flashSec*2*S2F)
                 S.flipInCycle=0;
             end
         end
     end
 end
+
 

@@ -43,7 +43,14 @@ classdef dpxCoreWindow < hgsetget
         function open(W)
             Screen('Preference','VisualDebuglevel',0);
             Screen('Preference','SkipSyncTests',W.SkipSyncTests);
+            PsychGPUControl('FullScreenWindowDisablesCompositor', 1);
             [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,[],2,W.stereoCode);
+            r=Screen('Resolution',W.scrNr);
+            if all(W.winRectPx==[0 0 r.width r.height])
+                % we are fullscreen, hide the cursor
+                HideCursor;
+                clear r;
+            end
             W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
             % Set the blend function so we can use antialiasing of dots and
             % lines.

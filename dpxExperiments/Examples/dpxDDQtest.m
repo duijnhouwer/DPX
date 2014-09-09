@@ -31,13 +31,13 @@ function dpxExampleExperiment
     % Set the name, this will be used as the stem of the output filename.
     % If no name is provided, the experiment will take the name of the
     % experiment class, in this (if not all) case(s): dpxCoreExperiment.
-    E.expName='dpxExampleExperiment';
+    E.expName='dpxDDQtest';
     
     % Define the folder to which to save the output. This defaults to
     % '/tmp/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows, so
     % you can leave this commented out if your happy with that, or provide
     % a valid path for your system.
-    E.outputFolder='C:\dpxData\';
+    % E.outputFolder='C:\dpxData\';
     
     % 'physScr' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
@@ -68,54 +68,50 @@ function dpxExampleExperiment
     % windowed mode is convenient when designing an experiment as it
     % doesn't obscure the view of the matlab environment. When ommited from
     % your function, windowed defaults to false.
-    E.windowed(false); % true, false, [0 0 410 310]+100
+    E.windowed(true); % true, false, [0 0 410 310]+100
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
-    cohFrac=-1:.25:1;
-    
-    for c=1:numel(cohFrac)
-        
-        % The experiment will have numel(cohFrac) condition. We will now
-        % create these conditions one at a time in this loop. Tip: use
-        % nested for loop for multiple stimulus dimensions.
-        
-        C=dpxCoreCondition;
-        
-        % Set the duration of the condition (trial). In this example,
-        % we make it infinite and have the response finish the trial.
-        C.durSec=2.5;
-        
-        % Create and add a default fixation-dot 'stimulus'. We add this
-        % stimulus first because the stimuli are drawn in a
-        % first-added-last-drawn order. This way the fixation dot will
-        % be on top.
-        S=dpxStimDot;
-        S.wDeg=0.5;
-        C.addStim(S);
-        
-        %
-        S=dpxStimDynDotQrt;
-        S.onSec=.5;
-        S.durSec=2;
-        S.xDeg=-10;
-        
-        C.addStim(S);
-            
-        % Create and add a response object to record the keyboard
-        % presses.
-        R=dpxRespContiMouse;
-        R.allowAfterSec=0;
-        R.allowUntilSec=C.durSec;
-        R.name='mouse';
-        R.mouseId=8;
-        C.addResp(R);
-        
-        % Add this condition to the experiment
-        E.addCondition(C);
+    wid=1.8;
+    for hei=[.5 1 1.5 2 2.5 3]*wid
+        for ori=[0 45 90 135]
+            for bottomLeftTopRightFirst=[false true]
+                for antiJump=[false true]
+                    if hei==wid && antiJump
+                        continue;
+                    end
+                    
+                    C=dpxCoreCondition;
+                    C.durSec=2;
+                    
+                    % Create and add a default fixation-dot 'stimulus'. We add this
+                    % stimulus first because the stimuli are drawn in a
+                    % first-added-last-drawn order. This way the fixation dot will
+                    % be on top.
+                    S=dpxStimDot;
+                    S.wDeg=0.25;
+                    C.addStim(S);
+                    
+                    %
+                    S=dpxStimDynDotQrt;
+                    S.wDeg=wid;
+                    S.hDeg=hei;
+                    S.flashSec=.75;
+                    S.oriDeg=ori;
+                    S.onSec=0;
+                    S.durSec=1;
+                    S.antiJump=antiJump;
+                    S.bottomLeftTopRightFirst=bottomLeftTopRightFirst;
+                    C.addStim(S);
+                    
+                    % Add this condition to the experiment
+                    E.addCondition(C);
+                end
+            end
+        end
     end
     % Set the number of repeats of each condition, aka blocks.
-    E.nRepeats=1;
+    E.nRepeats=10;
     % Start the experiment. It will run until all trials are finished, or
     % until Escape is pressed. If the program crashes for whatever reason
     % and the window remains visible (obscuring the matlab environment),
