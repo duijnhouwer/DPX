@@ -1,7 +1,7 @@
 function dpxDDQtest
     
     % dpxDDQtest
-   
+    
     E=dpxCoreExperiment;
     E.expName='dpxDDQtest';
     % E.outputFolder='C:\dpxData\';
@@ -20,7 +20,7 @@ function dpxDDQtest
                     end
                     %
                     C=dpxCoreCondition;
-                    C.durSec=2;
+                    C.durSec=36000;
                     %
                     S=dpxStimDot;
                     set(S,'name','fix','wDeg',0.25);
@@ -31,7 +31,7 @@ function dpxDDQtest
                     set(S,'oriDeg',ori,'onSec',.5,'durSec',1,'antiJump',antiJump);
                     set(S,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                     C.addStim(S);
-                    % 
+                    %
                     R=dpxRespKeyboard;
                     R.name='kb';
                     R.kbNames='LeftArrow,RightArrow';
@@ -44,6 +44,10 @@ function dpxDDQtest
                     set(S,'name','respfeedback','wDeg',0.5,'visible',0);
                     C.addStim(S);
                     %
+                    S=dpxStimTactileMIDI;
+                    set(S,'onSec',1.25);
+                    C.addStim(S);
+                    %
                     E.addCondition(C);
                 end
             end
@@ -52,3 +56,4 @@ function dpxDDQtest
     E.nRepeats=10;
     E.run;
 end
+

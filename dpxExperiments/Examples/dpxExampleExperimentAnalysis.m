@@ -32,7 +32,7 @@ function dpxExampleExperimentAnalysis(data)
     cla; % Clear the contents of the figure if any
     h=plot(coherence*100,saidRight*100,'x-','LineWidth',2); % plot the psychometric curve
     dpxPlotVert(0,'k--'); % plot a vertical line through x=0
-    dpxPlotHori(0.5,'k--'); % plot a horizontal line through y=0.5
+    dpxPlotHori(50,'k--'); % plot a horizontal line through y=0.5
     xlabel('Motion coherence (%; negative: left)');
     ylabel('''Right'' (%)');
     legend(h,['Subject: ' data.exp_subjectId{1}]);

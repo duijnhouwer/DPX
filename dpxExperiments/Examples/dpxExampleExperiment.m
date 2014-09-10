@@ -37,7 +37,7 @@ function dpxExampleExperiment
     % '/tmp/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows, so
     % you can leave this commented out if your happy with that, or provide
     % a valid path for your system.
-    E.outputFolder='C:\dpxData\';
+    % E.outputFolder='C:\dpxData\';
     
     % 'physScr' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
@@ -68,7 +68,7 @@ function dpxExampleExperiment
     % windowed mode is convenient when designing an experiment as it
     % doesn't obscure the view of the matlab environment. When ommited from
     % your function, windowed defaults to false.
-    E.windowed(true); % true, false, [0 0 410 310]+100
+    E.windowed(false); % true, false, [0 0 410 310]+100
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
