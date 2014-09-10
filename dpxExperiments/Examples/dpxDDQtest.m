@@ -1,77 +1,15 @@
-function dpxExampleExperiment
+function dpxDDQtest
     
-    % dpxExampleExperiment
-    %
-    % Tutorial on creating experiments using the DPX toolkit.
-    %
-    % This example is a simple 2AFC experiment of left-right motion
-    % discrimination with different levels of coherence (fraction of
-    % motion-signal embedded in motion-noise).
-    %
-    % Sections between [] explain some of the ideas and intended advantages
-    % of the object oriented design of DPX.
-    %
-    % See also: dpxExampleExperimentAnalyse
-    %
-    % Jacob Duijnhouwer, 2014-09-05
-    
-    % At the basis of each experiment is the Experiment class. This class,
-    % called dpxCoreExperiment has functionality for most psychophysical
-    % and 2-photon microscopy experiments.
-    % [However, it is possible to make
-    % a derived class of dpxCoreExperiment. This class would inherit the
-    % functionality of dpxCoreExperiment and allows a user to change that
-    % functionality or add features without breaking the experiments of
-    % other users. Inheritance is a general and powerful feature of object
-    % oriented programming..]
-    
-    % Make an object E of the class dpxCoreExperiment now ...
+    % dpxDDQtest
+   
     E=dpxCoreExperiment;
-    
-    % Set the name, this will be used as the stem of the output filename.
-    % If no name is provided, the experiment will take the name of the
-    % experiment class, in this (if not all) case(s): dpxCoreExperiment.
     E.expName='dpxDDQtest';
-    
-    % Define the folder to which to save the output. This defaults to
-    % '/tmp/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows, so
-    % you can leave this commented out if your happy with that, or provide
-    % a valid path for your system.
     % E.outputFolder='C:\dpxData\';
-    
-    % 'physScr' is a property of the dpxExperiment class that contains a
-    % dpxCoreWindow object. This object gets instantiated automatically
-    % when dpxCoreExperiment object is made. The settings of physScr can be
-    % viewed by typing get(E.physScr) and set by typing, for example,
-    % set(E.physScr,'distMm',1000) to set the viewing distance to a meter.
-    % Note that not all properties of E.physScr that are displayed when
-    % calling get(E.physScr) can also be set using set, some properties are
-    % read-only. A convenient way to set your physScr properties,
-    % visualize, and test them is through the amazing GUI I created. Evoke
-    % this by typing:
-    %   E.physScr.gui
-    % The "disp" button in this GUI generates a set-string to your command
-    % window that you can copy/paste into your experiment, as I've done for
-    % this experiment here:
-    E.physScr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
+    E.physScr.set('winRectPx',[],'widHeiMm',[677 423],'distMm',500, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','SkipSyncTests',0);
-    % Note (1) that i've manually cut the line using elipses (...) for
-    % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
-    % full screen display, regardless what resolution the screen is set to.
-    
-    % 'windowed' is a method of the dpxCoreExperiment. If called with false
-    % as the argument the experiment runs in full screen. If called with
-    % true it will run in a small window. Alternatively, a 4-element vector
-    % representing a display window [topLeftX topLeftY botRightX botRightY]
-    % in pixels can be provided for custom window sizes. Running in
-    % windowed mode is convenient when designing an experiment as it
-    % doesn't obscure the view of the matlab environment. When ommited from
-    % your function, windowed defaults to false.
-    E.windowed(true); % true, false, [0 0 410 310]+100
-    
-    % In this experiment, we vary coherence and motion direction. Define
-    % the ranges of these properties here values of those here:
+    E.windowed(false); % true, false, [0 0 410 310]+100
+    %
     wid=1.8;
     for hei=[.5 1 1.5 2 2.5 3]*wid
         for ori=[0 45 90 135]
@@ -80,42 +18,37 @@ function dpxExampleExperiment
                     if hei==wid && antiJump
                         continue;
                     end
-                    
+                    %
                     C=dpxCoreCondition;
                     C.durSec=2;
-                    
-                    % Create and add a default fixation-dot 'stimulus'. We add this
-                    % stimulus first because the stimuli are drawn in a
-                    % first-added-last-drawn order. This way the fixation dot will
-                    % be on top.
+                    %
                     S=dpxStimDot;
-                    S.wDeg=0.25;
+                    set(S,'name','fix','wDeg',0.25);
                     C.addStim(S);
-                    
                     %
                     S=dpxStimDynDotQrt;
-                    S.wDeg=wid;
-                    S.hDeg=hei;
-                    S.flashSec=.75;
-                    S.oriDeg=ori;
-                    S.onSec=0;
-                    S.durSec=1;
-                    S.antiJump=antiJump;
-                    S.bottomLeftTopRightFirst=bottomLeftTopRightFirst;
+                    set(S,'name','ddq','wDeg',wid,'hDeg',hei,'flashSec',.75);
+                    set(S,'oriDeg',ori,'onSec',.5,'durSec',1,'antiJump',antiJump);
+                    set(S,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                     C.addStim(S);
-                    
-                    % Add this condition to the experiment
+                    % 
+                    R=dpxRespKeyboard;
+                    R.name='kb';
+                    R.kbNames='LeftArrow,RightArrow';
+                    R.allowAfterSec=S.onSec+S.durSec; % only after stim
+                    R.correctEndsTrialAfterSec=0.1;
+                    R.correctStimName='respfeedback';
+                    C.addResp(R);
+                    %
+                    S=dpxStimDot;
+                    set(S,'name','respfeedback','wDeg',0.5,'visible',0);
+                    C.addStim(S);
+                    %
                     E.addCondition(C);
                 end
             end
         end
     end
-    % Set the number of repeats of each condition, aka blocks.
     E.nRepeats=10;
-    % Start the experiment. It will run until all trials are finished, or
-    % until Escape is pressed. If the program crashes for whatever reason
-    % and the window remains visible (obscuring the matlab environment),
-    % type the shorthand 'cf' and press Enter.
     E.run;
-    %
 end

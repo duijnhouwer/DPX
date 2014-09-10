@@ -42,7 +42,7 @@ classdef (CaseInsensitiveProperties=false ...
             E.subjectId='0';
             E.txtStart='Press and release a key to start'; % if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtPause='I N T E R M I S S I O N';
-            E.txtPauseNrTrials=100;
+            E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
             E.outputFolder='';
@@ -315,7 +315,7 @@ classdef (CaseInsensitiveProperties=false ...
             maxDigits=ceil(log10(N));
             numformat=['%.' num2str(maxDigits) 'd'];
             tstr=datestr(now-E.startTime,'HH:MM:SS');
-            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Running time %s.'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
             if tr>1
                 fprintf(repmat('\b',1,numel(str)));
             end

@@ -15,7 +15,7 @@ classdef dpxBasicResp < hgsetget
         % Time window in which the response can be given relative to trial
         % onset.
         allowAfterSec=1;
-        allowUntilSec=120;
+        allowUntilSec=3600;
         % The object name, when left empty, this will default to the
         % class-name when added to condition
         name='';
