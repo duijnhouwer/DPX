@@ -61,7 +61,7 @@ function jdDpxDDQtactile
                     S.tapOnSec=tmp2;
                     S.tapOnSec=S.tapOnSec+2/60;
                     S.tapDurSec=2/60;
-                    S.tapNote=repmat([0 1 9 13],1,1000);
+                    S.tapNote=repmat([0 1 9 10],1,1000);
                     S.tapNote=S.tapNote(1:numel(S.tapOnSec));
                     C.addStim(S);
                     %
