@@ -11,17 +11,17 @@ function lkDpxGratingExp
     %
     E.physScr.gamma=0.69;
     E.physScr.backRGBA=[.25 .25 .25 1];
-    E.windowed(true) ; % [0 0 810 610]+100); % true, false
-    E.txtStart='asd DAQ-pulse';
-    E.txtEnd='asd DAQ-pulse';
+    E.windowed(false) ; % [0 0 810 610]+100); % true, false
+    E.txtStart='DAQ-pulse';
+    E.txtEnd='DAQ-pulse';
     E.txtPauseNrTrials=0;
     %
     % Settings
     %
-    dirDegs=[0:45:315];
-    contrastFracs=[.25 .5 1];
-    cyclesPerDeg=[.05 .1 .2];
-    cyclesPerSecond=[.5 1 2];
+    dirDegs=[0:90:270];
+    contrastFracs=.5%[.25 .5 1];
+    cyclesPerDeg=.1%[.05 .1 .2];
+    cyclesPerSecond=1%[.5 1 2];
     E.nRepeats=2;
     stimSec=4;
     isiSec=4;

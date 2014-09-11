@@ -1,16 +1,18 @@
 function lkDpxGratingAdaptExp
     E=dpxCoreExperiment;
     E.expName='lkDpxGratingAdaptExp';
-    E.physScr.distMm=290;
-    % 2014-4-24: Measured luminance BENQ screen Two-Photon room
+    % Screen settings:
+    set(E.physScr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
+        ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.25 0.25 0.25 1] ...
+        ,'stereoMode','mono','SkipSyncTests',0);
+    % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
     % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz VGA connected
-    % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
+    % Hz VGA connected.  With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
-    E.physScr.gamma=0.69;
-    E.physScr.backRGBA=[.25 .25 .25 1];
-    E.windowed(false) ; % [0 0 810 610]+100); % true, false
+    %
+    % Set these strings to 'DAQ-pulse' to start the experiment when a the
+    % Leica microscope gives a pulse.
     E.txtStart='asd DAQ-pulse';
     E.txtEnd='asd DAQ-pulse';
     E.txtPauseNrTrials=0;
@@ -42,7 +44,7 @@ function lkDpxGratingAdaptExp
     firstTrialSec=itiaSec + initialAdapSec + itibSec;
     topupTrialSec=itiaSec + topupSec + blankSec + testSec + itibSec;
     nrTestConditions=numel(testDirDegs) * numel(testContrastFracs) * numel(testCyclesPerDeg) * numel(testCyclesPerSecond);
-    nrTrials=nrTestConditions * E.nRepeats + 1; % + 1 is the long adaptation trial
+    nrTrials=nrTestConditions * E.nRepeats + 1; % + 1 to account for the long adaptation trial
     dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(topupTrialSec)+initialAdapSec+itibSec+10)) ' s recording pattern in LasAF.']);
     %
     % Create the one initial adaptation condition
