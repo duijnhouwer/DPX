@@ -10,14 +10,18 @@ function jdDpxDDQtactile
         'stereoMode','mono','SkipSyncTests',0);
     E.windowed(false); % true, false, [0 0 410 310]+100
     %
+    
+    javaaddpath(which('BrainMidi.jar'));
+    
+    
     durS=30;
     flashSec=.5;
-    wid=7;
-    for hei=1*wid
-        for ori=45
+    ddqWid=10;
+    for ddqHei=ddqWid * [.5 1 2]
+        for ori=0
             for bottomLeftTopRightFirst=[false]
                 for antiJump=false
-                    if hei==wid && antiJump
+                    if ddqHei==ddqWid && antiJump
                         continue;
                     end
                     %
@@ -25,32 +29,45 @@ function jdDpxDDQtactile
                     C=dpxCoreCondition;
                     C.durSec=36000;
                     %
-                    S=dpxStimDot;
-                    set(S,'name','fix','wDeg',0.25);
-                    C.addStim(S);
+                    F=dpxStimDot;
+                    % type get(F) to see a list of parameters you can set
+                    set(F,'xDeg',-15); % set the fix dot 10 deg to the left
+                    set(F,'F=dpxStimDot;','fix','wDeg',0.5);
+                    C.addStim(F);
                     %
-                    S=dpxStimDynDotQrt;
-                    set(S,'name','ddq','wDeg',wid,'hDeg',hei,'flashSec',flashSec);
-                    set(S,'oriDeg',ori,'onSec',.5,'durSec',durS,'antiJump',antiJump);
-                    set(S,'diamsDeg',[4 4 4 4]);
-                    set(S,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
-                    C.addStim(S);
+                    DDQ=dpxStimDynDotQrt;
+                    set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
+                    set(DDQ,'oriDeg',ori,'onSec',.5,'durSec',durS,'antiJump',antiJump);
+                    set(DDQ,'diamsDeg',[1 1 1 1]*2); % diamsDeg is diameter of disks in degrees
+                    set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
+                    set(DDQ,'xDeg',0);
+                    C.addStim(DDQ);
+%                     
+%                           DDQ=dpxStimDynDotQrt;
+%                     set(DDQ,'name','ddqLeft','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
+%                     set(DDQ,'oriDeg',ori,'onSec',.5,'durSec',durS,'antiJump',antiJump);
+%                     set(DDQ,'diamsDeg',[1 1 1 1]*2); % diamsDeg is diameter of disks in degrees
+%                     set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
+%                     set(DDQ,'xDeg',-10);
+%                     C.addStim(DDQ);
+                    
                     %
                     R=dpxRespKeyboard;
                     R.name='kb';
-                    R.kbNames='LeftArrow,RightArrow';
+                    R.kbNames='LeftArrow,UpArrow';
                     R.allowAfterSec=0;
                     R.correctEndsTrialAfterSec=0.1;
                     R.correctStimName='respfeedback';
                     C.addResp(R);
                     %
-                    S=dpxStimDot;
-                    set(S,'name','respfeedback','wDeg',0.5,'visible',0);
-                    C.addStim(S);
+                    FB=dpxStimDot;
+                    set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
+                    set(FB,'name','respfeedback','wDeg',1,'visible',0);
+                    C.addStim(FB);
                     %
-                    S=dpxStimTactileMIDI;
-                    S.onSec=.5;
-                    S.durSec=Inf;
+                    T=dpxStimTactileMIDI;
+                    T.onSec=.5;
+                    T.durSec=Inf;
                     
                     tmp=flashSec:flashSec:durS;
                     tmp2=[];
@@ -58,12 +75,12 @@ function jdDpxDDQtactile
                         tmp2(end+1)=tmp(i);
                         tmp2(end+1)=tmp(i);
                     end
-                    S.tapOnSec=tmp2;
-                    S.tapOnSec=S.tapOnSec+2/60;
-                    S.tapDurSec=2/60;
-                    S.tapNote=repmat([0 1 9 10],1,1000);
-                    S.tapNote=S.tapNote(1:numel(S.tapOnSec));
-                    C.addStim(S);
+                    T.tapOnSec=tmp2;
+                    T.tapOnSec=T.tapOnSec+2/60;
+                    T.tapDurSec=2/60;
+                    T.tapNote=repmat([0 1 8 10],1,1000);
+                    T.tapNote=T.tapNote(1:numel(T.tapOnSec));
+                    C.addStim(T);
                     %
                     E.addCondition(C);
                 end

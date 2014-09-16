@@ -6,7 +6,7 @@ classdef dpxStimDynDotQrt < dpxBasicStim
         RGBAsFrac;
         oriDeg;
         antiJump;
-        bottomLeftTopRightFirst; 
+        bottomLeftTopRightFirst;
     end
     properties (Access=protected)
         rectsPx; % rectangles containing the disks in pixels
@@ -73,8 +73,8 @@ classdef dpxStimDynDotQrt < dpxBasicStim
             S.showOddPair=true;
         end
         function myDraw(S)
-          %  Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, [10 400 100 500])
-          %  return
+            %  Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, [10 400 100 500])
+            %  return
             if S.showOddPair
                 Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, S.rectsPx{1}, S.diamPx(1));
                 Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{3}, S.rectsPx{3}, S.diamPx(3));
@@ -89,6 +89,15 @@ classdef dpxStimDynDotQrt < dpxBasicStim
             S.showOddPair=S.flipInCycle<S.flashSec*S2F;
             if S.flipInCycle>=round(S.flashSec*2*S2F)
                 S.flipInCycle=0;
+            end
+        end
+    end
+    methods
+        function set.antiJump(S,value)
+            if islogical(value)
+                 S.antiJump=value;
+            else
+                error('antiJump must be logical (true or false)');
             end
         end
     end
