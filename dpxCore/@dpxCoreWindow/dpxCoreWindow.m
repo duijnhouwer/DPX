@@ -8,7 +8,8 @@ classdef dpxCoreWindow < hgsetget
         gamma=1;
         backRGBA=[.5 .5 .5 1];
         stereoMode='mono';
-        SkipSyncTests=0;
+        skipSyncTests=0;
+        verbosity0min5max=3;
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -30,6 +31,7 @@ classdef dpxCoreWindow < hgsetget
     properties (Access=protected)
         scrNr;
         stereoCode;
+        oldPrefs;
     end
     methods (Access=public)
         function W=dpxCoreWindow
@@ -41,14 +43,14 @@ classdef dpxCoreWindow < hgsetget
             W=initValues(W);
         end
         function open(W)
-            Screen('Preference','VisualDebuglevel',0);
-            Screen('Preference','SkipSyncTests',W.SkipSyncTests);
-            PsychGPUControl('FullScreenWindowDisablesCompositor', 1);
+            W.oldPrefs.VisualDebuglevel=Screen('Preference','VisualDebuglevel',1);
+            W.oldPrefs.SkipSyncTests=Screen('Preference','SkipSyncTests',W.skipSyncTests);
+            W.oldPrefs.Verbosity=Screen('Preference', 'Verbosity', W.verbosity0min5max);
             [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,[],2,W.stereoCode);
             r=Screen('Resolution',W.scrNr);
-            if all(W.winRectPx==[0 0 r.width r.height])
-                % we are fullscreen, hide the cursor
+            if all(W.winRectPx==[0 0 r.width r.height]) % we are fullscreen
                 HideCursor;
+                PsychGPUControl('FullScreenWindowDisablesCompositor', 1);
                 clear r;
             end
             W.measuredFrameRate = 1/Screen('GetFlipInterval',W.windowPtr);
@@ -88,9 +90,11 @@ classdef dpxCoreWindow < hgsetget
         end
         function close(W)
             warning on %#ok<WNON>
-            ShowCursor;
-            set(W,'gamma',1);
-            Screen('CloseAll');
+            % reset global Psychtoolbox preferences
+            Screen('Preference','VisualDebuglevel',W.oldPrefs.VisualDebuglevel);
+            Screen('Preference','SkipSyncTests',W.oldPrefs.SkipSyncTests);
+            Screen('Preference','Verbosity', W.oldPrefs.Verbosity);
+            sca;
             try
                 ListenChar(0);
             catch me

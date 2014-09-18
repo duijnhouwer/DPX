@@ -1,7 +1,4 @@
-classdef (CaseInsensitiveProperties=false ...
-        ,Description='a' ...
-        ,DetailedDescription='ab') ...
-        dpxCoreExperiment < hgsetget
+classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
         expName;
@@ -65,9 +62,9 @@ classdef (CaseInsensitiveProperties=false ...
                     % increment the trial counter
                     tr=tr+1;
                     E.showProgressCli(tr);
-                    % Show the pause screen if appropriate (and make a
+                    % Show the pause screen if appropriate (and make an
                     % intermediate backup save)
-                    if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<E.nRepeats*numel(condList)
+                    if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
                         E.showSaveScreen;
                         E.save;
                         E.showPauseScreen;
@@ -89,7 +86,7 @@ classdef (CaseInsensitiveProperties=false ...
                     % until escape is pressed
                     [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
                     if esc
-                        fprintf('\nEscape pressed during show\n');
+                        disp('Escape pressed.');
                         break;
                     end
                     % Store the condition number, the start and stop time,
@@ -194,7 +191,7 @@ classdef (CaseInsensitiveProperties=false ...
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
-                maxWaitSec=120;
+                maxWaitSec=60;
                 str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds) ... '];
                 dpxDispFancy(str);
                 dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
@@ -311,12 +308,15 @@ classdef (CaseInsensitiveProperties=false ...
             end
         end
         function showProgressCli(E,tr)
+            if Screen('Preference', 'Verbosity')==0
+                return;
+            end
             N=numel(E.internalCondSeq);
             maxDigits=ceil(log10(N));
             numformat=['%.' num2str(maxDigits) 'd'];
             tstr=datestr(now-E.startTime,'HH:MM:SS');
-            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
-            if tr>1
+            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            if tr>1 && Screen('Preference', 'Verbosity')<4
                 fprintf(repmat('\b',1,numel(str)));
             end
             fprintf('%s',str);

@@ -4,7 +4,7 @@ function lkDpxGratingAdaptExp
     % Screen settings:
     set(E.physScr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
         ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.25 0.25 0.25 1] ...
-        ,'stereoMode','mono','SkipSyncTests',0);
+        ,'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',1);
     % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
     % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
@@ -32,7 +32,7 @@ function lkDpxGratingAdaptExp
     contrastFadeAtEdgeRampLengthDeg=1;
     grayLevelFractionOfMaxRange=0.25;
     % Timing
-    initialAdapSec=40;
+    initialAdapSec=2;
     itiaSec=2;
     topupSec=5;
     blankSec=2;

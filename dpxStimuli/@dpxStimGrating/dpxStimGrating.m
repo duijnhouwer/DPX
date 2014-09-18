@@ -14,9 +14,10 @@ classdef dpxStimGrating < dpxBasicStim
         visibleSizePx;
         cyclesPerPx;
         pxPerCycle;
-        gratingTexture;
-        maskTexture;
+        gratingTexture=[];
+        maskTexture=[];
         dstRect;
+        srcRect;
         shiftPxPerFlip;
     end
     methods (Access=public)
@@ -74,7 +75,13 @@ classdef dpxStimGrating < dpxBasicStim
             end
         end
         function myDraw(S)
-            xoffset = mod(S.flipCounter*S.shiftPxPerFlip,S.pxPerCycle);
+            Screen('DrawTexture', S.physScrVals.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+            if ~isempty(S.maskTexture)
+                Screen('DrawTexture', S.physScrVals.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, -S.dirDeg);
+            end
+        end
+        function myStep(S)
+            % We move the grating by shifting the part we show:
             % Define shifted srcRect that cuts out the properly shifted rectangular
             % area from the texture: We cut out the range 0 to visiblesize in
             % the vertical direction although the texture is only 1 pixel in
@@ -82,14 +89,11 @@ classdef dpxStimGrating < dpxBasicStim
             % replicate pixels in one dimension if we exceed the real borders
             % of the stored texture. This allows us to save storage space here,
             % as our 2-D grating is essentially only defined in 1-D:
-            srcRect=[xoffset 0 xoffset+S.visibleSizePx S.visibleSizePx];
-            Screen('DrawTexture', S.physScrVals.windowPtr, S.gratingTexture, srcRect, S.dstRect, -S.dirDeg);
-            %if ~isempty(S.maskTexture)
-            %    keyboard
-                Screen('DrawTexture', S.physScrVals.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, -S.dirDeg);
-            %end
+            xoffset = mod(S.flipCounter*S.shiftPxPerFlip,S.pxPerCycle);
+            S.srcRect=[xoffset 0 xoffset+S.visibleSizePx S.visibleSizePx];
         end
-        function myStep(S)
+        function myClear(S)
+            Screen('Close',[S.gratingTexture S.maskTexture])
         end
     end
     methods
@@ -103,5 +107,4 @@ classdef dpxStimGrating < dpxBasicStim
     end
 end
 
-% --- HELP FUNCTIONS ------------------------------------------------------
 
