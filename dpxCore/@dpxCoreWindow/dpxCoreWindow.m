@@ -59,7 +59,14 @@ classdef dpxCoreWindow < hgsetget
             Screen('BlendFunction',W.windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
             % Query OpenGL about limits on parameters, this only works
             % after the window has been opened using Screen('OpenWindow')
-            InitializeMatlabOpenGL(1); % this loads OpenGL constant labels as GL_XXX GLU_XXX etc.
+            try
+                InitializeMatlabOpenGL(1); % this loads OpenGL constant labels as GL_XXX GLU_XXX etc.
+            catch me
+                if IsLinux && ~isempty(strfind(me.message,'libglut.so'))
+                    dpxDispFancy('The libglut.so.3 library seems to missing on your Linux system. If you have admin rights, try running ''!sudo apt-get install freeglut3'' from the command window (without quotation marks).');
+                end
+                rethrow(me);
+            end
             W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
             % Load GetSecs' MEX into memory by calling it once so the first real call will be more accurate.
             GetSecs;
