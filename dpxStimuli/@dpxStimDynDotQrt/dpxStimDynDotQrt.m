@@ -14,7 +14,7 @@ classdef dpxStimDynDotQrt < dpxBasicStim
         showOddPair;
         RGBAs;
         diamPx;
-        flipInCycle;
+        flipInCycle; % keep track of the number of video-flips in the DDQ cycle
     end
     methods (Access=public)
         function S=dpxStimDynDotQrt
@@ -86,7 +86,7 @@ classdef dpxStimDynDotQrt < dpxBasicStim
         function myStep(S)
             S2F=S.physScrVals.measuredFrameRate;
             S.flipInCycle=S.flipInCycle+1;
-            S.showOddPair=S.flipInCycle<S.flashSec*S2F;
+            S.showOddPair=S.flipInCycle<round(S.flashSec*S2F);
             if S.flipInCycle>=round(S.flashSec*2*S2F)
                 S.flipInCycle=0;
             end
