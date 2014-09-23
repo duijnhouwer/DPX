@@ -32,11 +32,12 @@ classdef (Abstract) dpxBasicStim < hgsetget
             %
             % Abstract means no objects can be created from this class, it
             % only serves to be inherited. The names of all derived classes
-            % should be of the format dpxStimXXXXX.
+            % should be of the format dpxStimXXX where XXX is a placeholder
+            % for the name of your stimulus.
             %
-            % See also: dpxBasicResp, dpxStimRDK
+            % See also: dpxBasicResp, dpxStimRdk
             %
-            % Jacob Duijnhouwer, 20140905
+            % Jacob Duijnhouwer, 2014-09-05
         end
         function lockInitialPublicState(S)
             % addStim of the condition class will call this function to

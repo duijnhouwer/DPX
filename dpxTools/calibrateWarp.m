@@ -25,14 +25,14 @@ function calibrateWarp
                 azi=[];
                 ele=[];
                 while isempty(azi)
-                    s=input(['Point Nr ' num2str(tel) ' / ' num2str(numel(XX)*numel(YY)) ': [x y]=[' num2str(x) ' ' num2str(y) '] --> azi in deg? (type nan if invisible) > '],'s');
+                    s=input(['Point Nr ' num2str(tel) ' / ' num2str(numel(XX)*numel(YY)) ': [x y]=[' num2str(x) ' ' num2str(y) '] --> AZI in deg? (type nan if invisible) > '],'s');
                     azi=str2num(s); %#ok<*ST2NM>
                     if isnan(azi)
                         ele=nan;
                     end
                 end
                 while isempty(ele)
-                    s=input(['Point Nr ' num2str(tel) ' / ' num2str(numel(XX)*numel(YY)) ': [x y]=[' num2str(x) ' ' num2str(y) '] --> ele in deg? (type nan if invisible) > '],'s');
+                    s=input(['--- Point Nr ' num2str(tel) ' / ' num2str(numel(XX)*numel(YY)) ': [x y]=[' num2str(x) ' ' num2str(y) '] --> ELE in deg? (type nan if invisible) > '],'s');
                     ele=str2num(s);
                 end
                 cal.xPx(end+1)=x;
