@@ -8,7 +8,7 @@ function calibrateWarp
     W.winRectPx=[wid 0 wid*2 hei];
     W.open;
     
-    XX=120 : 120 : 1800;
+    XX=120 : 120 : 1920-120;
     YY=120 : 120 : 1080-120; 
     YY=YY(randperm(numel(YY)));
     
