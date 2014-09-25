@@ -3,18 +3,23 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
     properties (Access=public)
         nClusters;
         dAdEdeg; % azimuth and elevation offsets of points in cluster
-        dotSize;
+        dotDiamPx;
+        nSteps;
         lutFileName='halfDomeLUT.mat';
-        dotRBGAfrac1;
-        dotRBGAfrac2;
+        RBGAfrac1;
+        RBGAfrac2;
     end
     properties (Access=protected)
+        LUT;
         aziDeg;
         eleDeg;
-        LUT;
-        dotsRGBA;
+        dotCol; % 1s and 2s
+        dotAge; % frames
         visibleDots;
-        dotXy;
+        visDotXy;
+        visDotCol;
+        nDotsPerCluster;
+        palette;
     end
     methods (Access=public)
         function S=dpxStimHalfDomeRdk
@@ -28,54 +33,70 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             %
             % Jacob Duijnhouwer, 2014-09-23
             S.nClusters=500;
-            S.dotSize=4;
+            S.dotDiamPx=2;
+            S.nSteps=4;
             S.dAdEdeg=[0 sind(45:45:360)*.25 sind(30:30:360)*.5 ; 0 cosd(45:45:360)*.25 cosd(30:30:360)*.5];
-            S.dotRBGAfrac1=[0 0 0 1];
-            S.dotRBGAfrac2=[1 1 1 1];
+            S.RBGAfrac1=[0 0 0 1];
+            S.RBGAfrac2=[1 1 1 1];
         end
     end
     methods (Access=protected)
         function myInit(S)
-            F2I=S.physScrVals.whiteIdx; % fraction to index (for colors)
             S.LUT=S.loadHalfdomeWarpObject;
-            S.dotXy=[];
+            S.visDotXy=[];
             % create a uniform-density sphere of nClusters dots
-            S.aziDeg=rand(S.nClusters,1)*360; % angle in cross-section plane orthogonal to vertical axis
-            S.eleDeg=acosd(rand(S.nClusters,1)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
-            idx = rand(1,S.nClusters)<.5;
-            S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
-            S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
+            [S.aziDeg, S.eleDeg, S.dotAge]=S.getFreshClusters(S.nClusters,S.nSteps);
+            % Xreate an array with the color group number (1 or 2) for all
+            % dots, clusters (cols) x dotspercluster (rows);
+            S.dotCol=repmat(round(rand(1,S.nClusters))+1,S.nDotsPerCluster,1);
+            % Make this table a row, so that dots of the same clusters are
+            % next to each other
+            S.dotCol=S.dotCol(:)';
+            % Make the paletter into which the dotCol numbers are indices
+            S.palette=[S.RBGAfrac1(:) S.RBGAfrac2(:)]*S.physScrVals.whiteIdx;        
         end
         function myDraw(S)
-            %colors=repmat(S.dotsRGBA(:,S.visibleDots),1,S.nDotsPerCluster);
-            Screen('DrawDots',S.physScrVals.windowPtr,S.dotXy,S.dotSize,[255 255 255 255],[0 0],2);
-            %  for i=1:numel(S.visibleDots)
-            %        x=S.dotXy(1,i);
-            %        y=S.dotXy(2,i);
-            %        a=.5;
-            %        check=[x-a y-a; x+a y-a; x+a y+a; x-a y+a];
-            %        Screen('FillPoly',S.physScrVals.windowPtr,colors(:,i),check);
-            %  end
+            cols=S.palette(:,S.visDotCol);
+            Screen('DrawDots',S.physScrVals.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
         end
         function myStep(S)
             % 1: update the positions
             S.aziDeg=S.aziDeg+.1;
-            % 2: convert azi-ele deg to x-y pix
+            % 2: update lifetime, replace expired points
+            if S.nSteps<Inf
+                S.dotAge=S.dotAge+1;
+                expired=S.dotAge>S.nSteps;
+                [S.aziDeg(expired), S.eleDeg(expired)]=S.getFreshClusters(sum(expired),S.nSteps);
+                S.dotAge(expired)=0;
+            end
+            % 3: convert azi-ele deg to x-y pix
             % format the ele and azi coordinates lists of all clusters
             centerAzi=mod(S.aziDeg(:)',360)-180;
             centerEle=S.eleDeg(:)';
             % See which of the centers fall within the panorama
-            [~, S.visibleDots]=S.LUT.getXYpix(centerAzi,centerEle);
-            azi=repmat(centerAzi(S.visibleDots),1,size(S.dAdEdeg,2));
-            ele=repmat(centerEle(S.visibleDots),1,size(S.dAdEdeg,2));
-            dAzi=repmat(S.dAdEdeg(1,:),numel(S.visibleDots),1);
-            dEle=repmat(S.dAdEdeg(2,:),numel(S.visibleDots),1);
+            [~, vis]=S.LUT.getXYpix(centerAzi,centerEle);
+            col=repmat(S.dotCol(vis),S.nDotsPerCluster,1);
+            azi=repmat(centerAzi(vis),S.nDotsPerCluster,1);
+            ele=repmat(centerEle(vis),S.nDotsPerCluster,1);
+            col=col(:)';
+            azi=azi(:)';
+            ele=ele(:)';
+            dAzi=repmat(S.dAdEdeg(1,:),1,numel(vis));
+            dEle=repmat(S.dAdEdeg(2,:),1,numel(vis));
             azi=azi+dAzi(:)';
             ele=ele+dEle(:)';
-            [S.dotXy, S.visibleDots]=S.LUT.getXYpix(azi,ele);
+            [S.visDotXy, S.visibleDots]=S.LUT.getXYpix(azi,ele);
+            S.visDotCol=col(S.visibleDots);
         end
         function myClear(S)
             S.LUT=[];
+        end
+        function [aziDeg,eleDeg,dotAge]=getFreshClusters(~,N,maxSteps)
+            aziDeg=rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
+            eleDeg=acosd(rand(1,N)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
+            if nargout>2
+                dotAge=floor(rand(1,N)*maxSteps+1);
+            end
         end
         function W=loadHalfdomeWarpObject(S)
             % The halfdomeWarpObject is an object of the
@@ -106,23 +127,26 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
                 error('dAdEdeg should be an 2xN matrix of N dots per cluster (dAzi,dEle) values in degrees');
             else
                 S.dAdEdeg=value;
+                S.nDotsPerCluster=size(value,2); %#ok<MCSUP>
             end
         end
-        %function set.dotRBGAfrac1(S,value)
-        %    [ok,str]=dpxIsRGBAfrac(value);
-        %    if ~ok
-        %        error(['dotRBGAfrac1 should be a ' str]);
-        %    else
-        %        S.dotRBGAfrac1=value;
-        %    end
-        %end
-        %function set.dotRBGAfrac2(S,value)
-        %    [ok,str]=dpxIsRGBAfrac(value);
-        %    if ~ok
-        %        error(['dotRBGAfrac2 should be a ' str]);
-        %    else
-        %        S.dotRBGAfrac2=value;
-        %    end
-        %end         
+        function set.RBGAfrac1(S,value)
+            [ok,str]=dpxIsRGBAfrac(value);
+            if ~ok
+                error(['RBGAfrac1 should be a ' str]);
+            else
+                S.RBGAfrac1=value;
+            end
+        end
+        function set.RBGAfrac2(S,value)
+            [ok,str]=dpxIsRGBAfrac(value);
+            if ~ok
+                error(['RBGAfrac2 should be a ' str]);
+            else
+                S.RBGAfrac2=value;
+            end
+        end         
     end
 end
+
+
