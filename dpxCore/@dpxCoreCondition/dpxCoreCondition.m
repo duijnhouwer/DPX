@@ -66,8 +66,9 @@ classdef (CaseInsensitiveProperties=false ...
                     respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                 end
             end
+            % Initialize the video-blank timeer
             vbl=Screen('Flip',winPtr);
-            % loop over all video-flips (frames) of the trial
+            % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
             for f=1:C.nFlips
                 % Check the esc key (only every Nth flip to save overhead)
@@ -87,9 +88,9 @@ classdef (CaseInsensitiveProperties=false ...
                     C.stims{s}.draw;
                 end
                 % Wait until it's time, then flip the video buffer
-                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.75/C.physScrVals.measuredFrameRate);
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.physScrVals.measuredFrameRate);
                 % If this flip missed the deadline, increase the
-                % nrMissedFlips counter. Note that the Screen flip?
+                % nrMissedFlips counter. Note that the 'Screen flip?'
                 % documentation states that "... The automatic detection of
                 % deadline-miss is not fool-proof ..."
                 if dDeadlineSecs>0

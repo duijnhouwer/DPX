@@ -99,9 +99,14 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             drawnow
         end
         function [xy, visibleIdx]=getXYpix(W,aziDeg,eleDeg)
+            % XY will be a matrix with nDots-columns, 1st row X, 2nd row Y,
+            % regardless of the orientation of the input vector aziDeg and
+            % eleDeg;
             visibleIdx=1:numel(aziDeg);
             ai=1+round(aziDeg*W.stepsPerDeg-W.LUT.minA);
             ei=1+round(eleDeg*W.stepsPerDeg-W.LUT.minE);
+            ai=ai(:);
+            ei=ei(:);
             ok=ai>=1 & ai<=size(W.LUT.table,1) & ei>=1 & ei<=size(W.LUT.table,2);
             ai=ai(ok);
             ei=ei(ok);

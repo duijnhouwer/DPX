@@ -1,8 +1,9 @@
 classdef dpxStimHalfDomeRdk < dpxBasicStim
     
     properties (Access=public)
-        nDots;
-        dotDiamDeg;
+        nClusters;
+        dAdEdeg; % azimuth and elevation offsets of points in cluster
+        dotSize;
         lutFileName='halfDomeLUT.mat';
         dotRBGAfrac1;
         dotRBGAfrac2;
@@ -10,10 +11,10 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
     properties (Access=protected)
         aziDeg;
         eleDeg;
-        dotxy;
         LUT;
         dotsRGBA;
         visibleDots;
+        dotXy;
     end
     methods (Access=public)
         function S=dpxStimHalfDomeRdk
@@ -26,7 +27,9 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             % Definitely see also: dpxToolsHalfDomeWarp
             %
             % Jacob Duijnhouwer, 2014-09-23
-            S.nDots=500;
+            S.nClusters=500;
+            S.dotSize=4;
+            S.dAdEdeg=[0 sind(45:45:360)*.25 sind(30:30:360)*.5 ; 0 cosd(45:45:360)*.25 cosd(30:30:360)*.5];
             S.dotRBGAfrac1=[0 0 0 1];
             S.dotRBGAfrac2=[1 1 1 1];
         end
@@ -35,22 +38,43 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
         function myInit(S)
             F2I=S.physScrVals.whiteIdx; % fraction to index (for colors)
             S.LUT=S.loadHalfdomeWarpObject;
-            S.dotxy=[];
-            % create a uniform-density sphere of nDots dots
-            S.aziDeg=rand(S.nDots,1)*360; % angle in cross-section plane orthogonal to vertical axis
-            S.eleDeg=acosd(rand(S.nDots,1)*2-1); % angle of origin-point vector with vertical axis
-            idx = rand(1,S.nDots)<.5;
+            S.dotXy=[];
+            % create a uniform-density sphere of nClusters dots
+            S.aziDeg=rand(S.nClusters,1)*360; % angle in cross-section plane orthogonal to vertical axis
+            S.eleDeg=acosd(rand(S.nClusters,1)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
+            idx = rand(1,S.nClusters)<.5;
             S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
         end
         function myDraw(S)
-            colors=S.dotsRGBA(:,S.visibleDots);
-            Screen('DrawDots',S.physScrVals.windowPtr,S.dotxy,10,colors,[0 0],2);
+            %colors=repmat(S.dotsRGBA(:,S.visibleDots),1,S.nDotsPerCluster);
+            tic
+            Screen('DrawDots',S.physScrVals.windowPtr,S.dotXy,S.dotSize,[255 255 255 255],[0 0],2);
+            toc
+            %  for i=1:numel(S.visibleDots)
+            %        x=S.dotXy(1,i);
+            %        y=S.dotXy(2,i);
+            %        a=.5;
+            %        check=[x-a y-a; x+a y-a; x+a y+a; x-a y+a];
+            %        Screen('FillPoly',S.physScrVals.windowPtr,colors(:,i),check);
+            %  end
         end
         function myStep(S)
-            S.aziDeg=S.aziDeg+1;
-            a=mod(S.aziDeg,360)-180;
-            [S.dotxy, S.visibleDots]=S.LUT.getXYpix(a,S.eleDeg);
+            % 1: update the positions
+            S.aziDeg=S.aziDeg+.1;
+            % 2: convert azi-ele deg to x-y pix
+            % format the ele and azi coordinates lists of all clusters
+            centerAzi=mod(S.aziDeg(:)',360)-180;
+            centerEle=S.eleDeg(:)';
+            % See which of the centers fall within the panorama
+            [~, S.visibleDots]=S.LUT.getXYpix(centerAzi,centerEle);
+            azi=repmat(centerAzi(S.visibleDots),1,size(S.dAdEdeg,2));
+            ele=repmat(centerEle(S.visibleDots),1,size(S.dAdEdeg,2));
+            dAzi=repmat(S.dAdEdeg(1,:),numel(S.visibleDots),1);
+            dEle=repmat(S.dAdEdeg(2,:),numel(S.visibleDots),1);
+            azi=azi+dAzi(:)';
+            ele=ele+dEle(:)';
+            [S.dotXy, S.visibleDots]=S.LUT.getXYpix(azi,ele);
         end
         function myClear(S)
             S.LUT=[];
@@ -77,5 +101,30 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             end
             W=tmp.(fn{1});
         end
+    end
+    methods
+        function set.dAdEdeg(S,value)
+            if ~isnumeric(value) || size(value,1)~=2
+                error('dAdEdeg should be an 2xN matrix of N dots per cluster (dAzi,dEle) values in degrees');
+            else
+                S.dAdEdeg=value;
+            end
+        end
+        function set.dotRBGAfrac1(S,value)
+            [ok,str]=dpxIsRGBAfrac(value);
+            if ~ok
+                error(['dotRBGAfrac1 should be a ' str]);
+            else
+                S.dotRBGAfrac1=value;
+            end
+        end
+        function set.dotRBGAfrac2(S,value)
+            [ok,str]=dpxIsRGBAfrac(value);
+            if ~ok
+                error(['dotRBGAfrac2 should be a ' str]);
+            else
+                S.dotRBGAfrac2=value;
+            end
+        end         
     end
 end
