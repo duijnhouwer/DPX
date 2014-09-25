@@ -48,6 +48,7 @@ classdef dpxCoreExperiment < hgsetget
             try
                 % This is the last function to call in your experiment script,
                 % it starts the experiment and saves it when finished.
+                dpxDispFancy(E.expName)
                 E.startTime=now;
                 E.unifyConditions;
                 E.createConditionSequence;

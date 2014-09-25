@@ -48,9 +48,7 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
         end
         function myDraw(S)
             %colors=repmat(S.dotsRGBA(:,S.visibleDots),1,S.nDotsPerCluster);
-            tic
             Screen('DrawDots',S.physScrVals.windowPtr,S.dotXy,S.dotSize,[255 255 255 255],[0 0],2);
-            toc
             %  for i=1:numel(S.visibleDots)
             %        x=S.dotXy(1,i);
             %        y=S.dotXy(2,i);
@@ -110,21 +108,21 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
                 S.dAdEdeg=value;
             end
         end
-        function set.dotRBGAfrac1(S,value)
-            [ok,str]=dpxIsRGBAfrac(value);
-            if ~ok
-                error(['dotRBGAfrac1 should be a ' str]);
-            else
-                S.dotRBGAfrac1=value;
-            end
-        end
-        function set.dotRBGAfrac2(S,value)
-            [ok,str]=dpxIsRGBAfrac(value);
-            if ~ok
-                error(['dotRBGAfrac2 should be a ' str]);
-            else
-                S.dotRBGAfrac2=value;
-            end
-        end         
+        %function set.dotRBGAfrac1(S,value)
+        %    [ok,str]=dpxIsRGBAfrac(value);
+        %    if ~ok
+        %        error(['dotRBGAfrac1 should be a ' str]);
+        %    else
+        %        S.dotRBGAfrac1=value;
+        %    end
+        %end
+        %function set.dotRBGAfrac2(S,value)
+        %    [ok,str]=dpxIsRGBAfrac(value);
+        %    if ~ok
+        %        error(['dotRBGAfrac2 should be a ' str]);
+        %    else
+        %        S.dotRBGAfrac2=value;
+        %    end
+        %end         
     end
 end

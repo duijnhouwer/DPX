@@ -4,8 +4,15 @@ function jdDpxExpHalfDomeRdk(fullscreen)
     end
     E=dpxCoreExperiment;
     E.expName='jdDpxExpHalfDomeRdk';
-    E.physScr.skipSyncTests=1;
-    E.windowed(~fullscreen); 
+    E.physScr.skipSyncTests=0;
+    E.nRepeats=10;
+    if fullscreen
+        wid=1920;
+        hei=1080;
+        E.windowed([wid 0 wid*2 hei]);
+    else
+        E.windowed(true);
+    end
     C=dpxCoreCondition;
     C.durSec=10;
     S=dpxStimHalfDomeRdk;

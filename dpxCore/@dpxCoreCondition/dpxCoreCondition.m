@@ -1,8 +1,4 @@
-classdef (CaseInsensitiveProperties=false ...
-        ,Description='a' ...
-        ,DetailedDescription='ab') ...
-        dpxCoreCondition < hgsetget
-    
+classdef dpxCoreCondition < hgsetget
     
     properties (Access=public)
         % The duration of this condition (unless prematurely ended by

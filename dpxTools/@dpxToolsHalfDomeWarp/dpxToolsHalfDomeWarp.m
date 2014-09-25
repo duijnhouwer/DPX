@@ -19,7 +19,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
     end
     methods (Access='public')
         function W=dpxToolsHalfDomeWarp
-            load('C:\Users\jacob\Dropbox\Radboud\RevPhi gedrag\calib.mat');
+            load('calib.mat');
             ok=~isnan(A)&~isnan(E);
             W.aListDeg=A(ok);
             W.eListDeg=E(ok);
