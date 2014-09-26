@@ -19,10 +19,22 @@ function jdDpxExpHalfDomeRdk(fullscreen)
     end
     C=dpxCoreCondition;
     C.durSec=10;
+    % mask
+    M=dpxStimMask;
+    M.typeStr='halfdome';
+    M.pars=[600 50];
+    M.grayFrac=0;
+    M.wDeg=60;
+    M.hDeg=60;
+    M.yDeg=-5;
+    M.durSec=10;
+    C.addStim(M);
+    E.addCondition(C);
+    % dot stimulus
     S=dpxStimHalfDomeRdk;
     S.nClusters=1000;
     S.durSec=10;
     C.addStim(S);
-    E.addCondition(C);
+
     E.run;
 end
