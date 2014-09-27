@@ -28,15 +28,18 @@ function jdDpxExpHalfDomeRdk(fullscreen)
     M.wDeg=60;
     M.hDeg=60;
     M.yDeg=-5;
-    M.onSec=0;
-    M.durSec=11;
     C.addStim(M);
     E.addCondition(C);
     % dot stimulus
     S=dpxStimHalfDomeRdk;
     S.nClusters=1000;
-    S.durSec=10;
     C.addStim(S);
-
+    % gray field
+    F=dpxStimRect;
+    F.wDeg=50;
+    F.hDeg=50;
+    F.RGBAfrac=[.5 .5 .5 1];
+    C.addStim(F);
+    %
     E.run;
 end

@@ -6,8 +6,8 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
         dotDiamPx;
         nSteps;
         lutFileName='halfDomeLUT.mat';
-        RBGAfrac1;
-        RBGAfrac2;
+        RGBAfrac1;
+        RGBAfrac2;
     end
     properties (Access=protected)
         LUT;
@@ -36,8 +36,8 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             S.dotDiamPx=2;
             S.nSteps=4;
             S.dAdEdeg=[0 sind(45:45:360)*.25 sind(30:30:360)*.5 ; 0 cosd(45:45:360)*.25 cosd(30:30:360)*.5];
-            S.RBGAfrac1=[0 0 0 1];
-            S.RBGAfrac2=[1 1 1 1];
+            S.RGBAfrac1=[0 0 0 1];
+            S.RGBAfrac2=[1 1 1 1];
         end
     end
     methods (Access=protected)
@@ -53,7 +53,7 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             % next to each other
             S.dotCol=S.dotCol(:)';
             % Make the paletter into which the dotCol numbers are indices
-            S.palette=[S.RBGAfrac1(:) S.RBGAfrac2(:)]*S.scrGets.whiteIdx;        
+            S.palette=[S.RGBAfrac1(:) S.RGBAfrac2(:)]*S.scrGets.whiteIdx;        
         end
         function myDraw(S)
             cols=S.palette(:,S.visDotCol);
@@ -61,7 +61,7 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
         end
         function myStep(S)
             % 1: update the positions
-            S.aziDeg=S.aziDeg+.1;
+            S.aziDeg=S.aziDeg+1;
             % 2: update lifetime, replace expired points
             if S.nSteps<Inf
                 S.dotAge=S.dotAge+1;
@@ -130,20 +130,20 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
                 S.nDotsPerCluster=size(value,2); %#ok<MCSUP>
             end
         end
-        function set.RBGAfrac1(S,value)
+        function set.RGBAfrac1(S,value)
             [ok,str]=dpxIsRGBAfrac(value);
             if ~ok
-                error(['RBGAfrac1 should be a ' str]);
+                error(['RGBAfrac1 should be a ' str]);
             else
-                S.RBGAfrac1=value;
+                S.RGBAfrac1=value;
             end
         end
-        function set.RBGAfrac2(S,value)
+        function set.RGBAfrac2(S,value)
             [ok,str]=dpxIsRGBAfrac(value);
             if ~ok
-                error(['RBGAfrac2 should be a ' str]);
+                error(['RGBAfrac2 should be a ' str]);
             else
-                S.RBGAfrac2=value;
+                S.RGBAfrac2=value;
             end
         end         
     end
