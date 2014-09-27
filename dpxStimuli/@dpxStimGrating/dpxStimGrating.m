@@ -37,15 +37,15 @@ classdef dpxStimGrating < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.physScrVals.deg2px; % degrees to pixels deg*D2P=px
+            D2P=S.scrGets.deg2px; % degrees to pixels deg*D2P=px
             S.cyclesPerPx=S.cyclesPerDeg/D2P;
             S.pxPerCycle=1/S.cyclesPerPx;
             texHalfLenPx=round(S.wPx/2);
             S.visibleSizePx=2*texHalfLenPx+1;
-            S.shiftPxPerFlip= -1 * S.pxPerCycle * S.cyclesPerSecond / S.physScrVals.measuredFrameRate;
+            S.shiftPxPerFlip= -1 * S.pxPerCycle * S.cyclesPerSecond / S.scrGets.measuredFrameRate;
             spacePx=meshgrid(-texHalfLenPx:texHalfLenPx + S.pxPerCycle, 1);
-            white=S.physScrVals.whiteIdx;
-            black=S.physScrVals.blackIdx;
+            white=S.scrGets.whiteIdx;
+            black=S.scrGets.blackIdx;
             midgray=round((white+black)*S.grayFrac);
             maxAmplitude=min(white-midgray,abs(midgray-black));
             grating=midgray + S.contrastFrac*maxAmplitude*cosd(S.cyclesPerPx*spacePx*360);
@@ -53,7 +53,7 @@ classdef dpxStimGrating < dpxBasicStim
                 grating(grating>=midgray)=midgray+S.contrastFrac*maxAmplitude;
                 grating(grating<midgray)=midgray-S.contrastFrac*maxAmplitude;
             end
-            S.gratingTexture=Screen('MakeTexture', S.physScrVals.windowPtr, grating, -S.dirDeg);
+            S.gratingTexture=Screen('MakeTexture', S.scrGets.windowPtr, grating, -S.dirDeg);
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
             if strcmpi(S.maskStr,'gaussian')
@@ -61,13 +61,13 @@ classdef dpxStimGrating < dpxBasicStim
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 sigmaPx=S.maskPars*D2P;
                 mask(:, :, 2)=white * (1 - exp(-((x/sigmaPx).^2)-((y/sigmaPx).^2)));
-                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask, -S.dirDeg);
+                S.maskTexture=Screen('MakeTexture', S.scrGets.windowPtr, mask, -S.dirDeg);
             elseif strcmpi(S.maskStr,'circle')
                 mask=ones(S.visibleSizePx, S.visibleSizePx, 2) * midgray;
                 [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,-texHalfLenPx:texHalfLenPx);
                 rampPx=S.maskPars*D2P;
                 mask(:,:,2)=white*(1-dpxClip((hypot(x,y)-texHalfLenPx)*-1./rampPx,[0 1]));
-                S.maskTexture=Screen('MakeTexture', S.physScrVals.windowPtr, mask, -S.dirDeg);
+                S.maskTexture=Screen('MakeTexture', S.scrGets.windowPtr, mask, -S.dirDeg);
             elseif strcmpi(S.maskStr,'none')
                 S.maskTexture=[];
             else
@@ -75,9 +75,9 @@ classdef dpxStimGrating < dpxBasicStim
             end
         end
         function myDraw(S)
-            Screen('DrawTexture', S.physScrVals.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+            Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
             if ~isempty(S.maskTexture)
-                Screen('DrawTexture', S.physScrVals.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, -S.dirDeg);
+                Screen('DrawTexture', S.scrGets.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, -S.dirDeg);
             end
         end
         function myStep(S)

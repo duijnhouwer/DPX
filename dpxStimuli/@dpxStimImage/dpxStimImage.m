@@ -17,7 +17,7 @@ classdef dpxStimImage < dpxBasicStim
             xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
             rect=[xyTopLeft xyBotRite];
-            Screen('FillRect',S.physScrVals.windowPtr,S.RGBA,rect);
+            Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
         end
     end
 end

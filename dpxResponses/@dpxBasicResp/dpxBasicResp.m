@@ -35,7 +35,7 @@ classdef dpxBasicResp < hgsetget
         endsTrialAfterFlips;
     end
     properties (Access=protected)
-        physScrVals;
+        scrGets;
         flipCounter;
         kbNamesCell={};
         correctKbNamesCell={};
@@ -59,12 +59,12 @@ classdef dpxBasicResp < hgsetget
             %
             % Jacob Duijnhouwer, 20140905
         end
-        function init(R,physScrVals)
+        function init(R,scrGets)
             R.given=false;
-            R.allowAfterNrFlips=round(R.allowAfterSec*physScrVals.measuredFrameRate);
-            R.allowUntilNrFlips=round(R.allowUntilSec*physScrVals.measuredFrameRate);
+            R.allowAfterNrFlips=round(R.allowAfterSec*scrGets.measuredFrameRate);
+            R.allowUntilNrFlips=round(R.allowUntilSec*scrGets.measuredFrameRate);
             R.flipCounter=0;
-            R.physScrVals=physScrVals;
+            R.scrGets=scrGets;
             myInit(R);
         end
         function getResponse(R)

@@ -40,8 +40,8 @@ classdef dpxStimRdk < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.physScrVals.deg2px; % xDeg * D2P = xPix
-            F2I=S.physScrVals.whiteIdx; % fraction to index (for colors)
+            D2P=S.scrGets.deg2px; % xDeg * D2P = xPix
+            F2I=S.scrGets.whiteIdx; % fraction to index (for colors)
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
@@ -53,13 +53,13 @@ classdef dpxStimRdk < dpxBasicStim
             noiseDirs = rand(1,N) * 360;
             S.dotDirDeg(S.noiseDots) = noiseDirs(S.noiseDots);
             if S.cohereFrac<0, S.dotDirDeg = S.dotDirDeg + 180; end % negative coherence flips directions
-            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScrVals.limits.GL_ALIASED_POINT_SIZE_RANGE);
+            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.scrGets.deg2px,S.scrGets.limits.GL_ALIASED_POINT_SIZE_RANGE);
             if wasoutofrange
-                S.dotDiamDeg=S.dotDiamPx/S.physScrVals.deg2px;
+                S.dotDiamDeg=S.dotDiamPx/S.scrGets.deg2px;
                 warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
             end
             S.dotAge = floor(rand(1,N) * (S.nSteps + 1));
-            S.pxPerFlip = S.speedDps * D2P / S.physScrVals.measuredFrameRate;
+            S.pxPerFlip = S.speedDps * D2P / S.scrGets.measuredFrameRate;
             idx = rand(1,N)<.5;
             S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
@@ -68,7 +68,7 @@ classdef dpxStimRdk < dpxBasicStim
             ok=applyTheAperture(S);
             if ~any(ok), return; end
             xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-            Screen('DrawDots',S.physScrVals.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+            Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
         end
         function myStep(S)
             % Reposition the dots, use shorthands for clarity

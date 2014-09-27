@@ -37,7 +37,7 @@ classdef dpxStimDynDotQrt < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.physScrVals.deg2px; % xDeg * D2P = xPx
+            D2P=S.scrGets.deg2px; % xDeg * D2P = xPx
             %
             X=[-1 1 1 -1]/2*D2P*S.wDeg;
             Y=[1 1 -1 -1]/2*D2P*S.hDeg;
@@ -67,24 +67,24 @@ classdef dpxStimDynDotQrt < dpxBasicStim
                 botritey=S.winCntrXYpx(2) + S.yPx + XY(i,2) + S.diamPx(i)/2;
                 S.rectsPx{i}=[topleftx toplefty botritex botritey];
                 % scale the colors to this computer's whiteindex
-                S.RGBAs{i}=S.RGBAsFrac{i} * S.physScrVals.whiteIdx;
+                S.RGBAs{i}=S.RGBAsFrac{i} * S.scrGets.whiteIdx;
             end
             S.flipInCycle=0;
             S.showOddPair=true;
         end
         function myDraw(S)
-            %  Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, [10 400 100 500])
+            %  Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{1}, [10 400 100 500])
             %  return
             if S.showOddPair
-                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{1}, S.rectsPx{1}, S.diamPx(1));
-                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{3}, S.rectsPx{3}, S.diamPx(3));
+                Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{1}, S.rectsPx{1}, S.diamPx(1));
+                Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{3}, S.rectsPx{3}, S.diamPx(3));
             else
-                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{2}, S.rectsPx{2}, S.diamPx(2));
-                Screen('FillOval', S.physScrVals.windowPtr, S.RGBAs{4}, S.rectsPx{4}, S.diamPx(4));
+                Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{2}, S.rectsPx{2}, S.diamPx(2));
+                Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{4}, S.rectsPx{4}, S.diamPx(4));
             end
         end
         function myStep(S)
-            S2F=S.physScrVals.measuredFrameRate;
+            S2F=S.scrGets.measuredFrameRate;
             S.flipInCycle=S.flipInCycle+1;
             S.showOddPair=S.flipInCycle<round(S.flashSec*S2F);
             if S.flipInCycle>=round(S.flashSec*2*S2F)

@@ -4,7 +4,8 @@ function jdDpxExpHalfDomeRdk(fullscreen)
     end
     E=dpxCoreExperiment;
     E.expName='jdDpxExpHalfDomeRdk';
-    E.physScr.skipSyncTests=1;
+    E.scr.skipSyncTests=1;
+    E.scr.backRGBA=[0 0 0 1];
     E.nRepeats=10;
     if fullscreen
         if IsLinux
@@ -27,7 +28,8 @@ function jdDpxExpHalfDomeRdk(fullscreen)
     M.wDeg=60;
     M.hDeg=60;
     M.yDeg=-5;
-    M.durSec=10;
+    M.onSec=0;
+    M.durSec=11;
     C.addStim(M);
     E.addCondition(C);
     % dot stimulus

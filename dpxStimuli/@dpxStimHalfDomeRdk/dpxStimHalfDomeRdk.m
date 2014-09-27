@@ -53,11 +53,11 @@ classdef dpxStimHalfDomeRdk < dpxBasicStim
             % next to each other
             S.dotCol=S.dotCol(:)';
             % Make the paletter into which the dotCol numbers are indices
-            S.palette=[S.RBGAfrac1(:) S.RBGAfrac2(:)]*S.physScrVals.whiteIdx;        
+            S.palette=[S.RBGAfrac1(:) S.RBGAfrac2(:)]*S.scrGets.whiteIdx;        
         end
         function myDraw(S)
             cols=S.palette(:,S.visDotCol);
-            Screen('DrawDots',S.physScrVals.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
+            Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
         end
         function myStep(S)
             % 1: update the positions

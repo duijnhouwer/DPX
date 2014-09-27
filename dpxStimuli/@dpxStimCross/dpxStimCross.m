@@ -20,18 +20,18 @@ classdef dpxStimCross < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            S.RGBA = S.RGBAfrac * S.physScrVals.whiteIdx;
-            S.lineWidDeg = S.lineWidDeg * S.physScrVals.deg2px;
+            S.RGBA = S.RGBAfrac * S.scrGets.whiteIdx;
+            S.lineWidDeg = S.lineWidDeg * S.scrGets.deg2px;
         end
         function myDraw(S)
-            wPtr=S.physScrVals.windowPtr;
+            wPtr=S.scrGets.windowPtr;
             h=S.hPx/2;
             w=S.wPx/2;
             x=S.xPx;
             y=S.yPx;
-            if strcmpi(S.physScrVals.stereoMode,'mono')
+            if strcmpi(S.scrGets.stereoMode,'mono')
                 Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);
-            elseif strcmpi(S.physScrVals.stereoMode,'mirror')
+            elseif strcmpi(S.scrGets.stereoMode,'mirror')
                 for buffer=0:1
                     Screen('SelectStereoDrawBuffer', wPtr, buffer);
                     Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);

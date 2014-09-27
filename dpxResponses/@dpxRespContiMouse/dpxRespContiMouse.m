@@ -31,11 +31,11 @@ classdef dpxRespContiMouse < dpxBasicResp
             R.resp.dxPx=nan(1,R.nrTotalSamples);
             R.resp.dyPx=nan(1,R.nrTotalSamples);
             R.resp.tSec=nan(1,R.nrTotalSamples);
-            R.defaultX=round(R.physScrVals.widPx/2);
-            R.defaultY=round(R.physScrVals.heiPx/2);
+            R.defaultX=round(R.scrGets.widPx/2);
+            R.defaultY=round(R.scrGets.heiPx/2);
         end
         function myGetResponse(R)
-            [x,y] = GetMouse(R.physScrVals.windowPtr, R.mouseId); % R.mouseId is ignored on platforms other than Linux
+            [x,y] = GetMouse(R.scrGets.windowPtr, R.mouseId); % R.mouseId is ignored on platforms other than Linux
             t=GetSecs;
             SetMouse(R.defaultX, R.defaultY);
             R.nrSamplesTaken=R.nrSamplesTaken+1;

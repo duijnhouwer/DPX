@@ -2,7 +2,7 @@ classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
         expName;
-        physScr;
+        scr;
         nRepeats;
         conditionSequence;
         conditions;
@@ -31,7 +31,7 @@ classdef dpxCoreExperiment < hgsetget
             % Part of DPX suite
             % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
             % Jacob Duijnhouwer, 2014
-            E.physScr=dpxCoreWindow;
+            E.scr=dpxCoreWindow;
             E.conditions={};
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
@@ -54,7 +54,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.createConditionSequence;
                 E.sysInfo=dpxSystemInfo;
                 E.createFileName; % this function also asks for subject and experimenter IDs
-                E.physScr.open;
+                E.scr.open;
                 E.signalFile('save');
                 E.showStartScreen;
                 % Set the trial counter to zero
@@ -73,16 +73,16 @@ classdef dpxCoreExperiment < hgsetget
                     % Initialize this condition, this needs information
                     % about the screen. We pass it the values using get,
                     % not the object itself.
-                    E.conditions{cNr}.init(get(E.physScr));
+                    E.conditions{cNr}.init(get(E.scr));
                     % Technically backRGBA is a condition property, but to save
                     % the need to define it for all conditions I keep it in
                     % the window class, with an optional override in the
                     % condition class. Deal with that override now.
                     if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                        defaultBackRGBA=E.physScr.backRGBA;
-                        E.physScr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                        defaultBackRGBA=E.scr.backRGBA;
+                        E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
                     end
-                    E.physScr.clear;
+                    E.scr.clear;
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
                     [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
@@ -102,7 +102,7 @@ classdef dpxCoreExperiment < hgsetget
                     % If an overriding RGBA has been defined in this condition,
                     % reset the window object's backRGBA to its default,
                     if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                        E.physScr.backRGBA=defaultBackRGBA;
+                        E.scr.backRGBA=defaultBackRGBA;
                     end
                 end
                 E.stopTime=now;
@@ -110,7 +110,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.save;
                 E.signalFile('delete');
                 E.showEndScreen;
-                E.physScr.close;
+                E.scr.close;
             catch me
                 caf; % screen reset
                 rethrow(me)
@@ -130,16 +130,16 @@ classdef dpxCoreExperiment < hgsetget
                     win=[];
                 end
             end
-            E.physScr.winRectPx=win;
+            E.scr.winRectPx=win;
         end
     end
     methods (Access=protected)
         function save(E)
             % Convert the data
             D.exp=get(E);
-            D.exp=rmfield(D.exp,{'physScr','conditions','outputFileName','outputFolder','trials'});
-            D.stimwin=dpxGetSetables(E.physScr);
-            D.stimwin.measuredFrameRate=E.physScr.measuredFrameRate;
+            D.exp=rmfield(D.exp,{'scr','conditions','outputFileName','outputFolder','trials'});
+            D.stimwin=dpxGetSetables(E.scr);
+            D.stimwin.measuredFrameRate=E.scr.measuredFrameRate;
             D=dpxFlattenStruct(D);
             for c=1:numel(E.conditions)
                 for s=1:numel(E.conditions{c}.stims)
@@ -174,20 +174,20 @@ classdef dpxCoreExperiment < hgsetget
                 % magic value for E.txtStart, wait for pulse on DAQ device
                 str=['Waiting for ' E.txtEnd ' ... '];
                 dpxDispFancy(str);
-                dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
             else
-                dpxDisplayText(E.physScr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+                dpxDisplayText(E.scr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
             end
         end
         function showSaveScreen(E)
             str=[E.txtPause '\n\nSaving data ...'];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showPauseScreen(E)
             str=[E.txtPause '\n\nPress and release a key to continue'];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'fadeInSec',-1);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')
@@ -195,16 +195,16 @@ classdef dpxCoreExperiment < hgsetget
                 maxWaitSec=60;
                 str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds) ... '];
                 dpxDispFancy(str);
-                dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
                 E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
             end
             str=[E.txtEnd '\n\nSaving data ...\n\n'];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
             str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
-            dpxDisplayText(E.physScr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.physScr.backRGBA);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
         end
         function createFileName(E)
             if ~exist(E.outputFolder,'file')

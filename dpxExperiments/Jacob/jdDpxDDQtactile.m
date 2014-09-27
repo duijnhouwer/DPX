@@ -5,7 +5,7 @@ function jdDpxDDQtactile
     E=dpxCoreExperiment;
     E.expName='dpxDDQtest';
     % E.outputFolder='C:\dpxData\';
-    E.physScr.set('winRectPx',[0 0 1680 1050],'widHeiMm',[430 270],'distMm',500,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','SkipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
+    E.scr.set('winRectPx',[0 0 1680 1050],'widHeiMm',[430 270],'distMm',500,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','SkipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
 
     E.windowed(false); % true, false, [0 0 410 310]+100
     %

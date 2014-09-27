@@ -17,14 +17,14 @@ classdef dpxStimDot < dpxBasicStim
     end
     methods (Access=protected)
         function myInit(S)
-            S.RGBA = S.RGBAfrac * S.physScrVals.whiteIdx;
+            S.RGBA = S.RGBAfrac * S.scrGets.whiteIdx;
         end
         function myDraw(S)
-            wPtr=S.physScrVals.windowPtr;
+            wPtr=S.scrGets.windowPtr;
             diam=max(1,S.wPx);
-            if strcmpi(S.physScrVals.stereoMode,'mono')
+            if strcmpi(S.scrGets.stereoMode,'mono')
                 Screen('DrawDots',wPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
-            elseif strcmpi(S.physScrVals.stereoMode,'mirror')
+            elseif strcmpi(S.scrGets.stereoMode,'mirror')
                 for buffer=0:1
                     Screen('SelectStereoDrawBuffer', wPtr, buffer);
                     Screen('DrawDots',wPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
@@ -38,12 +38,12 @@ end
 
 
 function drawCross(S)
-    wPtr=S.physScrVals.windowPtr;
+    wPtr=S.scrGets.windowPtr;
     crossXY=max(1,S.wPx);
-    if strcmpi(S.physScrVals.stereoMode,'mono')
+    if strcmpi(S.scrGets.stereoMode,'mono')
         Screen('DrawLines',wPtr,[0 0 S.xPx-crossXY S.yPx+crossXY;S.xPx-crossXY S.yPx+crossXY 0 0] ...
             ,S.crossW,S.RGBA(:),S.winCntrXYpx);
-    elseif strcmpi(S.physScrVals.stereoMode,'mirror')
+    elseif strcmpi(S.scrGets.stereoMode,'mirror')
         for buffer=0:1
             Screen('SelectStereoDrawBuffer', wPtr, buffer);
             Screen('DrawLines',wPtr,[0 0 S.xPx-crossXY S.yPx+crossXY;S.xPx-crossXY S.yPx+crossXY 0 0] ...

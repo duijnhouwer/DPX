@@ -13,9 +13,9 @@ E.txtPauseNrTrials=5;
 E.nRepeats=1;
 E.outputFolder='';
 
-E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
-E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
-E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
+E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
+E.scr.set('stereoMode','mirror','SkipSyncTests',1);
 E.windowed(true);
 
 barConfigs={'even','uneven'};

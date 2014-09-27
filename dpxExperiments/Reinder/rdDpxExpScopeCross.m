@@ -2,8 +2,8 @@ function rdDpxExpScopeCross
 %fails :D
 
 E=dpxCoreExperiment;
-E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
-E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
+E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.scr.set('stereoMode','mirror','SkipSyncTests',1);
 E.windowed(true);
 C=dpxCoreCondition;
 set(C,'durSec',3600);

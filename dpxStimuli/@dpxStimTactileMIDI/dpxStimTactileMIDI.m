@@ -28,8 +28,8 @@ classdef dpxStimTactileMIDI < dpxBasicStim
         function myInit(S)
             % 'BrainMidi.jar' should be in the dpxStimTactileMIDI class folder
             S.midiSender=MidiSender('Port A');
-            S.tapOnFlip=round(S.tapOnSec*S.physScrVals.measuredFrameRate+S.onFlip);
-            S.tapOffFlip=S.tapOnFlip+round(S.tapDurSec*S.physScrVals.measuredFrameRate);
+            S.tapOnFlip=round(S.tapOnSec*S.scrGets.measuredFrameRate+S.onFlip);
+            S.tapOffFlip=S.tapOnFlip+round(S.tapDurSec*S.scrGets.measuredFrameRate);
         end
         function myDraw(S)
             onNotes=find(S.flipCounter==S.tapOnFlip);

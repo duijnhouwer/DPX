@@ -1,4 +1,4 @@
-function b=pdxIsWholeNumber(A)
+function b=dpxIsWholeNumber(A)
 
 % Return true if A contains all whole numbers. 
 % Return false if not numbers, not integer, or not positive.

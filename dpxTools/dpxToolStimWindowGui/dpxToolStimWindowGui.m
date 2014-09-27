@@ -56,7 +56,7 @@ function editButton_Callback(hObject, eventdata, handles)
     displaySetup(hObject, eventdata, handles);
 end
 
-function testButton_Callback(hObject, eventdata, handles)
+function testButton_Callback(hObject, eventdata, handles) %#ok<*DEFNU>
     handles.stimWin.open;
     strings={'Five','Four','Three','Two','One'};
     for s=1:numel(strings)
@@ -75,7 +75,7 @@ function dispButton_Callback(hObject, eventdata, handles)
     parms=dpxGetSetables(handles.stimWin);
     fields=fieldnames(parms);
     vals=struct2cell(parms);
-    str='E.physScr.set(';
+    str='E.scr.set(';
     for i=1:numel(fields)
         v=vals{i};
         if isnumeric(v)
@@ -94,7 +94,7 @@ function dispButton_Callback(hObject, eventdata, handles)
             v=[ '''' v ''''];
         else
             k=whos('v');
-            error(['Can''t deal with objects of class ' k.class]);
+            error(['Can''t handle objects of class ' k.class]);
         end
         str=[str '''' fields{i} ''',' v ','];
     end

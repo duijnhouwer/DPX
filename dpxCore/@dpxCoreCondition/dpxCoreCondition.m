@@ -20,38 +20,38 @@ classdef dpxCoreCondition < hgsetget
     properties (Access=protected)
         % The duration of the trial in flips, calculated in init
         nFlips;
-        % Structure that will hold copies of the getable values in physScr
-        physScrVals=struct;
+        % Structure that will hold copies of the getable values in scr
+        scrGets=struct;
     end
     methods (Access=public)
         function C=dpxCoreCondition
         end
-        function init(C,physScrVals)
+        function init(C,scrGets)
             % Initialize the dpxCoreCondition object Store a copy of the
-            % values in physScr, do not change any of these values, I would
+            % values in scr, do not change any of these values, I would
             % make them read only if Matlab allowed me. Changing
-            % physScrVals won't change the physScr object from which they
-            % were derived, thus messing up any calculations that depend on
-            % them.
-            C.physScrVals=physScrVals;
+            % scrGets won't change the scr object from which they were
+            % derived. Doing so would mess up any calculations that depend
+            % on them.
+            C.scrGets=scrGets;
             % Calculate the duration of the trial in flips
-            C.nFlips=round(C.durSec*C.physScrVals.measuredFrameRate);
+            C.nFlips=round(C.durSec*C.scrGets.measuredFrameRate);
             % Initialize all stimulus objects that have been added using
             % calls to addStim in the experiment script.
             for s=1:numel(C.stims)
-                C.stims{s}.init(physScrVals);
+                C.stims{s}.init(scrGets);
             end
             % Initialize all response objects that have been added using
             % calls to addStim in the experiment script.
             for r=1:numel(C.resps)
-                C.resps{r}.init(physScrVals);
+                C.resps{r}.init(scrGets);
             end
         end
         function [escPressed,timingStruct,respStruct,nrMissedFlips]=show(C)
-            if isempty(C.physScrVals)
+            if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
-            winPtr=C.physScrVals.windowPtr;
+            winPtr=C.scrGets.windowPtr;
             escPressed=false;
             stopTrialEarlyFlip=Inf;
             % Initialize the responses with the null response
@@ -84,7 +84,7 @@ classdef dpxCoreCondition < hgsetget
                     C.stims{s}.draw;
                 end
                 % Wait until it's time, then flip the video buffer
-                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.physScrVals.measuredFrameRate);
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.scrGets.measuredFrameRate);
                 % If this flip missed the deadline, increase the
                 % nrMissedFlips counter. Note that the 'Screen flip?'
                 % documentation states that "... The automatic detection of
@@ -121,7 +121,7 @@ classdef dpxCoreCondition < hgsetget
                                 % for initialization can be used. If this
                                 % is a problem a slight redesign of the
                                 % feedback system will be required.
-                                stimHandle.init(C.physScrVals);
+                                stimHandle.init(C.scrGets);
                                 stimHandle.visible=true;
                             end
                         end
@@ -205,7 +205,7 @@ classdef dpxCoreCondition < hgsetget
     end
     methods
         function set.overrideBackRGBA(C,value)
-            ok=(islogical(value) && value==false) || (isnumeric(value) && numel(value)==4 && all(value<=1) && all(value>=0));
+            ok=(islogical(value) && value==false) || dpxIsRGBAfrac(value);
             if ~ok
                 error('overrideBackRGBA needs to be false or a 4-element vector of numerical values between 0 and 1');
             else

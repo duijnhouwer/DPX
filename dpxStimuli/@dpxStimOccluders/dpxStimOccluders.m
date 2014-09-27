@@ -42,7 +42,7 @@ classdef dpxStimOccluders < dpxBasicStim
                 S.Block(Bl)=OccluShuffle(S.Block(Bl));
                 
                 for StimNr=1:BlockSize
-                    S.Block(Bl).StimEncode(StimNr).Texture=CalcTexture(S,S.physScrVals,S.Block(Bl).StimEncode(StimNr));
+                    S.Block(Bl).StimEncode(StimNr).Texture=CalcTexture(S,S.scrGets,S.Block(Bl).StimEncode(StimNr));
                 end
             end
             

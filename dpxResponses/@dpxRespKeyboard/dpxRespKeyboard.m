@@ -54,10 +54,10 @@ classdef dpxRespKeyboard < dpxBasicResp
                         end
                         if correct
                             R.nameOfFeedBackStim=R.correctStimName;
-                            R.endsTrialAfterFlips=round(R.correctEndsTrialAfterSec*R.physScrVals.measuredFrameRate);
+                            R.endsTrialAfterFlips=round(R.correctEndsTrialAfterSec*R.scrGets.measuredFrameRate);
                         else
                             R.nameOfFeedBackStim=R.wrongStimName;
-                            R.endsTrialAfterFlips=round(R.wrongEndsTrialAfterSec*R.physScrVals.measuredFrameRate);
+                            R.endsTrialAfterFlips=round(R.wrongEndsTrialAfterSec*R.scrGets.measuredFrameRate);
                         end
                         break;
                     end

@@ -14,7 +14,7 @@ function [newFileName,changed]=dpxSanitizeFileName(oldFileName,fauxpas,replacewi
     % prep fauxpas for regexprep
     reFauxpas='';
     for i=1:numel(fauxpas)
-        reFauxpas=[reFauxpas '(' fauxpas(i) ')|'];
+        reFauxpas=[reFauxpas '(' fauxpas(i) ')|']; %#ok<AGROW>
     end
     reFauxpas(end)='';
     %[^\d\w~!@#$%^&()_\-{}.]*

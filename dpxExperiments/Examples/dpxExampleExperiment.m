@@ -39,21 +39,21 @@ function dpxExampleExperiment
     % a valid path for your system.
     % E.outputFolder='C:\dpxData\';
     
-    % 'physScr' is a property of the dpxExperiment class that contains a
+    % 'scr' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
-    % when dpxCoreExperiment object is made. The settings of physScr can be
-    % viewed by typing get(E.physScr) and set by typing, for example,
-    % set(E.physScr,'distMm',1000) to set the viewing distance to a meter.
-    % Note that not all properties of E.physScr that are displayed when
-    % calling get(E.physScr) can also be set using set, some properties are
-    % read-only. A convenient way to set your physScr properties,
+    % when dpxCoreExperiment object is made. The settings of scr can be
+    % viewed by typing get(E.scr) and set by typing, for example,
+    % set(E.scr,'distMm',1000) to set the viewing distance to a meter.
+    % Note that not all properties of E.scr that are displayed when
+    % calling get(E.scr) can also be set using set, some properties are
+    % read-only. A convenient way to set your scr properties,
     % visualize, and test them is through the amazing GUI I created. Evoke
     % this by typing:
-    %   E.physScr.gui
+    %   E.scr.gui
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.physScr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
+    E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','SkipSyncTests',0);
     % Note (1) that i've manually cut the line using elipses (...) for

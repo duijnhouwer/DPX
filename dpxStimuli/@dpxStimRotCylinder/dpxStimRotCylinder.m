@@ -43,19 +43,19 @@ classdef dpxStimRotCylinder < dpxBasicStim
     methods (Access='protected')
         function myInit(S)
             S.nDots = max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
-            S.depthPx=round(S.yDeg*S.physScrVals.deg2px);
-            S.stimEyeDistPx=S.physScrVals.distPx-S.zCenterPx;
-            S.xCenterPx=round(S.xDeg*S.physScrVals.deg2px);
-            S.zCenterPx=round(S.zDeg*S.physScrVals.deg2px);
-            S.dotDiamPx=S.dotDiamDeg*S.physScrVals.deg2px;
-            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.physScrVals.deg2px,S.physScrVals.limits.GL_ALIASED_POINT_SIZE_RANGE);
+            S.depthPx=round(S.yDeg*S.scrGets.deg2px);
+            S.stimEyeDistPx=S.scrGets.distPx-S.zCenterPx;
+            S.xCenterPx=round(S.xDeg*S.scrGets.deg2px);
+            S.zCenterPx=round(S.zDeg*S.scrGets.deg2px);
+            S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
+            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.scrGets.deg2px,S.scrGets.limits.GL_ALIASED_POINT_SIZE_RANGE);
             if wasoutofrange
-                S.dotDiamDeg=S.dotDiamPx/S.physScrVals.deg2px;
+                S.dotDiamDeg=S.dotDiamPx/S.scrGets.deg2px;
                 warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
             end
-            S.dotRGBA1=S.dotRGBA1frac*S.physScrVals.whiteIdx;
-            S.dotRGBA2=S.dotRGBA2frac*S.physScrVals.whiteIdx;
-            S.winCntrXYpx=[S.physScrVals.widPx/2 S.physScrVals.heiPx/2];
+            S.dotRGBA1=S.dotRGBA1frac*S.scrGets.whiteIdx;
+            S.dotRGBA2=S.dotRGBA2frac*S.scrGets.whiteIdx;
+            S.winCntrXYpx=[S.scrGets.widPx/2 S.scrGets.heiPx/2];
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
                 x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
@@ -74,10 +74,10 @@ classdef dpxStimRotCylinder < dpxBasicStim
             else
                 error(['Unknown axis option: ' S.axis]);
             end
-            S.dAz=S.rotSpeedDeg/180*pi/S.physScrVals.measuredFrameRate;
+            S.dAz=S.rotSpeedDeg/180*pi/S.scrGets.measuredFrameRate;
         end
         function myDraw(S)
-            wPtr=S.physScrVals.windowPtr;
+            wPtr=S.scrGets.windowPtr;
             for buffer=0:1
                 if buffer==0 % left eye
                     dispfieldstr='lX00'; % disparity field string
@@ -116,7 +116,7 @@ classdef dpxStimRotCylinder < dpxBasicStim
             else
                 error(['Unknown axis option: ' S.axis]);
             end
-            S.hordisp=getHorizontalDisparity(S.physScrVals,S.XYZ);
+            S.hordisp=getHorizontalDisparity(S.scrGets,S.XYZ);
             S.fog=1-(sign(S.fogFrac)*cos(S.Az)+1)/2*abs(S.fogFrac);
             S.dotDiamScale=1-(sign(S.dotDiamScaleFrac)*cos(S.Az)+1)/2*abs(S.dotDiamScaleFrac);
         end
@@ -147,17 +147,17 @@ end
 
 % ------------------------------------------------------------------------
 
-function hordisp=getHorizontalDisparity(physScr,XYZ)
+function hordisp=getHorizontalDisparity(scr,XYZ)
     nDots=size(XYZ,2);
-    leV=XYZ-physScr.leftEyeXYZpx*ones(1,nDots);
-    reV=XYZ-physScr.rightEyeXYZpx*ones(1,nDots);
-    ceV=XYZ-physScr.cyclopEyeXYZpx*ones(1,nDots);
-    leC=-physScr.leftEyeXYZpx(2,:)*ones(1,nDots)./leV(2,:);
-    reC=-physScr.rightEyeXYZpx(2,:)*ones(1,nDots)./reV(2,:);
-    ceC=-physScr.cyclopEyeXYZpx(2,:)*ones(1,nDots)./ceV(2,:);
-    lepXYZ=round(physScr.leftEyeXYZpx*ones(1,nDots) + [leC; leC; leC].*leV );
-    repXYZ=round(physScr.rightEyeXYZpx*ones(1,nDots) + [reC; reC; reC].*reV );
-    cepXYZ=round(physScr.cyclopEyeXYZpx*ones(1,nDots) + [ceC; ceC; ceC].*ceV );
+    leV=XYZ-scr.leftEyeXYZpx*ones(1,nDots);
+    reV=XYZ-scr.rightEyeXYZpx*ones(1,nDots);
+    ceV=XYZ-scr.cyclopEyeXYZpx*ones(1,nDots);
+    leC=-scr.leftEyeXYZpx(2,:)*ones(1,nDots)./leV(2,:);
+    reC=-scr.rightEyeXYZpx(2,:)*ones(1,nDots)./reV(2,:);
+    ceC=-scr.cyclopEyeXYZpx(2,:)*ones(1,nDots)./ceV(2,:);
+    lepXYZ=round(scr.leftEyeXYZpx*ones(1,nDots) + [leC; leC; leC].*leV );
+    repXYZ=round(scr.rightEyeXYZpx*ones(1,nDots) + [reC; reC; reC].*reV );
+    cepXYZ=round(scr.cyclopEyeXYZpx*ones(1,nDots) + [ceC; ceC; ceC].*ceV );
     hordisp.lX00=cepXYZ-lepXYZ;
     hordisp.rX00=cepXYZ-repXYZ;
     % no perspective, only horizontal disparity component

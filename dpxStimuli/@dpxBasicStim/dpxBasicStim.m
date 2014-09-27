@@ -3,7 +3,7 @@ classdef (Abstract) dpxBasicStim < hgsetget
     properties (Access=public)
         visible=true;
         onSec=0;
-        durSec=1;
+        durSec=Inf;
         xDeg=0;
         yDeg=0;
         zDeg=0;
@@ -23,7 +23,7 @@ classdef (Abstract) dpxBasicStim < hgsetget
         wPx;
         hPx;
         winCntrXYpx=[];
-        physScrVals=[];
+        scrGets=[];
         flipCounter=0;
     end
     methods (Access=public)
@@ -45,9 +45,9 @@ classdef (Abstract) dpxBasicStim < hgsetget
             % stimulus in initialPublicState. Before a repeat of the
             % condition is presented, this struct is used to restore this
             % stimulus to it's starting state. So when, for example, the
-            % field visibility was toggled during one trail, is will be set
-            % to the intended start state at the beginning of the next
-            % trial of that conditon (repeat).
+            % property 'visible' was toggled during a condition-presenation
+            % (trial), is will be reset prior to the next trial of this
+            % condition.
             if ~isempty(S.initialPublicState)
                 error('lockInitialPublicState should be called only once on a stimulus, during addStim');
             end
@@ -62,23 +62,23 @@ classdef (Abstract) dpxBasicStim < hgsetget
                 S.(fns{i})=S.initialPublicState.(fns{i});
             end
         end
-        function init(S,physScrVals)
-            if nargin~=2 || ~isstruct(physScrVals)
+        function init(S,scrGets)
+            if nargin~=2 || ~isstruct(scrGets)
                 error('Needs get(dpxCoreWindow-object) struct');
             end
-            if isempty(physScrVals.windowPtr)
+            if isempty(scrGets.windowPtr)
                 error('dpxCoreWindow object has not been initialized');
             end
             S.restoreInitialPublicState; % keep at top of init
             S.flipCounter=0;
-            S.onFlip = S.onSec * physScrVals.measuredFrameRate;
-            S.offFlip = (S.onSec + S.durSec) * physScrVals.measuredFrameRate;
-            S.winCntrXYpx = [physScrVals.widPx/2 physScrVals.heiPx/2];
-            S.xPx = S.xDeg * physScrVals.deg2px;
-            S.yPx = S.yDeg * physScrVals.deg2px;
-            S.wPx = S.wDeg * physScrVals.deg2px;
-            S.hPx = S.hDeg * physScrVals.deg2px;
-            S.physScrVals=physScrVals;
+            S.onFlip = S.onSec * scrGets.measuredFrameRate;
+            S.offFlip = (S.onSec + S.durSec) * scrGets.measuredFrameRate;
+            S.winCntrXYpx = [scrGets.widPx/2 scrGets.heiPx/2];
+            S.xPx = S.xDeg * scrGets.deg2px;
+            S.yPx = S.yDeg * scrGets.deg2px;
+            S.wPx = S.wDeg * scrGets.deg2px;
+            S.hPx = S.hDeg * scrGets.deg2px;
+            S.scrGets=scrGets;
             S.myInit;
         end
         function draw(S)
