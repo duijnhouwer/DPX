@@ -1,5 +1,10 @@
 classdef dpxStimAAAAA < dpxBasicStim
     
+    % This stimulus is a stub. If you want to add a stimulus class, you can
+    % copy the entire @dpxStimAAAAA folder and replace all occurances of
+    % AAAAA with your stimulus' name.
+    % Jacob Duijnhouwer, 2014-09-29
+    
     properties (Access=public)
         RGBAfrac; % A four element vector of values between [0..1] representing red-green-blue-opacity of the rectangle
     end
@@ -29,11 +34,11 @@ classdef dpxStimAAAAA < dpxBasicStim
             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
             rect=[xyTopLeft xyBotRite];
             Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
-            disp('fillrect :)');
         end
         function myClear(S)
             % Called at the end of the trial, can used to clear objects
-            % that may have been instantiated during myInit
+            % that may have been instantiated during myInit. Typically this
+            % function can be left out of your stimulus class.
         end
     end
     methods
