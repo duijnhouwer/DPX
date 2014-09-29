@@ -5,6 +5,7 @@ classdef dpxStimRect < dpxBasicStim
     end
     properties (Access=protected)
         RGBA;
+        rect;
     end
     methods (Access=public)
         function S=dpxStimRect
@@ -14,13 +15,12 @@ classdef dpxStimRect < dpxBasicStim
     methods (Access=protected)
         function myInit(S)
             S.RGBA=S.RGBAfrac*S.scrGets.whiteIdx;
-        end
-        function myDraw(S)
             xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
-            rect=[xyTopLeft xyBotRite];
-            Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
-            disp('fillrect :)');
+            S.rect=[xyTopLeft xyBotRite];
+        end
+        function myDraw(S)
+            Screen('FillRect',S.scrGets.windowPtr,S.RGBA,S.rect);
         end
     end
     methods

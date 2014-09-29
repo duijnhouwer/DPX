@@ -49,6 +49,7 @@ classdef dpxCoreExperiment < hgsetget
                 % This is the last function to call in your experiment script,
                 % it starts the experiment and saves it when finished.
                 dpxDispFancy(E.expName)
+                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
                 E.startTime=now;
                 E.unifyConditions;
                 E.createConditionSequence;
