@@ -1,1 +1,1 @@
-% shorthand for clear allclear all
+% shorthand for clear allclear all classes

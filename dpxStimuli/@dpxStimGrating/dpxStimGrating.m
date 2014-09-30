@@ -53,6 +53,7 @@ classdef dpxStimGrating < dpxAbstractStim
                 grating(grating>=midgray)=midgray+S.contrastFrac*maxAmplitude;
                 grating(grating<midgray)=midgray-S.contrastFrac*maxAmplitude;
             end
+            
             S.gratingTexture=Screen('MakeTexture', S.scrGets.windowPtr, grating, -S.dirDeg);
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
