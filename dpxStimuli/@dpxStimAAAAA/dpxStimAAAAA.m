@@ -28,15 +28,15 @@ classdef dpxStimAAAAA < dpxBasicStim
             % updated here.
         end
         function myDraw(S)
-            % Called every flip, after myStep. All drawing must be done
-            % here, the video-flip is triggered right after this.
+            % Called every flip, after myStep. All drawing is done here,
+            % the video-flip is triggered right after this.
             xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
             rect=[xyTopLeft xyBotRite];
             Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
         end
         function myClear(S)
-            % Called at the end of the trial, can used to clear objects
+            % Called at the end of the trial, can be used to clear objects
             % that may have been instantiated during myInit. Typically this
             % function can be left out of your stimulus class.
         end
