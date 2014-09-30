@@ -55,7 +55,7 @@ function dpxExampleExperiment
     % this experiment here:
     E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','SkipSyncTests',0);
+        'stereoMode','mono','skipSyncTests',0);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
