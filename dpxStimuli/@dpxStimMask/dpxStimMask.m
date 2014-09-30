@@ -1,4 +1,4 @@
-classdef dpxStimMask < dpxBasicStim
+classdef dpxStimMask < dpxAbstractStim
     
     properties (Access=public)
         typeStr; % 'none', 'gaussian', 'circle'

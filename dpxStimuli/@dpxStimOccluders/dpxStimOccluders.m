@@ -1,4 +1,4 @@
-classdef dpxStimOccluders < dpxBasicStim
+classdef dpxStimOccluders < dpxAbstractStim
     %DPXOCCLUDERS Summary of this class goes here
     %   Detailed explanation goes here
     

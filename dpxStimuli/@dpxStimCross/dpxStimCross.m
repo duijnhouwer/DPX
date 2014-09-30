@@ -1,4 +1,4 @@
-classdef dpxStimCross < dpxBasicStim
+classdef dpxStimCross < dpxAbstractStim
     
     properties (Access=public)
         shape;

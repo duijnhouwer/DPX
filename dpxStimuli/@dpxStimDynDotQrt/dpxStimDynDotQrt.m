@@ -1,4 +1,4 @@
-classdef dpxStimDynDotQrt < dpxBasicStim
+classdef dpxStimDynDotQrt < dpxAbstractStim
     
     properties (Access=public)
         flashSec;

@@ -1,4 +1,4 @@
-classdef dpxStimAAAAA < dpxBasicStim
+classdef dpxStimAAAAA < dpxAbstractStim
     
     % This stimulus is a stub. If you want to add a stimulus class, you can
     % copy the entire @dpxStimAAAAA folder and replace all occurances of

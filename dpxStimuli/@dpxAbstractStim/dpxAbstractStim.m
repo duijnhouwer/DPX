@@ -1,4 +1,4 @@
-classdef (Abstract) dpxBasicStim < hgsetget
+classdef (Abstract) dpxAbstractStim < hgsetget
     
     properties (Access=public)
         visible=true;
@@ -27,8 +27,8 @@ classdef (Abstract) dpxBasicStim < hgsetget
         flipCounter=0;
     end
     methods (Access=public)
-        function S=dpxBasicStim
-            % dpxBasicStim - Abstract class for dpxStim classes.
+        function S=dpxAbstractStim
+            % dpxAbstractStim - Abstract class for dpxStim classes.
             %
             % Abstract means no objects can be created from this class, it
             % only serves to be inherited. The names of all derived classes

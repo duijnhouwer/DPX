@@ -1,4 +1,4 @@
-classdef dpxStimImage < dpxBasicStim
+classdef dpxStimImage < dpxAbstractStim
     
     properties (Access=public)
         RGBA=[0 0 255 255];

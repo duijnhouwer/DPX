@@ -1,4 +1,4 @@
-classdef dpxStimRotCylinder < dpxBasicStim
+classdef dpxStimRotCylinder < dpxAbstractStim
     
     properties (Access=public)
         dotsPerSqrDeg=10;

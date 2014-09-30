@@ -1,4 +1,4 @@
-classdef dpxStimTactileMIDI < dpxBasicStim
+classdef dpxStimTactileMIDI < dpxAbstractStim
     
     properties (Access=public)
         tapNote;

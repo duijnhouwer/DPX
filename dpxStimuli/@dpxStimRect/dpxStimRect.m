@@ -1,4 +1,4 @@
-classdef dpxStimRect < dpxBasicStim
+classdef dpxStimRect < dpxAbstractStim
     
     properties (Access=public)
         RGBAfrac;

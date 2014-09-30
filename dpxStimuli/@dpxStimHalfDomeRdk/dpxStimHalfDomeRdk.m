@@ -1,4 +1,4 @@
-classdef dpxStimHalfDomeRdk < dpxBasicStim
+classdef dpxStimHalfDomeRdk < dpxAbstractStim
     
     properties (Access=public)
         nClusters;

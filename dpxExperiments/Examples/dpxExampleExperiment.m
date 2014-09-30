@@ -104,7 +104,7 @@ function dpxExampleExperiment
         
         % [The RDK is one of the earliest stimuli I've programmed for
         % DPX. The design is that new stimuli can be added as modules,
-        % little files that inherit from dpxBasicStim like dpxStimRdk
+        % little files that inherit from dpxAbstractStim like dpxStimRdk
         % does, or that inherit from an existing stimulus (say you want
         % the RDK to have some additional exotic behavior, don't tweak
         % the dpxStimRdk file, but instead inherit from that class into

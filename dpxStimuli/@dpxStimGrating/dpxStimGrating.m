@@ -1,4 +1,4 @@
-classdef dpxStimGrating < dpxBasicStim
+classdef dpxStimGrating < dpxAbstractStim
     
     properties (Access=public)
         dirDeg;

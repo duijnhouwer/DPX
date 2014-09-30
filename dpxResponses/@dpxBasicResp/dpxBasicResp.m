@@ -55,7 +55,7 @@ classdef dpxBasicResp < hgsetget
             % has since been split into this abstract class and the derived
             % class dpxRespKeyboard.
             %
-            % See also: dpxBasicStim, dpxRespKeyboard
+            % See also: dpxAbstractStim, dpxRespKeyboard
             %
             % Jacob Duijnhouwer, 20140905
         end
