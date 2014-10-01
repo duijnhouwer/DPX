@@ -1,4 +1,4 @@
-classdef dpxRespKeyboard < dpxBasicResp
+classdef dpxRespKeyboard < dpxAbstractResp
     
     properties (Access=public)
         % A comma separated list of keys-names that are valid responses To
@@ -15,12 +15,22 @@ classdef dpxRespKeyboard < dpxBasicResp
         % wrong or right answer exists (e.g., set it to 1 or .5)
         correctKbNames='1';
     end
+    properties (Access=protected)
+        winHandle;
+    end
     methods (Access=protected)
         function myInit(R)
             R.resp=struct('keyNr',-1,'keyName','none','keySec',-1);
             KbName('UnifyKeyNames');
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
+            % Create a(n invisible) figure window with a edit-box that will
+            % keep keypresses from also going into the command window or an
+            % open file in the editor, which could potentially mess things
+            % up badly.
+            R.winHandle=dpxFindFig('DPX KeyCatcher','visible',false);
+            h=uicontrol('Parent',R.winHandle,'Style','edit');
+            uicontrol(h);
         end
         function myGetResponse(R)
             [keyIsDown,keyTime,keyCode]=KbCheck(-1);
@@ -63,6 +73,9 @@ classdef dpxRespKeyboard < dpxBasicResp
                     end
                 end
             end
+        end
+        function myClear(R)
+            close(R.winHandle);
         end
     end
 end

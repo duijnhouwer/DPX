@@ -1,4 +1,4 @@
-classdef dpxRespContiMouse < dpxBasicResp
+classdef dpxRespContiMouse < dpxAbstractResp
     
     properties (Access=public)
         mouseId=[];

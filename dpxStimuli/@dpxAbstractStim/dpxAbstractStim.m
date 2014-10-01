@@ -35,7 +35,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % should be of the format dpxStimXXX where XXX is a placeholder
             % for the name of your stimulus.
             %
-            % See also: dpxBasicResp, dpxStimRdk
+            % See also: dpxAbstractResp, dpxStimRdk
             %
             % Jacob Duijnhouwer, 2014-09-05
         end

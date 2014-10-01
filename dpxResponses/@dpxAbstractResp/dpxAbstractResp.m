@@ -1,4 +1,4 @@
-classdef dpxBasicResp < hgsetget
+classdef dpxAbstractResp < hgsetget
     
     properties (Access=public)
         % The names of the stimuli that will be displayed as positive or
@@ -41,8 +41,8 @@ classdef dpxBasicResp < hgsetget
         correctKbNamesCell={};
     end
     methods (Access=public)
-        function R=dpxBasicResp
-            % dpxBasicResp - Abstract class for dpxResp classes.
+        function R=dpxAbstractResp
+            % dpxAbstractResp - Abstract class for dpxResp classes.
             %
             % Classes for registering participant-responses, e.g.
             % dpxRespKeyboard, inherit basic properties and methods from
