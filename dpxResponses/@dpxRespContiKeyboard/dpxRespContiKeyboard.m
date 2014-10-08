@@ -14,11 +14,12 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
     end
     methods (Access=protected)
         function myInit(R)
-            R.resp.keyNr=-1;
-            R.resp.keySec=-1;
+            R.resp.keyNr{1}=-1;
+            R.resp.keyName{1}='';
+            R.resp.keySec{1}=-1;
             KbName('UnifyKeyNames');
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
-            R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
+            %R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
             R.nResponses=0;
             R.keyWasDownPrevFlip=false;
         end
@@ -31,8 +32,12 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
                             % A defined key was pressed, parcel it in the resp
                             % structure for output to the caller function
                             R.nResponses=R.nResponses+1;
-                            R.resp.keyNr(R.nResponses)=i;
-                            R.resp.keySec(R.nResponses)=keyTime;
+                            R.resp.keyNr{1}(R.nResponses)=i;
+                            R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbNamesCell{i} ]);
+                            R.resp.keySec{1}(R.nResponses)=keyTime;
+                            
+                           % i
+                            %666
                             break;
                         end
                     end

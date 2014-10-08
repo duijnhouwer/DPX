@@ -66,7 +66,8 @@ for t=2:numel(T)
                 M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{cf};
             end
         else
-            if iscell(thistab.(thisname)) try
+            if iscell(thistab.(thisname))
+                try
                 M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
                 catch % 666
                     keyboard, end;
