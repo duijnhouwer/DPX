@@ -45,8 +45,9 @@ classdef dpxRespContiMouse < dpxAbstractResp
             if R.nrSamplesTaken>=R.nrTotalSamples-1
                 % Flag dpxCoreCondition that the response is complete and
                 % can be appended to the output structure. Subtracting 1
-                % from nrTotalSamples serve to guarantee that given is set
-                % in the face of rounding errors. Last sample will be NaN.
+                % from nrTotalSamples serve to guarantee that 'given' is
+                % set despite potential rounding errors. Last sample will
+                % be NaN.
                 R.given=true;
             end
         end

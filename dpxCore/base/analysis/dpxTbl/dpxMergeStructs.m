@@ -19,8 +19,8 @@ function u=dpxMergeStructs(s,str)
     % EXAMPLE:
     %   monkey=struct('furry',true,'animal',true);
     %   banana=struct('fruit',true,'color','yellow','curvature',2.72)
-    %   jdPTBmergeStructs({monkey banana})
-    %   jdPTBmergeStructs({monkey banana},{'monkey ','food '})
+    %   dpxMergeStructs({monkey banana})
+    %   dpxMergeStructs({monkey banana},{'monkey ','food '})
     %
     % See also jdPTBflattenStruct
     
@@ -82,7 +82,7 @@ function [b,nUniqueFields,nFields]=checkFieldnameConflict(s)
     for i=1:numel(s)
         newFns=fieldnames(s{i});
         nFields=nFields+numel(newFns);
-        fns=[fns(:); newFns(:)]; %#ok<AGROW>
+        fns=[fns(:); newFns(:)];
     end
     nUniqueFields=numel(unique(upper(fns)));
     b=nUniqueFields~=nFields;

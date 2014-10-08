@@ -16,7 +16,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
         correctKbNames='1';
     end
     properties (Access=protected)
-        winHandle;
+        figHandle;
     end
     methods (Access=protected)
         function myInit(R)
@@ -24,13 +24,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
             KbName('UnifyKeyNames');
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
-            % Create a(n invisible) figure window with a edit-box that will
-            % keep keypresses from also going into the command window or an
-            % open file in the editor, which could potentially mess things
-            % up badly.
-            R.winHandle=dpxFindFig('DPX KeyCatcher','visible',false);
-            h=uicontrol('Parent',R.winHandle,'Style','edit');
-            uicontrol(h);
+            R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
         end
         function myGetResponse(R)
             [keyIsDown,keyTime,keyCode]=KbCheck(-1);
@@ -75,7 +69,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
             end
         end
         function myClear(R)
-            close(R.winHandle);
+            close(R.figHandle);
         end
     end
 end

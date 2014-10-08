@@ -60,4 +60,7 @@ function varargout = psignifit(varargin)
 % mailto:psignifit@bootstrap-software.org
 % http://bootstrap-software.org/psignifit/
 
+if strcmp(mexext,'mexmaci64')
+    error('psignifit does not work on your Mac OS X/64-bit Matlab setup. This would require  a psignifit.mexmaci64 mex-file. But I haven''t been able to compile (make) that, and it may be impossible without substantial changes to the already abandoned psignifit 2 project. However, this analysis does run on Windows and Linux PCs with 32 or 64-bits Matlab. Jacob Duijnhouwer 2014-10-02')
+end
 error('the PSIGNIFIT engine (mex-file) needs to be installed, or needs to be given a higher priority on the path than PSIGNIFIT.M')

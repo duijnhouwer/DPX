@@ -1,15 +1,16 @@
 classdef (Abstract) dpxAbstractStim < hgsetget
     
     properties (Access=public)
-        visible=true;
-        onSec=0;
-        durSec=Inf;
-        xDeg=0;
-        yDeg=0;
-        zDeg=0;
-        wDeg=1;
-        hDeg=1;
-        name=''; % defaults to class when added to condition
+        visible=true; % Toggle visibility of the stimulus, true|false
+        onSec=0; % Time since trial start that stimulus comes on
+        durSec=Inf; % Duration of stim (relative to start)
+        xDeg=0; % Horizontal position of stimulus relative to screen center
+        yDeg=0; % Vertical position of stimulus relative to screen center
+        zDeg=0; % Position on axis normal to screen. Currently (10/2014) only stereoscopic stimuli use this but could in the future be used for all stimuli to control mutual occlusion.
+        wDeg=1; % Widht of the stimulus
+        hDeg=1; % Height of the stimulus
+        aDeg=0; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
+        name=''; % defaults to class-name when added to condition
     end
     properties (SetAccess=public,GetAccess=protected)
         initialPublicState=[];
@@ -99,7 +100,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         end
     end
     methods (Access=protected)
-        % overwrite these "my" functions is your stimulus class
+        % overwrite these "my"-functions is your stimulus class
         function myInit(S), end     
         function myDraw(S), end
         function myStep(S), end

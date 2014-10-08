@@ -18,6 +18,11 @@ function setFields=dpxWhichSetFields(obj)
     okToSet=true(numel(allFields),1);
     for i=1:numel(allFields)
         try
+            % Try setting this field, if it has protected setting, this
+            % will cause an error that we will catch. This is actually an
+            % ugly way to to this, depending on errors to happen always is.
+            % Practically it's inconvenient because dbstop if all error
+            % will stop here. Think of a better method someday ... 666
             obj.(allFields{i})=obj.(allFields{i});
         catch me
             if strcmpi(me.identifier,'MATLAB:class:SetProhibited')

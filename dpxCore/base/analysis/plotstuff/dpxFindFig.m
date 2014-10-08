@@ -41,7 +41,7 @@ end
 
 
 fig_ = findobj(get(0,'children'),'flat','tag',tag);
-if length(fig_) > 0
+if ~isempty(fig_)
     %set(fig_,'visible',visi);
     figure(fig_);
     set(fig_,'visible',visi);

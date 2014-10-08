@@ -1,4 +1,4 @@
-function structMP=jdDpxGratingToMontijn(filename)
+function structMP=lkDpxGratingToMontijn(filename)
     
     % Conversion function for output of dpxGratingExp style 2-photon
     % microscope experiments (TF TS contrast grating) to Jorrit Montijn

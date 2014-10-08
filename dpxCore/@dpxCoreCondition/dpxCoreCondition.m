@@ -74,37 +74,21 @@ classdef dpxCoreCondition < hgsetget
                         break;
                     end
                 end
-                % Step the stimuli (e.g., move the random dots)
+                % Step the stimuli (e.g., update random dot positions)
                 for s=1:numel(C.stims)
                     C.stims{s}.step;
                 end
                 % Draw the stimuli
                 for s=numel(C.stims):-1:1
-                    % draw stim in reverse order so stim1 is on top
+                    % draw stims in reverse order so stims{1} is on top
                     C.stims{s}.draw;
                 end
-                % Wait until it's time, then flip the video buffer
-                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.scrGets.measuredFrameRate);
-                % If this flip missed the deadline, increase the
-                % nrMissedFlips counter. Note that the 'Screen flip?'
-                % documentation states that "... The automatic detection of
-                % deadline-miss is not fool-proof ..."
-                if dDeadlineSecs>0
-                    nrMissedFlips=nrMissedFlips+1; 
-                end
-                % Collect start or stop time of the trial in seconds, right
-                % after the flip for accuracy.
-                if f==1
-                    timingStruct.startSec=GetSecs;
-                elseif f==C.nFlips
-                    timingStruct.stopSec=GetSecs;
-                    break;
-                end
+                Screen('DrawingFinished',winPtr);
                 % Get the response(s)
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
                         C.resps{r}.getResponse;
-                        if C.resps{r}.given
+                        if C.resps{r}.given || f==C.nFlips % (at final flip always store, useful for continous resp recordings)
                             respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                             % Set the new end time of the trial. This way
                             % giving the response can stop the trial. If
@@ -126,6 +110,23 @@ classdef dpxCoreCondition < hgsetget
                             end
                         end
                     end
+                end
+                % Wait until it's time, then flip the video buffer
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.scrGets.measuredFrameRate);
+                % If this flip missed the deadline, increase the
+                % nrMissedFlips counter. Note that the 'Screen flip?'
+                % documentation states that "... The automatic detection of
+                % deadline-miss is not fool-proof ..."
+                if dDeadlineSecs>0
+                    nrMissedFlips=nrMissedFlips+1; 
+                end
+                % Collect start or stop time of the trial in seconds, right
+                % after the flip for accuracy.
+                if f==1
+                    timingStruct.startSec=GetSecs;
+                elseif f==C.nFlips
+                    timingStruct.stopSec=GetSecs;
+                    break;
                 end
                 % If the response ends the trial, that happens here
                 if f>=stopTrialEarlyFlip

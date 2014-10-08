@@ -1,3 +1,4 @@
+
 classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
@@ -29,7 +30,7 @@ classdef dpxCoreExperiment < hgsetget
         function E=dpxCoreExperiment
             % dpxCoreExperiment
             % Part of DPX suite
-            % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
+            % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
             E.conditions={};
@@ -48,8 +49,11 @@ classdef dpxCoreExperiment < hgsetget
             try
                 % This is the last function to call in your experiment script,
                 % it starts the experiment and saves it when finished.
-                dpxDispFancy(E.expName)
-                %commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
+                if numel(E.conditions)==0
+                    disp('No conditions. Use your experiment-object''s (typically: dpxCoreExperiment) ''addCondition'' method to add condition objects (typically: dpxCoreCondition) to your experiment.');
+                    return;
+                end
+                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
                 E.startTime=now;
                 E.unifyConditions;
                 E.createConditionSequence;
@@ -152,7 +156,8 @@ classdef dpxCoreExperiment < hgsetget
                     % preallocate
                     C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
                 else
-                    C(c)=dpxFlattenStruct(TMP);
+                    % insert in preallocated array
+                    C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                 end
             end
             % Get the settings for all trials

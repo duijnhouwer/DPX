@@ -47,11 +47,11 @@ for t=1:numel(T)
     F=E;
 end
 
-% copy the output fields of the first dpxTbl to the output M
+% Copy the output fields of the first dpxTbl to the output M
 for f=1:numel(F)
     M.(F{f})=T{1}.(F{f});
 end
-% merge the remaining dpxTbl in the input array with the output M
+% Merge the remaining dpxTbls in the input array with the output M
 for t=2:numel(T)
     thistab=T{t};
     for f=1:numel(F)
@@ -66,8 +66,10 @@ for t=2:numel(T)
                 M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{cf};
             end
         else
-            if iscell(thistab.(thisname))
+            if iscell(thistab.(thisname)) try
                 M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
+                catch % 666
+                    keyboard, end;
             elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname))
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
             elseif isstruct(thistab.(thisname))
