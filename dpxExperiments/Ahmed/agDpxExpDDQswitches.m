@@ -8,15 +8,17 @@ function agDpxExpDDQswitches
     E.expName='agDpxExpDDQswitches';
     E.nRepeats=10;
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
+    E.txtPause='';
+    E.txtPauseNrTrials=1;
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',4); % Generated using dpxToolStimWindowGui on 2014-09-29
+        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1); % Generated using dpxToolStimWindowGui on 2014-09-29
     
     
-    aRatio=[1.3];
+    aRatio=[1.4];
     flashSec=.25;
-    nrSteps=2;
+    nrSteps=10000;
     ddqWid=4;
     bottomLeftTopRightFirst=[true false];
     
@@ -25,7 +27,7 @@ function agDpxExpDDQswitches
             for b=bottomLeftTopRightFirst;
                 
                 C=dpxCoreCondition;
-                C.durSec=36000;
+                C.durSec=120;
                 %
                 F=dpxStimDot;
                 % type get(F) to see a list of parameters you can set
@@ -40,26 +42,17 @@ function agDpxExpDDQswitches
                 set(DDQ,'bottomLeftTopRightFirst',b);
                 C.addStim(DDQ);
                 %
-                R=dpxRespKeyboard;
-                R.name='kb';
+                R=dpxRespContiKeyboard;
+                R.name='ckb';
                 R.kbNames='LeftArrow,DownArrow';
-                R.allowAfterSec=DDQ.onSec+DDQ.durSec;
-                R.correctEndsTrialAfterSec=0.1;
-                R.correctStimName='respfeedback';
+                R.allowAfterSec=0;
                 C.addResp(R);
-                %
-                FB=dpxStimDot;
-                set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
-                set(FB,'name','respfeedback','wDeg',1,'visible',0);
-                C.addStim(FB);
                 %
                 E.addCondition(C);
                 
             end
         end
     end
-    E.run;
-    
-    
+    E.run;    
 end
 
