@@ -1,0 +1,25 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21760\viewh13900\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \
+%% to update your folder from the cloud\
+ !svn update /Users/iMac_2Photon/Documents/MATLAB/DPX\
+\
+\
+%% you need to add the files within the Folder first before committing the changes\
+!svn add /Users/iMac_2Photon/Documents/MATLAB/DPX/dpxExperiments/Ahmed/*\
+\
+%% updating your cloud after you make changes on your pc\
+!svn commit -m "changes to Ahmed experiments" /Users/iMac_2Photon/Documents/MATLAB/DPX/dpxExperiments/Ahmed --username 
+\f1 toa7med@gmail.com 
+\f0  --password 
+\f1\fs30 QP4QA8uz8Gt5
+\f0\fs24 \
+\
+\
+%%checkout: make a complete new LOCAL COPY of the files on the server (CLOUD)\
+cd /Users/iMac_2Photon/Documents/MATLAB\
+!svn checkout https://duijnhouwer-psychtoolbox-experiments.googlecode.com/svn/trunk/ DPX}
