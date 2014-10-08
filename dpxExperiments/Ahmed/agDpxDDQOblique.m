@@ -1,9 +1,9 @@
-function jdDpxDDQOblique 
+function agDpxDDQOblique 
     
-    % jdDpxDDQOblique
+    % agDpxDDQOblique
     
     E=dpxCoreExperiment;
-    E.expName='jdDpxDDQOblique';
+    E.expName='agDpxDDQOblique';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
       % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
@@ -43,7 +43,7 @@ function jdDpxDDQOblique
                     C.addResp(R);
                     %
                     S=dpxStimDot;
-                    set(S,'name','respfeedback','wDeg',1,'visible',0);
+                    set(S,'name','respfeedback','wDeg',.5*sqrt(2),'visible',0);
                     C.addStim(S);
                     %
                     E.addCondition(C);
@@ -52,8 +52,6 @@ function jdDpxDDQOblique
         end
     end
     E.nRepeats=7;
-    keyboard
-    
     E.run;
 end
 
