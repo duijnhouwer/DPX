@@ -15,6 +15,7 @@ function agDpxExpDDQswitches
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1); % Generated using dpxToolStimWindowGui on 2014-09-29
     
+    E.windowed(true)
     
     aRatio=[1.4];
     flashSec=.25;
@@ -43,8 +44,14 @@ function agDpxExpDDQswitches
                 C.addStim(DDQ);
                 %
                 R=dpxRespContiKeyboard;
-                R.name='ckb';
-                R.kbNames='LeftArrow,DownArrow';
+                R.name='LeftArrow';
+                R.kbName='LeftArrow';
+                R.allowAfterSec=0;
+                C.addResp(R);
+                  %
+                R=dpxRespContiKeyboard;
+                R.name='DownArrow';
+                R.kbName='DownArrow';
                 R.allowAfterSec=0;
                 C.addResp(R);
                 %
