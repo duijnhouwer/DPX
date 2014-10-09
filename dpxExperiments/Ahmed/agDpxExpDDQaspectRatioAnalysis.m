@@ -22,9 +22,11 @@ function agDpxExpDDQaspectRatioAnalysis(data)
     % values respectively.
     aspectratio=nan(size(C));
     saidHori=nan(size(C));
+    N=nan(size(C));
     for i=1:numel(C)
         aspectratio(i)=mean(C{i}.ddq_aspectRatio);
         saidHori(i)=mean(strcmpi(C{i}.resp_kb_keyName,'LeftArrow'));
+        N(i)=C{i}.N;
     end
     
     % Open a figure window with a specified title, if a window is already
@@ -32,11 +34,16 @@ function agDpxExpDDQaspectRatioAnalysis(data)
     % will receive subsequent plot calls.
     dpxFindFig(mfilename);
     cla; % Clear the contents of the figure if any
-    h=plot(aspectratio,saidHori*100,'x-','LineWidth',2); % plot the psychometric curve
+    F=dpxPsignifit;
+    set(F,'X',aspectratio,'Y',saidHori,'N',N);
+    hMarkers=F.plotdata;
+    hold on;
+    [hLine hEbar]=F.plotfit;
+  %  h=plot(aspectratio,saidHori*100,'x-','LineWidth',2); % plot the psychometric curve
     dpxPlotVert(1,'k--'); % plot a vertical line through x=0
     dpxPlotHori(50,'k--'); % plot a horizontal line through y=0.5
     xlabel('height/width');
     ylabel('''Horizontal'' (%)');
-    legend(h,['Subject: ' data.exp_subjectId{1}]);
+    legend(hMarkers(1),['Subject: ' data.exp_subjectId{1}]);
     
 end
