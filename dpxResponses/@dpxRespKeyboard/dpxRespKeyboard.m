@@ -16,7 +16,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
         correctKbNames='1';
     end
     properties (Access=protected)
-        figHandle;
+        %figHandle;
     end
     methods (Access=protected)
         function myInit(R)
@@ -24,7 +24,8 @@ classdef dpxRespKeyboard < dpxAbstractResp
             KbName('UnifyKeyNames');
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
-            R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
+           % R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
+            ListenChar(2);
         end
         function myGetResponse(R)
             [keyIsDown,keyTime,keyCode]=KbCheck(-1);
@@ -69,7 +70,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
             end
         end
         function myClear(R)
-            close(R.figHandle);
+            ListenChar(0);
         end
     end
 end
