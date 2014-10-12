@@ -115,8 +115,13 @@ classdef dpxCoreWindow < hgsetget
     end
     methods
         function set.winRectPx(W,value)
-            if ~isempty(value) && (~isnumeric(value) && numel(value)==4)
+            if ~isempty(value) && ~(isnumeric(value) && numel(value)==4)
                 error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
+            end
+            if ~isempty(value)
+                if value(1)>=value(3) || value(2)>=value(4)
+                    error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
+                end
             end
             W.winRectPx=value;
             initValues(W);

@@ -15,16 +15,12 @@ classdef dpxRespKeyboard < dpxAbstractResp
         % wrong or right answer exists (e.g., set it to 1 or .5)
         correctKbNames='1';
     end
-    properties (Access=protected)
-        %figHandle;
-    end
     methods (Access=protected)
         function myInit(R)
             R.resp=struct('keyNr',-1,'keyName','none','keySec',-1);
             KbName('UnifyKeyNames');
             R.kbNamesCell=strtrim(regexp(R.kbNames,',','split'));
             R.correctKbNamesCell=strtrim(regexp(R.correctKbNames,',','split'));
-           % R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
             ListenChar(2);
         end
         function myGetResponse(R)
@@ -69,7 +65,7 @@ classdef dpxRespKeyboard < dpxAbstractResp
                 end
             end
         end
-        function myClear(R)
+        function myClear(R) %#ok<MANU>
             ListenChar(0);
         end
     end

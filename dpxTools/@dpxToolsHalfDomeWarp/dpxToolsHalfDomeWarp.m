@@ -1,6 +1,8 @@
 classdef dpxToolsHalfDomeWarp < hgsetget
     
     properties (Access='public')
+        filename;
+        winRectPx=[0 0 1920 1080];
         xListPix=[];
         yListPix=[];
         stepsPerDeg;
@@ -19,14 +21,52 @@ classdef dpxToolsHalfDomeWarp < hgsetget
     end
     methods (Access='public')
         function W=dpxToolsHalfDomeWarp
-            load('calib.mat');
-            ok=~isnan(A)&~isnan(E);
-            W.aListDeg=A(ok);
-            W.eListDeg=E(ok);
-            W.xListPix=X(ok);
-            W.yListPix=Y(ok);
+            % W=dpxToolsHalfDomeWarp
+            % Part of the DPX toolkit
+            % http://tinyurl.com/dpxlink
+            % Jacob Duijnhouwer, 2014-10-10
+            %
+            % This tool can be used to create lookup tables to warp display
+            % matrices, for example for use in half-dome projection
+            % set-ups.
+            %
+            % See also: jdDpxExpHalfDomeRdk
+
             W.stepsPerDeg=10;
             W.pixelStep=0.2;
+        end
+        function calibrate(W)
+            S=dpxCoreWindow;
+            set(S,'winRectPx',W.winRectPx);
+            S.open;
+            nDone=1;
+            nTogo=numel(W.xListPix)*numel(W.yListPix);
+            input('<< Press ENTER to start calibrating >>');
+            for x=W.xListPix(:)'
+                for y=W.yListPix(:)'
+                    Screen('DrawDots',S.windowPtr,[x y],5,[255 255 255]);
+                    Screen('Flip',S.windowPtr);
+                    azi=[];
+                    ele=[];
+                    while isempty(azi)
+                        disp(['Point Nr ' num2str(nDone) ' / ' num2str(nTogo) ': [x,y]=[' num2str(x) ',' num2str(y) ]);
+                        disp('(Type NaN if the point is invisible, CTRL+C to quit)');
+                        s=input('--> AZIMUTH in deg? > ','s');
+                        azi=str2num(s); %#ok<*ST2NM>
+                        if isnan(azi)
+                            ele=nan;
+                        end
+                    end
+                    while isempty(ele)
+                        s=input('--> ELEVATION in deg? > ','s');
+                        ele=str2num(s);
+                    end
+                    W.aListDeg(end+1)=azi;
+                    W.eListDeg(end+1)=ele;
+                    save(W.filename,'W');
+                    nDone=nDone+1;
+                end
+            end
         end
         function plot(W)
             W.fitSplines;
@@ -95,7 +135,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             dpxLabel('x','azi (deg)','y','ele (deg)');
             set(gca,'XTickLabel',round((get(gca,'XTick')+W.LUT.minA)/W.stepsPerDeg));
             set(gca,'YTickLabel',round((get(gca,'YTick')+W.LUT.minE)/W.stepsPerDeg));
-            colorbar('NorthOutside'); 
+            colorbar('NorthOutside');
             drawnow
         end
         function [xy, visibleIdx]=getXYpix(W,aziDeg,eleDeg)
@@ -134,5 +174,18 @@ classdef dpxToolsHalfDomeWarp < hgsetget
                 'regularizer','gradient', 'extend','warning', 'tilesize',inf);
         end
     end
+    methods
+        function set.filename(W,value)
+            if isempty(value)
+                defaultSaveName=[mfilename 'Object' datestr(now,'YYYYmmDDHHMMSS') '.mat'];
+                [flnm, pth] = uiputfile(defaultSaveName, 'Save dpxToolsHalfDomeWarp object as');
+                W.filename=fullfile(pth,flnm);
+            elseif ischar(value)
+                W.filename=value; % should do some checking of filename validity here ...
+            else
+                error('Filename should be string (filename) or be empty (i.e., [], to trigger save-as dialog)');
+            end
+        end
+    end   
 end
 

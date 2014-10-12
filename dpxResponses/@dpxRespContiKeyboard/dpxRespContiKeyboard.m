@@ -9,7 +9,6 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
         kbName='LeftArrow';
     end
     properties (Access=protected)
-       % figHandle;
         nResponses;
         keyWasDownPrevFlip;
     end
@@ -67,18 +66,17 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
                         R.nResponses=R.nResponses+1;
                         R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbName ]);
                         R.resp.keySec{1}(R.nResponses)=keyTime;
-                        R.resp.keyReleaseFlip{1}(R.nResponses)=-1; % not released, yet, and may not happen before end of trial...
+                        R.resp.keyReleaseFlip{1}(R.nResponses)=-1; % not released yet (note: may not happen before end of trial)
                     end
                     R.keyWasDownPrevFlip=true; % key is being held
                 end
             elseif R.keyWasDownPrevFlip
                 R.keyWasDownPrevFlip=false; % no longer holding key
-                idx=max(1,R.nResponses); % could start trial holding the key
+                idx=max(1,R.nResponses); % could start trial holding the key, i.e., before a response was given
                 R.resp.keyReleaseFlip{1}(idx)=R.flipCounter; % precision of release is lower than press in current design (flipcount vs GetSecs)
             end
         end
-        function myClear(R)
-            %close(R.figHandle);
+        function myClear(R) %#ok<MANU>
             ListenChar(0);
         end
     end

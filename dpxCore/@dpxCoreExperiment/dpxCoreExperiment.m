@@ -118,6 +118,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.scr.close;
             catch me
                 caf; % screen reset
+                ListenChar(0);
                 rethrow(me)
             end
         end
