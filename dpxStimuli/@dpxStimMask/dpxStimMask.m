@@ -14,7 +14,7 @@ classdef dpxStimMask < dpxAbstractStim
     end
     methods (Access=public)
         function S=dpxStimMask
-            % Set the defaults in the constructure (here)
+            % Set the defaults in the constructur (here)
             S.typeStr='circle';
             S.pars=1;
             S.wDeg=5;
