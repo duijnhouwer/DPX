@@ -26,8 +26,8 @@ classdef dpxStimMask < dpxAbstractStim
         function myInit(S)
             texHalfLenPx=round(S.wPx/2);
             S.visibleSizePx=2*texHalfLenPx+1;
-            S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
-            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
+            S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.hPx/2+S.winCntrXYpx(2)];
+            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx];
             D2P=S.scrGets.deg2px; % degrees to pixels deg*D2P=px
             white=S.scrGets.whiteIdx;
             opaque=white;
@@ -57,7 +57,7 @@ classdef dpxStimMask < dpxAbstractStim
                     [x,y]=meshgrid(-texHalfLenPx:texHalfLenPx,(-texHalfLenPx:texHalfLenPx)-texHalfLenPx/2);
                     topCurve=hypot(x,y)>topDiamPx;
                     botCurve=hypot(x,y+botDiamPx)>botDiamPx+botDiamOffsetPx;
-                    if true
+                    if false
                         dpxFindFig('halfdomemask');
                         subplot(1,3,1);
                         imagesc(topCurve); axis equal;

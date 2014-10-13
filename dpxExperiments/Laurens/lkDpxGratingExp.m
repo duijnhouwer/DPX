@@ -5,7 +5,7 @@ function lkDpxGratingExp
     % 2014-4-24: Measured luminance BENQ screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
     % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz VGA connected
+    % Hz connected with a VGA cable.
     % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
     %
@@ -18,17 +18,15 @@ function lkDpxGratingExp
     %
     % Settings
     %
-    dirDegs=[0:90:270];
-    contrastFracs=.5%[.25 .5 1];
-    cyclesPerDeg=.1%[.05 .1 .2];
-    cyclesPerSecond=1%[.5 1 2];
+    dirDegs=0:45:315;
+    contrastFracs=.5;%[.25 .5 1];
+    cyclesPerDeg=.1;%[.05 .1 .2];
+    cyclesPerSecond=1;%[.5 1 2];
     E.nRepeats=2;
     stimSec=4;
     isiSec=4;
     %
-    nrTrials=numel(dirDegs) * numel(contrastFracs) * numel(cyclesPerDeg) * numel(cyclesPerSecond) * E.nRepeats;
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 10 s)']);
-    %
+  %
     for direc=dirDegs(:)'
         for cont=contrastFracs(:)'
             for sf=cyclesPerDeg(:)'
@@ -37,7 +35,7 @@ function lkDpxGratingExp
                     C.durSec=stimSec+isiSec;
                     %
                     S=dpxStimGrating;
-                    %
+                    S.name='grating';
                     S.wDeg=45;
                     S.dirDeg=direc;
                     S.cyclesPerSecond=tf;
@@ -45,16 +43,25 @@ function lkDpxGratingExp
                     S.contrastFrac=cont;
                     S.grayFrac=.25;
                     S.squareWave=true;
-                    S.maskStr='circle';
-                    S.maskPars=2;
                     S.onSec=isiSec/2;
                     S.durSec=stimSec;
                     %
+                    M=dpxStimMask;
+                    M.wDeg=45;
+                    M.hDeg=45;
+                    M.name='mask';
+                    M.pars=2;
+                    M.grayFrac=.25;
+                    %
+                    C.addStim(M);
                     C.addStim(S);
+                    %
                     E.addCondition(C);
                 end
             end
         end    
     end
+    nrTrials=numel(E.conditions)*E.nRepeats;
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 10 s)']);
     E.run;
 end
