@@ -11,13 +11,14 @@ function agDpxExpDDQswitches
     E.txtPause='';
     E.txtPauseNrTrials=1;
     % Use E.scr.gui to bring up the gui to set the screen properties
-    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
+    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[480 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1); % Generated using dpxToolStimWindowGui on 2014-09-29
+        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1);
+    % Generated using dpxToolStimWindowGui on 2014-09-29
     
-    E.windowed(true)
+     E.windowed(false)
     
-    aRatio=[1.4];
+    aRatio=[1.57];
     flashSec=.25;
     nrSteps=10000;
     ddqWid=4;
@@ -50,8 +51,8 @@ function agDpxExpDDQswitches
                 C.addResp(R);
                   %
                 R=dpxRespContiKeyboard;
-                R.name='DownArrow';
-                R.kbName='DownArrow';
+                R.name='UpArrow';
+                R.kbName='UpArrow';
                 R.allowAfterSec=0;
                 C.addResp(R);
                 %
