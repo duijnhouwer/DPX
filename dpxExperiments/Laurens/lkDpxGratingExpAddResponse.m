@@ -68,8 +68,6 @@ function browseStimfileButton_Callback(hObject, eventdata, handles)
             set(handles.stimField,'ForegroundColor',[1 0 0])
             error(errstr);
         end
-        outputFullFile=[dpxStrReplaceExtension(stimFullFile,'') '+Response.mat'];
-        set(handles.outputField,'String',outputFullFile);
     catch me
         set(handles.statusBar,'String',me.message);
         return;
@@ -116,15 +114,34 @@ function saveButton_Callback(hObject, eventdata, handles)
     try
         [resp,errstr]=loadRespFile(get(handles.respField,'String'));
         error(errstr);
-        set(handles.statusBar,'String',[num2str(123)]);
+       % set(handles.statusBar,'String',[num2str(123)]);
     catch me
         set(handles.statusBar,'String',me.message);
         return;
     end
     try
+        set(handles.statusBar,'String','Merging data ...'); drawnow
         data=mergeStimResp(stim.data,resp.ses); %#ok<NASGU>
-        save(get(handles.outputField,'String'),'data');
-        set(handles.statusBar,'String',['Saved ''' get(handles.outputField,'String') '''.']);
+        set(handles.statusBar,'String',''); drawnow
+        % get the ses-file folder
+        targetfolder=fileparts(get(handles.respField,'String'));
+        % get the stimulus-file name
+        [~,targetfilename]=fileparts(get(handles.stimField,'String'));
+        % Change the extension .mat to +response.mat
+        targetfilename=[targetfilename '+Response.mat'];
+        % Cache the current folder (working directory)
+        oldwd=pwd;
+        % Let the user select a folder and a filename to save the merged data to
+        cd(targetfolder);
+        set(handles.statusBar,'String','Select merge data file destination'); drawnow
+        [filename, targetfolder] = uiputfile({'*.mat'}, 'Save the merged data file as ...',targetfilename);
+        cd(oldwd);
+        if ischar(filename)
+            save(fullfile(targetfolder,filename),'data');
+            set(handles.statusBar,'String',['Saved ''' fullfile(targetfolder,filename) '''.']);
+        else
+            set(handles.statusBar,'String','Saving canceled');
+        end
     catch me
         set(handles.statusBar,'String',me.message);
         return
@@ -165,7 +182,7 @@ function [S]=mergeStimResp(S,R)
     if isnan(startPulseSec) || startPulseSec==-1
         error('No start DAQ-pulse was found in the stimulus file!');
     elseif isnan(endPulseSec) || endPulseSec==-1
-        error('No end DAQ-pulse was found in the stimulus file!');
+        warning('No end DAQ-pulse was found in the stimulus file. Not possible to compare Microscope and Stimfile durations!');
     end
     % Do a sanity check of the timeseries length compared to the start and
     % end DAQ-pulses
@@ -173,7 +190,7 @@ function [S]=mergeStimResp(S,R)
     durSecDpx=endPulseSec-startPulseSec;
     offPercent=durSecTiffs/durSecDpx*100-100;
     quarterTrialOffPercent=min(S.stopSec-S.startSec)/durSecTiffs*100 / 4;
-    if abs(offPercent)>quarterTrialOffPercent
+    if abs(offPercent)>quarterTrialOffPercent && endPulseSec~=-1
         warndlg({['Durations in stimulus and response files are off by ' num2str(offPercent) '%!'],'Are you sure they are from the same recording?'});
     end
     % Store these duration in the data struct for later reference
@@ -185,7 +202,7 @@ function [S]=mergeStimResp(S,R)
     end
     % Get the info and the respones per trial for each neuron
     for i=1:R.int_neuron
-        unitstr=['resp_unit' num2str(i,'%.3d')];  
+        unitstr=['resp_unit' num2str(i,'%.3d')];
         for tr=1:S.N
             S.([unitstr '_type']){tr}=R.neuron(i).type;
             S.([unitstr '_xymap']){tr}=sparse(R.neuron(i).matMask); % the location of the unit in the image
@@ -198,8 +215,8 @@ function [S]=mergeStimResp(S,R)
         % and stop pulses recorded by DPX
         S.([unitstr '_dFoF'])=dpxSegmentTimeSeries('timeseries',dFoF,'sampleHz',R.samplingFreq,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec);
     end
-        
-        
+
+    
     
     
     
