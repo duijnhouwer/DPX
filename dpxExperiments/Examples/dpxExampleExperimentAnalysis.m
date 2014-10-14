@@ -34,7 +34,7 @@ function dpxExampleExperimentAnalysis(data)
     dpxPlotVert(0,'k--'); % plot a vertical line through x=0
     dpxPlotHori(50,'k--'); % plot a horizontal line through y=0.5
     xlabel('Motion coherence (%; negative: left)');
-    ylabel('''Right'' (%)');
+    ylabel('''Rightward'' (%)');
     legend(h,['Subject: ' data.exp_subjectId{1}]);
     
 end
