@@ -8,10 +8,14 @@ function [b,n,fields]=dpxTblIs(T,varargin)
 % p.addRequired('t');
 % p.addOptional('verbosity',0,@isnumeric);
 
+if nargin==0
+    error('Not enough input arguments.');
+end
 %%% Handle varargin list %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 p = inputParser;   % Create an instance of the inputParser class.
 p.addRequired('t');
 p.addOptional('verbosity',0,@isnumeric); % 0 do nothing, >=1, disp problem, >=2 + stop for debugging 
+
 p.parse(T,varargin{:});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -68,9 +68,10 @@ for t=2:numel(T)
         else
             if iscell(thistab.(thisname))
                 try
-                M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
+                    M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
                 catch % 666
-                    keyboard, end;
+                    keyboard,
+                end;
             elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname))
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
             elseif isstruct(thistab.(thisname))
