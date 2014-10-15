@@ -6,8 +6,8 @@ function jdToggleFontSizeEditor(fontsize)
     %
     % USAGE:
     %   jdToggleFontSizeEditor [Without argument] switches between Matlab
-    %   default editor-fonts, and larger ones that puts less strain on my
-    %   eyes when I use my ASUS N550jv's laptop.
+    %   default editor font and larger ones that puts less strain on my
+    %   eyes when I use my ASUS N550jv laptop.
     %
     %   jdToggleFontSizeEditor(fontsize) change size to numerical fontsize.
     %

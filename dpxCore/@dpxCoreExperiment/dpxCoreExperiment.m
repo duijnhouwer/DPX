@@ -1,4 +1,3 @@
-
 classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
@@ -144,8 +143,8 @@ classdef dpxCoreExperiment < hgsetget
             % Convert the data
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'scr','conditions','outputFileName','outputFolder','trials'});
-            D.stimwin=dpxGetSetables(E.scr);
-            D.stimwin.measuredFrameRate=E.scr.measuredFrameRate;
+            D.scr=dpxGetSetables(E.scr);
+            D.scr.measuredFrameRate=E.scr.measuredFrameRate;
             D=dpxFlattenStruct(D);
             for c=1:numel(E.conditions)
                 for s=1:numel(E.conditions{c}.stims)

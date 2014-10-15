@@ -7,7 +7,7 @@ function outstructs=dpxTblSplit(r,params)
     % Jacob 2014-06-02
     
     if nargin~=2
-        error('Needs two inputs: a SpikeEssence-struct and a fieldname (string) accross which to split the struct. Fieldname can also be a cell array of fieldname-strings.');
+        error('Needs two inputs: a dpxTbl-struct and a fieldname (string) accross which to split the struct. Fieldname can also be a cell array of fieldname-strings.');
     end
     outstructs=cell(0);
     if iscell(params) && numel(params)==1
