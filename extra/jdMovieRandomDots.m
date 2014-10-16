@@ -20,9 +20,9 @@ function jdMovieRandomDots(varargin)
     p.addOptional('dX',3,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
     p.addOptional('dY',0,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
     p.addOptional('dotRadiusPx',6,@(x)isnumeric(x) && x>0 && numel(x)==1 && ~mod(x,2)); % dot radius in pixels, must be even!
-    p.addOptional('stepFr',1,@(x)isnumeric(x) && x>0 && numel(x)==1); % dotsize
+    p.addOptional('stepFr',1,@(x)isnumeric(x) && x>0 && numel(x)==1); % number of steps a dot takes befores being refreshed
     p.addOptional('coherence',1,@(x)isnumeric(x) && x>=0 && x<=1 && numel(x)==1); % coherent motion fraction
-    p.addOptional('revphi',true,@(x)islogical(x) || x==1 || x==0);
+    p.addOptional('revphi',false,@(x)islogical(x) || x==1 || x==0);
     p.addOptional('RGB0',[.5 .5 .5],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb background
     p.addOptional('RGB1',[0 0 0],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 1
     p.addOptional('RGB2',[1 1 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
