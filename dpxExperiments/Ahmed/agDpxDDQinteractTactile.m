@@ -6,7 +6,7 @@ function agDpxDDQinteractTactile
     E.expName='agDpxDDQinteractTactile';
     % E.outputFolder='C:\dpxData\';
     E.scr.set('winRectPx',[],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
-    E.windowed(true); % true, false, [0 0 410 310]+100
+%     E.windowed(true); % true, false, [0 0 410 310]+100
     %
     
     javaaddpath(which('BrainMidi.jar'));

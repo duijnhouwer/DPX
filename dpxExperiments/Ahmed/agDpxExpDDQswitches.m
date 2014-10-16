@@ -6,7 +6,7 @@ function agDpxExpDDQswitches
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
     E.expName='agDpxExpDDQswitches';
-    E.nRepeats=10;
+    E.nRepeats=100;
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     E.txtPause='';
     E.txtPauseNrTrials=1;
@@ -16,7 +16,6 @@ function agDpxExpDDQswitches
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1);
     % Generated using dpxToolStimWindowGui on 2014-09-29
     
-     E.windowed(false)
     
     aRatio=[1.57];
     flashSec=.25;
@@ -61,6 +60,9 @@ function agDpxExpDDQswitches
             end
         end
     end
+        nTrials=numel(E.conditions)*E.nRepeats;
+    expectedSecs=nTrials*(.25+1+.55);
+    dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;    
 end
 

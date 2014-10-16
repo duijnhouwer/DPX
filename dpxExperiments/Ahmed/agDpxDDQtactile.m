@@ -70,7 +70,8 @@ function agDpxDDQtactile
                             T.durSec=Inf;
                             
                             tmp=flashSec:flashSec:durS;
-                            tmp2=[];
+tmp
+tmp2=[];
                             for i=1:numel(tmp)
                                 tmp2(end+1)=tmp(i);
                                 tmp2(end+1)=tmp(i);

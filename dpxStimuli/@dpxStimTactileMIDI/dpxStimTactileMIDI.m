@@ -35,10 +35,12 @@ classdef dpxStimTactileMIDI < dpxAbstractStim
             onNotes=find(S.flipCounter==S.tapOnFlip);
             offNotes=find(S.flipCounter==S.tapOffFlip);
             for i=onNotes(:)'
-                S.midiSender.sendJavaMidi([144 S.tapNote(i) 127]);
+                noteIdx=mod(i-1,numel(S.tapNote))+1;
+                S.midiSender.sendJavaMidi([144 S.tapNote(noteIdx) 127]);
             end
             for i=offNotes(:)'
-                S.midiSender.sendJavaMidi([144 S.tapNote(i) 0]);
+                noteIdx=mod(i-1,numel(S.tapNote))+1;
+                S.midiSender.sendJavaMidi([144 S.tapNote(noteIdx) 0]);
             end
         end
         function myClear(S) 

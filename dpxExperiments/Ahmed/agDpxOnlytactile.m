@@ -20,47 +20,52 @@ for i=1:8
     R=dpxRespKeyboard;
     R.name='kb';
     R.kbNames='LeftArrow,UpArrow';
-    R.allowAfterSec=0;
-    R.correctEndsTrialAfterSec=0.1;
-    R.correctStimName='respfeedback';
+    R.allowAfterSec=2+.200; % only allow response after the stimulus + 200 ms minimum reaction time
+    R.correctEndsTrialAfterSec=0.05;
+%     R.correctStimName='respfeedback';
     
-    C.durSec=2;
+    C.durSec=10;
     C.addStim(F);
     C.addResp(R);
     T=dpxStimTactileMIDI;
-    T.tapOnSec=[0.5 1 1.5 2];
+    T.tapOnSec=0.5:0.5:10;%[0.5 1 1.5 2 ];
     if i==1
-        T.tapNote=[8 1 8 1];
+        T.tapNote=[8 1];
     elseif i==2
-        T.tapNote=[0 9 0 9];
+        T.tapNote=[0 9];
     elseif i==3
-        T.tapNote=[8 0 8 0];
+        T.tapNote=[8 0];
     elseif i==4
-        T.tapNote=[1 9 1 9];
+        T.tapNote=[1 9];
     elseif i==5
+        
+        % a=1:5
+        % a=[a;a]
+        % reshape(a,1,10);
+       
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[0 1  8 9  0 1  8 9];
+        T.tapNote=[0 1  8 9];
     elseif i==6
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[1 8  0 9  1 8  0 9];
+        T.tapNote=[1 8  0 9];
     elseif i==7
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[0 8  5 9  0 8  5 9];
+        T.tapNote=[0 8  1 9];
     elseif i==8
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[0 8  5 9  0 8  5 9];
+        T.tapNote=[8 9  0 1];
     else
         error('Unknown condition number ....');
     end
-    T.tapDurSec=T.tapOnSec + 0.020;
+    T.tapDurSec=0.020;
     C.addStim(T);
     E.addCondition(C);
-    if i==5
+    if i==5 || i==8
         E.addCondition(C);
         E.addCondition(C);
     end
 end
-E.nRepeats=ag20;
+E.nRepeats=20;
 nTrials=numel(E.conditions)*E.nRepeats;
 expectedSecs=nTrials*(2.5);
 dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
