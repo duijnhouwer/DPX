@@ -51,7 +51,6 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
             R.resp.keySec{1}=-1;
             R.resp.keyReleaseFlip{1}=-1;
             KbName('UnifyKeyNames');
-            %R.figHandle=dpxCreateInvisibleEditBoxToInterceptKeypresses;
             R.nResponses=0;
             R.keyWasDownPrevFlip=false;
             ListenChar(2);
