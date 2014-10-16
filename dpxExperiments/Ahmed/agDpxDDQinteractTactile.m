@@ -11,7 +11,7 @@ function agDpxDDQinteractTactile
     javaaddpath(which('BrainMidi.jar'));
     
     
-    durS=10;
+    durS=5;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
@@ -64,14 +64,14 @@ function agDpxDDQinteractTactile
                             R.name='LeftArrow';
                             R.kbName='LeftArrow';
                             R.allowAfterSec=0;
-                            R.correctEndsTrialAfterSec=0.1;
+                            R.correctEndsTrialAfterSec=10;
                             C.addResp(R);
                             %
                             R=dpxRespContiKeyboard;
                             R.name='DownArrow';
                             R.kbName='DownArrow';
                             R.allowAfterSec=0;
-                            R.correctEndsTrialAfterSec=0.1;
+                            R.correctEndsTrialAfterSec=10;
                             C.addResp(R);
                             %
                             FB=dpxStimDot;
