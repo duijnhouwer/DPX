@@ -27,7 +27,7 @@ function [didfix,D]=fix(D)
         return;
     end
     D.idx=1:D.N;
-    D=dpxTblSplit(D,'idx');
+    D=dpxdSplit(D,'idx');
     for i=1:numel(D)
         E=dpxFlattenStruct(D{i}.exp);
         S=dpxFlattenStruct(D{i}.stimwin);
@@ -36,7 +36,7 @@ function [didfix,D]=fix(D)
         D{i}=dpxMergeStructs({E,S,T,D{i}},{'exp_','stimwin_','',''});
         D{i}=dpxStructMakeSingleValued(D{i});
     end
-    D=dpxTblMerge(D);
+    D=dpxdMerge(D);
     D=rmfield(D,'idx');
     didfix=true;
 end
