@@ -1,8 +1,8 @@
-function M=dpxTblMerge(T,varargin)
+function M=dpxdMerge(T,varargin)
 
-% Merge the dpxTbls in cell array T into one dpxTbl M. All dpxTbls in T
+% Merge the DPXDs in cell array T into one DPXD M. All DPXDs in T
 % must be compatible, i.e., have the same fields.
-% 2012-10-12: T can also be a regular array of dpxTbls, does not need
+% 2012-10-12: T can also be a regular array of DPXDs, does not need
 % to be a cell.
 
 p=inputParser;
@@ -24,12 +24,12 @@ end
 
 bad=[];
 for f=1:length(T)
-    if ~dpxTblIs(T{f}, 'verbosity', 1)
+    if ~dpxdIs(T{f}, 'verbosity', 1)
         bad(end+1)=f;
     end
 end
 if ~isempty(bad)
-    error(['Elements ' num2str(bad) ' of input cell array are not dpxTbls.']);
+    error(['Elements ' num2str(bad) ' of input cell array are not DPXDs.']);
 end
 
 
@@ -39,19 +39,19 @@ for t=1:numel(T)
     E=intersect(F,newfields,'stable');
     if numel(F)~=numel(E)
         if strcmpi(p.Results.missingfields,'error')
-            error(['In the input array dpxTbls number ' num2str(t) ' was inconsistent with earlier elements.']);
+            error(['In the input array DPXDs number ' num2str(t) ' was inconsistent with earlier elements.']);
         elseif strcmpi(p.Results.missingfields,'warnskip')
-            warning(['Ignoring non-intersecting fields of dpxTbl-input array element #' num2str(t) '.']);
+            warning(['Ignoring non-intersecting fields of DPXD-input array element #' num2str(t) '.']);
         end
     end
     F=E;
 end
 
-% Copy the output fields of the first dpxTbl to the output M
+% Copy the output fields of the first DPXD to the output M
 for f=1:numel(F)
     M.(F{f})=T{1}.(F{f});
 end
-% Merge the remaining dpxTbls in the input array with the output M
+% Merge the remaining DPXDs in the input array with the output M
 for t=2:numel(T)
     thistab=T{t};
     for f=1:numel(F)
@@ -76,11 +76,11 @@ for t=2:numel(T)
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
             elseif isstruct(thistab.(thisname))
                 % if you want to have dissimilar structs in a field per
-                % datum in the dpxTbl, make it a cell, not a
+                % datum in the dpxd, make it a cell, not a
                 % struct-array
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
             else
-                error('dpxTbl field should be cell or numeric.');
+                error('dpxd field should be cell or numeric.');
             end
         end
     end

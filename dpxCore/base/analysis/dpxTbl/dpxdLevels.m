@@ -1,4 +1,4 @@
-function [n]=dpxTblLevels(r,fieldname)
+function [n]=dpxdLevels(r,fieldname)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Handle varargin list
@@ -8,7 +8,7 @@ p.addRequired('fieldname',@ischar);
 p.parse(r,fieldname);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if ~isfield(r,fieldname)
-	str=sprintf('Error: Passed fieldname "%s" is not an existing field in dpxTbl.\nValid fieldnames are:',fieldname);
+	str=sprintf('Error: Passed fieldname "%s" is not an existing field in DXPD.\nValid fieldnames are:',fieldname);
 	disp(str);
 	disp(fieldnames(r))
 	error('(see above)');

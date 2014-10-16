@@ -1,14 +1,14 @@
-function f=dpxTblSubset(r,indices)
+function f=dpxdSubset(r,indices)
 
-% function F=jdTblStructSelectIndices(R,IDXS) 
+% function F=dpxdSubset(R,IDXS) 
 % Of a pdxTbl R, return the subset F corresponding to R at the
-% given indices IDXS. Note that if IDXS is [], F will not be
-% empty but a complete pdxTbl with the same, but empty, fields as R
+% given indices. Note that if indices is [], F will not be
+% empty but a complete DPXD with the same, but empty, fields as R
 % and F.N=0.
 
 %%% Handle varargin list%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 p = inputParser;   % Create an instance of the inputParser class.
-p.addRequired('r', @dpxTblIs);
+p.addRequired('r', @dpxdIs);
 p.addRequired('indices',@(x)isnumeric(x) | islogical(x));
 p.parse(r,indices);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
