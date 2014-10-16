@@ -4,7 +4,7 @@ function agDpxOnlyTactile
 
 E=dpxCoreExperiment;
 E.expName='agDpxOnlyTactile';
-% E.outputFolder='C:\dpxData\';
+E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
 E.scr.set('winRectPx',[],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
 E.windowed(true); % true, false, [0 0 410 310]+100
 %
@@ -30,19 +30,19 @@ for i=1:8
     T=dpxStimTactileMIDI;
     T.tapOnSec=[0.5 1 1.5 2];
     if i==1
-        T.tapNote=[8 9 8 9];
+        T.tapNote=[8 1 8 1];
     elseif i==2
-        T.tapNote=[8 9 8 9];
+        T.tapNote=[0 9 0 9];
     elseif i==3
-        T.tapNote=[8 9 8 9];
+        T.tapNote=[8 0 8 0];
     elseif i==4
-        T.tapNote=[8 9 8 9];
+        T.tapNote=[1 9 1 9];
     elseif i==5
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[0 8  5 9  0 8  5 9];
+        T.tapNote=[0 1  8 9  0 1  8 9];
     elseif i==6
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
-        T.tapNote=[0 8  5 9  0 8  5 9];
+        T.tapNote=[1 8  0 9  1 8  0 9];
     elseif i==7
         T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
         T.tapNote=[0 8  5 9  0 8  5 9];
@@ -55,12 +55,12 @@ for i=1:8
     T.tapDurSec=T.tapOnSec + 0.020;
     C.addStim(T);
     E.addCondition(C);
-    if i==4
+    if i==5
         E.addCondition(C);
         E.addCondition(C);
     end
 end
-E.nRepeats=20;
+E.nRepeats=ag20;
 nTrials=numel(E.conditions)*E.nRepeats;
 expectedSecs=nTrials*(2.5);
 dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);

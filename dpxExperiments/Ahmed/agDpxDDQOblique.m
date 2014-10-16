@@ -7,13 +7,13 @@ function agDpxDDQOblique
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
-        'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
+        'distMm',600,'interEyeMm',65,'gamma',0.7,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1); % Generated using dpxToolStimWindowGui on 2014-09-29
     E.nRepeats=7;
-    E.txtStart='CCW = left arrow\nCW = down arrow\ Press any key to start the experiment';
+    E.txtStart='Counter-clockwise rotation: left arrow\nClockwise rotation: down arrow\ Press any key to start the experiment';
     %
     wid=4;
-    for hei=[.5 .75 1 1.25 1.5 1.75 2]*wid
+    for hei=[.25 .5 .75 1 1.25 1.5 1.75 2 2.25]*wid
         for ori=[0 45 90 135]
             for bottomLeftTopRightFirst=[false true]
                 for antiJump=[false true]
@@ -52,7 +52,7 @@ function agDpxDDQOblique
         end
     end
     nTrials=numel(E.conditions)*E.nRepeats;
-    expectedSecs=nTrials*(.25+1+.5);
+    expectedSecs=nTrials*(.25+1+.55);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;
 end
