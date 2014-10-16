@@ -6,7 +6,7 @@ function agDpxExpDDQswitches
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
     E.expName='agDpxExpDDQswitches';
-    E.nRepeats=100;
+    E.nRepeats=5;
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     E.txtPause='';
     E.txtPauseNrTrials=1;
@@ -50,8 +50,8 @@ function agDpxExpDDQswitches
                 C.addResp(R);
                   %
                 R=dpxRespContiKeyboard;
-                R.name='UpArrow';
-                R.kbName='UpArrow';
+                R.name='DownArrow';
+                R.kbName='DownArrow';
                 R.allowAfterSec=0;
                 C.addResp(R);
                 %
@@ -60,8 +60,8 @@ function agDpxExpDDQswitches
             end
         end
     end
-        nTrials=numel(E.conditions)*E.nRepeats;
-    expectedSecs=nTrials*(.25+1+.55);
+     nTrials=numel(E.conditions)*E.nRepeats;
+    expectedSecs=nTrials*(C.durSec+1+.55);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;    
 end
