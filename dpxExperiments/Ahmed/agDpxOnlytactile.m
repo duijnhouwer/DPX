@@ -22,13 +22,18 @@ for i=1:8
     R.kbNames='LeftArrow,UpArrow';
     R.allowAfterSec=2+.200; % only allow response after the stimulus + 200 ms minimum reaction time
     R.correctEndsTrialAfterSec=0.05;
-%     R.correctStimName='respfeedback';
-    
-    C.durSec=10;
+    %
+    C.durSec=3600;
     C.addStim(F);
     C.addResp(R);
     T=dpxStimTactileMIDI;
-    T.tapOnSec=0.5:0.5:10;%[0.5 1 1.5 2 ];
+    T.tapOnSec=0.5 : 0.5 : 4; %[0.5 1 1.5 2 ];
+    if i>4
+        a=T.tapOnSec;
+        a=[a;a];
+        a=reshape(a,1,numel(a));
+        T.tapOnSec=a;
+    end
     if i==1
         T.tapNote=[8 1];
     elseif i==2
@@ -37,22 +42,13 @@ for i=1:8
         T.tapNote=[8 0];
     elseif i==4
         T.tapNote=[1 9];
-    elseif i==5
-        
-        % a=1:5
-        % a=[a;a]
-        % reshape(a,1,10);
-       
-        T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
+    elseif i==5    
         T.tapNote=[0 1  8 9];
     elseif i==6
-        T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
         T.tapNote=[1 8  0 9];
     elseif i==7
-        T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
         T.tapNote=[0 8  1 9];
     elseif i==8
-        T.tapOnSec=[0.5 0.5  1 1  1.5 1.5  2 2];
         T.tapNote=[8 9  0 1];
     else
         error('Unknown condition number ....');
