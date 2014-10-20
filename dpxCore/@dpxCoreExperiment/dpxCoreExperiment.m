@@ -330,6 +330,16 @@ classdef dpxCoreExperiment < hgsetget
         end
     end
     methods
+        function set.expName(E,value)
+            if ~ischar(value) || isempty(value)
+                error('expName must be a string');
+            elseif any(E.expName=='-')
+                error('expName can''t contain ''-''');
+                % DPX uses - to split filesnames into expName, subject, and start-time.
+            else
+                E.expName=value;
+            end
+        end
         function set.outputFolder(E,value)
             if isempty(value)
                 if IsWin, value='C:\temp\dpxData';

@@ -14,11 +14,11 @@ function fullnames=dpxUIgetfiles(varargin)
     
     global OPTIONS;
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addParamValue('filterspec','*.*',@ischar);
-    p.addParamValue('dialogtitle','Select files',@ischar);
-    p.addParamValue('dir',dpxGetLastDirStr,@ischar);
-    p.addParamValue('reload',false,@(x)islogical(x) || x==1 || x==0); % previous selection as default
-    p.addParamValue('multifolder',true,@(x)islogical(x) || x==1 || x==0); % interactively and iteratively select from multiple folders
+    p.addParameter('filterspec','*.*',@ischar);
+    p.addParameter('dialogtitle','Select files',@ischar);
+    p.addParameter('dir',dpxGetLastDirStr,@ischar);
+    p.addParameter('reload',false,@(x)islogical(x) || x==1 || x==0); % previous selection as default
+    p.addParameter('multifolder',true,@(x)islogical(x) || x==1 || x==0); % interactively and iteratively select from multiple folders
     p.parse(varargin{:});
     OPTIONS=p.Results;
     

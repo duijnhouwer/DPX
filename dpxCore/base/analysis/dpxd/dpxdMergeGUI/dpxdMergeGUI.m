@@ -22,7 +22,7 @@ function varargout = dpxdMergeGUI(varargin)
     
     % Edit the above text to modify the response to help dpxdMergeGUI
     
-    % Last Modified by GUIDE v2.5 15-Oct-2014 20:59:08
+    % Last Modified by GUIDE v2.5 20-Oct-2014 21:22:58
     
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -138,50 +138,6 @@ function listCommonFields_CreateFcn(hObject, eventdata, handles)
     end
     
     
-    % --- Executes on selection change in listbox3.
-function listbox3_Callback(hObject, eventdata, handles)
-    % hObject    handle to listbox3 (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    
-    % Hints: contents = cellstr(get(hObject,'String')) returns listbox3 contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from listbox3
-    
-    
-    % --- Executes during object creation, after setting all properties.
-function listbox3_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to listbox3 (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    empty - handles not created until after all CreateFcns called
-    
-    % Hint: listbox controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-    
-    
-    % --- Executes on selection change in listbox4.
-function listbox4_Callback(hObject, eventdata, handles)
-    % hObject    handle to listbox4 (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    
-    % Hints: contents = cellstr(get(hObject,'String')) returns listbox4 contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from listbox4
-    
-    
-    % --- Executes during object creation, after setting all properties.
-function listbox4_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to listbox4 (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    empty - handles not created until after all CreateFcns called
-    
-    % Hint: listbox controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
     
     
     % --- Executes on button press in butMergeAndSave.
@@ -195,22 +151,52 @@ function butMergeAndSave_Callback(hObject, eventdata, handles)
         handles=rmfield(handles,'dpxdCell');
         guidata(hObject,handles);
     else
+        dpxd=dpxdMerge(handles.dpxdCell);
         oldwd=pwd;
         try
-        cd(dpxGetLastDirStr);
+            cd(dpxGetLastDirStr);
         catch
         end
-        % 666 todo: make automatic informative filename
-        [filename,pathname]=uiputfile('*.mat','Save merged DPXD file as ...','mergedDpxd.mat');
+        outfile=composeFilename(dpxd);
+        [filename,pathname]=uiputfile('*.mat','Save merged DPXD file as ...',outfile);
         if isnumeric(filename)
             % user pressed cancel
         else
-            dpxd=dpxdMerge(handles.dpxdCell);
             save(fullfile(pathname,filename),'dpxd');
             cd(oldwd);
         end
     end
-        
+    
+    
+function [outfile,outpath]=composeFilename(D)
+    outpath=dpxGetLastDirStr;
+    try
+        paradigms=unique(D.exp_expName);
+        if numel(paradigms)==1
+            P=paradigms{1};
+        elseif numel(paradigms)==2
+            P=[paradigms{1} '+' paradigms{2}];
+        else
+            P=[num2str(numel(paradigms)) 'mergedParadigms'];
+        end
+        subjects=unique(D.exp_subjectId);
+        if numel(subjects)>5
+            S=[num2str(numel(subjects)) 'subjects'];
+        else
+            S=subjects{1};
+            for i=2:numel(subjects)
+                S=[S ',' subjects{i}];
+            end
+        end
+        T=unique(D.exp_startTime);
+        T=datestr(T,'YYYYMMDD');
+        if size(T,1)>=1
+            T=[T(1,:) 'to' T(end,:)];
+        end
+        outfile=[P '-' S '-' T];
+    catch me  
+        outfile='mergedDPXDs.mat';
+    end
     
     
     
@@ -219,7 +205,7 @@ function handles=loadTheFiles(hObject,handles)
     handles.dpxdCell=cell(numel(list),1);
     for i=1:numel(list)
         set(handles.fileToMergeList,'Value',1:i); % hilite files that are loaded
-        pause(0.2);
+        pause(0.05);
         K=load(list{i});
         flds=fieldnames(K);
         foundData=false;
@@ -254,33 +240,33 @@ function [commonFields,unCommonFields]=getCommonFields(dpxdCell)
         allfields=unique(allfields);
         unCommonFields=setdiff(allfields,commonFields);
     end
-             
-
-
-% --- Executes on selection change in listUncommonFields.
+    
+    
+    
+    % --- Executes on selection change in listUncommonFields.
 function listUncommonFields_Callback(hObject, eventdata, handles)
-% hObject    handle to listUncommonFields (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns listUncommonFields contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listUncommonFields
-
-
-% --- Executes during object creation, after setting all properties.
+    % hObject    handle to listUncommonFields (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    
+    % Hints: contents = cellstr(get(hObject,'String')) returns listUncommonFields contents as cell array
+    %        contents{get(hObject,'Value')} returns selected item from listUncommonFields
+    
+    
+    % --- Executes during object creation, after setting all properties.
 function listUncommonFields_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listUncommonFields (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in butAddPlaceholder.
+    % hObject    handle to listUncommonFields (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+    
+    % Hint: listbox controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+    
+    
+    % --- Executes on button press in butAddPlaceholder.
 function butAddPlaceholder_Callback(hObject, eventdata, handles)
     list=cellstr(get(handles.listUncommonFields,'String'));
     hilited=list(get(handles.listUncommonFields,'Value'));
@@ -316,8 +302,8 @@ function butAddPlaceholder_Callback(hObject, eventdata, handles)
         end
     end
     guidata(hObject, handles);
-
-
+    
+    
 function doCoOccur=checkFieldnamesCoOccurInFiles(hilited,dpxdCell)
     doCoOccur=false;
     for i=1:numel(dpxdCell)
@@ -327,11 +313,34 @@ function doCoOccur=checkFieldnamesCoOccurInFiles(hilited,dpxdCell)
             break;
         end
     end
-       
-
-
-% --- Executes on button press in butPoolFields.
+    
+    
+    
+    % --- Executes on button press in butPoolFields.
 function butPoolFields_Callback(hObject, eventdata, handles)
-% hObject    handle to butPoolFields (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+    % hObject    handle to butPoolFields (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    
+    
+    % --- Executes on selection change in fileToMergeList.
+function listbox5_Callback(hObject, eventdata, handles)
+    % hObject    handle to fileToMergeList (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    
+    % Hints: contents = cellstr(get(hObject,'String')) returns fileToMergeList contents as cell array
+    %        contents{get(hObject,'Value')} returns selected item from fileToMergeList
+    
+    
+    % --- Executes during object creation, after setting all properties.
+function listbox5_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to fileToMergeList (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+    
+    % Hint: listbox controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
