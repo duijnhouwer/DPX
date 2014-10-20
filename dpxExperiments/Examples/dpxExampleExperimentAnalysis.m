@@ -14,7 +14,7 @@ function dpxExampleExperimentAnalysis(data)
     
     % Split the data into as many parts as there are motionStim_cohereFrac
     % values.
-    C=dpxTblSplit(data,'motionStim_cohereFrac');
+    C=dpxdSplit(data,'motionStim_cohereFrac');
     % Now loop over these subsets C, and get the coherences ans
     % answer-correct percentage value of each C We'll plot these as x and y
     % values respectively.

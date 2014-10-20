@@ -16,7 +16,7 @@ function agDpxExpDDQaspectRatioAnalysis(data)
     data.ddq_aspectRatio=data.ddq_hDeg./data.ddq_wDeg;
     % Split the data into as many parts as there are aspect ratios
     % values.
-    C=dpxTblSplit(data,'ddq_aspectRatio');
+    C=dpxdSplit(data,'ddq_aspectRatio');
     % Now loop over these subsets C, and get the coherences ans
     % answer-correct percentage value of each C We'll plot these as x and y
     % values respectively.

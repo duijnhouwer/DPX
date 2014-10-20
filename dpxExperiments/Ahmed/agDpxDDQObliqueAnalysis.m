@@ -10,7 +10,7 @@ function agDpxDDQObliqueAnalysis(D)
     % Remove all antiJump trials, these were only included to prevent the
     % observer being able to predict the final orientation of the stimulus
     % from the initial orientation
-    D=dpxTblSubset(D,D.ddq_antiJump==0);
+    D=dpxdSubset(D,D.ddq_antiJump==0);
     % Add an explicit Aspect Ratio field
     D.ddq_aspectRatio=D.ddq_hDeg./D.ddq_wDeg;
     % The observers indicated if the line through the second pair of dots
@@ -30,14 +30,14 @@ function agDpxDDQObliqueAnalysis(D)
             D.resp_kb_keyName{tr}='CW';
         end
     end  
-    D=dpxTblSplit(D,'ddq_oriDeg');
+    D=dpxdSplit(D,'ddq_oriDeg');
     for di=1:numel(D)
         CW=strcmpi(D{di}.resp_kb_keyName,'CW');
         BL=D{di}.ddq_bottomLeftTopRightFirst;
         D{di}.seenJumpAxis=CW & BL | ~CW & ~BL;
     end
     for di=1:numel(D)
-        C=dpxTblSplit(D{di},'ddq_aspectRatio');
+        C=dpxdSplit(D{di},'ddq_aspectRatio');
         x=nan(1,numel(C));
         y=nan(1,numel(C));
         n=nan(1,numel(C));
@@ -47,7 +47,7 @@ function agDpxDDQObliqueAnalysis(D)
             n(ci)=C{ci}.N;
         end
         F=dpxPsignifit;
-        set(F,'X',x,'Y',y,'N',n);
+        set(F,'X',log2(x),'Y',y,'N',n);
         markers=F.plotdata;
         hold on
         h(di)=F.plotfit;

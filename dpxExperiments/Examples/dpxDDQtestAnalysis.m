@@ -19,7 +19,7 @@ function dpxDDQtestAnalysis(data)
         data.vhRatio(i)=hei/wid;
     end
     
-    C=dpxTblSplit(data,'vhRatio');
+    C=dpxdSplit(data,'vhRatio');
     % Now loop over these subsets C, and get the coherences ans
     % answer-correct percentage value of each C We'll plot these as x and y
     % values respectively.

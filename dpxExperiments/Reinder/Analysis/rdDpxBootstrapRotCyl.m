@@ -9,14 +9,14 @@ if nargin==2 || isempty(D)
         D{f}=data;
     end
 end
-D=dpxTblMerge(D);
+D=dpxdMerge(D);
 exp=whichExp(D);
 
 mono=D.(exp.stereoCue)==0;
 stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
-EE=dpxTblSubset(D,stereo | mono&stereo);
+EE=dpxdSubset(D,stereo | mono&stereo);
 
-EE=dpxTblSplit(EE,exp.stereoCue);
+EE=dpxdSplit(EE,exp.stereoCue);
 i=1;
 for ee=1:numel(EE) 
     if all(roundn(mean(EE{ee}.(exp.stereoCue)),-1)~=disps)

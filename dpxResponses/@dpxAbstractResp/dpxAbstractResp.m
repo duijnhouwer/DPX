@@ -27,7 +27,7 @@ classdef dpxAbstractResp < hgsetget
         % A structure representing the respones, this is defined in myInit,
         % and can be changed in derived classes for different response
         % measures, such as key-names or mouse-click positions. The fields
-        % of resp will automatically be output in the dpxTbl output file.
+        % of resp will automatically be output in the DPXD output file.
         resp;
         nameOfFeedBackStim='none';
         allowAfterNrFlips;

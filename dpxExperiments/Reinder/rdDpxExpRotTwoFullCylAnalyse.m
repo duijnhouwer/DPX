@@ -8,12 +8,12 @@ if nargin==0 || isempty(D)
         D{f}=data;
     end
 end
-D=dpxTblMerge(D);
+D=dpxdMerge(D);
 oldN=D.N;
 exp=whichExp(D);
 
-D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
-D=dpxTblSubset(D,D.resp_leftHand_keyNr>0);
+D=dpxdSubset(D,D.resp_rightHand_keyNr>0);
+D=dpxdSubset(D,D.resp_leftHand_keyNr>0);
 disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response']);
 
 
@@ -27,15 +27,15 @@ sideNum={-1,1};%-1 = left, 1 = right
 for side=1:numel(sideNum) 
     %get current side
     xDeg=abs(D.fullInducerCyl_xDeg(1));
-    Cur=dpxTblSubset(D,D.fullInducerCyl_xDeg==xDeg*sideNum{side});
+    Cur=dpxdSubset(D,D.fullInducerCyl_xDeg==xDeg*sideNum{side});
     mono=Cur.(exp.stereoCue)==0 & Cur.(exp.lummCor)==1;
     stereo=Cur.(exp.monoCueFog)==0 & Cur.(exp.monoCueDiam)==0 & Cur.(exp.lummCor)==1;
     antistereo=Cur.(exp.monoCueFog)==0 & Cur.(exp.monoCueDiam)==0 & Cur.(exp.lummCor)==-1;
     
     %divide mono/stereo/antistereo
-    M=dpxTblSubset(Cur,mono | mono&stereo);
-    S=dpxTblSubset(Cur,stereo | mono&stereo);
-    AS=dpxTblSubset(Cur,antistereo | antistereo&mono);
+    M=dpxdSubset(Cur,mono | mono&stereo);
+    S=dpxdSubset(Cur,stereo | mono&stereo);
+    AS=dpxdSubset(Cur,antistereo | antistereo&mono);
     
     %inducer percept plot
     subplot(3,2,side);
@@ -85,10 +85,10 @@ end
 end
 
 function  h=plotPsychoCurves(D,fieldstr,exp,side,varargin)
-E=dpxTblSplit(D,fieldstr);
+E=dpxdSplit(D,fieldstr);
 for e=1:numel(E)
     x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>
-    Sp=dpxTblSplit(E{e},exp.speed);
+    Sp=dpxdSplit(E{e},exp.speed);
     for iSp=1:numel(Sp);
         if sign(Sp{iSp}.(exp.speed)(1))==-1
             if side>0
@@ -115,7 +115,7 @@ hold on
 end
 
 function  h=plotPerceptBoundCurves(D,fieldstr,varargin)
-E=dpxTblSplit(D,fieldstr);
+E=dpxdSplit(D,fieldstr);
 for e=1:numel(E);
     x(e)=mean(E{e}.(fieldstr));
     y(e)=mean(E{e}.resp_rightHand_keyNr==E{e}.resp_leftHand_keyNr);

@@ -11,14 +11,14 @@ if nargin==1 || isempty(D)
         D{f}=data;
     end
 end
-D=dpxTblMerge(D);
+D=dpxdMerge(D);
 exp=whichExp(D);
 
 mono=D.(exp.stereoCue)==0;
 stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
-EE=dpxTblSubset(D,stereo | mono&stereo);
+EE=dpxdSubset(D,stereo | mono&stereo);
 
-EE=dpxTblSplit(EE,exp.stereoCue);
+EE=dpxdSplit(EE,exp.stereoCue);
 
 if rebecca
     geen stereo en antistereo splitten

@@ -148,7 +148,7 @@ classdef dpxCoreCondition < hgsetget
             if isempty(S.name)
                 % If no name is provided (not recommended) use the class
                 % name of the object as the stimulus name that will show up
-                % in the output dpxTbl struct
+                % in the output DPXD struct
                 S.name=class(S);
             end
             % Store all values of the public (interface) variables of the stimulus so
@@ -179,7 +179,7 @@ classdef dpxCoreCondition < hgsetget
                 error(['Reponse object name cannot be ''' R.name '''.']);
             end
             % Check that all responses have unique names, this is important
-            % for the readability of the final output format (dpxTbl)
+            % for the readability of the final output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.resps,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);

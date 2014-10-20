@@ -12,11 +12,11 @@ if isempty(split)
     split='n';
 end
 
-D=dpxTblMerge(D);
+D=dpxdMerge(D);
 oldN=D.N;
 exp=whichExp(D);
 % Remove all trials in which no response was given
-D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
+D=dpxdSubset(D,D.resp_rightHand_keyNr>0);
 disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
 %
 
@@ -25,8 +25,8 @@ if strcmpi(split,'y')
     sUp=D.(exp.speed)>0;
     sDown=D.(exp.speed)<0;
     
-    speed{1}=dpxTblSubset(D,sUp);
-    speed{2}=dpxTblSubset(D,sDown);
+    speed{1}=dpxdSubset(D,sUp);
+    speed{2}=dpxdSubset(D,sDown);
 end
 for spd=1:numel(speed)
     
@@ -34,13 +34,13 @@ for spd=1:numel(speed)
     stereo=speed{spd}.(exp.monoCueFog)==0 & speed{spd}.(exp.monoCueDiam)==0 & speed{spd}.(exp.lummCor)==1;
     antistereo=speed{spd}.(exp.monoCueFog)==0 & speed{spd}.(exp.monoCueDiam)==0 & speed{spd}.(exp.lummCor)==-1;
     
-    M=dpxTblSubset(speed{spd},mono | mono&stereo);
-    S=dpxTblSubset(speed{spd},stereo | mono&stereo);
+    M=dpxdSubset(speed{spd},mono | mono&stereo);
+    S=dpxdSubset(speed{spd},stereo | mono&stereo);
     if strcmp(exp.Id,'fullFb') || strcmp(exp.Id,'halfFb');
-        B=dpxTblSubset(speed{spd},~mono&~stereo | mono&stereo);
+        B=dpxdSubset(speed{spd},~mono&~stereo | mono&stereo);
         varLbl='both';
     else
-        AS=dpxTblSubset(speed{spd},antistereo | mono&antistereo);
+        AS=dpxdSubset(speed{spd},antistereo | mono&antistereo);
         varLbl='anti-stereo';
     end
     
@@ -82,7 +82,7 @@ end
 end
 
 function  h=plotPsychoCurves(D,fieldstr,keyname,Id,speed,varargin)
-E=dpxTblSplit(D,fieldstr);
+E=dpxdSplit(D,fieldstr);
 if strcmp(Id,'bind')
     for e=1:numel(E)
         x(e)=mean(E{e}.(fieldstr)); %#ok<*AGROW>

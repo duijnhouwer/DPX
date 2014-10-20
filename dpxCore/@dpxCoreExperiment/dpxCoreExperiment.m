@@ -169,7 +169,7 @@ classdef dpxCoreExperiment < hgsetget
                 data{t}=dpxStructMakeSingleValued(data{t});
                 data{t}.N=1;
             end
-            data=dpxTblMerge(data); %#ok<NASGU>
+            data=dpxdMerge(data); %#ok<NASGU>
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
             save(absFileName,'data');
@@ -253,7 +253,7 @@ classdef dpxCoreExperiment < hgsetget
         function unifyConditions(E)
             % Before we start running the experiment, make sure all
             % conditions have the same stimuli, this is required for the
-            % output format (dpxTbl). If one or more conditions have been
+            % output format (DPXD). If one or more conditions have been
             % defined without the same stimuli (as defined by the stimulus
             % name) add the missing stimuli and set their visibility and
             % durSec fields to 0. (Setting either to 0 would suffice but
