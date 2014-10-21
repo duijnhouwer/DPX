@@ -64,6 +64,5 @@ function agDpxExpDDQaspectRatio
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;
     
-    
 end
 

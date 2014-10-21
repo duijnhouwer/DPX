@@ -33,14 +33,14 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     fadeText(windowPtr,p.Results,'fadein');
     % wait for input ...
     KbName('UnifyKeyNames');
-    FlushEvents('keyDown');
-    keyIsDown=false;
-    while ~keyIsDown
+    FlushEvents([],[],'keyDown');
+    pause(0.05);
+    [~,~,keyCode]=KbCheck(-1);
+    while ~keyCode(KbName('space')) && ~keyCode(KbName('Escape'));
         if GetSecs-startSec>p.Results.forceAfterSec
-            keyIsDown=true; % emulate button press when time is up
-            keyCode=false(1,256);
+            keyCode(KbName('space'))=true; % emulate button press when time is up
         else
-            [keyIsDown,~,keyCode]=KbCheck(-1);
+            [~,~,keyCode]=KbCheck(-1);
         end
     end
     escPressed=keyCode(KbName('Escape'));

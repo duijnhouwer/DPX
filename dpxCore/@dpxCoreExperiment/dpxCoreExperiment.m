@@ -37,7 +37,7 @@ classdef dpxCoreExperiment < hgsetget
             E.conditionSequence='shufflePerBlock';
             E.expName='dpxCoreExperiment';
             E.subjectId='0';
-            E.txtStart='Press and release a key to start'; % if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
+            E.txtStart='Press and release SPACE to start'; % if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtPause='I N T E R M I S S I O N';
             E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
@@ -63,16 +63,18 @@ classdef dpxCoreExperiment < hgsetget
                 E.showStartScreen;
                 % Set the trial counter to zero
                 tr=0;
-                for cNr=E.internalCondSeq(:)'
+                while tr<numel(E.internalCondSeq)
+                    % not for, must be able to change list as we go
                     % increment the trial counter
                     tr=tr+1;
+                    cNr=E.internalCondSeq(tr);
                     E.showProgressCli(tr);
-                    % Show the pause screen if appropriate (and make an
+                    % Show the itnermission screen if appropriate (and make an
                     % intermediate backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
                         E.showSaveScreen;
                         E.save;
-                        E.showPauseScreen;
+                        E.showIntermissionScreen;
                     end
                     % Initialize this condition, this needs information
                     % about the screen. We pass it the values using get,
@@ -89,10 +91,24 @@ classdef dpxCoreExperiment < hgsetget
                     E.scr.clear;
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
-                    [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
-                    if esc
+                    [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
+                    % If an overriding RGBA has been defined in this condition,
+                    % reset the window object's backRGBA to its default,
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.scr.backRGBA=defaultBackRGBA;
+                    end
+                    % Handle the completion status of the trial
+                    if strcmp(completionStr,'esc')
                         disp('Escape pressed.');
                         break;
+                    elseif strcmp(completionStr,'pause')
+                        disp('Paused pressed. Press space to continue.');
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
+                        E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
+                        E.showPauseScreen;                  
+                        % the skipped trial can be recognized by stopSec==-1
+                    elseif ~strcmp(completionStr,'ok')
+                        error(['Unknown completion status: ''' completionStr '''.']); 
                     end
                     % Store the condition number, the start and stop time,
                     % and the response output (which may be empty if no
@@ -103,11 +119,6 @@ classdef dpxCoreExperiment < hgsetget
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
                     E.trials(tr).nrMissedFlips=nrMissedFlips;
-                    % If an overriding RGBA has been defined in this condition,
-                    % reset the window object's backRGBA to its default,
-                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                        E.scr.backRGBA=defaultBackRGBA;
-                    end
                 end
                 E.stopTime=now;
                 E.showFinalSaveScreen;
@@ -115,8 +126,10 @@ classdef dpxCoreExperiment < hgsetget
                 E.signalFile('delete');
                 E.showEndScreen;
                 E.scr.close;
+                sca;
+                ListenChar(0);
             catch me
-                caf; % screen reset
+                sca; % screen reset
                 ListenChar(0);
                 rethrow(me)
             end
@@ -178,8 +191,13 @@ classdef dpxCoreExperiment < hgsetget
             str=[E.txtPause '\n\nSaving data ...'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
+        function showIntermissionScreen(E)
+            str=[E.txtPause '\n\nPress and release SPACE to continue'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
+        end
         function showPauseScreen(E)
-            str=[E.txtPause '\n\nPress and release a key to continue'];
+            str='P A U S E D\n(Condition will be repeated at a later time)';
+            str=[str '\n\nPress and release SPACE to continue'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showFinalSaveScreen(E)
@@ -197,7 +215,7 @@ classdef dpxCoreExperiment < hgsetget
         end
         function showEndScreen(E)
             str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1);
         end
         function createFileName(E)
             if ~exist(E.outputFolder,'file')
@@ -310,9 +328,9 @@ classdef dpxCoreExperiment < hgsetget
             numformat=['%.' num2str(maxDigits) 'd'];
             tstr=datestr(now-E.startTime,'HH:MM:SS');
             str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
-            if tr>1 && Screen('Preference', 'Verbosity')<4
-                fprintf(repmat('\b',1,numel(str)));
-            end
+           % if tr>1 && Screen('Preference', 'Verbosity')<4
+           %     fprintf(repmat('\b',1,numel(str)));
+           % end
             fprintf('%s',str);
         end
     end

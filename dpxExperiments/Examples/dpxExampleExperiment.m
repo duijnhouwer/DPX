@@ -53,16 +53,16 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
+    E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ... 10 10 400 300
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',0);
+        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
-    cohFrac=-1:.25:1;
+    cohFrac=-1:.5:1;
     
     for c=1:numel(cohFrac)
         

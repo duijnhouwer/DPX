@@ -47,13 +47,16 @@ classdef dpxCoreCondition < hgsetget
                 C.resps{r}.init(scrGets);
             end
         end
-        function [escPressed,timingStruct,respStruct,nrMissedFlips]=show(C)
+        function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
             if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
             winPtr=C.scrGets.windowPtr;
-            escPressed=false;
+            completionStatus='ok';
             stopTrialEarlyFlip=Inf;
+            % Initialize the timing struct
+            timingStruct.startSec=-1;
+            timingStruct.stopSec=-1;
             % Initialize the responses with the null response
             if numel(C.resps)==0
                 respStruct=[];
@@ -69,10 +72,13 @@ classdef dpxCoreCondition < hgsetget
             for f=1:C.nFlips
                 % Check the esc key (only every Nth flip to save overhead)
                 if mod(f,5)==0
-                    escPressed=dpxGetEscapeKey;
-                    if escPressed
+                    if dpxGetEscapeKey
+                        completionStatus='esc';
                         break;
-                    end
+                    elseif dpxGetPauseKey
+                        completionStatus='pause';
+                        break;
+                    end 
                 end
                 % Step the stimuli (e.g., update random dot positions)
                 for s=1:numel(C.stims)
