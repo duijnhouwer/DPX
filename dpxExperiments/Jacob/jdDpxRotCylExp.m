@@ -1,7 +1,6 @@
 function jdDpxRotCylExp
     
     E=dpxCoreExperiment;
-    E.windowed(false); % true, false, [0 0 410 310]+100
     E.scr.set('winRectPx',[0 0 1600 1200],'widHeiMm',[394 295],'distMm',1000 ...
         ,'interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1] ...
         ,'stereoMode','mirror','SkipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-06-02]

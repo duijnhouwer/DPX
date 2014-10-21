@@ -11,7 +11,6 @@ function lkDpxGratingExp
     %
     E.scr.gamma=0.69;
     E.scr.backRGBA=[.25 .25 .25 1];
-    E.windowed(true) ; % [0 0 810 610]+100); % true, false
     E.txtStart='<cut this>DAQ-pulse';
     E.txtEnd='<cut this>DAQ-pulse';
     E.txtPauseNrTrials=0;

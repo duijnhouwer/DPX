@@ -16,7 +16,6 @@ E.outputFolder='';
 E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
 E.scr.set('stereoMode','mirror','SkipSyncTests',1);
-E.windowed(true);
 
 barConfigs={'even','uneven'};
 for B=1:numel(barConfigs)

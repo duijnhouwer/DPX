@@ -1,24 +1,10 @@
-function jdDpxExpHalfDomeRdk(fullscreen)
-    if nargin==0
-        fullscreen=false;
-    end
+function jdDpxExpHalfDomeRdk
     E=dpxCoreExperiment;
     E.expName='jdDpxExpHalfDomeRdk';
     E.scr.skipSyncTests=1;
     E.scr.backRGBA=[0 0 0 1];
     E.scr.distMm=600;
     E.nRepeats=10;
-    if fullscreen
-        if IsLinux
-            wid=1920;
-            hei=1080;
-            E.windowed([wid 0 wid*2 hei]);
-        else
-            E.windowed(false);
-        end
-    else
-        E.windowed(true);
-    end
     C=dpxCoreCondition;
     C.durSec=1000;
     % half-circular mask

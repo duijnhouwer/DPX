@@ -124,19 +124,6 @@ classdef dpxCoreExperiment < hgsetget
         function addCondition(E,C)
             E.conditions{end+1}=C;
         end
-        function windowed(E,win)
-            if nargin==1 && (~islogical(win) && ~(isnumeric(win) && numel(win)==4))
-                error('windowed needs a second argument that is logical or a 4-element win rect');
-            end
-            if islogical(win)
-                if win
-                    win=[10 20 500 375];
-                else
-                    win=[];
-                end
-            end
-            E.scr.winRectPx=win;
-        end
     end
     methods (Access=protected)
         function save(E)

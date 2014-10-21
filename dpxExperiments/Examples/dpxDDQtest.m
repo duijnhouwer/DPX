@@ -8,7 +8,6 @@ function dpxDDQtest
     E.scr.set('winRectPx',[],'widHeiMm',[677 423],'distMm',500, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','SkipSyncTests',0);
-    E.windowed(false); % true, false, [0 0 410 310]+100
     %
     wid=1.8;
     for hei=[.5 1 1.5 2 2.5 3]*wid

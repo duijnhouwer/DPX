@@ -1,6 +1,5 @@
 function jdDpxRdkExp
     E=dpxCoreExperiment;
-    E.windowed(false); % true, false, [0 0 410 310]+100
     E.scr.stereoMode='mono';
     for x=[-12 12]
         C=dpxCoreCondition;
