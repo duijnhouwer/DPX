@@ -10,6 +10,7 @@ classdef dpxCoreWindow < hgsetget
         stereoMode='mono';
         skipSyncTests=0;
         verbosity0min5max=3;
+        scrNr=[];
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -27,9 +28,6 @@ classdef dpxCoreWindow < hgsetget
         rightEyeXYZpx;
         cyclopEyeXYZpx;
         limits=struct;
-    end
-    properties (SetAccess=public,GetAccess=private)
-        scrNr;
     end
     properties (Access=protected)
         stereoCode;
@@ -187,7 +185,9 @@ classdef dpxCoreWindow < hgsetget
     end
     methods (Access=private)
         function W=initValues(W)
-            W.scrNr=max(Screen('screens'));
+            if isempty(W.scrNr)
+                W.scrNr=max(Screen('screens'));
+            end
             if isempty(W.winRectPx)
                 [W.widPx, W.heiPx]=Screen('WindowSize',W.scrNr);
                 W.winRectPx=[0 0 W.widPx W.heiPx];

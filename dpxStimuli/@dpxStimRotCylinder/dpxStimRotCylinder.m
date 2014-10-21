@@ -64,6 +64,16 @@ classdef dpxStimRotCylinder < dpxAbstractStim
                 y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
                 z=round(-S.depthPx+r*sin(S.Az));
                 S.XYZ=[x;y;z];
+            elseif strcmpi(S.axis,'horisphere')
+                x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                r=S.hPx/2; %Y is going in the screen
+                S.Az=2*pi*rand(1,S.nDots);
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                yScale=sin( acos(x/S.wPx*2) );
+                y=y.*yScale;
+                z=round(-S.depthPx+r*sin(S.Az));
+                z=z.*yScale;
+                S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'vert')
                 z=round(S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
                 r=S.wPx/2;
@@ -113,8 +123,16 @@ classdef dpxStimRotCylinder < dpxAbstractStim
                 y = round(S.depthPx+S.disparityFrac*r*cos(S.Az));
                 x = round(S.xPx+r*sin(S.Az));
                 S.XYZ=[x;y;S.XYZ(3,:)];
+            elseif strcmpi(S.axis,'horisphere')
+                r=S.hPx/2; %Y is going in the screen
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                yScale=sin( acos(S.XYZ(1,:)/S.wPx*2) );
+                y=y.*yScale;
+                z=round(-S.depthPx+r*sin(S.Az));
+                z=z.*yScale;
+                S.XYZ=[S.XYZ(1,:);y;z];
             else
-                error(['Unknown axis option: ' S.axis]);
+                %error(['Unknown axis option: ' S.axis]);
             end
             S.hordisp=getHorizontalDisparity(S.scrGets,S.XYZ);
             S.fog=1-(sign(S.fogFrac)*cos(S.Az)+1)/2*abs(S.fogFrac);
