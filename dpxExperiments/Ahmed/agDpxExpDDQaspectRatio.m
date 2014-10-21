@@ -6,7 +6,7 @@ function agDpxExpDDQaspectRatio
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
     E.expName='agDpxExpDDQaspectRatio';
-    E.nRepeats=10;
+    
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
@@ -14,7 +14,7 @@ function agDpxExpDDQaspectRatio
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',4); % Generated using dpxToolStimWindowGui on 2014-09-29
     
     
-    aRatio=[1.3];
+    aRatio=[.6:.2:2.2];
     flashSec=.25;
     nrSteps=2;
     ddqWid=4;
@@ -58,6 +58,10 @@ function agDpxExpDDQaspectRatio
             end
         end
     end
+    E.nRepeats=10;
+    nTrials=numel(E.conditions)*E.nRepeats;
+    expectedSecs=nTrials*(.5+.02);
+    dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;
     
     

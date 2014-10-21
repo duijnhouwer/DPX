@@ -8,21 +8,21 @@ function [f,thisval]=dpxdSelect(r,fieldname,varargin)
 p = inputParser;   % Create an instance of the inputParser class.
 p.addRequired('r', @dpxdIs);
 p.addRequired('fieldname',@ischar);
-p.addParameter('eq',[],@(x)isnumeric(x) || ischar(x));
-p.addParameter('ne',[],@(x)isnumeric(x) || ischar(x));
-p.addParameter('lt',[],@(x)isnumeric(x));
-p.addParameter('ge',[],@(x)isnumeric(x));
-p.addParameter('le',[],@(x)isnumeric(x));
-p.addParameter('gt',[],@(x)isnumeric(x));
-p.addParameter('subindex',[],@(x)jdIsWholeNumber(x) && numel(x)==1);
-p.addParameter('numel_ge',[],@jdIsWholeNumber);
-p.addParameter('numel_gt',[],@jdIsWholeNumber);
-p.addParameter('numel_lt',[],@jdIsWholeNumber);
-p.addParameter('numel_le',[],@jdIsWholeNumber);
-p.addParameter('warn0left',false,@(x)islogical(x) || x==1 || x==0);
+p.addParamValue('eq',[],@(x)isnumeric(x) || ischar(x));
+p.addParamValue('ne',[],@(x)isnumeric(x) || ischar(x));
+p.addParamValue('lt',[],@(x)isnumeric(x));
+p.addParamValue('ge',[],@(x)isnumeric(x));
+p.addParamValue('le',[],@(x)isnumeric(x));
+p.addParamValue('gt',[],@(x)isnumeric(x));
+p.addParamValue('subindex',[],@(x)jdIsWholeNumber(x) && numel(x)==1);
+p.addParamValue('numel_ge',[],@jdIsWholeNumber);
+p.addParamValue('numel_gt',[],@jdIsWholeNumber);
+p.addParamValue('numel_lt',[],@jdIsWholeNumber);
+p.addParamValue('numel_le',[],@jdIsWholeNumber);
+p.addParamValue('warn0left',false,@(x)islogical(x) || x==1 || x==0);
 %p.addOptional('min',[],@isnumeric);
 %p.addOptional('max',[],@isnumeric);
-p.addParameter('increasing',[],@isnumeric);
+p.addParamValue('increasing',[],@isnumeric);
 p.parse(r,fieldname,varargin{:});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

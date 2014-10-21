@@ -16,7 +16,7 @@ function agDpxExpDDQswitches
     % Generated using dpxToolStimWindowGui on 2014-09-29
     
     
-    aRatio=[1.57];
+    aRatio=[1.13];
     flashSec=.25;
     nrSteps=10000;
     ddqWid=4;
@@ -27,7 +27,7 @@ function agDpxExpDDQswitches
             for b=bottomLeftTopRightFirst;
                 
                 C=dpxCoreCondition;
-                C.durSec=5;
+                C.durSec=60*3;
                 %
                 F=dpxStimDot;
                 % type get(F) to see a list of parameters you can set
@@ -59,7 +59,7 @@ function agDpxExpDDQswitches
             end
         end
     end
-    E.nRepeats=5;
+    E.nRepeats=2;
     nTrials=numel(E.conditions)*E.nRepeats;
     expectedSecs=nTrials*(C.durSec+1+.55);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
