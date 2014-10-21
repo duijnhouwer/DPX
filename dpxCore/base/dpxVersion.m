@@ -26,7 +26,9 @@ function revisionNr=dpxVersion(varargin)
     
     fp=mfilename('fullpath');
     oldwd=pwd;
-    DPXPATH=fp(1:strfind(fp,'dpxCore')-1);
+    DPXPATH=fp(1:strfind(fp,'dpxCore')-2); 
+    % !svn update "C:\Users\jacob\Documents\MATLAB\DPX\" failed on SVN version 1.8.10 (r1615264) 
+    % However, !svn update "C:\Users\jacob\Documents\MATLAB\DPX" DID work! Hence "-2" [Jacob 2014-10-21]
     
     try
         cd(DPXPATH);
@@ -52,9 +54,9 @@ function revisionNr=dpxVersion(varargin)
                 if p.Results.offerupdate
                     a=input(['Do you wish to update your local DPX to revision ' num2str(onlineVersion) '? [y/N] > '],'s');
                     if strcmpi(strtrim(a),'y')
-                        cd(DPXPATH);
+                       %cd(DPXPATH);
                         eval(['!svn update "' DPXPATH '"']);
-                        cd(oldwd);
+                       % cd(oldwd);
                     end
                     revisionNr=dpxVersion('checkonline',false);
                     disp(['You now have the latest DPX revision (' num2str(revisionNr) ').']);

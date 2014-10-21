@@ -28,7 +28,7 @@ classdef dpxCoreExperiment < hgsetget
     methods (Access=public)
         function E=dpxCoreExperiment
             % dpxCoreExperiment
-            % Part of DPX suite
+            % Part of DPX framework
             % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
