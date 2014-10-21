@@ -28,8 +28,10 @@ classdef dpxCoreWindow < hgsetget
         cyclopEyeXYZpx;
         limits=struct;
     end
-    properties (Access=protected)
+    properties (SetAccess=public,GetAccess=private)
         scrNr;
+    end
+    properties (Access=protected)
         stereoCode;
         oldPrefs;
     end

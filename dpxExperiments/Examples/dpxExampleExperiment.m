@@ -53,22 +53,12 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ...
+    E.scr.set('winRectPx',[0 0 1600 1200],'widHeiMm',[508 318],'distMm',500, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',0);
+        'stereoMode','mono','skipSyncTests',0,'scrNr',1);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
-    
-    % 'windowed' is a method of the dpxCoreExperiment. If called with false
-    % as the argument the experiment runs in full screen. If called with
-    % true it will run in a small window. Alternatively, a 4-element vector
-    % representing a display window [topLeftX topLeftY botRightX botRightY]
-    % in pixels can be provided for custom window sizes. Running in
-    % windowed mode is convenient when designing an experiment as it
-    % doesn't obscure the view of the matlab environment. When ommited from
-    % your function, windowed defaults to false.
-    E.windowed(false); % true, false, [0 0 410 310]+100
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
