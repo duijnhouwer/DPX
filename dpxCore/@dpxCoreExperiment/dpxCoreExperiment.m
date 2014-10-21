@@ -99,15 +99,13 @@ classdef dpxCoreExperiment < hgsetget
                     end
                     % Handle the completion status of the trial
                     if strcmp(completionStr,'Escape')
-                        disp('Escape pressed.');
                         break;
                     elseif strcmp(completionStr,'Pause')
-                        disp('Paused pressed. Press space to continue.');
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showPauseScreen;                  
                         % the skipped trial can be recognized by stopSec==-1
-                    elseif ~strcmp(completionStr,'ok')
+                    elseif ~strcmp(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
                     end
                     % Store the condition number, the start and stop time,

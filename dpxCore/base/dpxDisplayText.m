@@ -12,6 +12,10 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     % dpxDisplayText(windowPtr,'Saving...',,'fadeInSec',.5,'forceAfterSec',0,'fadeOutSec',-1);
     %
     
+    % DO NOT REPLACE addParamValue WITH addParamter AS SUGGESTED BY MATLAB
+    % 2014B BECAUSE IT WILL BREAK ON MATLAB <=2012B !!!
+    % jacob, 2014-10-21
+    
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('windowPtr',@(x)isnumeric(x));
     p.addRequired('str',@(x)ischar(x));
@@ -23,7 +27,15 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     p.addParamValue('fontsize',25,@(x)isnumeric(x));
     p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
     p.addParamValue('forceAfterSec',Inf,@isnumeric);
+    p.addParamValue('commandlinetoo',true,@islogical);
     p.parse(windowPtr,text,varargin{:});
+    %
+    if p.Results.commandlinetoo
+        str=regexp(p.Results.str,'\\n','split');
+        for i=1:numel(str)
+            disp(str{i});
+        end
+    end
     %
     oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
     oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
@@ -112,3 +124,6 @@ function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
     end
     Screen('Flip',windowPtr);
 end
+
+    
+    

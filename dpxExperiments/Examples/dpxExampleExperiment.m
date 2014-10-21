@@ -53,7 +53,7 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[],'widHeiMm',[508 318],'distMm',500, ... 10 10 400 300
+    E.scr.set('winRectPx',[10 10 400 300],'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',2);
     % Note (1) that i've manually cut the line using elipses (...) for
