@@ -98,10 +98,10 @@ classdef dpxCoreExperiment < hgsetget
                         E.scr.backRGBA=defaultBackRGBA;
                     end
                     % Handle the completion status of the trial
-                    if strcmp(completionStr,'esc')
+                    if strcmp(completionStr,'Escape')
                         disp('Escape pressed.');
                         break;
-                    elseif strcmp(completionStr,'pause')
+                    elseif strcmp(completionStr,'Pause')
                         disp('Paused pressed. Press space to continue.');
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
@@ -260,12 +260,12 @@ classdef dpxCoreExperiment < hgsetget
             % conditions have the same stimuli, this is required for the
             % output format (DPXD). If one or more conditions have been
             % defined without the same stimuli (as defined by the stimulus
-            % name) add the missing stimuli and set their visibility and
-            % durSec fields to 0. (Setting either to 0 would suffice but
-            % doing both for clarity.) Prior to the introduction of this
-            % function it was necessary to define all stimuli for all
-            % conditions, even when the stimuli were not used in that
-            % condition.
+            % name) ADD placeholder stimuli with default values BUT SET
+            % their visibility and durSec fields to 0. (Setting either to 0
+            % would suffice but doing both for clarity.) Prior to the
+            % introduction of this function it was necessary to define all
+            % stimuli for all conditions, even when the stimuli were not
+            % used in that condition.
             % Step 1: get a list of unique stimulus names and classes
             stimnames={};
             classnames={};
@@ -282,7 +282,7 @@ classdef dpxCoreExperiment < hgsetget
             for i=1:numel(E.conditions)
                 stimnamesPresent={};
                 for j=1:numel(E.conditions{i}.stims)
-                    stimnamesPresent{end+1}=E.conditions{i}.stims{j}.name;
+                    stimnamesPresent{end+1}=E.conditions{i}.stims{j}.name; %#ok<AGROW>
                 end
                 stimnamesMissing=setxor(stimnamesPresent,stimnames);
                 for j=1:numel(stimnamesMissing)
@@ -328,9 +328,6 @@ classdef dpxCoreExperiment < hgsetget
             numformat=['%.' num2str(maxDigits) 'd'];
             tstr=datestr(now-E.startTime,'HH:MM:SS');
             str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
-           % if tr>1 && Screen('Preference', 'Verbosity')<4
-           %     fprintf(repmat('\b',1,numel(str)));
-           % end
             fprintf('%s',str);
         end
     end

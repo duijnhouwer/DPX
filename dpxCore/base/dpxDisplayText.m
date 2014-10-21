@@ -80,7 +80,7 @@ function escPressed=fadeText(windowPtr,p,how)
             opacity=1-opacity;
         end
         printText(p.str,windowPtr,p.rgba,p.rgbaback,opacity,p.dxdy);
-        if dpxGetEscapeKey
+        if dpxGetKey('Escape')
             escPressed=true;
             break;
         end

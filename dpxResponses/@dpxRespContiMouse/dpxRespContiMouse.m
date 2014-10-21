@@ -87,7 +87,7 @@ function mouseId=selectAndTestMouse(mouseIndices, productNames)
     mouseId=selec;
     dpxDispFancy(['Testing mouseId ' num2str(mouseId) ' (' productNames{mouseIndices==selec} ')'],':',2);
     firsttime=true;
-    while ~dpxGetEscapeKey
+    while ~dpxGetKey('Escape')
         [x,y] = GetMouse(0, mouseId); % mouseId is ignored on platforms other than Linux
         if firsttime, firsttime=false;
         else fprintf(repmat('\b',1,numel(str)));

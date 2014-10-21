@@ -48,7 +48,8 @@ classdef dpxCoreWindow < hgsetget
             W.oldPrefs.Verbosity=Screen('Preference', 'Verbosity', W.verbosity0min5max);
             [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,[],2,W.stereoCode);
             r=Screen('Resolution',W.scrNr);
-            if all(W.winRectPx==[0 0 r.width r.height]) % we are fullscreen
+            if W.winRectPx(3)-W.winRectPx(1)==r.width && W.winRectPx(4)-W.winRectPx(2)==r.height
+                disp('% we are fullscreen');
                 HideCursor;
                 PsychGPUControl('FullScreenWindowDisablesCompositor', 1);
                 clear r;
@@ -125,6 +126,13 @@ classdef dpxCoreWindow < hgsetget
             end
             W.winRectPx=value;
             initValues(W);
+        end
+        function set.scrNr(W,value)
+            scrs=Screen('screens');
+            if ~isempty(value) && ~any(scrs==value)
+                error(['On this setup scrNr must be ' sprintf('%d, ',scrs) 'or [] (On this setup [] will default to ' num2str(max(scrs)) ').']);
+            end
+            W.scrNr=value;
         end
         function set.distMm(W, value)
             if ~isnumeric(value)

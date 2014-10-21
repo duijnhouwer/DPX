@@ -12,7 +12,7 @@ function dpxToolPaintTexture
     col=true;
     holding=false;
     xy=[];
-    while ~dpxGetEscapeKey
+    while ~dpxGetKey('Escape')
         [x,y,buttons]=GetMouse(W.windowPtr);
         if any(buttons)>0
             if buttons(1) && ~buttons(3)

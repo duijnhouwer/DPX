@@ -69,16 +69,13 @@ classdef dpxCoreCondition < hgsetget
             vbl=Screen('Flip',winPtr);
             % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
+            breakKeys={'Escape','Pause'};
             for f=1:C.nFlips
                 % Check the esc key (only every Nth flip to save overhead)
-                if mod(f,5)==0
-                    if dpxGetEscapeKey
-                        completionStatus='esc';
-                        break;
-                    elseif dpxGetPauseKey
-                        completionStatus='pause';
-                        break;
-                    end 
+                keyIdx=dpxGetKey(breakKeys);
+                if keyIdx>0
+                    completionStatus=breakKeys{keyIdx};
+                    break;
                 end
                 % Step the stimuli (e.g., update random dot positions)
                 for s=1:numel(C.stims)
