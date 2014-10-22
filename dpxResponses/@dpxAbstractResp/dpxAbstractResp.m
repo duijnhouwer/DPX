@@ -36,9 +36,9 @@ classdef dpxAbstractResp < hgsetget
     end
     properties (Access=protected)
         scrGets;
-        flipCounter;
         kbNamesCell={};
         correctKbNamesCell={};
+        flipCounter;
     end
     methods (Access=public)
         function R=dpxAbstractResp
@@ -63,13 +63,12 @@ classdef dpxAbstractResp < hgsetget
             R.given=false;
             R.allowAfterNrFlips=round(R.allowAfterSec*scrGets.measuredFrameRate);
             R.allowUntilNrFlips=round(R.allowUntilSec*scrGets.measuredFrameRate);
-            R.flipCounter=0;
             R.scrGets=scrGets;
             myInit(R);
         end
-        function getResponse(R)
-            R.flipCounter=R.flipCounter+1;
-            if R.flipCounter>=R.allowAfterNrFlips && R.flipCounter<R.allowUntilNrFlips;
+        function getResponse(R,flipCounter)
+            R.flipCounter=flipCounter;
+            if R.flipCounter>R.allowAfterNrFlips && R.flipCounter<=R.allowUntilNrFlips;
                 myGetResponse(R);
             end
         end

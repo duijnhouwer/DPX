@@ -48,11 +48,12 @@ classdef dpxCoreCondition < hgsetget
             end
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
+            % This function is the loop where the stimuli are displayed
             if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
             winPtr=C.scrGets.windowPtr;
-            completionStatus='ok';
+            completionStatus='OK';
             stopTrialEarlyFlip=Inf;
             % Initialize the timing struct
             timingStruct.startSec=-1;
@@ -70,7 +71,11 @@ classdef dpxCoreCondition < hgsetget
             % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
             breakKeys={'Escape','Pause'};
-            for f=1:C.nFlips
+            f=0;
+            while f<=C.nFlips
+               % if f>0
+                    f=f+1;
+               % end
                 % Check the esc key (only every Nth flip to save overhead)
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
@@ -79,7 +84,7 @@ classdef dpxCoreCondition < hgsetget
                 end
                 % Step the stimuli (e.g., update random dot positions)
                 for s=1:numel(C.stims)
-                    C.stims{s}.step;
+                    C.stims{s}.step(f);
                 end
                 % Draw the stimuli
                 for s=numel(C.stims):-1:1
@@ -90,7 +95,7 @@ classdef dpxCoreCondition < hgsetget
                 % Get the response(s)
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
-                        C.resps{r}.getResponse;
+                        C.resps{r}.getResponse(f);
                         if C.resps{r}.given || f==C.nFlips % (at final flip always store, useful for continous resp recordings)
                             respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                             % Set the new end time of the trial. This way

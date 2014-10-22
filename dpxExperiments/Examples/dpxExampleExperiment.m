@@ -81,6 +81,7 @@ function dpxExampleExperiment
         % first-added-last-drawn order. This way the fixation dot will
         % be on top.
         S=dpxStimDot;
+        S.onSec=-1;
         S.wDeg=0.5;
         C.addStim(S);
         

@@ -82,18 +82,16 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.scrGets=scrGets;
             S.myInit;
         end
-        function draw(S)
-            S.flipCounter=S.flipCounter+1;
-            if ~S.visible || S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-                return;
-            end
-            S.myDraw;
+        function step(S,flipCounter)
+            S.flipCounter=flipCounter;
+            if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
+                S.myStep;
+            end 
         end
-        function step(S)
-            if S.flipCounter<S.onFlip || S.flipCounter>=S.offFlip
-                return;
+        function draw(S)
+            if S.visible && S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
+                S.myDraw;
             end
-            S.myStep;
         end
         function clear(S)
             S.myClear;
@@ -101,7 +99,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
     end
     methods (Access=protected)
         % overwrite these "my"-functions is your stimulus class
-        function myInit(S), end     
+        function myInit(S), end %#ok<*MANU>
         function myDraw(S), end
         function myStep(S), end
         function myClear(S), end
