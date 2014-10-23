@@ -213,7 +213,7 @@ classdef dpxCoreExperiment < hgsetget
         end
         function showEndScreen(E)
             str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1);
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1,'commandWindowToo',false);
         end
         function createFileName(E)
             if ~exist(E.outputFolder,'file')

@@ -27,10 +27,10 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     p.addParamValue('fontsize',25,@(x)isnumeric(x));
     p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
     p.addParamValue('forceAfterSec',Inf,@isnumeric);
-    p.addParamValue('commandlinetoo',true,@islogical);
+    p.addParamValue('commandWindowToo',true,@islogical);
     p.parse(windowPtr,text,varargin{:});
     %
-    if p.Results.commandlinetoo
+    if p.Results.commandWindowToo
         str=regexp(p.Results.str,'\\n','split');
         for i=1:numel(str)
             disp(str{i});

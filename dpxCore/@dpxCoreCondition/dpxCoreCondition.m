@@ -12,10 +12,12 @@ classdef dpxCoreCondition < hgsetget
         overrideBackRGBA=false; 
     end
     properties (SetAccess=protected,GetAccess=public)
-        % Cell array of stimulus objects (e.g. dpxStimFix) to be added using addStim
+        % Cell array of stimulus objects (e.g. dpxStimDot) to be added using addStim
         stims={};
-        % Cell array of response objects (e.g. dpxCoreResponse) to be added using addStim
+        % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using addStim
         resps={};
+        % Cell array of go-condition objects (e.g. dpxGoconEyelink,dpxGoconStartKey) to be added using addGocon
+        gocons={};
     end
     properties (Access=protected)
         % The duration of the trial in flips, calculated in init
@@ -48,7 +50,6 @@ classdef dpxCoreCondition < hgsetget
             end
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
-            % This function is the loop where the stimuli are displayed
             if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
@@ -71,12 +72,23 @@ classdef dpxCoreCondition < hgsetget
             % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
             breakKeys={'Escape','Pause'};
-            f=0;
+            f=0; % flipCounter
             while f<=C.nFlips
-               % if f>0
+                % Lock in frame-0 until all go-conditions are met. Stimuli
+                % with onSec<=0 will show already (e.g. fixation dot
+                % waiting for go-condition fixation using eyelink)
+                if f>0
                     f=f+1;
-               % end
-                % Check the esc key (only every Nth flip to save overhead)
+                else
+                    nMet=0;
+                    for g=1:numel(C.gocons)
+                        nMet=nMet+C.gocons{g}.met;
+                    end
+                    if nMet==numel(C.gocons)
+                        f=1; % Lift the lock: go
+                    end
+                end
+                % Check the break keys
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
                     completionStatus=breakKeys{keyIdx};
@@ -143,16 +155,16 @@ classdef dpxCoreCondition < hgsetget
                 end
             end
             for s=1:numel(C.stims)
-                % call the clear of (all) the stimulus object(s)
+                % Call the clear of (all) the stimulus object(s)
                 C.stims{s}.clear;
             end
             for r=1:numel(C.resps)
-                % call the clear of (all) the response object(s)
+                % Call the clear of (all) the response object(s)
                 C.resps{r}.clear;
             end
         end
         function addStim(C,S)
-            % add a stimulus object to the condition
+            % Add a stimulus object to the condition
             if isempty(S.name)
                 % If no name is provided (not recommended) use the class
                 % name of the object as the stimulus name that will show up
@@ -164,20 +176,16 @@ classdef dpxCoreCondition < hgsetget
             % conditon is shown;
             S.lockInitialPublicState;
             C.stims{end+1}=S;
-            % Check that the name is not 'none', this is reserved name (see
-            % dpxCoreResponse)
-            if strcmpi(S.name,'none')
-                error(['Reponse object name cannot be ''' R.name '''.']);
-            end
-            % Check that all stimuli have unique names
+            % Check that all responses have unique names, this is important
+            % for the output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.stims,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All stimuli in a condition need unique name fields');
+                error('All stimuli in a condition need unique names');
             end
         end
         function addResp(C,R)
-            % add a response object to the condition
+            % Add a response object to the condition
             if isempty(R.name)
                 R.name=class(R);
             end
@@ -187,11 +195,25 @@ classdef dpxCoreCondition < hgsetget
                 error(['Reponse object name cannot be ''' R.name '''.']);
             end
             % Check that all responses have unique names, this is important
-            % for the readability of the final output format (DPXD)
+            % for the output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.resps,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All stimuli in a condition need unique name fields');
+                error('All responses in a condition need unique names');
+            end
+        end
+        function addGocon(C,G)
+            % Add a go-condition object to the condition
+            if isempty(G.name)
+                G.name=class(G);
+            end
+            C.gocons{end+1}=G;
+            % Check that all gocons have unique names, this is important
+            % for the output format (DPXD)
+            nameList=cellfun(@(x)get(x,'name'),C.gocons,'UniformOutput',false);
+            if numel(nameList)~=numel(unique(nameList))
+                disp(nameList);
+                error('All go-conditions in a condition need unique names');
             end
         end
     end

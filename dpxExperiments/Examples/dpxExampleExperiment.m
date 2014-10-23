@@ -134,6 +134,11 @@ function dpxExampleExperiment
         R.correctEndsTrialAfterSec=0;
         C.addResp(R);
         
+        % Add a go-condition to the experiment
+        G=dpxGoconKey;
+        G.name='startkey';
+        C.addGocon(G);
+        
         % Add this condition to the experiment
         E.addCondition(C);
     end
