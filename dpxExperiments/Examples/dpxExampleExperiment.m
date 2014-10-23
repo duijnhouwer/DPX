@@ -53,7 +53,7 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[10 10 400 300],'widHeiMm',[508 318],'distMm',500, ... 
+    E.scr.set('winRectPx',[10 10 800 600],'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',2);
     % Note (1) that i've manually cut the line using elipses (...) for
@@ -76,14 +76,11 @@ function dpxExampleExperiment
         % we make it infinite and have the response finish the trial.
         C.durSec=Inf;
         
-        % Create and add a default fixation-dot 'stimulus'. We add this
-        % stimulus first because the stimuli are drawn in a
-        % first-added-last-drawn order. This way the fixation dot will
-        % be on top.
-        S=dpxStimDot;
-        S.onSec=-1;
-        S.wDeg=0.5;
-        C.addStim(S);
+        % Create fixation-dot 'stimulus'. 
+        FIX=dpxStimDot;
+        FIX.onSec=-1;
+        FIX.wDeg=0.5;
+
         
         % Add the random dot motion stimulus to this condition, and set
         % the properties. Remember, to get a list of all properties and
@@ -102,25 +99,38 @@ function dpxExampleExperiment
         % a new class, say dpxStimRdkExotic, and add the properties and
         % override the methods as required. This way the stimulus
         % modules (classes) stay clean and backward compatible.]
-        S=dpxStimRdk;
+        RDK=dpxStimRdk;
         % We will use default settings except for the coherence. Note,
         % dpxStimRdk takes the sign of the coherence to multiply the
         % direction with. So if the property dirDeg is 0 (right) a
         % condition with negative coherence will move left.
-        S.cohereFrac=cohFrac(c);
+        RDK.cohereFrac=cohFrac(c);
         % We want the stimulus to go on 100 ms after the start of the
         % trial and last for half a second
-        S.onSec=0.1;
-        S.durSec=0.5;
+        RDK.onSec=0.1;
+        RDK.durSec=0.5;
         % Provide a name for this stimulus, this is how the stimulus
         % will be called in the data-file. If no name is provided, the
         % name will default to the class-name (dpxStimRdk). In an
         % experiment, no two stimuli can have the same name, not even
         % if they are in different conditions.
-        S.name='motionStim'; % no spaces allowed in name
-        % Add the stimulus to the condition
-        C.addStim(S);
+        RDK.name='motionStim'; % no spaces allowed in name
 
+        
+        % Add a semi-transparent mask for over the RDK
+        MASK=dpxStimMaskGaussian;
+        MASK.sigmaDeg=1;
+        MASK.onSec=0.1;
+        MASK.durSec=0.5;
+        MASK.wDeg=RDK.wDeg+RDK.dotDiamDeg;      
+        MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
+        
+        % Add the stimuli to the condition
+        C.addStim(FIX); % first added will be on top
+        C.addStim(MASK);
+        C.addStim(RDK);
+        
+        
         % Create and add a response object to record the keyboard
         % presses.
         R=dpxRespKeyboard;
@@ -135,9 +145,9 @@ function dpxExampleExperiment
         C.addResp(R);
         
         % Add a go-condition to the experiment
-        G=dpxGoconKey;
-        G.name='startkey';
-        C.addGocon(G);
+       % G=dpxGoconKey;
+       % G.name='startkey';
+       % C.addGocon(G);
         
         % Add this condition to the experiment
         E.addCondition(C);

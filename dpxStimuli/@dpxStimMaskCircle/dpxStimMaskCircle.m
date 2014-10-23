@@ -25,7 +25,6 @@ classdef dpxStimMaskCircle < dpxAbstractStim
             if std(S.RGBAfrac(1:3))>0
                 error('CURRENTLY ONLY GRAYSCALES (R=G=B) IMPLEMENTED, ONLY REASON BEING THAT I WSA IN A HURRY, CAN BE IMPLEMENTED WITHOUT PORBLEM');
             end
-
             texHalfLenPx=round(S.wPx/2);
             S.visibleSizePx=2*texHalfLenPx+1;
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.hPx/2+S.winCntrXYpx(2)];
