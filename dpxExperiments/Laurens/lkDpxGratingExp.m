@@ -11,36 +11,49 @@ function lkDpxGratingExp
     %
     E.scr.gamma=0.69;
     E.scr.backRGBA=[.25 .25 .25 1];
-    E.txtStart='<cut this>DAQ-pulse';
-    E.txtEnd='<cut this>DAQ-pulse';
+    %E.scr.winRectPx=[0 0 1920 1080];
+    E.scr.verbosity0min5max=1;
+    E.scr.winRectPx=[0 0 1920 1080] ;
+    E.txtStart='<cut this>DAQ-pulse';  
+    E.txtEnd=E.txtStart;
     E.txtPauseNrTrials=0;
     %
     % Settings
     %
-    dirDegs=0:45:315;
-    contrastFracs=.5;%[.25 .5 1];
-    cyclesPerDeg=.1;%[.05 .1 .2];
-    cyclesPerSecond=1;%[.5 1 2];
-    E.nRepeats=2;
+    dirDegs=[0:45:315];
+    contrastFracs=[1];
+    cyclesPerDeg=[0.1 0.2];
+    cyclesPerSecond=[1];
+    E.nRepeats=6;
     stimSec=4;
     isiSec=4;
     %
-  %
     for direc=dirDegs(:)'
         for cont=contrastFracs(:)'
             for sf=cyclesPerDeg(:)'
                 for tf=cyclesPerSecond(:)'
                     C=dpxCoreCondition;
                     C.durSec=stimSec+isiSec;
+                    
+                    
+                    
                     %
                     S=dpxStimGrating;
-                    S.name='grating';
+                    % 666
+                    if direc==0
+                     C.overrideBackRGBA=[1 1 1 1];
+                    S.grayFrac=1;
+                    else
+                        C.overrideBackRGBA=[0 0 0 1];
+                    S.grayFrac=0;
+                    end
+                    %
                     S.wDeg=45;
                     S.dirDeg=direc;
                     S.cyclesPerSecond=tf;
                     S.cyclesPerDeg=sf;
                     S.contrastFrac=cont;
-                    S.grayFrac=.25;
+                   % S.grayFrac=.25; 666
                     S.squareWave=true;
                     S.onSec=isiSec/2;
                     S.durSec=stimSec;
@@ -60,7 +73,7 @@ function lkDpxGratingExp
             end
         end    
     end
-    nrTrials=numel(E.conditions)*E.nRepeats;
+    nrTrials=numel(E.conditions) * E.nRepeats;
     dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 10 s)']);
     E.run;
 end
