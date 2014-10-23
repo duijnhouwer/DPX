@@ -176,7 +176,7 @@ classdef dpxCoreExperiment < hgsetget
         function showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
-                str=['Waiting for ' E.txtEnd ' ... '];
+                str=['Waiting for ' E.txtStart ' ... '];
                 dpxDispFancy(str);
                 dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
@@ -343,7 +343,7 @@ classdef dpxCoreExperiment < hgsetget
         function set.outputFolder(E,value)
             if isempty(value)
                 if IsWin, value='C:\temp\dpxData';
-                elseif IsOSX || IsLinux, value='/tmp/dpxData';
+                elseif IsOSX || IsLinux, value='~/dpxData';
                 else error('Unsupported OS!');
                 end
             end

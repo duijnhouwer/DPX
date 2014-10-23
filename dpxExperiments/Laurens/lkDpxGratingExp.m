@@ -14,8 +14,7 @@ function lkDpxGratingExp
     %E.scr.winRectPx=[0 0 1920 1080];
     E.scr.verbosity0min5max=1;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='<cut this>DAQ-pulse';  
-    E.txtEnd=E.txtStart;
+    E.txtStart='DAQ-pulse';  
     E.txtPauseNrTrials=0;
     %
     % Settings
@@ -24,7 +23,7 @@ function lkDpxGratingExp
     contrastFracs=[1];
     cyclesPerDeg=[0.1 0.2];
     cyclesPerSecond=[1];
-    E.nRepeats=6;
+    E.nRepeats=1;
     stimSec=4;
     isiSec=4;
     %
@@ -33,40 +32,43 @@ function lkDpxGratingExp
             for sf=cyclesPerDeg(:)'
                 for tf=cyclesPerSecond(:)'
                     C=dpxCoreCondition;
-                    C.durSec=stimSec+isiSec;
-                    
-                    
-                    
+                    C.durSec=stimSec+isiSec;           
                     %
                     S=dpxStimGrating;
-                    % 666
-                    if direc==0
-                     C.overrideBackRGBA=[1 1 1 1];
-                    S.grayFrac=1;
-                    else
-                        C.overrideBackRGBA=[0 0 0 1];
-                    S.grayFrac=0;
-                    end
-                    %
+                    S.name='grating';
                     S.wDeg=45;
                     S.dirDeg=direc;
                     S.cyclesPerSecond=tf;
                     S.cyclesPerDeg=sf;
                     S.contrastFrac=cont;
-                   % S.grayFrac=.25; 666
+                    S.grayFrac=.25;
                     S.squareWave=true;
                     S.onSec=isiSec/2;
                     S.durSec=stimSec;
                     %
-                    M=dpxStimMask;
-                    M.wDeg=45;
-                    M.hDeg=45;
+                    M=dpxStimMaskCircle;
                     M.name='mask';
-                    M.pars=2;
-                    M.grayFrac=.25;
+                    M.wDeg=45*sqrt(2)+1;
+                    M.hDeg=45*sqrt(2)+1;
+                    M.outerDiamDeg=45;
+                    M.innerDiamDeg=43;
+                    M.RGBAfrac=[.25 .25 .25 1];
                     %
+                    V=dpxStimMccAnalogOut;
+                    V.name='mcc';
+                    V.onSec=S.onSec;
+                    V.durSec=S.durSec;
+                    V.Voff=0;
+                    V.Von=4;
+                    %
+                    C.addStim(V);
                     C.addStim(M);
                     C.addStim(S);
+                    %
+                    MCC=dpxRespMccCounter;
+                    MCC.name='mcc';
+                    MCC.allowUntilSec=C.durSec;
+                    C.addResp(MCC);
                     %
                     E.addCondition(C);
                 end
