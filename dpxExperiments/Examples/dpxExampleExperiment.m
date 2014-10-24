@@ -18,36 +18,36 @@ function dpxExampleExperiment
     % At the basis of each experiment is the Experiment class. This class,
     % called dpxCoreExperiment has functionality for most psychophysical
     % and 2-photon microscopy experiments.
-    % [However, it is possible to make
-    % a derived class of dpxCoreExperiment. This class would inherit the
-    % functionality of dpxCoreExperiment and allows a user to change that
-    % functionality or add features without breaking the experiments of
-    % other users. Inheritance is a general and powerful feature of object
-    % oriented programming..]
+    % [However, it is possible to make a derived class of
+    % dpxCoreExperiment. This class would inherit the functionality of
+    % dpxCoreExperiment and allows a user to change that functionality or
+    % add features without breaking the experiments of other users.
+    % Inheritance is a powerful feature of object oriented programming.]
     
     % Make an object E of the class dpxCoreExperiment now ...
     E=dpxCoreExperiment;
     
     % Set the name, this will be used as the stem of the output filename.
     % If no name is provided, the experiment will take the name of the
-    % experiment class, in this (if not all) case(s): dpxCoreExperiment.
+    % experiment class (in this case 'dpxCoreExperiment').
     E.expName='dpxExampleExperiment';
     
     % Define the folder to which to save the output. This defaults to
-    % '/tmp/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows, so
-    % you can leave this commented out if your happy with that, or provide
-    % a valid path for your system.
+    % '~/Documents/dpxData' on Unix systems, and 'C:\temp\dpxData\' on
+    % windows, so you can leave this commented out if your happy with the
+    % default, or provide a valid path for your system.
     % E.outputFolder='C:\dpxData\';
     
     % 'scr' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
     % when dpxCoreExperiment object is made. The settings of scr can be
     % viewed by typing get(E.scr) and set by typing, for example,
-    % set(E.scr,'distMm',1000) to set the viewing distance to a meter.
-    % Note that not all properties of E.scr that are displayed when
-    % calling get(E.scr) can also be set using set, some properties are
-    % read-only. A convenient way to set your scr properties,
-    % visualize, and test them is through the amazing GUI I created. Evoke
+    % set(E.scr,'distMm',1000) or E.scr.distMm=1000 to set the viewing
+    % distance to a meter. Note that not all properties of E.scr that are
+    % displayed when calling get(E.scr) can also be set using set, some
+    % properties are read-only. A convenient way to set your scr
+    % properties, visualize, and test them is through the amazing GUI I
+    % created. Evoke
     % this by typing:
     %   E.scr.gui
     % The "disp" button in this GUI generates a set-string to your command
@@ -144,11 +144,10 @@ function dpxExampleExperiment
         R.correctEndsTrialAfterSec=0;
         C.addResp(R);
         
-        % Add a go-condition to the experiment
-       % G=dpxGoconKey;
-       % G.name='startkey';
-       % C.addGocon(G);
-        
+        % Add a Trial-trigger to the condition
+        G=dpxTriggerKey;
+        G.name='startkey';
+        C.addTrialTrigger(G);
         % Add this condition to the experiment
         E.addCondition(C);
     end

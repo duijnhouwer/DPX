@@ -16,8 +16,8 @@ classdef dpxCoreCondition < hgsetget
         stims={};
         % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using addStim
         resps={};
-        % Cell array of go-condition objects (e.g. dpxGoconEyelink,dpxGoconStartKey) to be added using addGocon
-        gocons={};
+        % Cell array of trial-trigger objects (e.g. dpxGoconEyelink,dpxGoconStartKey) to be added using addTrialTrigger
+        trigs={};
     end
     properties (Access=protected)
         % The duration of the trial in flips, calculated in init
@@ -81,10 +81,10 @@ classdef dpxCoreCondition < hgsetget
                     f=f+1;
                 else
                     nMet=0;
-                    for g=1:numel(C.gocons)
-                        nMet=nMet+C.gocons{g}.met;
+                    for g=1:numel(C.trigs)
+                        nMet=nMet+C.trigs{g}.go;
                     end
-                    if nMet==numel(C.gocons)
+                    if nMet==numel(C.trigs)
                         f=1; % Lift the lock: go
                     end
                 end
@@ -202,15 +202,15 @@ classdef dpxCoreCondition < hgsetget
                 error('All responses in a condition need unique names');
             end
         end
-        function addGocon(C,G)
-            % Add a go-condition object to the condition
+        function addTrialTrigger(C,G)
+            % Add a trial-trigger object to the condition
             if isempty(G.name)
                 G.name=class(G);
             end
-            C.gocons{end+1}=G;
+            C.trigs{end+1}=G;
             % Check that all gocons have unique names, this is important
             % for the output format (DPXD)
-            nameList=cellfun(@(x)get(x,'name'),C.gocons,'UniformOutput',false);
+            nameList=cellfun(@(x)get(x,'name'),C.trigs,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
                 error('All go-conditions in a condition need unique names');
