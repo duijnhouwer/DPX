@@ -11,12 +11,12 @@ function agDpxDDQinteractTactile
     javaaddpath(which('BrainMidi.jar'));
     
     
-    durS=60*3 ;
+    durS=60*2 ;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
-            for ddqHei=ddqWid * [1.4]%more or less it is the point of subjective equality
+            for ddqHei=ddqWid * [1.58]%it is the point of subjective equality
                 for ori=0
                     for bottomLeftTopRightFirst=[false]
                         for antiJump=false
@@ -26,8 +26,7 @@ function agDpxDDQinteractTactile
                             %
                             
                             C=dpxCoreCondition;
-                            C.durSec=durS
-                            ;
+                            C.durSec=durS;
                             %
                             F=dpxStimDot;
                             % type get(F) to see a list of parameters you can set

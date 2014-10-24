@@ -26,7 +26,7 @@ for i=1:8
     C.addStim(F);
     C.addResp(R);
     T=dpxStimTactileMIDI;
-    T.tapOnSec=0.5 : 0.5 : 2.5; %[0.5 1 1.5 2 ];
+    T.tapOnSec=0.5 : 0.5 : 2; %[0.5 1 1.5 2 ];
     if i>4
         a=T.tapOnSec;
         a=[a;a];

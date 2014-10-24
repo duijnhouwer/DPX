@@ -60,6 +60,10 @@ function dpxExampleExperiment
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
     
+    % Add a plugin to use the eyelink
+    P=dpxPluginEyelink;
+    E.addPlugin(P);
+    
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
     cohFrac=-1:.5:1;
@@ -100,11 +104,13 @@ function dpxExampleExperiment
         % override the methods as required. This way the stimulus
         % modules (classes) stay clean and backward compatible.]
         RDK=dpxStimRdk;
-        % We will use default settings except for the coherence. Note,
-        % dpxStimRdk takes the sign of the coherence to multiply the
+        % Set the coherence. Note,  dpxStimRdk takes the sign of the coherence to multiply the
         % direction with. So if the property dirDeg is 0 (right) a
         % condition with negative coherence will move left.
         RDK.cohereFrac=cohFrac(c);
+        % Set the diameter of the RDK
+        RDK.wDeg=20;
+        RDK.hDeg=20;
         % We want the stimulus to go on 100 ms after the start of the
         % trial and last for half a second
         RDK.onSec=0.1;
@@ -119,7 +125,7 @@ function dpxExampleExperiment
         
         % Add a semi-transparent mask for over the RDK
         MASK=dpxStimMaskGaussian;
-        MASK.sigmaDeg=1;
+        MASK.sigmaDeg=5;
         MASK.onSec=0.1;
         MASK.durSec=0.5;
         MASK.wDeg=RDK.wDeg+RDK.dotDiamDeg;      
@@ -145,9 +151,10 @@ function dpxExampleExperiment
         C.addResp(R);
         
         % Add a Trial-trigger to the condition
-        G=dpxTriggerKey;
-        G.name='startkey';
-        C.addTrialTrigger(G);
+        %G=dpxTriggerKey;
+        %G.name='startkey';
+        %C.addTrialTrigger(G);
+        
         % Add this condition to the experiment
         E.addCondition(C);
     end

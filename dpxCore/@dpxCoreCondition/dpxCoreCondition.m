@@ -30,8 +30,8 @@ classdef dpxCoreCondition < hgsetget
         end
         function init(C,scrGets)
             % Initialize the dpxCoreCondition object Store a copy of the
-            % values in scr, do not change any of these values, I would
-            % make them read only if Matlab allowed me. Changing
+            % values in scr, do not change any of these values (I would
+            % make them read only if Matlab allowed for that). Changing
             % scrGets won't change the scr object from which they were
             % derived. Doing so would mess up any calculations that depend
             % on them.
@@ -74,7 +74,7 @@ classdef dpxCoreCondition < hgsetget
             breakKeys={'Escape','Pause'};
             f=0; % flipCounter
             while f<=C.nFlips
-                % Lock in frame-0 until all go-conditions are met. Stimuli
+                % Lock in frame-0 until all trial-triggers are go. Stimuli
                 % with onSec<=0 will show already (e.g. fixation dot
                 % waiting for go-condition fixation using eyelink)
                 if f>0

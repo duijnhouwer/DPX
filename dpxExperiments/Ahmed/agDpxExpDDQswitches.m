@@ -16,7 +16,7 @@ function agDpxExpDDQswitches
     % Generated using dpxToolStimWindowGui on 2014-09-29
     
     
-    aRatio=[1.13];
+    aRatio=[1.58];
     flashSec=.25;
     nrSteps=10000;
     ddqWid=4;
@@ -27,7 +27,7 @@ function agDpxExpDDQswitches
             for b=bottomLeftTopRightFirst;
                 
                 C=dpxCoreCondition;
-                C.durSec=60*3;
+                C.durSec=60*2;
                 %
                 F=dpxStimDot;
                 % type get(F) to see a list of parameters you can set

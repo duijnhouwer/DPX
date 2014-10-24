@@ -12,6 +12,7 @@ classdef dpxCoreExperiment < hgsetget
         txtEnd;
         txtRBGAfrac;
         outputFolder;
+        plugins;
     end
     properties (Access=protected)
         outputFileName='undefined.mat';
@@ -43,6 +44,7 @@ classdef dpxCoreExperiment < hgsetget
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
             E.outputFolder='';
+            E.plugins={};
         end
         function run(E)
             try
@@ -59,7 +61,9 @@ classdef dpxCoreExperiment < hgsetget
                 E.sysInfo=dpxSystemInfo;
                 E.createFileName; % this function also asks for subject and experimenter IDs
                 E.scr.open;
-                E.signalFile('save');
+                for i=1:numel(E.plugins)
+                    E.plugins{i}.start(get(E));
+                end
                 E.showStartScreen;
                 % Set the trial counter to zero
                 tr=0;
@@ -121,9 +125,11 @@ classdef dpxCoreExperiment < hgsetget
                 E.stopTime=now;
                 E.showFinalSaveScreen;
                 E.save;
-                E.signalFile('delete');
                 E.showEndScreen;
                 E.scr.close;
+                for i=1:numel(E.plugins)
+                    E.plugins{i}.stop;
+                end
                 sca;
                 ListenChar(0);
             catch me
@@ -134,6 +140,9 @@ classdef dpxCoreExperiment < hgsetget
         end
         function addCondition(E,C)
             E.conditions{end+1}=C;
+        end
+        function addPlugin(E,P)
+            E.plugins{end+1}=P; % e.g. dpxPluginEyelink
         end
     end
     methods (Access=protected)
@@ -234,23 +243,6 @@ classdef dpxCoreExperiment < hgsetget
                 delete(testfile);
             catch me
                 error([me.message ' : ' testfile]);
-            end
-        end
-        function signalFile(E,opt)
-            % handy when using shared dropbox folder as the output folder,
-            % indicates that someone is running the experiment and on which
-            % computer.
-            if strtrim(E.subjectId)=='0'
-                return; % don't signal test runs
-            end
-            fname=['DPX=RUNNING ' E.expName ' C-'  dpxGetUserName ' S-' E.subjectId ' X-' E.experimenterId '.mat'];
-            fname=dpxSanitizeFileName(fname,'fname');
-            if strcmpi(opt,'save')
-                save(fullfile(E.outputFolder,fname),'');
-            elseif strcmpi(opt,'delete')
-                delete(fullfile(E.outputFolder,fname));
-            else
-                error(['Unknown signalFile option ' opt]);
             end
         end
         function unifyConditions(E)
