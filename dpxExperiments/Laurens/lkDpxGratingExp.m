@@ -9,7 +9,7 @@ function lkDpxGratingExp
     % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
     %
-    E.scr.gamma=0.69;
+    E.scr.gamma=0.690;
     E.scr.backRGBA=[.1 .1 .1 1];
     E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
