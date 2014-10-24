@@ -3,10 +3,14 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
     properties (Access=public)
         Voff;
         Von;
-        channel=0;
+        channelOnSec;
+        channelDurSec;
+        channelNr;
+        daqNr;
     end
     properties (Access=protected)
-        daqNr;
+        channelOnFlip;
+        channelOffFlip;
     end
     methods (Access=public)
         function S=dpxStimMccAnalogOut
@@ -21,23 +25,30 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
             % See also: DaqPins, DaqDeviceIndex, DaqAOut
             S.Voff=0;
             S.Von=4;
-            S.daqNr=[];
-            S.channel=0;
+            S.daqNr=DaqDeviceIndex([],0);
+            DaqAOut(S.daqNr,0,0);
+            DaqAOut(S.daqNr,1,0);
+            S.channelNr=0; % can be a single 0 or 1 or any other pattern that will be repeated         
         end
     end
     methods (Access=protected)
         function myInit(S)
-            S.daqNr=DaqDeviceIndex([],0);
+            S.channelOnFlip=round(S.channelOnSec*S.scrGets.measuredFrameRate+S.onFlip);
+            S.channelOffFlip=S.channelOnFlip+round(S.channelDurSec*S.scrGets.measuredFrameRate);
             DaqAOut(S.daqNr,0,S.Voff/4.095);
+            DaqAOut(S.daqNr,1,S.Voff/4.095);
         end
         function myDraw(S)
-             if S.flipCounter>S.onFlip && S.flipCounter<S.offFlip
-                 DaqAOut(S.daqNr,0,S.Voff/4.095);
-             elseif S.flipCounter==S.offFlip
-                 DaqAOut(S.daqNr,0,S.Von/4.095);
-             else
-                 warning('This should not be possible! If you see this something must have changed in the design somewhere which affects dpxStimMccAnalogOut.m. Please check');
-             end
+            ons=find(S.flipCounter==S.channelOnFlip);
+            offs=find(S.flipCounter==S.channelOffFlip);
+            for i=ons(:)'
+                idx=mod(i-1,numel(S.channelNr))+1;
+                DaqAOut(S.daqNr,S.channelNr(idx),S.Von/4.095);  
+            end
+            for i=offs(:)'
+                idx=mod(i-1,numel(S.channelNr))+1;
+                DaqAOut(S.daqNr,S.channelNr(idx),S.Voff/4.095);  
+            end
         end
     end
     % set methods
@@ -54,11 +65,11 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
             end
             S.Von=value;
          end
-         function set.channel(S,value)
-            if value~=0 && value~=1
-                error('channel should be 0 or 1');
+         function set.channelNr(S,value)
+            if ~all(value==1 | value==0)
+                error('channel should be a vector of zeros and ones');
             end
-            S.Voff=value;
+            S.channelNr=value;
          end
     end
 end

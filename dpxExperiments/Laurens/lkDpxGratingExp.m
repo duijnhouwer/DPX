@@ -14,7 +14,7 @@ function lkDpxGratingExp
     %E.scr.winRectPx=[0 0 1920 1080];
     E.scr.verbosity0min5max=1;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='DAQ-pulse';  
+    E.txtStart='asd DAQ-pulse';  
     E.txtPauseNrTrials=0;
     %
     % Settings
@@ -22,8 +22,8 @@ function lkDpxGratingExp
     dirDegs=[0:45:315];
     contrastFracs=[1];
     cyclesPerDeg=[0.1 0.2];
-    cyclesPerSecond=[1];
-    E.nRepeats=1;
+    cyclesPerSecond=[0.5 1];
+    E.nRepeats=10;
     stimSec=4;
     isiSec=4;
     %
@@ -34,17 +34,17 @@ function lkDpxGratingExp
                     C=dpxCoreCondition;
                     C.durSec=stimSec+isiSec;           
                     %
-                    S=dpxStimGrating;
-                    S.name='grating';
-                    S.wDeg=45;
-                    S.dirDeg=direc;
-                    S.cyclesPerSecond=tf;
-                    S.cyclesPerDeg=sf;
-                    S.contrastFrac=cont;
-                    S.grayFrac=.25;
-                    S.squareWave=true;
-                    S.onSec=isiSec/2;
-                    S.durSec=stimSec;
+                    G=dpxStimGrating;
+                    G.name='grating';
+                    G.wDeg=45;
+                    G.dirDeg=direc;
+                    G.cyclesPerSecond=tf;
+                    G.cyclesPerDeg=sf;
+                    G.contrastFrac=cont;
+                    G.grayFrac=.25;
+                    G.squareWave=true;
+                    G.onSec=isiSec/2;
+                    G.durSec=stimSec;
                     %
                     M=dpxStimMaskCircle;
                     M.name='mask';
@@ -56,14 +56,17 @@ function lkDpxGratingExp
                     %
                     V=dpxStimMccAnalogOut;
                     V.name='mcc';
-                    V.onSec=S.onSec;
-                    V.durSec=S.durSec;
+                    V.onSec=0;
+                    V.durSec=C.durSec;
+                    V.channelOnSec=G.onSec;
+                    V.channelDurSec=G.durSec;
                     V.Voff=0;
                     V.Von=4;
+                    V.channelNr=0;
                     %
                     C.addStim(V);
                     C.addStim(M);
-                    C.addStim(S);
+                    C.addStim(G);
                     %
                     MCC=dpxRespMccCounter;
                     MCC.name='mcc';
