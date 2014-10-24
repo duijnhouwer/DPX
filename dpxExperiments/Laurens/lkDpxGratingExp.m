@@ -5,16 +5,16 @@ function lkDpxGratingExp
     % 2014-4-24: Measured luminance BENQ screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
     % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz connected with a VGA cable.
+    % Hz connected with a VGA cable (so that we can split to Beetronixs Screen)
     % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
     %
     E.scr.gamma=0.69;
-    E.scr.backRGBA=[.25 .25 .25 1];
-    %E.scr.winRectPx=[0 0 1920 1080];
-    E.scr.verbosity0min5max=1;
+    E.scr.backRGBA=[.1 .1 .1 1];
+    E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='asd DAQ-pulse';  
+    E.txtStart='asd DAQ-pulse'; 
+    E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
     % Settings
@@ -36,7 +36,7 @@ function lkDpxGratingExp
                     %
                     G=dpxStimGrating;
                     G.name='grating';
-                    G.wDeg=45;
+                    G.wDeg=65;
                     G.dirDeg=direc;
                     G.cyclesPerSecond=tf;
                     G.cyclesPerDeg=sf;
@@ -48,11 +48,11 @@ function lkDpxGratingExp
                     %
                     M=dpxStimMaskCircle;
                     M.name='mask';
-                    M.wDeg=45*sqrt(2)+1;
-                    M.hDeg=45*sqrt(2)+1;
-                    M.outerDiamDeg=45;
-                    M.innerDiamDeg=43;
-                    M.RGBAfrac=[.25 .25 .25 1];
+                    M.wDeg=G.wDeg*sqrt(2)+1;
+                    M.hDeg=G.wDeg*sqrt(2)+1;
+                    M.outerDiamDeg=G.wDeg;
+                    M.innerDiamDeg=G.wDeg-5;
+                    M.RGBAfrac=[.1 .1 .1 1];
                     %
                     V=dpxStimMccAnalogOut;
                     V.name='mcc';
