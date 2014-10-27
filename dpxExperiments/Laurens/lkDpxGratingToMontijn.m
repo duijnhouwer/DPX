@@ -5,7 +5,7 @@ function structMP=lkDpxGratingToMontijn(filename)
     % output so that it can be used with Jorrit's analysis suite
     
     if nargin==0
-        files2convert=dpxUIgetfiles('dialogtitle','Select lkDpxGratingExp output file(s)','filterspec','*.m');
+        files2convert=dpxUIgetfiles('dialogtitle','Select lkDpxGratingExp output file(s)','filterspec','*.mat');
     else
         if ~ischar(filename)
             error('Either give a single filename, or no argument to bring up a multiple file selection tool');
@@ -57,13 +57,13 @@ function M=convert(K)
     M.debug=0; % 0
     
     % De volgende scherm info staat ook in de klink-file
-    M.dblScreenDistance_cm=K.stimwin_distMm(1)/10;
-    M.dblScreenWidth_cm=K.stimwin_widHeiMm{1}(1)/10; % 34
-    M.dblScreenHeight_cm=K.stimwin_widHeiMm{1}(2)/10; % 27
+    M.dblScreenDistance_cm=K.scr_distMm(1)/10;
+    M.dblScreenWidth_cm=K.scr_widHeiMm{1}(1)/10; % 34
+    M.dblScreenHeight_cm=K.scr_widHeiMm{1}(2)/10; % 27
     M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
     M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
-    M.intScreenWidth_pix=K.stimwin_winRectPx{1}(3); % 1280
-    M.intScreenHeight_pix=K.stimwin_winRectPx{1}(4); % 1024
+    M.intScreenWidth_pix=K.scr_winRectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.scr_winRectPx{1}(4); % 1024
     
     
     % Herbereken een paar conversie factoren, deze zijn ten minste nodig om
@@ -73,10 +73,10 @@ function M=convert(K)
     Deg2Pix = tand(1).*(M.dblScreenDistance_cm*10)*Mm2Pix;
         
     % diameter aperture
-    M.dblStimSizeRetinalDegrees=K.dpxStimGrating_wDeg(1);
+    M.dblStimSizeRetinalDegrees=K.grating_wDeg(1);
     
     % Spatiele frequentie (ik gok in cycles/degree)
-    M.dblSpatialFrequency=K.dpxStimGrating_cyclesPerDeg; % lijst van lengte nTrials
+    M.dblSpatialFrequency=K.grating_cyclesPerDeg; % lijst van lengte nTrials
     
     % Ik weet niet zeker wat dit voorsteld, mogelijk aantal keer dat
     % periode in de grating past. Ik zet het zolang maar op -1, dan zien we
@@ -85,11 +85,11 @@ function M=convert(K)
     
     % dit wordt een lijst met contrast waarden per trial, weet niet of de
     % montijn analyse daarmee om kan gaan, was daar een scalar.
-    M.amplitude = K.dpxStimGrating_contrastFrac;
+    M.amplitude = K.grating_contrastFrac;
     
     % Ik denk dat dit voorsteld welke waarde in dKe stimulus codering het
     % achtergrondsgrijs voorsteld. Ik hardcode dit maar even op 0.5;
-    M.bgIntStim = K.dpxStimGrating_grayFrac;
+    M.bgIntStim = K.grating_grayFrac;
     M.bgInt = 'who cares'; % 128
     
     % Een beschrijving van welke richitng wat is
@@ -104,7 +104,7 @@ function M=convert(K)
     % gedefinieerd. ik behoud dat nu, ik hoop dat het de analyse niet
     % verstoord. anders moet alles boven de 180 een andere vecDirections
     % krijgen en de Orientations modudolo 180 genomen worden.
-    M.vecOrientations = unique(K.dpxStimGrating_dirDeg); % [0 22.5000 45 67.5000 90 112.5000 135 157.5000]
+    M.vecOrientations = unique(K.grating_dirDeg); % [0 22.5000 45 67.5000 90 112.5000 135 157.5000]
 
     % Ik neem aan dat dit spatiele frequentie voorstelt. Ik geloof niet dat
     % deze waarde in de analyse gebruikt wordt structMP. Speed daarentegen
@@ -148,10 +148,10 @@ function M=convert(K)
     M.intStimTypes = numel(unique(K.condition));
     
     % de orientaties op volgorde van presentatie
-    M.vecPresStimOri = K.dpxStimGrating_dirDeg;
+    M.vecPresStimOri = K.grating_dirDeg;
     % het teken van de richting op volgorde van presentatie, wordt niet
     % gebruikt in de analyse...
-    %M.vecPresStimDir = 1.0*K.dpxStimGrating_cyclesPerSecond>0;   % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
+    %M.vecPresStimDir = 1.0*K.grating_cyclesPerSecond>0;   % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
     % aantal getoonde trials (presentaties) Deze waarde lijkt nergens in de
     % analyse gebruikt te worden (i.t.t.  M.intStimNumber, see below)
     %M.intTrialNum = K.STIM.NumbOfPres; % 80 wordt niet gebruikt in de
@@ -192,7 +192,7 @@ function M=convert(K)
     
     % Ik denk dat ActOn het moment is waarop de stimulus aangaat. Dat lijkt
     % netjes te corresponderen met [K.LOG.ON]:
-    stimOnRelativeToStartPulseSeconds = K.dpxStimGrating_onSec + K.startSec - startpulseSecs;
+    stimOnRelativeToStartPulseSeconds = K.grating_onSec + K.startSec - startpulseSecs;
     M.ActOnPulses = stimOnRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
     
 
@@ -212,7 +212,7 @@ function M=convert(K)
     % overeen moeten komen. We hebben dan een probleem met de laatste, ik
     % verzin die maar op basis van de stimulus duratie...
     
-    stimOffRelativeToStartPulseSeconds = K.dpxStimGrating_onSec + K.dpxStimGrating_durSec + K.startSec - startpulseSecs;
+    stimOffRelativeToStartPulseSeconds = K.grating_onSec + K.grating_durSec + K.startSec - startpulseSecs;
     M.ActOffPulses = stimOffRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
     
     % In klink is er niet zoiets als een mid-pulse, voor zover ik weet.
@@ -222,13 +222,13 @@ function M=convert(K)
     %M.ActMidPulses = nan(size(M.ActOnPulses)); % [1x80 double]
     
     % Orientaties per presentatie
-    M.Orientation = K.dpxStimGrating_dirDeg;
+    M.Orientation = K.grating_dirDeg;
     % Richtingen (hardcoded 0) per presentatie
-    M.Direction = 1.0*K.dpxStimGrating_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
+    M.Direction = 1.0*K.grating_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
     % Speeds (ik gok in cycles/second) per presentatie
-    M.Speed = K.dpxStimGrating_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+    M.Speed = K.grating_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
     % Spatfreq per presentatie
-    M.SpatialFrequency = K.dpxStimGrating_cyclesPerDeg; % [1x80 double]
+    M.SpatialFrequency = K.grating_cyclesPerDeg; % [1x80 double]
 end
 
 
