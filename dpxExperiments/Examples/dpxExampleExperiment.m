@@ -53,9 +53,9 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[10 10 800 600],'widHeiMm',[508 318],'distMm',500, ... 
+    E.scr.set('winRectPx',[1680 0 1680+1280 960],'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',2);
+        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',1);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.

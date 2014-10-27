@@ -126,8 +126,8 @@ classdef (Abstract) dpxAbstractStim < hgsetget
                         % maximum distance from the stimulus x,y;
                         x=x-S.winCntrXYpx(1);
                         y=y-S.winCntrXYpx(2); 
-                        dist=hypot(S.xPx-x,S.yPx-y)          
-                        if dist<S.fixWithinPx
+                        distPx=hypot(S.xPx-x,S.yPx-y);         
+                        if distPx<S.fixWithinPx
                             str='InsideWindow';
                         else
                             str='BreakFixation';

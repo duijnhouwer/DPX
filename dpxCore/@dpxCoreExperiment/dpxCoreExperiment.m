@@ -185,7 +185,7 @@ classdef dpxCoreExperiment < hgsetget
             else
                 for p=1:numel(E.plugins)
                     TMP.plugin.(E.plugins{p}.name)=dpxGetSetables(E.plugins{p});
-                    TMP.plugin.(E.plugins{p}.name)=rmfield(TMP.plugin.(E.plugins{p}.name),'name');
+                    TMP.plugin.(E.plugins{p}.name)=rmfield(TMP.plugin.(E.plugins{p}.name),{'name','pauseMenuKeyStrCell','pauseMenuInfoStrCell'});
                     if p==1
                         % preallocate
                         P(1:numel(E.plugins))=dpxFlattenStruct(TMP);
@@ -231,8 +231,23 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showPauseScreen(E)
-            str='P A U S E D\n(Condition will be repeated at a later time)';
-            str=[str '\n\nPress and release SPACE to continue'];
+            str='P A U S E D';
+            for i=1:numel(E.plugins)
+                for o=1:numel(E.plugins{i}.pauseMenuKeyStrCell)
+                    str=[str '\n' E.plugins{i}.pauseMenuKeyStrCell{o} ' - ' E.plugins{i}.pauseMenuInfoStrCell{o}]; %#ok<AGROW>
+                end
+            end
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'forceAfterSec',0,'fadeOutSec',-1);
+            choiceIsMade=false;
+            while ~choiceIsMade
+                for i=1:numel(E.plugins)
+                    choiceIsMade=E.plugins{i}.pauseMenuFunction;
+                    if choiceIsMade
+                        break;
+                    end
+                end
+            end
+            str='P A U S E D\n\nPress and release SPACE to continue';
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showBreakFixScreen(E)
