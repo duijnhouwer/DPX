@@ -48,9 +48,6 @@ classdef dpxPluginEyelink < hgsetget
             WaitSecs(0.1);
             P.edfFile=fullfile(getExp.outputFolder,getExp.outputFileName);
             P.edfFile=dpxStrReplaceExtension(P.edfFile,'edf');
-            
-            keyboard
-            
         end
         function stop(P)
             Eyelink('StopRecording');
