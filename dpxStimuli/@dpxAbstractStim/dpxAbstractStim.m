@@ -11,6 +11,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         hDeg=1; % Height of the stimulus
         aDeg=0; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
         name=''; % defaults to class-name when added to condition
+        fixWithinDeg=-1; % if larger that >0, fixation on stim is required
     end
     properties (SetAccess=public,GetAccess=protected)
         initialPublicState=[];
@@ -26,6 +27,9 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         winCntrXYpx=[];
         scrGets=[];
         flipCounter=0;
+        fixWithinPx=[];
+        eyeUsed=-1;
+        el;
     end
     methods (Access=public)
         function S=dpxAbstractStim
@@ -81,20 +85,66 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.hPx = S.hDeg * scrGets.deg2px;
             S.scrGets=scrGets;
             S.myInit;
+            if S.fixWithinDeg>0 && S.checkEyelinkIsConnected
+                S.fixWithinPx=S.fixWithinDeg * scrGets.deg2px;
+                S.el=EyelinkInitDefaults(scrGets.windowPtr);
+                S.eyeUsed=-1;
+            end
         end
-        function step(S,flipCounter)
+        function stepAndDraw(S,flipCounter)
             S.flipCounter=flipCounter;
             if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
                 S.myStep;
-            end 
-        end
-        function draw(S)
-            if S.visible && S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
-                S.myDraw;
-            end
+                 if S.visible
+                     S.myDraw;
+                 end
+            end         
         end
         function clear(S)
             S.myClear;
+        end
+        function [ok,str]=fixationStatus(S)
+            ok=true;
+            str='thisShouldNotBePossibleLookIntoIt';
+            if S.fixWithinDeg<=0
+                str='NotRequired';
+            else
+                if Eyelink('NewFloatSampleAvailable') > 0
+                    % get the sample in the form of an event structure
+                    evt = Eyelink('NewestFloatSample');
+                    if S.eyeUsed==-1
+                        S.eyeUsed = Eyelink('EyeAvailable'); % get eye that's tracked
+                        if S.eyeUsed == S.el.BINOCULAR; % if both eyes are tracked
+                            S.eyeUsed = S.el.LEFT_EYE; % use left eye
+                        end
+                    end
+                    x = evt.gx(S.eyeUsed+1); % +1 as we're accessing MATLAB array
+                    y = evt.gy(S.eyeUsed+1);
+                    % do we have valid data and is the pupil visible?
+                    if x~=S.el.MISSING_DATA && y~=S.el.MISSING_DATA && evt.pa(S.eyeUsed+1)>0
+                        % The data is valid. Now check if it's within the
+                        % maximum distance from the stimulus x,y;
+                        x=x-S.winCntrXYpx(1);
+                        y=y-S.winCntrXYpx(2); 
+                        dist=hypot(S.xPx-x,S.yPx-y)          
+                        if dist<S.fixWithinPx
+                            str='InsideWindow';
+                        else
+                            str='BreakFixation';
+                            ok=false;
+                        end
+                        return;
+                    else
+                        % The data is invalid (e.g. during a blink)
+                        ok=false;
+                        str='BreakFixation';
+                        return;
+                       
+                    end
+                else
+                    str='NoSampleAvailable';
+                end
+            end  
         end
     end
     methods (Access=protected)
@@ -103,7 +153,17 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         function myDraw(S), end
         function myStep(S), end
         function myClear(S), end
+        %
+        function ok=checkEyelinkIsConnected(S)
+            try
+                Eyelink('EyeAvailable');
+                ok=true;
+            catch me
+                error(['It seems that no conection with an Eyelink has been established, yet your script requires stimulus ' S.name ' to be foveated within ' num2str(S.fixWithinDeg) ' degrees. Please check dpxDocsEyelinkHowTo']);
+            end
+        end
     end
+    
     methods
         function set.visible(S,value)
             if ~islogical(value) && ~isnumeric(value)

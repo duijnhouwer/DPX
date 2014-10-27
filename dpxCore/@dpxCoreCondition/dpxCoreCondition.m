@@ -67,6 +67,16 @@ classdef dpxCoreCondition < hgsetget
                     respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                 end
             end
+            % Figure out which stimulus needs to be fixated, if any
+            stimNumberToFixate=[];
+            for s=1:numel(C.stims)
+                if C.stims{s}.fixWithinDeg>0
+                    if ~isempty(stimNumberToFixate)
+                        error('Only one stimulus can have fixWithinDeg>0!');
+                    end
+                    stimNumberToFixate=s;
+                end
+            end
             % Initialize the video-blank timeer
             vbl=Screen('Flip',winPtr);
             % Loop over all video-flips (frames) of the trial
@@ -79,31 +89,44 @@ classdef dpxCoreCondition < hgsetget
                 % waiting for go-condition fixation using eyelink)
                 if f>0
                     f=f+1;
-                else
-                    nMet=0;
-                    for g=1:numel(C.trigs)
-                        nMet=nMet+C.trigs{g}.go;
-                    end
-                    if nMet==numel(C.trigs)
-                        f=1; % Lift the lock: go
-                    end
                 end
+               %     nGo=0;
+               %     for g=1:numel(C.trigs)
+               %         nGo=nGo+C.trigs{g}.go;
+               %     end
+               %     if nGo==numel(C.trigs)
+               %         f=1; % Lift the lock: start the trial
+               %     end
+               % end
                 % Check the break keys
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
                     completionStatus=breakKeys{keyIdx};
                     break;
                 end
-                % Step the stimuli (e.g., update random dot positions)
-                for s=1:numel(C.stims)
-                    C.stims{s}.step(f);
-                end
-                % Draw the stimuli
+                % Step, draw the stimuli
                 for s=numel(C.stims):-1:1
-                    % draw stims in reverse order so stims{1} is on top
-                    C.stims{s}.draw;
+                    C.stims{s}.stepAndDraw(f);
                 end
-                Screen('DrawingFinished',winPtr);
+                Screen('DrawingFinished',winPtr);  
+                % Check the gaze-fixation status
+                if isempty(stimNumberToFixate)
+                    f=1; % start the condition
+                else
+                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus;
+                    if ~ok
+                        if f>0
+                            % if f==0 we are waiting for first fixation
+                            completionStatus=str; % 'BREAKFIXATION'
+                            break;
+                        end
+                    else
+                        if f==0
+                            Eyelink('Message', 'FIRSTFIXATION'); % set marker in EDF file (timed on 2008 iMac: 0.000091 seconds)
+                            f=1; % start the condition
+                        end
+                    end
+                end
                 % Get the response(s)
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
@@ -213,7 +236,7 @@ classdef dpxCoreCondition < hgsetget
             nameList=cellfun(@(x)get(x,'name'),C.trigs,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All go-conditions in a condition need unique names');
+                error('All trial-triggers in a condition need unique names');
             end
         end
     end

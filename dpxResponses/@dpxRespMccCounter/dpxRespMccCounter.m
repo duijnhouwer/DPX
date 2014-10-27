@@ -14,7 +14,9 @@ classdef dpxRespMccCounter < dpxAbstractResp
             R.resp.tSec=GetSecs;
         end
         function myGetResponse(R)
-            % DaqCIn(R.daq) takes 25 ms, so cannot call every frame...
+            % DaqCIn(R.daq) takes 25 ms, so cannot call every frame... 
+            % So we only store the counter just prior to the beginning of
+            % the trial (with accurate timestamp)
         end
     end
 end

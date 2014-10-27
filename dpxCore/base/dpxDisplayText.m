@@ -108,6 +108,11 @@ function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
     if nargin<5 || isempty(dxdy)
         dxdy=[0 0];
     end
+    if all(RGBAfore==RGBAback)
+        % Don't print text if fore and back colors are identical, you can
+        % still see it on mac because alpha blending is weird on macs.
+        return;
+    end
     RGBAfore=RGBAfore*WhiteIndex(windowPtr);
     RGBAback=RGBAback*WhiteIndex(windowPtr);
     RGBAfore(4)=RGBAfore(4)*opacityFrac;

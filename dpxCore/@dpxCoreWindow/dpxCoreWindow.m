@@ -104,6 +104,7 @@ classdef dpxCoreWindow < hgsetget
             Screen('Preference','Verbosity', W.oldPrefs.Verbosity);
             sca;
             try
+                ShowCursor;
                 ListenChar(0);
             catch me
                 disp(me);

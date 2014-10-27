@@ -55,7 +55,7 @@ function dpxExampleExperiment
     % this experiment here:
     E.scr.set('winRectPx',[10 10 800 600],'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',2);
+        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',2);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
@@ -82,8 +82,10 @@ function dpxExampleExperiment
         
         % Create fixation-dot 'stimulus'. 
         FIX=dpxStimDot;
+        FIX.name='fixdot';
         FIX.onSec=-1;
         FIX.wDeg=0.5;
+        FIX.fixWithinDeg=10;
 
         
         % Add the random dot motion stimulus to this condition, and set
@@ -125,9 +127,10 @@ function dpxExampleExperiment
         
         % Add a semi-transparent mask for over the RDK
         MASK=dpxStimMaskGaussian;
+        MASK.name='envelope';
         MASK.sigmaDeg=5;
-        MASK.onSec=0.1;
-        MASK.durSec=0.5;
+        MASK.onSec=RDK.onSec;
+        MASK.durSec=RDK.durSec;
         MASK.wDeg=RDK.wDeg+RDK.dotDiamDeg;      
         MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
         
@@ -151,15 +154,15 @@ function dpxExampleExperiment
         C.addResp(R);
         
         % Add a Trial-trigger to the condition
-        %G=dpxTriggerKey;
-        %G.name='startkey';
-        %C.addTrialTrigger(G);
+        G=dpxTriggerEyelink;
+        G.name='startkey';
+        C.addTrialTrigger(G);
         
         % Add this condition to the experiment
         E.addCondition(C);
     end
     % Set the number of repeats of each condition, aka blocks.
-    E.nRepeats=3;
+    E.nRepeats=2;
     % Start the experiment. It will run until all trials are finished, or
     % until Escape is pressed. If the program crashes for whatever reason
     % and the window remains visible (obscuring the matlab environment),

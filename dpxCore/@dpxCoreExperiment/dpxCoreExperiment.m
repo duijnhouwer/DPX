@@ -33,6 +33,7 @@ classdef dpxCoreExperiment < hgsetget
             % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
+            E.plugins={};
             E.conditions={};
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
@@ -43,8 +44,7 @@ classdef dpxCoreExperiment < hgsetget
             E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
-            E.outputFolder='';
-            E.plugins={};
+            E.outputFolder='';   
         end
         function run(E)
             try
@@ -96,11 +96,6 @@ classdef dpxCoreExperiment < hgsetget
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
                     [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
-                    % If an overriding RGBA has been defined in this condition,
-                    % reset the window object's backRGBA to its default,
-                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
-                        E.scr.backRGBA=defaultBackRGBA;
-                    end
                     % Handle the completion status of the trial
                     if strcmp(completionStr,'Escape')
                         break;
@@ -108,6 +103,11 @@ classdef dpxCoreExperiment < hgsetget
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showPauseScreen;                  
+                        % the skipped trial can be recognized by stopSec==-1
+                    elseif strcmp(completionStr,'BreakFixation')
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
+                        E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
+                        E.showBreakFixScreen;
                         % the skipped trial can be recognized by stopSec==-1
                     elseif ~strcmp(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
@@ -121,17 +121,20 @@ classdef dpxCoreExperiment < hgsetget
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
                     E.trials(tr).nrMissedFlips=nrMissedFlips;
+                    % If an overriding RGBA has been defined in this condition,
+                    % reset the window object's backRGBA to its default,
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.scr.backRGBA=defaultBackRGBA;
+                    end
                 end
                 E.stopTime=now;
                 E.showFinalSaveScreen;
                 E.save;
-                E.showEndScreen;
-                E.scr.close;
                 for i=1:numel(E.plugins)
                     E.plugins{i}.stop;
                 end
-                sca;
-                ListenChar(0);
+                E.showEndScreen;
+                E.scr.close;
             catch me
                 sca; % screen reset
                 ListenChar(0);
@@ -149,15 +152,23 @@ classdef dpxCoreExperiment < hgsetget
         function save(E)
             % Convert the data
             D.exp=get(E);
-            D.exp=rmfield(D.exp,{'scr','conditions','outputFileName','outputFolder','trials'});
+            D.exp=rmfield(D.exp,{'scr','conditions','plugins','outputFileName','outputFolder','trials'});
             D.scr=dpxGetSetables(E.scr);
             D.scr.measuredFrameRate=E.scr.measuredFrameRate;
             D=dpxFlattenStruct(D);
+            % Format the conditions
             for c=1:numel(E.conditions)
                 for s=1:numel(E.conditions{c}.stims)
                     stimname=E.conditions{c}.stims{s}.name;
                     % this is why unique stimulus names are required
                     TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
+                    
+                end
+                for s=1:numel(E.conditions{c}.trigs)
+                    trigname=E.conditions{c}.trigs{s}.name;
+                    % this is why unique trialtrigger names are required
+                    TMP.(trigname)=dpxGetSetables(E.conditions{c}.trigs{s});
+                    TMP.(trigname)=rmfield(TMP.(trigname),'name');
                 end
                 if c==1
                     % preallocate
@@ -167,12 +178,29 @@ classdef dpxCoreExperiment < hgsetget
                     C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                 end
             end
+            % Format the plugins
+            clear TMP;
+            if numel(E.plugins)==0
+                P=struct; % empty struct
+            else
+                for p=1:numel(E.plugins)
+                    TMP.plugin.(E.plugins{p}.name)=dpxGetSetables(E.plugins{p});
+                    TMP.plugin.(E.plugins{p}.name)=rmfield(TMP.plugin.(E.plugins{p}.name),'name');
+                    if p==1
+                        % preallocate
+                        P(1:numel(E.plugins))=dpxFlattenStruct(TMP);
+                    else
+                        % insert in preallocated array
+                        P(c)=dpxFlattenStruct(TMP);
+                    end
+                end
+            end
             % Get the settings for all trials
             data=cell(1,numel(E.trials));
             for t=1:numel(E.trials)
                 TMP=dpxFlattenStruct(E.trials(t));
                 condNr=TMP.condition;
-                data{t}=dpxMergeStructs({D,TMP,C(condNr)},'overwrite');
+                data{t}=dpxMergeStructs({D,P,TMP,C(condNr)},'overwrite');
                 data{t}=dpxStructMakeSingleValued(data{t});
                 data{t}.N=1;
             end
@@ -206,6 +234,9 @@ classdef dpxCoreExperiment < hgsetget
             str='P A U S E D\n(Condition will be repeated at a later time)';
             str=[str '\n\nPress and release SPACE to continue'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
+        end
+        function showBreakFixScreen(E)
+            dpxDisplayText(E.scr.windowPtr,'BREAKFIXATION','rgba',E.scr.backRGBA,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',0.5,'commandWindowToo',true);
         end
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')

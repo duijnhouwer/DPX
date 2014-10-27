@@ -13,12 +13,12 @@ function agDpxDDQinteractTactile
     
     durS=60*2 ;
     flashSec=.5; %the alternative is 1 sec
-    ddqWid=4;
+     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
-            for ddqHei=ddqWid * [1.58]%it is the point of subjective equality
+            for ddqHei=ddqWid * [1.1496]%it is the point of subjective equality
                 for ori=0
-                    for bottomLeftTopRightFirst=[false]
+                    for bottomLeftTopRightFirst=[true]
                         for antiJump=false
                             if ddqHei==ddqWid && antiJump
                                 continue;
