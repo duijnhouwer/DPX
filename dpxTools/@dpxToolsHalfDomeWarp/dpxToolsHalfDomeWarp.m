@@ -2,12 +2,13 @@ classdef dpxToolsHalfDomeWarp < hgsetget
     
     properties (Access='public')
         filename;
-        winRectPx=[0 0 1920 1080];
+        winRectPx=[0 0 600 400];
         xListPix=[];
         yListPix=[];
         stepsPerDeg;
         pixelStep;
-        LUT=struct('minA',[],'minE',[],'table',[]);
+        LUT;
+        nDone; % number of points already measured
     end
     properties (GetAccess='public', SetAccess='protected')
         eListDeg=[];
@@ -26,45 +27,67 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014-10-10
             %
-            % This tool can be used to create lookup tables to warp display
-            % matrices, for example for use in half-dome projection
+            % This tool can be used to create lookup tables for warping
+            % display matrices, for example for use in half-dome projection
             % set-ups.
             %
             % See also: jdDpxExpHalfDomeRdk
-
+            W.filename=fullfile(pwd,'dpxToolsHalfDomeWarp.mat');
+            W.winRectPx=[30 30 600 400];
+            W.xListPix=0:W.winRectPx(3)/10:W.winRectPx(3);
+            W.yListPix=0:W.winRectPx(4)/8:W.winRectPx(4);
+            W.LUT=struct('minA',[],'minE',[],'table',[]);
             W.stepsPerDeg=10;
             W.pixelStep=0.2;
+            W.nDone=0;
         end
         function calibrate(W)
+            if numel(W.xListPix)==0 || numel(W.yListPix)==0
+                error('No X and/or Y screen coordinates provided (set xListPix and yListPix)');
+            end
             S=dpxCoreWindow;
             set(S,'winRectPx',W.winRectPx);
             S.open;
-            nDone=1;
             nTogo=numel(W.xListPix)*numel(W.yListPix);
-            input('<< Press ENTER to start calibrating >>');
+            if W.nDone==0
+                input('<< Press ENTER to start calibrating >>');
+            else
+                input('<< Press ENTER to continue calibrating >>');
+            end
+            xy=[];
             for x=W.xListPix(:)'
                 for y=W.yListPix(:)'
-                    Screen('DrawDots',S.windowPtr,[x y],5,[255 255 255]);
-                    Screen('Flip',S.windowPtr);
-                    azi=[];
-                    ele=[];
-                    while isempty(azi)
-                        disp(['Point Nr ' num2str(nDone) ' / ' num2str(nTogo) ': [x,y]=[' num2str(x) ',' num2str(y) ]);
-                        disp('(Type NaN if the point is invisible, CTRL+C to quit)');
-                        s=input('--> AZIMUTH in deg? > ','s');
-                        azi=str2num(s); %#ok<*ST2NM>
-                        if isnan(azi)
-                            ele=nan;
-                        end
-                    end
+                    xy(end+1,:)=[x y];
+                end
+            end
+            while W.nDone<size(xy,1)
+                W.nDone=W.nDone+1;
+                Screen('DrawDots',S.windowPtr,xy(W.nDone,:),5,[255 255 255]);
+                Screen('Flip',S.windowPtr);
+                azi=[];
+                ele=[];
+                while isempty(azi)
+                    disp(['Point Nr ' num2str(W.nDone) ' / ' num2str(nTogo) ': [x,y]=[' num2str(x) ',' num2str(y) ']']);
+                       disp('       Type NaN if the point is invisible, Inf to back redo last point, CTRL+C to quit.');
+                    s=input('   --> AZIMUTH in deg? > ','s');
+                    azi=str2num(s); %#ok<*ST2NM>
+
+                end
+                if isnan(azi) || isinf(azi)
+                    ele=nan;
+                else
                     while isempty(ele)
-                        s=input('--> ELEVATION in deg? > ','s');
+                        s=input('   --> ELEVATION in deg? > ','s');
                         ele=str2num(s);
                     end
-                    W.aListDeg(end+1)=azi;
-                    W.eListDeg(end+1)=ele;
+                end
+                if isinf(azi)
+                    W.nDone=max(0,W.nDone-2);
+                else
+                    W.aListDeg(W.nDone)=azi;
+                    W.eListDeg(W.nDone)=ele;
                     save(W.filename,'W');
-                    nDone=nDone+1;
+                    disp(['       Saved: ' W.filename]);
                 end
             end
         end
@@ -186,6 +209,6 @@ classdef dpxToolsHalfDomeWarp < hgsetget
                 error('Filename should be string (filename) or be empty (i.e., [], to trigger save-as dialog)');
             end
         end
-    end   
+    end
 end
 

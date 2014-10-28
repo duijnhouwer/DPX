@@ -153,11 +153,6 @@ function dpxExampleExperiment
         R.correctEndsTrialAfterSec=0;
         C.addResp(R);
         
-        % Add a Trial-trigger to the condition
-        G=dpxTriggerEyelink;
-        G.name='startkey';
-        C.addTrialTrigger(G);
-        
         % Add this condition to the experiment
         E.addCondition(C);
     end
