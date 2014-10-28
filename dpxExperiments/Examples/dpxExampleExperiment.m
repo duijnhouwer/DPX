@@ -1,4 +1,4 @@
-function dpxExampleExperiment
+function dpxExampleExperiment(testscr)
     
     % dpxExampleExperiment
     %
@@ -23,6 +23,10 @@ function dpxExampleExperiment
     % dpxCoreExperiment and allows a user to change that functionality or
     % add features without breaking the experiments of other users.
     % Inheritance is a powerful feature of object oriented programming.]
+    
+    if nargin==0
+        testscr=[20 20 800 600];
+    end
     
     % Make an object E of the class dpxCoreExperiment now ...
     E=dpxCoreExperiment;
@@ -53,7 +57,7 @@ function dpxExampleExperiment
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',[1680 0 1680+1280 960],'widHeiMm',[508 318],'distMm',500, ... 
+    E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',1);
     % Note (1) that i've manually cut the line using elipses (...) for
@@ -115,7 +119,7 @@ function dpxExampleExperiment
         RDK.hDeg=20;
         % We want the stimulus to go on 100 ms after the start of the
         % trial and last for half a second
-        RDK.onSec=0.1;
+        RDK.onSec=-1;
         RDK.durSec=0.5;
         % Provide a name for this stimulus, this is how the stimulus
         % will be called in the data-file. If no name is provided, the
@@ -128,6 +132,7 @@ function dpxExampleExperiment
         % Add a semi-transparent mask for over the RDK
         MASK=dpxStimMaskGaussian;
         MASK.name='envelope';
+        MASK.RGBAfrac=E.scr.backRGBA;
         MASK.sigmaDeg=5;
         MASK.onSec=RDK.onSec;
         MASK.durSec=RDK.durSec;
