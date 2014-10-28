@@ -81,6 +81,16 @@ classdef dpxStimRotCylinder < dpxAbstractStim
                 y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
                 x=round(S.xPx+r*sin(S.Az));
                 S.XYZ=[x;y;z];
+            elseif strcmpi(S.axis,'vertsphere')
+                z=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                r=S.wPx/2; %Y is going in the screen
+                S.Az=2*pi*rand(1,S.nDots);
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                yScale=sin( acos(z/S.wPx*2) );
+                y=y.*yScale;
+                x=round(-S.depthPx+r*sin(S.Az));
+                x=x.*yScale;
+                S.XYZ=[x;y;z];
             else
                 error(['Unknown axis option: ' S.axis]);
             end
@@ -126,11 +136,19 @@ classdef dpxStimRotCylinder < dpxAbstractStim
             elseif strcmpi(S.axis,'horisphere')
                 r=S.hPx/2; %Y is going in the screen
                 y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
-                yScale=sin( acos(S.XYZ(1,:)/S.wPx*2) );
-                y=y.*yScale;
+                taper=sin( acos(S.XYZ(1,:)/S.wPx*2) );
+                y=y.*taper;
                 z=round(-S.depthPx+r*sin(S.Az));
-                z=z.*yScale;
+                z=z.*taper;
                 S.XYZ=[S.XYZ(1,:);y;z];
+            elseif strcmpi(S.axis,'vertsphere')
+                r=S.wPx/2; %Y is going in the screen
+                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                taper=sin( acos(S.XYZ(3,:)/S.hPx*2) );
+                y=y.*taper;
+                x=round(-S.depthPx+r*sin(S.Az));
+                x=x.*taper;
+                S.XYZ=[x;y;S.XYZ(3,:)];
             else
                 %error(['Unknown axis option: ' S.axis]);
             end
