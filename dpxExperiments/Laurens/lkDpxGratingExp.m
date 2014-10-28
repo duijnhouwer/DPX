@@ -13,7 +13,7 @@ function lkDpxGratingExp
     E.scr.backRGBA=[.1 .1 .1 1];
     E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='asd DAQ-pulse'; 
+    E.txtStart='DAQ-pulse'; 
     E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
@@ -21,9 +21,9 @@ function lkDpxGratingExp
     %
     dirDegs=[0:45:315];
     contrastFracs=[1];
-    cyclesPerDeg=[0.1 0.2];
-    cyclesPerSecond=[0.5 1];
-    E.nRepeats=10;
+    cyclesPerDeg=[0.1];
+    cyclesPerSecond=[0.5 1 2];
+    E.nRepeats=6;
     stimSec=4;
     isiSec=4;
     %
