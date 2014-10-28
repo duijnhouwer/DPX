@@ -21,7 +21,7 @@ for dotSize=1
             for ori=0
                 for bottomLeftTopRightFirst=[true]
                     for antiJump=false
-                        for i=1:8
+                        for i=1:4
                         if ddqHei==ddqWid && antiJump
                             continue;
                         end
@@ -95,13 +95,13 @@ for dotSize=1
                         T.tapNote=flashSec:flashSec:durS;
                         
                             if i==1
-                                T.tapNote=repmat([0  8 ],1,1000);
+                                T.tapNote=[0  8 ];
                             elseif i==2
-                                T.tapNote=repmat([0  9 ],1,1000);
+                                T.tapNote=[0  9 ];
                             elseif i==3
-                                T.tapNote=repmat([9 1 ],1,1000);
+                                T.tapNote=[9 1 ];
                             elseif i==4
-                                T.tapNote=repmat([1 8 ],1,1000);
+                                T.tapNote=[1 8 ];
                             else
                                 error('Unknown condition number ....');
                             end
