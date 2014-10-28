@@ -58,22 +58,28 @@ end
 
 function testButton_Callback(hObject, eventdata, handles) %#ok<*DEFNU>
     handles.stimWin.open;
-    strings={'Five','Four','Three','Two','One'};
-    for s=1:numel(strings)
-        escPressed=dpxDisplayText(handles.stimWin.windowPtr ...
-            ,[strings{s} '\n\nWait or press Escape (2x) to close'] ...
+    textRGBA=[1 1 1 1];
+    if all(handles.stimWin.backRGBA==textRGBA)
+        textRGBA=[1-handles.stimWin.backRGBA(1:3) 1];
+    end
+    closingTime=false;
+    while ~closingTime
+        closingTime=dpxDisplayText(handles.stimWin.windowPtr ...
+            ,'D P X\nEscape: close this window\nSpace: remove the text' ...
+            ,'rgba',textRGBA ...
             ,'rgbaback',handles.stimWin.backRGBA ...
-            ,'forceAfterSec',0,'fadeInSec',0,'fadeOutSec',.5);
-        if escPressed
-            break;
+            ,'forceAfterSec',Inf,'fadeInSec',1/3,'fadeOutSec',1/2);
+        if ~closingTime
+            % Space is pressed. This solid window can be used to measure the
+            % luminance of the screen. Convenient for finding liniarized gamma!
+            FlushEvents([],[],'keyDown');
+            pause(0.05);
+            closingTime=dpxDisplayText(handles.stimWin.windowPtr ...
+                ,'' ...
+                ,'rgbaback',handles.stimWin.backRGBA ...
+                ,'forceAfterSec',Inf,'fadeInSec',0,'fadeOutSec',0);
         end
     end
-    %FlushEvents([],[],'keyDown');
-    %pause(0.1);
-    dpxDisplayText(handles.stimWin.windowPtr ...
-        ,'' ...
-        ,'rgbaback',handles.stimWin.backRGBA ...
-        ,'forceAfterSec',Inf,'fadeInSec',0,'fadeOutSec',0);
     handles.stimWin.close;
 end
 

@@ -1,7 +1,7 @@
 classdef dpxCoreWindow < hgsetget
     
     properties (Access=public)
-        winRectPx=[10 10 400 300];
+        winRectPx=[0 0 960 540]+30;
         widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
         pixelBits=32;
         distMm=600;
