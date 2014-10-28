@@ -110,9 +110,9 @@ classdef dpxCoreCondition < hgsetget
                 end
                 Screen('DrawingFinished',winPtr);  
                 % Check the gaze-fixation status
-                if isempty(stimNumberToFixate)
+                if f==0 && isempty(stimNumberToFixate) 
                     f=1; % start the condition
-                else
+                elseif f==0 && ~isempty(stimNumberToFixate) 
                     [ok,str]=C.stims{stimNumberToFixate}.fixationStatus;
                     if ~ok
                         if f>0

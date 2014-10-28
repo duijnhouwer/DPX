@@ -2,18 +2,23 @@ function lkDpxGratingExp
     E=dpxCoreExperiment;
     E.expName='lkDpxGratingExp';
     E.scr.distMm=290;
-    % 2014-4-24: Measured luminance BENQ screen Two-Photon room
-    % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
-    % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz connected with a VGA cable (so that we can split to Beetronixs Screen)
-    % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
-    % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
+    % 2014-10-28: Measured luminance BENQ screen Two-Photon room Brightness
+    % 0; contrast 50; black eq 15; color temp [R G B] correction = [0 100
+    % 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
+    % Hz; Reset Color no; AMA high, Instant OFF, Sharpness 1; Dynamic
+    % Contrast 0; Display mode Full; Color format RGB; Smartfocus OFF;
+    % connected with a VGA cable (so that we can split to Beetronixs
+    % Screen) With these settings. 
+    
+    
+    % FullWhite=42 cd/m2; FullBlack=0.12;
+    % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
     %
-    E.scr.gamma=0.690;
+    E.scr.gamma=1.0;
     E.scr.backRGBA=[.1 .1 .1 1];
     E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='DAQ-pulse'; 
+    E.txtStart='asd DAQ-pulse'; 
     E.txtEnd='';
     E.txtPauseNrTrials=0;
     %

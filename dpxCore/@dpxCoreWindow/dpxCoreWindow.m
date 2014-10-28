@@ -42,11 +42,11 @@ classdef dpxCoreWindow < hgsetget
             % Jacob Duijnhouwer, 2014
             AssertOpenGL;
             W=initValues(W);
-            if iswin
+            if IsWin
                 W.pixelBits=32;
-            elseif ismac
+            elseif IsOSX
                 W.pixelBits=32;
-            elseif islinux
+            elseif IsLinux
                 W.pixelBits=[];
             end
         end
