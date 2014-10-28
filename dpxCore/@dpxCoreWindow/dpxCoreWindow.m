@@ -2,7 +2,8 @@ classdef dpxCoreWindow < hgsetget
     
     properties (Access=public)
         winRectPx=[10 10 400 300];
-        widHeiMm=[]; % leave [] for auto-detect
+        widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
+        pixelBits=32;
         distMm=600;
         interEyeMm=65;
         gamma=1;
@@ -41,12 +42,19 @@ classdef dpxCoreWindow < hgsetget
             % Jacob Duijnhouwer, 2014
             AssertOpenGL;
             W=initValues(W);
+            if iswin
+                W.pixelBits=32;
+            elseif ismac
+                W.pixelBits=32;
+            elseif islinux
+                W.pixelBits=[];
+            end
         end
         function open(W)
             W.oldPrefs.VisualDebuglevel=Screen('Preference','VisualDebuglevel',1);
             W.oldPrefs.SkipSyncTests=Screen('Preference','SkipSyncTests',W.skipSyncTests);
             W.oldPrefs.Verbosity=Screen('Preference', 'Verbosity', W.verbosity0min5max);
-            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,32,2,W.stereoCode);
+            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,W.pixelBits,2,W.stereoCode);
             r=Screen('Resolution',W.scrNr);
             if W.winRectPx(3)-W.winRectPx(1)==r.width && W.winRectPx(4)-W.winRectPx(2)==r.height
                 disp('% we are fullscreen');
@@ -183,6 +191,12 @@ classdef dpxCoreWindow < hgsetget
             else
                 W.backRGBA=value;
             end
+        end
+        function set.pixelBits(W,value)
+            if ~isnumeric(value) || numel(value)>1 || ~isempty(value) && value~=8 && value~=16 && value~=24 && value~=32
+                error('pixelBits should be a single number (8, 16, 24, 32) or be empty ([])');
+            end
+            W.pixelBits=value;
         end
         function set.interEyeMm(W,value)
             if isempty(value) || ~isnumeric(value) || value<0

@@ -25,7 +25,7 @@ end
 
 function dpxToolStimWindowGui_OpeningFcn(hObject, eventdata, handles, varargin)
     if isempty(varargin)
-        handles.stimWin = dpxStimWindow;
+        handles.stimWin = dpxCoreWindow;
     elseif isobject(varargin{1})
         handles.stimWin = varargin{1};
     end
@@ -61,13 +61,19 @@ function testButton_Callback(hObject, eventdata, handles) %#ok<*DEFNU>
     strings={'Five','Four','Three','Two','One'};
     for s=1:numel(strings)
         escPressed=dpxDisplayText(handles.stimWin.windowPtr ...
-            ,[strings{s} '\n\nWait or press Escape to close'] ...
+            ,[strings{s} '\n\nWait or press Escape (2x) to close'] ...
             ,'rgbaback',handles.stimWin.backRGBA ...
             ,'forceAfterSec',0,'fadeInSec',0,'fadeOutSec',.5);
         if escPressed
             break;
         end
     end
+    %FlushEvents([],[],'keyDown');
+    %pause(0.1);
+    dpxDisplayText(handles.stimWin.windowPtr ...
+        ,'' ...
+        ,'rgbaback',handles.stimWin.backRGBA ...
+        ,'forceAfterSec',Inf,'fadeInSec',0,'fadeOutSec',0);
     handles.stimWin.close;
 end
 
@@ -161,7 +167,7 @@ function displaySetup(hObject, eventdata, handles)
     x=[-1 1 1 -1]*s.widPx/2;
     y=[-1 -1 1 1]*s.heiPx/2;
     z=[0 0 0 0];
-    fill3(z,x,y,s.backRGBA(1:3),'LineWidth',2,'EdgeColor',linecolor,'FaceAlpha',.5);  
+    fill3(z,x,y,s.backRGBA(1:3),'LineWidth',2,'EdgeColor',linecolor,'FaceAlpha',.5);
     % plot the cyclopean viewline
     x=[0 0];
     y=[0 0];
@@ -171,7 +177,7 @@ function displaySetup(hObject, eventdata, handles)
     x=[-s.interEyePx s.interEyePx];
     y=[0 0];
     z=[-s.distPx -s.distPx];
-    plot3(z,x,y,'k-','LineWidth',2,'Color',linecolor);  
+    plot3(z,x,y,'k-','LineWidth',2,'Color',linecolor);
     % plot the eyeballs
     [x,y,z]=sphere(11);
     xLeft=x*eyeRadiusPx-s.interEyePx;
@@ -206,5 +212,5 @@ function displaySetup(hObject, eventdata, handles)
     text(min(lims(1:2)),0,lims(5),'x','Color',textcolor);
     text(min(lims(1:2)),lims(3),0,'y','Color',textcolor);
     box on;
-    set(gca,'XTick',[],'YTick',[],'ZTick',[]) 
+    set(gca,'XTick',[],'YTick',[],'ZTick',[])
 end
