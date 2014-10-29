@@ -28,7 +28,7 @@ function agDpxTactileBiasDDQ
                                 %
                                 
                                 C=dpxCoreCondition;
-                                C.durSec=3600;
+                                C.durSec=durS;
                                 
                                 %
                                 F=dpxStimDot;
@@ -62,13 +62,16 @@ function agDpxTactileBiasDDQ
                                 %                             R.correctStimName='respfeedback';
                                 %                             C.addResp(R);
                                 %
-                                % Create and add a response object to record the keyboard
-                                % presses.
-                                R=dpxRespKeyboard;
-                                R.name='keyboard';
-                                R.kbNames='LeftArrow,DownArrow';
-                                R.allowAfterSec=DDQ.onSec+DDQ.durSec; % allow the response no sooner than the end of the DDQ stim
-                                R.correctEndsTrialAfterSec=0;
+                                R=dpxRespContiKeyboard;
+                                R.name='LeftArrow';
+                                R.kbName='LeftArrow';
+                                R.allowAfterSec=0;
+                                C.addResp(R);
+                                %
+                                R=dpxRespContiKeyboard;
+                                R.name='DownArrow';
+                                R.kbName='DownArrow';
+                                R.allowAfterSec=0;
                                 C.addResp(R);
                                 %
                                 FB=dpxStimDot;
@@ -79,9 +82,18 @@ function agDpxTactileBiasDDQ
                                 T=dpxStimTactileMIDI;
                                 T.onSec=DDQ.onSec;
                                 T.durSec=Inf;
-   
-                                T.tapOnSec=(flashSec:flashSec:durS)-flashSec;
-                                T.tapDurSec=2/60;                                
+                                
+                                tmp=flashSec:flashSec:durS;
+                                tmp2=[];
+                                for i=1:numel(tmp)
+                                    tmp2(end+1)=tmp(i);
+                                    tmp2(end+1)=tmp(i);
+                                end
+                                T.tapOnSec=tmp2;
+                                T.tapOnSec=T.tapOnSec;%+2/60;
+                                T.tapDurSec=2/60;
+                                T.tapNote=flashSec:flashSec:durS;
+                                
                                 if i==1
                                     T.tapNote=[0 8];
                                 elseif i==2
