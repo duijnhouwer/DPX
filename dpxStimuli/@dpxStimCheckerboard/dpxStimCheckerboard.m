@@ -18,12 +18,12 @@ classdef dpxStimCheckerboard < dpxAbstractStim
     methods (Access=public)
         function S=dpxStimCheckerboard
             % Set the defaults in the constructur (here)
-            S.RGBAfrac=[.5 .5 .5 1];
-            S.nHori=12;
-            S.nVert=12;
-            S.nHoleHori=4;
-            S.nHoleVert=4;
-            S.contrast=1;
+            S.RGBAfrac=[.5 .5 .5  1];
+            S.nHori=14;
+            S.nVert=14;
+            S.nHoleHori=6;
+            S.nHoleVert=6;
+            S.contrast=.5;
             S.rndSeed=round(rand*1000000);
             S.RND=RandStream('mt19937ar','Seed',S.rndSeed);
             S.sparseness=1/3;
@@ -34,12 +34,14 @@ classdef dpxStimCheckerboard < dpxAbstractStim
             % Make the destination rectangle (screen pixels)
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.hPx/2+S.winCntrXYpx(2)];
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx];
-            % Make the checkboard pattern
+            % Make the checkerboard pattern
+            white=S.scrGets.whiteIdx;
+            cols=[white-white*S.contrast white+white*S.contrast]/2;
             checkerboard=reshape(mod(1:(S.nHori+1)*S.nVert,2),S.nHori+1,S.nVert);
             checkerboard=checkerboard(1:S.nHori,1:S.nVert);
-            checkerboard=checkerboard*S.scrGets.whiteIdx;
+            checkerboard=checkerboard*cols(1)+(1-checkerboard)*cols(2);
             % Make the opacity layer
-            opacityLayer=S.scrGets.whiteIdx*(ones(size(checkerboard)));
+            opacityLayer=cols(1)*(ones(size(checkerboard)));
             % Make the central hole
             if (S.nHoleHori&S.nHoleVert)>0
                 xHole=round(S.nHori/2-S.nHoleHori/2+1:S.nHori/2+S.nHoleHori/2);
