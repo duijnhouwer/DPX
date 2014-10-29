@@ -58,39 +58,39 @@ classdef dpxStimRotCylinder < dpxAbstractStim
             S.winCntrXYpx=[S.scrGets.widPx/2 S.scrGets.heiPx/2];
             [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
-                x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                x=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
                 r=S.hPx/2; %Y is going in the screen
                 S.Az=2*pi*rand(1,S.nDots);
-                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
-                z=round(-S.depthPx+r*sin(S.Az));
-                S.XYZ=[x;y;z];
-            elseif strcmpi(S.axis,'horisphere')
-                x=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
-                r=S.hPx/2; %Y is going in the screen
-                S.Az=2*pi*rand(1,S.nDots);
-                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
-                yScale=sin( acos(x/S.wPx*2) );
-                y=y.*yScale;
-                z=round(-S.depthPx+r*sin(S.Az));
-                z=z.*yScale;
+                y=S.depthPx+S.disparityFrac*r*cos(S.Az);
+                z=-S.depthPx+r*sin(S.Az);
                 S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'vert')
-                z=round(S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+                z=S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
                 r=S.wPx/2;
                 S.Az=2*pi*rand(1,S.nDots);
-                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
-                x=round(S.xPx+r*sin(S.Az));
+                y=S.depthPx+S.disparityFrac*r*cos(S.Az);
+                x=S.xPx+r*sin(S.Az);
                 S.XYZ=[x;y;z];
-            elseif strcmpi(S.axis,'vertsphere')
-                z=round(S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots));
+            elseif strcmpi(S.axis,'horisphere')
+                x=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
+                r=S.hPx/2; %Y is going in the screen
+                S.Az=2*pi*rand(1,S.nDots);
+                y=S.depthPx+S.disparityFrac*r*cos(S.Az);
+                yScale=sin( acos(x/S.wPx*2) );
+                y=y.*yScale;
+                z=-S.depthPx+r*sin(S.Az);
+                z=z.*yScale;
+                S.XYZ=[x;y;z];
+            elseif strcmpi(S.axis,'vertsphere')   
+                z=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
                 r=S.wPx/2; %Y is going in the screen
                 S.Az=2*pi*rand(1,S.nDots);
-                y=round(S.depthPx+S.disparityFrac*r*cos(S.Az));
+                y=S.depthPx+S.disparityFrac*r*cos(S.Az);
                 yScale=sin( acos(z/S.wPx*2) );
                 y=y.*yScale;
-                x=round(-S.depthPx+r*sin(S.Az));
+                x=-S.depthPx+r*sin(S.Az);
                 x=x.*yScale;
-                S.XYZ=[x;y;z];
+                S.XYZ=[x;y;z];  
             else
                 error(['Unknown axis option: ' S.axis]);
             end
