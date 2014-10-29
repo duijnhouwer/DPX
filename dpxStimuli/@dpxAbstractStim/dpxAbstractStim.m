@@ -1,17 +1,18 @@
 classdef (Abstract) dpxAbstractStim < hgsetget
     
     properties (Access=public)
-        visible=true; % Toggle visibility of the stimulus, true|false
-        onSec=0; % Time since trial start that stimulus comes on
-        durSec=Inf; % Duration of stim (relative to start)
-        xDeg=0; % Horizontal position of stimulus relative to screen center
-        yDeg=0; % Vertical position of stimulus relative to screen center
-        zDeg=0; % Position on axis normal to screen. Currently (10/2014) only stereoscopic stimuli use this but could in the future be used for all stimuli to control mutual occlusion.
-        wDeg=1; % Widht of the stimulus
-        hDeg=1; % Height of the stimulus
-        aDeg=0; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
-        name=''; % defaults to class-name when added to condition
-        fixWithinDeg=-1; % if larger that >0, fixation on stim is required
+        visible; % Toggle visibility of the stimulus, true|false
+        onSec; % Time since trial start that stimulus comes on
+        durSec; % Duration of stim (relative to start)
+        xDeg; % Horizontal position of stimulus relative to screen center
+        yDeg; % Vertical position of stimulus relative to screen center
+        zDeg; % Position on axis normal to screen. Currently (10/2014) only stereoscopic stimuli use this but could in the future be used for all stimuli to control mutual occlusion.
+        wDeg; % Widht of the stimulus
+        hDeg; % Height of the stimulus
+        aDeg; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
+        name; % defaults to class-name when added to condition
+        fixWithinDeg; % if larger that >0, fixation on stim is required
+        rndSeed; % the seed of the stim's internal randstream
     end
     properties (SetAccess=public,GetAccess=protected)
         initialPublicState=[];
@@ -30,6 +31,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         fixWithinPx=[];
         eyeUsed=-1;
         el;
+        RND;
     end
     methods (Access=public)
         function S=dpxAbstractStim
@@ -43,6 +45,18 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % See also: dpxAbstractResp, dpxStimRdk
             %
             % Jacob Duijnhouwer, 2014-09-05
+            S.visible=true; % Toggle visibility of the stimulus, true|false
+            S.onSec=0; % Time since trial start that stimulus comes on
+            S.durSec=Inf; % Duration of stim (relative to start)
+            S.xDeg=0; % Horizontal position of stimulus relative to screen center
+            S.yDeg=0; % Vertical position of stimulus relative to screen center
+            S.zDeg=0; % Position on axis normal to screen. Currently (10/2014) only stereoscopic stimuli use this but could in the future be used for all stimuli to control mutual occlusion.
+            S.wDeg=1; % Widht of the stimulus
+            S.hDeg=1; % Height of the stimulus
+            S.aDeg=0; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
+            S.name=''; % defaults to class-name when added to condition
+            S.fixWithinDeg=-1; % if larger that >0, fixation on stim is required
+            S.rndSeed=rand*(2^32); % the seed of the stim's internal randstream
         end
         function lockInitialPublicState(S)
             % addStim of the condition class will call this function to
@@ -84,7 +98,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.wPx = S.wDeg * scrGets.deg2px;
             S.hPx = S.hDeg * scrGets.deg2px;
             S.scrGets=scrGets;
-            S.myInit;
+            S.myInit; % stimulus class specific init
             if S.fixWithinDeg>0 && S.checkEyelinkIsConnected
                 S.fixWithinPx=S.fixWithinDeg * scrGets.deg2px;
                 S.el=EyelinkInitDefaults(scrGets.windowPtr);
@@ -163,13 +177,19 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             end
         end
     end
-    
     methods
         function set.visible(S,value)
             if ~islogical(value) && ~isnumeric(value)
                 error('Enable should be numeric or (preferably) logical');
             end
             S.visible=logical(value);
+        end
+        function set.rndSeed(S,value)
+            if ~isnumeric(value)
+                error('random seed must be a number!');
+            end
+            S.rndSeed=value;
+            S.RND=RandStream('mt19937ar','Seed',S.rndSeed); %#ok<MCSUP>
         end
     end
 end

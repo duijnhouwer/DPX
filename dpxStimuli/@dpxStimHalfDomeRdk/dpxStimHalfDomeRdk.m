@@ -48,7 +48,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             [S.aziDeg, S.eleDeg, S.dotAge]=S.getFreshClusters(S.nClusters,S.nSteps);
             % Xreate an array with the color group number (1 or 2) for all
             % dots, clusters (cols) x dotspercluster (rows);
-            S.dotCol=repmat(round(rand(1,S.nClusters))+1,S.nDotsPerCluster,1);
+            S.dotCol=repmat(round(S.RND.rand(1,S.nClusters))+1,S.nDotsPerCluster,1);
             % Make this table a row, so that dots of the same clusters are
             % next to each other
             S.dotCol=S.dotCol(:)';
@@ -92,10 +92,10 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             S.LUT=[];
         end
         function [aziDeg,eleDeg,dotAge]=getFreshClusters(~,N,maxSteps)
-            aziDeg=rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
-            eleDeg=acosd(rand(1,N)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
+            aziDeg=S.RND.rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
+            eleDeg=acosd(S.RND.rand(1,N)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
             if nargout>2
-                dotAge=floor(rand(1,N)*maxSteps+1);
+                dotAge=floor(S.RND.rand(1,N)*maxSteps+1);
             end
         end
         function W=loadHalfdomeWarpObject(S)

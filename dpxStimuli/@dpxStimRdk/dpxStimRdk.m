@@ -45,12 +45,13 @@ classdef dpxStimRdk < dpxAbstractStim
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
-            S.dotXPx = rand(1,N) * S.wPx-S.wPx/2;
-            S.dotYPx = rand(1,N) * S.hPx-S.hPx/2;
+            S.dotXPx = S.RND.rand(1,N) * S.wPx-S.wPx/2;
+            S.dotYPx = S.RND.rand(1,N) * S.hPx-S.hPx/2;
             S.dotDirDeg = ones(1,N) * S.dirDeg;
             nNoiseDots = max(0,min(N,round(N * (1-abs(S.cohereFrac)))));
-            S.noiseDots = Shuffle([true(1,nNoiseDots) false(1,N-nNoiseDots)]);
-            noiseDirs = rand(1,N) * 360;
+            S.noiseDots = [true(1,nNoiseDots) false(1,N-nNoiseDots)];
+            S.noiseDots=S.noiseDots(S.RND.randperm(numel(S.noiseDots)));
+            noiseDirs = S.RND.rand(1,N) * 360;
             S.dotDirDeg(S.noiseDots) = noiseDirs(S.noiseDots);
             if S.cohereFrac<0, S.dotDirDeg = S.dotDirDeg + 180; end % negative coherence flips directions
             [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.scrGets.deg2px,S.scrGets.limits.GL_ALIASED_POINT_SIZE_RANGE);
@@ -58,9 +59,9 @@ classdef dpxStimRdk < dpxAbstractStim
                 S.dotDiamDeg=S.dotDiamPx/S.scrGets.deg2px;
                 warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
             end
-            S.dotAge = floor(rand(1,N) * (S.nSteps + 1));
+            S.dotAge = floor(S.RND.rand(1,N) * (S.nSteps + 1));
             S.pxPerFlip = S.speedDps * D2P / S.scrGets.measuredFrameRate;
-            idx = rand(1,N)<.5;
+            idx = S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
         end
@@ -82,10 +83,10 @@ classdef dpxStimRdk < dpxAbstractStim
             S.dotAge=S.dotAge+1;
             expired=S.dotAge>S.nSteps;
             % give new position if expired
-            x(expired)=rand(1,sum(expired))*w-w/2-dx(expired);
-            y(expired)=rand(1,sum(expired))*h-h/2-dy(expired);
+            x(expired)=S.RND.rand(1,sum(expired))*w-w/2-dx(expired);
+            y(expired)=S.RND.rand(1,sum(expired))*h-h/2-dy(expired);
             % give new random direction if expired and dot is noise
-            rndDirs=rand(size(x))*360;
+            rndDirs=S.RND.rand(size(x))*360;
             S.dotDirDeg(expired&S.noiseDots)=rndDirs(expired&S.noiseDots);
             S.dotAge(expired)=0;
             % Move the dots

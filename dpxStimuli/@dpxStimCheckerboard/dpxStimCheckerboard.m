@@ -7,13 +7,11 @@ classdef dpxStimCheckerboard < dpxAbstractStim
         contrast;
         nHoleHori;
         nHoleVert;
-        rndSeed;
         sparseness;
     end
     properties (Access=protected)
         checkerboardTexture=[];
         dstRect;
-        RND;
     end
     methods (Access=public)
         function S=dpxStimCheckerboard
@@ -24,8 +22,6 @@ classdef dpxStimCheckerboard < dpxAbstractStim
             S.nHoleHori=6;
             S.nHoleVert=6;
             S.contrast=.5;
-            S.rndSeed=round(rand*1000000);
-            S.RND=RandStream('mt19937ar','Seed',S.rndSeed);
             S.sparseness=1/3;
         end
     end
@@ -72,13 +68,6 @@ classdef dpxStimCheckerboard < dpxAbstractStim
            	[ok,str]=dpxIsRGBAfrac(value);
             if ~ok, error(str); end
             S.RGBAfrac=value;
-        end
-        function set.rndSeed(S,value)
-            if ~isnumeric(value)
-                error('random seed must be a number!');
-            end
-            S.rndSeed=value;
-            S.RND=RandStream('mt19937ar','Seed',S.rndSeed); %#ok<MCSUP>
         end
     end
 end

@@ -56,25 +56,25 @@ classdef dpxStimRotCylinder < dpxAbstractStim
             S.dotRGBA1=S.dotRGBA1frac*S.scrGets.whiteIdx;
             S.dotRGBA2=S.dotRGBA2frac*S.scrGets.whiteIdx;
             S.winCntrXYpx=[S.scrGets.widPx/2 S.scrGets.heiPx/2];
-            [S.leftEyeColor,S.rightEyeColor]=getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
+            [S.leftEyeColor,S.rightEyeColor]=S.getColors(S.nDots,[S.dotRGBA1(:) S.dotRGBA2(:)],S.stereoLumCorr);
             if strcmpi(S.axis,'hori')
-                x=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
+                x=S.xCenterPx-S.wPx/2+S.wPx*S.RND.rand(1,S.nDots);
                 r=S.hPx/2; %Y is going in the screen
-                S.Az=2*pi*rand(1,S.nDots);
+                S.Az=2*pi*S.RND.rand(1,S.nDots);
                 y=S.depthPx+S.disparityFrac*r*cos(S.Az);
                 z=-S.depthPx+r*sin(S.Az);
                 S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'vert')
-                z=S.zCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
+                z=S.zCenterPx-S.wPx/2+S.wPx*S.RND.rand(1,S.nDots);
                 r=S.wPx/2;
-                S.Az=2*pi*rand(1,S.nDots);
+                S.Az=2*pi*S.RND.rand(1,S.nDots);
                 y=S.depthPx+S.disparityFrac*r*cos(S.Az);
                 x=S.xPx+r*sin(S.Az);
                 S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'horisphere')
-                x=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
+                x=S.xCenterPx-S.wPx/2+S.wPx*S.RND.rand(1,S.nDots);
                 r=S.hPx/2; %Y is going in the screen
-                S.Az=2*pi*rand(1,S.nDots);
+                S.Az=2*pi*S.RND.rand(1,S.nDots);
                 y=S.depthPx+S.disparityFrac*r*cos(S.Az);
                 yScale=sin( acos(x/S.wPx*2) );
                 y=y.*yScale;
@@ -82,9 +82,9 @@ classdef dpxStimRotCylinder < dpxAbstractStim
                 z=z.*yScale;
                 S.XYZ=[x;y;z];
             elseif strcmpi(S.axis,'vertsphere')   
-                z=S.xCenterPx-S.wPx/2+S.wPx*rand(1,S.nDots);
+                z=S.xCenterPx-S.wPx/2+S.wPx*S.RND.rand(1,S.nDots);
                 r=S.wPx/2; %Y is going in the screen
-                S.Az=2*pi*rand(1,S.nDots);
+                S.Az=2*pi*S.RND.rand(1,S.nDots);
                 y=S.depthPx+S.disparityFrac*r*cos(S.Az);
                 yScale=sin( acos(z/S.wPx*2) );
                 y=y.*yScale;
@@ -156,6 +156,40 @@ classdef dpxStimRotCylinder < dpxAbstractStim
             S.fog=1-(sign(S.fogFrac)*cos(S.Az)+1)/2*abs(S.fogFrac);
             S.dotDiamScale=1-(sign(S.dotDiamScaleFrac)*cos(S.Az)+1)/2*abs(S.dotDiamScaleFrac);
         end
+        function [leDotCols,reDotCols]=getColors(S,nDots,cols,correl)
+            if size(cols,1)~=4
+                error('cols should be 4xN matrix for N RGBA colors');
+            end
+            if nargin==2 || isempty(correl)
+                correl=1;
+            end
+            nrColors=size(cols,2);
+            if nrColors==1
+                dotcols=repmat(cols,1,nDots);
+                leDotCols=dotcols;
+                reDotCols=dotcols;
+            elseif nrColors==2
+                nomcol=S.RND.rand(1,nDots)<.5;
+                if correl==1
+                    dotcols=repmat(cols(:,1),1,nDots);
+                    dotcols(:,nomcol)=repmat(cols(:,2),1,sum(nomcol));
+                    leDotCols=dotcols;
+                    reDotCols=dotcols;
+                elseif correl==-1
+                    leDotCols=repmat(cols(:,1),1,nDots);
+                    leDotCols(:,nomcol)=repmat(cols(:,2),1,sum(nomcol));
+                    reDotCols=repmat(cols(:,2),1,nDots);
+                    reDotCols(:,nomcol)=repmat(cols(:,1),1,sum(nomcol));
+                else
+                    error('Correlations other than 1 and -1 not implemented yet.');
+                end
+            elseif nrColors>2
+                error('Current implementation designed for max 2 colors');
+            else
+                error(['Illegal number of colors: ' num2str(nrColors) ]);
+            end
+        end
+
     end
     methods
         function set.stereoLumCorr(S,value)
@@ -201,6 +235,7 @@ function hordisp=getHorizontalDisparity(scr,XYZ)
     hordisp.rX00(2:3,:)=0;
 end
 
+
 function idx=getDotsOnSide(varargin)
     p=inputParser;
     p.addParamValue('whichside','both',@(x)any(strcmpi(x,{'both','back','front','none'})));
@@ -221,36 +256,3 @@ function idx=getDotsOnSide(varargin)
 end
 
 
-function [leDotCols,reDotCols]=getColors(nDots,cols,correl)
-    if size(cols,1)~=4
-        error('cols should be 4xN matrix for N RGBA colors');
-    end
-    if nargin==2 || isempty(correl)
-        correl=1;
-    end
-    nrColors=size(cols,2);
-    if nrColors==1
-        dotcols=repmat(cols,1,nDots);
-        leDotCols=dotcols;
-        reDotCols=dotcols;
-    elseif nrColors==2
-        nomcol=rand(1,nDots)<.5;
-        if correl==1
-            dotcols=repmat(cols(:,1),1,nDots);
-            dotcols(:,nomcol)=repmat(cols(:,2),1,sum(nomcol));
-            leDotCols=dotcols;
-            reDotCols=dotcols;
-        elseif correl==-1
-            leDotCols=repmat(cols(:,1),1,nDots);
-            leDotCols(:,nomcol)=repmat(cols(:,2),1,sum(nomcol));
-            reDotCols=repmat(cols(:,2),1,nDots);
-            reDotCols(:,nomcol)=repmat(cols(:,1),1,sum(nomcol));
-        else
-            error('Correlations other than 1 and -1 not implemented yet.');
-        end
-    elseif nrColors>2
-        error('Current implementation designed for max 2 colors');
-    else
-        error(['Illegal number of colors: ' num2str(nrColors) ]);
-    end
-end

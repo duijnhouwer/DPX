@@ -2,6 +2,9 @@ classdef dpxStimOccluders < dpxAbstractStim
     %DPXOCCLUDERS Summary of this class goes here
     %   Detailed explanation goes here
     
+    
+    % DOES NOT WORK
+
     properties (Access=public)
         NReps=10;
         PicsPerBlock=5;
@@ -63,7 +66,7 @@ end
 
 function StimList=Shuffle(PicNames,PicsPerBlock)
 NTotalPic=numel(PicNames);
-NewOrder=randperm(NTotalPic);
+NewOrder=S.RND.randperm(NTotalPic);
 StimList=PicNames(NewOrder);
 
 %removes file format behind name. actually needed for reading the good

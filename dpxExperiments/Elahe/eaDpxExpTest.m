@@ -1,7 +1,7 @@
 function eaDpxExpTest
     E=dpxCoreExperiment;
     E.expName='eaDpxExpTest';
-    E.scr.set('winRectPx',[10 10 800 600],'widHeiMm',[390 295],'distMm',1000, ...
+    E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...10 10 800 600
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...% 0.49
         'stereoMode','mono','skipSyncTests',0,'scrNr',0);
     
@@ -17,7 +17,6 @@ function eaDpxExpTest
         LeftCheck.xDeg=-stereoOffsetDeg;
         LeftCheck.wDeg=5;
         LeftCheck.hDeg=5;
-        LeftCheck.rndSeed=round(rand*100000);
         C.addStim(LeftCheck);
         %    S=dpxStimRect;
         
