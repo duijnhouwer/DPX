@@ -177,25 +177,11 @@ function [S]=mergeStimResp(S,R)
     % txtEnd that can optionally trigger 'wait for pulse' behavior (using
     % 'magic' value 'DAQ-pulse')
     startPulseSec=str2double(regexp(S.exp_txtStart{1},'[-+]?[0-9]*\.?[0-9]+.','match'));
-    endPulseSec=str2double(regexp(S.exp_txtEnd{1},'[-+]?[0-9]*\.?[0-9]+.','match'));
     % Check that the pulses were actually recorded
     if isnan(startPulseSec) || startPulseSec==-1
         error('No start DAQ-pulse was found in the stimulus file!');
-    elseif isnan(endPulseSec) || endPulseSec==-1
-        warning('No end DAQ-pulse was found in the stimulus file. Not possible to compare Microscope and Stimfile durations!');
     end
-    % Do a sanity check of the timeseries length compared to the start and
-    % end DAQ-pulses
-    durSecTiffs=numel(R.neuron(1).dFoF)/R.samplingFreq;
-    durSecDpx=endPulseSec-startPulseSec;
-    offPercent=durSecTiffs/durSecDpx*100-100;
-    quarterTrialOffPercent=min(S.stopSec-S.startSec)/durSecTiffs*100 / 4;
-    if abs(offPercent)>quarterTrialOffPercent && endPulseSec~=-1
-        warndlg({['Durations in stimulus and response files are off by ' num2str(offPercent) '%!'],'Are you sure they are from the same recording?'});
-    end
-    % Store these duration in the data struct for later reference
-    S.durSecDpx=ones(1,S.N)*durSecDpx;
-    S.durSecTiffs=ones(1,S.N)*durSecTiffs;
+    S.durSecTiffs=numel(R.neuron(1).dFoF)/R.samplingFreq;
     % store the microscope image file folder in S
     for tr=1:S.N
         S.resp_imagesPath{tr}=R.strImPath;
