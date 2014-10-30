@@ -9,10 +9,11 @@ classdef dpxToolsHalfDomeWarp < hgsetget
         pixelStep;
         LUT;
         nDone; % number of points already measured
+                eListDeg=[];
+        aListDeg=[];
     end
     properties (GetAccess='public', SetAccess='protected')
-        eListDeg=[];
-        aListDeg=[];
+
     end
     properties (GetAccess='private')
         aGrid=[];
@@ -54,24 +55,20 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             else
                 input('<< Press ENTER to continue calibrating >>');
             end
-            xy=[];
-            for x=W.xListPix(:)'
-                for y=W.yListPix(:)'
-                    xy(end+1,:)=[x y];
-                end
-            end
-            while W.nDone<size(xy,1)
+            [x,y]=meshgrid(W.xListPix,W.yListPix);
+            x=x(:);
+            y=y(:);
+            while W.nDone<numel(x)
                 W.nDone=W.nDone+1;
                 Screen('DrawDots',S.windowPtr,xy(W.nDone,:),5,[255 255 255]);
                 Screen('Flip',S.windowPtr);
                 azi=[];
                 ele=[];
                 while isempty(azi)
-                    disp(['Point Nr ' num2str(W.nDone) ' / ' num2str(nTogo) ': [x,y]=[' num2str(x) ',' num2str(y) ']']);
-                       disp('       Type NaN if the point is invisible, Inf to back redo last point, CTRL+C to quit.');
+                    disp(['Point Nr ' num2str(W.nDone) ' / ' num2str(nTogo) ': [x,y]=[' num2str(x(W.nDone)) ',' num2str(y(W.nDone)) ']']);
+                       disp('       Type NaN if the point is invisible, Inf to re-do previous point, CTRL+C to quit.');
                     s=input('   --> AZIMUTH in deg? > ','s');
                     azi=str2num(s); %#ok<*ST2NM>
-
                 end
                 if isnan(azi) || isinf(azi)
                     ele=nan;
@@ -92,17 +89,18 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             end
         end
         function plot(W)
+            [x,y]=meshgrid(W.xListPix,W.yListPix);
             W.fitSplines;
             dpxFindFig(mfilename)
             subplot 121
-            plot3(W.xListPix,W.yListPix,W.aListDeg,'ko','MarkerFaceColor','k');
+            plot3(x(:),y(:),W.aListDeg,'ko','MarkerFaceColor','k');
             hold on;
             box on;
             dpxLabel('x','X (pix)','y','Y (pix)','z','Azi (deg)');
             hold on
             surfl(W.xGrid,W.yGrid,W.aGrid);
             subplot 122
-            plot3(W.xListPix,W.yListPix,W.eListDeg,'ko','MarkerFaceColor','k');
+            plot3(x(:),y(:),W.eListDeg,'ko','MarkerFaceColor','k');
             hold on;
             box on;
             dpxLabel('x','X (pix)','y','Y (pix)','z','Ele (deg)');
@@ -187,12 +185,13 @@ classdef dpxToolsHalfDomeWarp < hgsetget
         function fitSplines(W)
             % fit a smooth surface to the meaured Azimuth and elevation as
             % a function of x and y pixels
-            xnodes=unique(W.xListPix);
-            ynodes=unique(W.yListPix);
-            [W.aGrid,W.xGrid,W.yGrid] = gridfit(W.xListPix,W.yListPix,W.aListDeg,xnodes,ynodes, ...
+            %xnodes=unique(W.xListPix);
+            %ynodes=unique(W.yListPix);
+            [X,Y]=meshgrid(W.xListPix,W.yListPix);
+            [W.aGrid,W.xGrid,W.yGrid] = gridfit(X(:),Y(:),W.aListDeg(:),W.xListPix,W.yListPix, ...
                 'smooth',5, 'interp','bilinear',  'solver','\', ...
                 'regularizer','gradient', 'extend','warning', 'tilesize',inf);
-            [W.eGrid] = gridfit(W.xListPix,W.yListPix,W.eListDeg,xnodes,ynodes, ...
+            [W.eGrid] = gridfit(X(:),Y(:),W.eListDeg(:),W.xListPix,W.yListPix, ...
                 'smooth',5, 'interp','bilinear',  'solver','\', ...
                 'regularizer','gradient', 'extend','warning', 'tilesize',inf);
         end
