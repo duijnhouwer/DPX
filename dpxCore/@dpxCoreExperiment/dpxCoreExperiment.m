@@ -92,7 +92,7 @@ classdef dpxCoreExperiment < hgsetget
                         defaultBackRGBA=E.scr.backRGBA;
                         E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
                     end
-                    E.scr.clear;
+                   % E.scr.clear;
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
                     [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;

@@ -9,7 +9,7 @@ classdef dpxCoreCondition < hgsetget
         % advantage of this design is that the RGBA for the background
         % doesn't have to be defined for each condition as most of the time
         % the background will be the same for all conditions
-        overrideBackRGBA=false; 
+        overrideBackRGBA=false;
     end
     properties (SetAccess=protected,GetAccess=public)
         % Cell array of stimulus objects (e.g. dpxStimDot) to be added using addStim
@@ -78,7 +78,7 @@ classdef dpxCoreCondition < hgsetget
                 end
             end
             % Initialize the video-blank timeer
-            vbl=Screen('Flip',winPtr);
+            vbl=Screen('Flip',winPtr,0);
             % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
             breakKeys={'Escape','Pause'};

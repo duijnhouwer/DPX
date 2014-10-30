@@ -9,7 +9,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
         pixelStep;
         LUT;
         nDone; % number of points already measured
-                eListDeg=[];
+        eListDeg=[];
         aListDeg=[];
     end
     properties (GetAccess='public', SetAccess='protected')
@@ -114,27 +114,35 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             E=W.eGrid*W.stepsPerDeg;
             X=W.xGrid;
             Y=W.yGrid;
+            W.LUT.table=[];
             W.LUT.minA=min(A(:));
             W.LUT.minE=min(E(:));
+            % iterate over all X and T pixels withing the rectangle of the
+            % minimum X and Y and the maximum X and Y for which an azi and
+            % ele could be measured PLUS a 100 pixel extrapolation margin.
             xx=min(X(:)):W.pixelStep:max(X(:));
             yy=min(Y(:)):W.pixelStep:max(Y(:));
             startSec=-Inf;
             for i=1:numel(xx)
                 ei=interp2(X,Y,E,xx(i),yy);
                 ai=interp2(X,Y,A,xx(i),yy);
-                ei=1+round(ei-W.LUT.minE);
-                ai=1+round(ai-W.LUT.minA);
+                ei=1+floor(ei-W.LUT.minE);
+                ai=1+floor(ai-W.LUT.minA);
                 for j=1:numel(yy)
-                    W.LUT.table(ai(j),ei(j),1)=xx(i);
-                    W.LUT.table(ai(j),ei(j),2)=yy(j);
+                    % Note: ele in rows, azi in columns!
+                    W.LUT.table(ei(j),ai(j),1)=xx(i);
+                    W.LUT.table(ei(j),ai(j),2)=yy(j);
                 end
-                if GetSecs-startSec>2
+                if GetSecs-startSec>10
                     if showplot, W.plotLut; end
                     startSec=GetSecs;
                 end
             end
             plotLut(W);
             dpxDispFancy('Inspect the LUTs. If there are any gaps or specs within the central areas, decrease ''pixelStep'''' and re-run ''makeLut''.');
+            % Cast LUT to 2 byte integer format (pixels), This reduce
+            % filesize (and load time) by a factor 4
+            W.LUT.table=uint16(W.LUT.table);
         end
         function plotLut(W)
             if isempty(W.LUT.table)
@@ -142,20 +150,20 @@ classdef dpxToolsHalfDomeWarp < hgsetget
                 return;
             end
             dpxFindFig('Lookup table');
-            clf;
+            clf; % important, MUST remove Ticks!
             subplot 121
             imagesc(W.LUT.table(:,:,1));
             title('X pixels');
             dpxLabel('x','azi (deg)','y','ele (deg)');
-            set(gca,'XTickLabel',round((get(gca,'XTick')+W.LUT.minA)/W.stepsPerDeg));
-            set(gca,'YTickLabel',round((get(gca,'YTick')+W.LUT.minE)/W.stepsPerDeg));
+            set(gca,'XTickLabel',round(get(gca,'XTick')+W.LUT.minA)/W.stepsPerDeg);
+            set(gca,'YTickLabel',round(get(gca,'YTick')+W.LUT.minE)/W.stepsPerDeg);
             colorbar('NorthOutside');
             subplot 122
             imagesc(W.LUT.table(:,:,2));
             title('Y pixels');
             dpxLabel('x','azi (deg)','y','ele (deg)');
-            set(gca,'XTickLabel',round((get(gca,'XTick')+W.LUT.minA)/W.stepsPerDeg));
-            set(gca,'YTickLabel',round((get(gca,'YTick')+W.LUT.minE)/W.stepsPerDeg));
+            set(gca,'XTickLabel',round(get(gca,'XTick')+W.LUT.minA)/W.stepsPerDeg);
+            set(gca,'YTickLabel',round(get(gca,'YTick')+W.LUT.minE)/W.stepsPerDeg);
             colorbar('NorthOutside');
             drawnow
         end
@@ -164,34 +172,64 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             % regardless of the orientation of the input vector aziDeg and
             % eleDeg;
             visibleIdx=1:numel(aziDeg);
-            ai=1+round(aziDeg*W.stepsPerDeg-W.LUT.minA);
-            ei=1+round(eleDeg*W.stepsPerDeg-W.LUT.minE);
+            ai=1+floor(aziDeg*W.stepsPerDeg-W.LUT.minA);
+            ei=1+floor(eleDeg*W.stepsPerDeg-W.LUT.minE);
             ai=ai(:);
             ei=ei(:);
-            ok=ai>=1 & ai<=size(W.LUT.table,1) & ei>=1 & ei<=size(W.LUT.table,2);
+            ok=ai>=1 & ai<=size(W.LUT.table,2) & ei>=1 & ei<=size(W.LUT.table,1);% Note: ele in rows, azi in columns!
             ai=ai(ok);
             ei=ei(ok);
             visibleIdx=visibleIdx(ok);
-            x=W.LUT.table(sub2ind(size(W.LUT.table),ai,ei,ones(size(ai))*1));
-            y=W.LUT.table(sub2ind(size(W.LUT.table),ai,ei,ones(size(ai))*2));
+            x=W.LUT.table(sub2ind(size(W.LUT.table),ei,ai,ones(size(ai))*1));% Note: ele in rows, azi in columns!
+            y=W.LUT.table(sub2ind(size(W.LUT.table),ei,ai,ones(size(ai))*2));% Note: ele in rows, azi in columns!
             ok=x>0 & y>0;
             x=x(ok);
             y=y(ok);
             visibleIdx=visibleIdx(ok);
             xy=[x(:) y(:)]';
+            xy=double(xy); % cast back to double data type
+        end
+        function createMaskTiff(W,filename)
+            if nargin==1, filename=''; end
+            wid=W.winRectPx(3)-W.winRectPx(1);
+            hei=W.winRectPx(4)-W.winRectPx(2);
+            M=zeros(wid,hei);
+            tel=0;
+            for i=1:numel(W.xListPix)
+                for j=1:numel(W.yListPix)
+                    tel=tel+1;
+                    if ~isnan(W.aListDeg(tel))
+                        M(W.xListPix(i),W.yListPix(j))=1;
+                    end
+                end
+            end
+            if isempty(filename)
+                [fl,pth]=uiputfile('dpxToolsHalfDomeWarp_automask.tif','Save mask as ...');
+                filename=fullfile(pth,fl);
+            end
+            imwrite(M',filename); % note tranpose '
+            if IsWin
+                system(['mspaint ' filename])
+            end
         end
     end
     methods (Access='protected')
         function fitSplines(W)
             % fit a smooth surface to the meaured Azimuth and elevation as
-            % a function of x and y pixels
-            %xnodes=unique(W.xListPix);
-            %ynodes=unique(W.yListPix);
+            % a function of x and y pixels. Only fit over the rectangular X
+            % and Y area where dots were visible + N pixels extrapolation
             [X,Y]=meshgrid(W.xListPix,W.yListPix);
-            [W.aGrid,W.xGrid,W.yGrid] = gridfit(X(:),Y(:),W.aListDeg(:),W.xListPix,W.yListPix, ...
+            visible=~isnan(W.aListDeg);
+            X=X(visible);
+            Y=Y(visible);
+            A=W.aListDeg(visible);
+            E=W.eListDeg(visible);
+            xNodes=unique(X);
+            yNodes=unique(Y);
+            [W.aGrid,W.xGrid,W.yGrid] = gridfit(X,Y,A,xNodes,yNodes, ...
                 'smooth',5, 'interp','bilinear',  'solver','\', ...
                 'regularizer','gradient', 'extend','warning', 'tilesize',inf);
-            [W.eGrid] = gridfit(X(:),Y(:),W.eListDeg(:),W.xListPix,W.yListPix, ...
+            [W.eGrid] = gridfit(X,Y,E,xNodes,yNodes, ...
                 'smooth',5, 'interp','bilinear',  'solver','\', ...
                 'regularizer','gradient', 'extend','warning', 'tilesize',inf);
         end

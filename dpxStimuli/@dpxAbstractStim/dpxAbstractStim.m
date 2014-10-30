@@ -27,11 +27,12 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         hPx;
         winCntrXYpx=[];
         scrGets=[];
-        flipCounter=0;
+        flipCounter;
+        stepCounter;
         fixWithinPx=[];
         eyeUsed=-1;
         el;
-        RND;
+        RND; % RandStream
     end
     methods (Access=public)
         function S=dpxAbstractStim
@@ -56,7 +57,9 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.aDeg=0; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
             S.name=''; % defaults to class-name when added to condition
             S.fixWithinDeg=-1; % if larger that >0, fixation on stim is required
-            S.rndSeed=rand*(2^32); % the seed of the stim's internal randstream
+            S.rndSeed=rand*(2^32); % the seed of the stim's internal randstream, setting this will automatically instantiate the RandStream
+            S.flipCounter=0;
+            S.stepCounter=0;
         end
         function lockInitialPublicState(S)
             % addStim of the condition class will call this function to
@@ -108,11 +111,12 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         function stepAndDraw(S,flipCounter)
             S.flipCounter=flipCounter;
             if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
+                S.stepCounter=S.stepCounter+1;
                 S.myStep;
-                 if S.visible
-                     S.myDraw;
-                 end
-            end         
+                if S.visible
+                    S.myDraw;
+                end
+            end
         end
         function clear(S)
             S.myClear;

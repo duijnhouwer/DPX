@@ -5,9 +5,14 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
         dAdEdeg; % azimuth and elevation offsets of points in cluster
         dotDiamPx;
         nSteps;
-        lutFileName='halfDomeLUT.mat';
+        lutFileName;
         RGBAfrac1;
         RGBAfrac2;
+        motType;
+        aziDps;
+        eleDps;
+        motStartSec; % relative to stim on
+        motDurSec;
     end
     properties (Access=protected)
         LUT;
@@ -20,6 +25,10 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
         visDotCol;
         nDotsPerCluster;
         palette;
+        aziDegPerFlip;
+        eleDegPerFlip;
+        motStartFlip;
+        motStopFlip;
     end
     methods (Access=public)
         function S=dpxStimHalfDomeRdk
@@ -38,6 +47,11 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             S.dAdEdeg=[0 sind(45:45:360)*.25 sind(30:30:360)*.5 ; 0 cosd(45:45:360)*.25 cosd(30:30:360)*.5];
             S.RGBAfrac1=[0 0 0 1];
             S.RGBAfrac2=[1 1 1 1];
+            S.motType='phi';
+            S.aziDps=60;
+            S.eleDps=0; % currently only a placeholder!
+            S.motStartSec=2; % relative to stimOnSec
+            S.motDurSec=4;
         end
     end
     methods (Access=protected)
@@ -52,16 +66,23 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             % Make this table a row, so that dots of the same clusters are
             % next to each other
             S.dotCol=S.dotCol(:)';
-            % Make the paletter into which the dotCol numbers are indices
-            S.palette=[S.RGBAfrac1(:) S.RGBAfrac2(:)]*S.scrGets.whiteIdx;        
+            % Make the palette into which the dotCol numbers are indices
+            S.palette=[S.RGBAfrac1(:) S.RGBAfrac2(:)]*S.scrGets.whiteIdx;
+            % Calculate the rotation rates
+            S.aziDegPerFlip=S.aziDps/S.scrGets.measuredFrameRate;
+            S.eleDegPerFlip=S.eleDps/S.scrGets.measuredFrameRate;
+            S.motStartFlip=S.motStartSec*S.scrGets.measuredFrameRate;
+            S.motStopFlip=S.motStartFlip+S.motDurSec*S.scrGets.measuredFrameRate;
         end
         function myDraw(S)
             cols=S.palette(:,S.visDotCol);
             Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
         end
         function myStep(S)
-            % 1: update the positions
-            S.aziDeg=S.aziDeg+1;
+            % 1: if in motion interval update the positions            
+            if S.stepCounter>S.motStartFlip && S.stepCounter<=S.motStopFlip
+                S.aziDeg=S.aziDeg+S.aziDegPerFlip;
+            end
             % 2: update lifetime, replace expired points
             if S.nSteps<Inf
                 S.dotAge=S.dotAge+1;
@@ -91,7 +112,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
         function myClear(S)
             S.LUT=[];
         end
-        function [aziDeg,eleDeg,dotAge]=getFreshClusters(~,N,maxSteps)
+        function [aziDeg,eleDeg,dotAge]=getFreshClusters(S,N,maxSteps)
             aziDeg=S.RND.rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
             eleDeg=acosd(S.RND.rand(1,N)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
             if nargout>2
@@ -145,7 +166,16 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             else
                 S.RGBAfrac2=value;
             end
-        end         
+        end   
+        function set.aziDps(S,value)
+            S.aziDps=value;
+        end
+        function set.eleDps(S,value)
+            if value~=0
+                error('eleDps can currently only be 0, is a placeholder for future elabotation');
+            end
+            S.eleDps=value;
+        end
     end
 end
 
