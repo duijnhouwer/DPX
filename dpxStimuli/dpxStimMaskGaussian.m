@@ -20,7 +20,7 @@ classdef dpxStimMaskGaussian < dpxAbstractStim
     methods (Access=protected)
         function myInit(S)
             grayFrac=S.RGBAfrac(1);
-            if std(S.RGBAfrac(1:3))>0
+            if std(S.RGBAfrac(1:3))>eps
                 error('CURRENTLY ONLY GRAYSCALES (R=G=B) IMPLEMENTED, ONLY REASON BEING THAT I WSA IN A HURRY, CAN BE IMPLEMENTED WITHOUT PORBLEM');
             end
             texHalfLenPx=round(S.wPx/2);

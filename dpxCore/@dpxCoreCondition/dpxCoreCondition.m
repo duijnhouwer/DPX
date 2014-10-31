@@ -1,15 +1,9 @@
 classdef dpxCoreCondition < hgsetget
     
     properties (Access=public)
-        % The duration of this condition (unless prematurely ended by
-        % a response, see below)
-        durSec=2;
-        % Leave this 'false' to use the backRGBA defined in the
-        % dpxCoreWindow class, or set it to a 4-element RGBA vector. The
-        % advantage of this design is that the RGBA for the background
-        % doesn't have to be defined for each condition as most of the time
-        % the background will be the same for all conditions
-        overrideBackRGBA=false;
+        durSec;
+        overrideBackRGBA;
+        breakFixGraceSec;
     end
     properties (SetAccess=protected,GetAccess=public)
         % Cell array of stimulus objects (e.g. dpxStimDot) to be added using addStim
@@ -24,9 +18,22 @@ classdef dpxCoreCondition < hgsetget
         nFlips;
         % Structure that will hold copies of the getable values in scr
         scrGets=struct;
+        % Counter for breakfixation grace period
+        flipsSinceBreakFix;
+        breakFixGraceFlips;
     end
     methods (Access=public)
         function C=dpxCoreCondition
+            % The duration of this condition (unless prematurely ended by
+            % a response, see below)
+            C.durSec=2;
+            % Leave this 'false' to use the backRGBA defined in the
+            % dpxCoreWindow class, or set it to a 4-element RGBA vector. The
+            % advantage of this design is that the RGBA for the background
+            % doesn't have to be defined for each condition as most of the time
+            % the background will be the same for all conditions
+            C.overrideBackRGBA=false;
+            C.breakFixGraceSec=.2; % how long does a blink last??
         end
         function init(C,scrGets)
             % Initialize the dpxCoreCondition object Store a copy of the
@@ -48,8 +55,12 @@ classdef dpxCoreCondition < hgsetget
             for r=1:numel(C.resps)
                 C.resps{r}.init(scrGets);
             end
+            C.flipsSinceBreakFix=[];
+            C.breakFixGraceFlips=round(C.breakFixGraceSec*C.scrGets.measuredFrameRate);
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
+            % This is the function called from dpxCoreExperiment as it
+            % works itself through the list of trials...
             if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
@@ -110,20 +121,33 @@ classdef dpxCoreCondition < hgsetget
                 end
                 Screen('DrawingFinished',winPtr);  
                 % Check the gaze-fixation status
-                if f==0 && isempty(stimNumberToFixate) 
-                    f=1; % start the condition
-                elseif f==0 && ~isempty(stimNumberToFixate) 
-                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus;
+                if isempty(stimNumberToFixate) 
+                   if f==0
+                       f=1; % just start the trial immediately
+                   end
+                else
+                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus; 
                     if ~ok
-                        if f>0
-                            % if f==0 we are waiting for first fixation
-                            completionStatus=str; % 'BREAKFIXATION'
-                            break;
+                        if f==0 
+                            % just keep waiting for first-fixation
+                        elseif isempty(C.flipsSinceBreakFix)
+                            % fixation interrupted, enter grace period
+                            C.flipsSinceBreakFix=C.breakFixGraceFlips;
+                        else
+                            C.flipsSinceBreakFix=C.flipsSinceBreakFix-1;
+                            if C.flipsSinceBreakFix<0
+                                % fixation not restored in time, stop the trial
+                                completionStatus=str;
+                                break;
+                            end
                         end
                     else
                         if f==0
-                            Eyelink('Message', 'FIRSTFIXATION'); % set marker in EDF file (timed on 2008 iMac: 0.000091 seconds)
-                            f=1; % start the condition
+                            Eyelink('Message', 'FIRSTFIXATION'); % set a time-stamp in EDF file (this function takes ~0.000091 seconds on a 2008 iMac)
+                            f=1; % start the condition (timestamp collected after flip below)
+                        else 
+                            % fixation was restored within the graceperiod
+                            C.flipsSinceBreakFix=[];
                         end
                     end
                 end

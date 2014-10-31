@@ -26,10 +26,8 @@ function agDpxTactileBiasDDQ
                                     continue;
                                 end
                                 %
-                                
                                 C=dpxCoreCondition;
                                 C.durSec=3600;
-                                
                                 %
                                 F=dpxStimDot;
                                 % type get(F) to see a list of parameters you can set

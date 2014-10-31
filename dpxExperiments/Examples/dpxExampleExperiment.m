@@ -59,7 +59,7 @@ function dpxExampleExperiment(testscr)
     % this experiment here:
     E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',1);
+        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
@@ -83,6 +83,9 @@ function dpxExampleExperiment(testscr)
         % Set the duration of the condition (trial). In this example,
         % we make it infinite and have the response finish the trial.
         C.durSec=Inf;
+        
+        % 
+        C.breakFixGraceSec=0.5;
         
         % Create fixation-dot 'stimulus'. 
         FIX=dpxStimDot;
@@ -117,10 +120,10 @@ function dpxExampleExperiment(testscr)
         % Set the diameter of the RDK
         RDK.wDeg=20;
         RDK.hDeg=20;
-        % We want the stimulus to go on 100 ms after the start of the
+        % We want the stimulus to go on 500 ms after the start of the
         % trial and last for half a second
-        RDK.onSec=-1;
-        RDK.durSec=0.5;
+        RDK.onSec=.5;
+        RDK.durSec=3;
         % Provide a name for this stimulus, this is how the stimulus
         % will be called in the data-file. If no name is provided, the
         % name will default to the class-name (dpxStimRdk). In an

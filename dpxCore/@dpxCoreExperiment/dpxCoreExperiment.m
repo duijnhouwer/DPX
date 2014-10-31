@@ -11,6 +11,7 @@ classdef dpxCoreExperiment < hgsetget
         txtPauseNrTrials;
         txtEnd;
         txtRBGAfrac;
+        breakFixTimeOutSec;
         outputFolder;
         plugins;
     end
@@ -44,7 +45,8 @@ classdef dpxCoreExperiment < hgsetget
             E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
-            E.outputFolder='';   
+            E.outputFolder='';
+            E.breakFixTimeOutSec=0.5; % blank interval after fixation interruption
         end
         function run(E)
             try
@@ -87,29 +89,28 @@ classdef dpxCoreExperiment < hgsetget
                     % Technically backRGBA is a condition property, but to save
                     % the need to define it for all conditions I keep it in
                     % the window class, with an optional override in the
-                    % condition class. Deal with that override now.
+                    % condition class. Here we deal with that override:
                     if numel(E.conditions{cNr}.overrideBackRGBA)==4
                         defaultBackRGBA=E.scr.backRGBA;
                         E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
                     end
-                   % E.scr.clear;
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
                     [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
                     % Handle the completion status of the trial
-                    if strcmp(completionStr,'Escape')
+                    if strcmpi(completionStr,'Escape')
                         break;
-                    elseif strcmp(completionStr,'Pause')
+                    elseif strcmpi(completionStr,'Pause')
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showPauseScreen;                  
                         % the skipped trial can be recognized by stopSec==-1
-                    elseif strcmp(completionStr,'BreakFixation')
+                    elseif strcmpi(completionStr,'BreakFixation')
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showBreakFixScreen;
                         % the skipped trial can be recognized by stopSec==-1
-                    elseif ~strcmp(completionStr,'OK')
+                    elseif ~strcmpi(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
                     end
                     % Store the condition number, the start and stop time,
@@ -253,7 +254,8 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showBreakFixScreen(E)
-            dpxDisplayText(E.scr.windowPtr,'BREAKFIXATION','rgba',E.scr.backRGBA,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',0.5,'commandWindowToo',true);
+            disp('Gaze fixation interrupted ... ');
+            dpxDisplayText(E.scr.windowPtr,'','rgba',E.scr.backRGBA,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',E.breakFixTimeOutSec,'commandWindowToo',true);
         end
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')

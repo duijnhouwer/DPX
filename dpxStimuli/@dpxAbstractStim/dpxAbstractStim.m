@@ -158,7 +158,6 @@ classdef (Abstract) dpxAbstractStim < hgsetget
                         ok=false;
                         str='BreakFixation';
                         return;
-                       
                     end
                 else
                     str='NoSampleAvailable';

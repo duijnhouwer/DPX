@@ -10,6 +10,9 @@ classdef dpxPluginEyelink < hgsetget
         info;
         pauseMenuKeyStrCell;
         pauseMenuInfoStrCell;
+        % specific for this plugin...
+        backGrayFrac;
+        foreGrayFrac;
     end
     properties (Access=protected)
         edfFile;
@@ -29,12 +32,27 @@ classdef dpxPluginEyelink < hgsetget
             P.info='';
             P.pauseMenuKeyStrCell={'1!','2@'};
             P.pauseMenuInfoStrCell={'Eyelink setup','Eyelink driftcorrect'};
+            P.backGrayFrac=[]; % empty means copy from experiment
+            P.foreGrayFrac=1;
         end
         function ok=start(P,getExp)
             Eyelink('Shutdown');
             ok=true;
             disp('Starting dpxPluginEyelink');            
+            %
             P.el=EyelinkInitDefaults(getExp.scr.windowPtr);
+            if isempty(P.backGrayFrac)
+                meanRGB=mean(getExp.scr.backRGBA(1:3));
+                P.el.backgroundcolour=meanRGB*getExp.scr.whiteIdx;
+            else
+                P.el.backgroundcolour=P.backGrayFrac*getExp.scr.whiteIdx;
+            end
+            P.el.foregroundcolour=P.foreGrayFrac*getExp.scr.whiteIdx; % this doesn't seem to change the marker color, TODO 666
+            if abs(P.el.backgroundcolour-P.el.foregroundcolour)<1
+                warning('fore and back colors of eyelink very similar!!');
+            end
+            EyelinkUpdateDefaults(P.el);
+            %
             dummymode=0;
             if ~EyelinkInit(dummymode, 1)
                 disp('Eyelink Init aborted.');
