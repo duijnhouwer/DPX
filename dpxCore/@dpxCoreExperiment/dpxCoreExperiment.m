@@ -231,19 +231,21 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showPauseScreen(E)
-            str='P A U S E D';
-            for i=1:numel(E.plugins)
-                for o=1:numel(E.plugins{i}.pauseMenuKeyStrCell)
-                    str=[str '\n' E.plugins{i}.pauseMenuKeyStrCell{o} ' - ' E.plugins{i}.pauseMenuInfoStrCell{o}]; %#ok<AGROW>
-                end
-            end
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'forceAfterSec',0,'fadeOutSec',-1);
-            choiceIsMade=false;
-            while ~choiceIsMade
+            if numel(E.plugins)>0
+                str='P A U S E D';
                 for i=1:numel(E.plugins)
-                    choiceIsMade=E.plugins{i}.pauseMenuFunction;
-                    if choiceIsMade
-                        break;
+                    for o=1:numel(E.plugins{i}.pauseMenuKeyStrCell)
+                        str=[str '\n' E.plugins{i}.pauseMenuKeyStrCell{o} ' - ' E.plugins{i}.pauseMenuInfoStrCell{o}]; %#ok<AGROW>
+                    end
+                end
+                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'forceAfterSec',0,'fadeOutSec',-1);
+                choiceIsMade=false;
+                while ~choiceIsMade
+                    for i=1:numel(E.plugins)
+                        choiceIsMade=E.plugins{i}.pauseMenuFunction;
+                        if choiceIsMade
+                            break;
+                        end
                     end
                 end
             end

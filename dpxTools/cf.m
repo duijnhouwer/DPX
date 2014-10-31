@@ -1,1 +1,1 @@
-function cf    % Close ALL figure windows.    close all hidden force    if exist('PsychtoolboxVersion','file')        sca;    endend
+function cf    % Close ALL figure windows.    close all hidden force    if exist('PsychtoolboxVersion','file')        sca;        try            dpxCoreExperiment; % side-effect: resets gamma        catch, end;    endend
