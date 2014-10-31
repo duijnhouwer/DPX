@@ -1,19 +1,21 @@
 function jdDpxExpHalfDomeRdk
     E=dpxCoreExperiment;
     E.expName='jdDpxExpHalfDomeRdk';
-    E.scr.skipSyncTests=1;
+    E.outputFolder='/data/vanwezeldata/dpxData';
+    E.scr.skipSyncTests=0;
+    E.scr.verbosity0min5max=1;
     E.scr.backRGBA=[.5 .5 .5 1];
     E.scr.distMm=600;
-    E.scr.winRectPx=[0 0 1920 1080];
-    E.scr.gamma=.33;
-    E.nRepeats=10;
+    E.scr.winRectPx=[1920 0 1920+1920 1080];
+    E.scr.gamma=0.25;
+    E.nRepeats=15;
     
-    motSec=1.5;
-    for startSec=[.5 .75 1 1.25 1.5]
-        for dps=[-180 -60 -20 0 20 60 180]
+    motSec=2;
+    for startSec=[1 2]
+        for dps=[-120 -40 -10 0 10 40 120]
             
             C=dpxCoreCondition;
-            C.durSec=1+startSec+motSec+0.5;
+            C.durSec=startSec+motSec+1;
             %
             % mask
             M=dpxStimMaskTiff;
@@ -21,42 +23,47 @@ function jdDpxExpHalfDomeRdk
             M.filename='mask20141030.tif';
             M.dstRectPx='fullscreen';
             M.blurPx=100;
-            S.onSec=-1;
+            M.onSec=-1;
             %
             % dot stimulus
             S=dpxStimHalfDomeRdk;
             S.name='rdk';
             S.lutFileName='HalfDomeWarpLut20141030.mat';
             S.nClusters=1000;
+            S.clusterRadiusDeg=1;
             S.dotDiamPx=4;
             S.aziDps=dps;
             S.nSteps=Inf;
             S.motStartSec=startSec;
             S.motDurSec=motSec;
-            S.onSec=-1;         
+            S.onSec=0;         
             %
             % gray background field
-            F=dpxStimRect;
-            F.wDeg=70;
-            F.hDeg=60;
-            F.RGBAfrac=[.5 .5 .5 1];
+           %5 F=dpxStimRect;
+           % F.wDeg=70;
+           % F.hDeg=60;
+           % F.RGBAfrac=[.5 .5 .5 1];
             %
             C.addStim(M);
             C.addStim(S);
             %C.addStim(F);
             %
             R1=dpxRespContiMouse;
-            R1.name='mouse1';
-            R1.mouseId=1;%9
+            R1.name='mouseBack';
+            R1.doReset=false;
+            R1.mouseId=14;
             R1.defaultX=1920;
             R1.defaultY=1080/2;
+            R1.allowUntilSec=C.durSec;
             C.addResp(R1);
             %
             R2=dpxRespContiMouse;
-            R2.name='mouse2';
-            R2.mouseId=1;%11
+            R2.name='mouseSide';
+            R2.doReset=true;
+            R2.mouseId=11;
             R2.defaultX=1920;
             R2.defaultY=1080/2;
+            R2.allowUntilSec=C.durSec;
             C.addResp(R2);
             %
             E.addCondition(C);
@@ -64,9 +71,8 @@ function jdDpxExpHalfDomeRdk
     end
     blockDurSec=0;
     for i=1:numel(E.conditions)
-        blockDurSec=blockDurSec+E.conditions{i}.durSec;
+        blockDurSec=blockDurSec+E.conditions{i}.durSec+.1;
     end
-    disp(['A block of all conditions will take ' dpxSeconds2readable(blockDurSec)]);
-    disp([num2str(E.nRepeats) ' blocks will take ' dpxSeconds2readable(blockDurSec*E.nRepeats)]);
+    disp([num2str(E.nRepeats) ' blocks will take approx. ' dpxSeconds2readable(blockDurSec*E.nRepeats)]);
     E.run;
 end

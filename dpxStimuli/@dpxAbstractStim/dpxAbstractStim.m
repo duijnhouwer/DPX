@@ -93,6 +93,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             end
             S.restoreInitialPublicState; % keep at top of init
             S.flipCounter=0;
+            S.stepCounter=0;
             S.onFlip = S.onSec * scrGets.measuredFrameRate;
             S.offFlip = (max(S.onSec,0) + S.durSec) * scrGets.measuredFrameRate;
             S.winCntrXYpx = [scrGets.widPx/2 scrGets.heiPx/2];

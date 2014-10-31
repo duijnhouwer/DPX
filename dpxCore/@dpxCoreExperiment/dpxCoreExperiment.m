@@ -207,7 +207,7 @@ classdef dpxCoreExperiment < hgsetget
             data=dpxdMerge(data); %#ok<NASGU>
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            save(absFileName,'data');
+            save(absFileName,'data','-v7.3');
             dpxDispFancy(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)

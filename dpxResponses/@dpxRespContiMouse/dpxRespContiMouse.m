@@ -4,6 +4,7 @@ classdef dpxRespContiMouse < dpxAbstractResp
         mouseId=[];
         defaultX;
         defaultY;
+        doReset;
     end
     properties (Access=protected)
         nrTotalSamples;
@@ -21,6 +22,7 @@ classdef dpxRespContiMouse < dpxAbstractResp
             %    M=dpxRespContiMouse;
             %    M.mouseId=-1
             %
+            R.doReset=true;
         end
     end
     methods (Access=protected)
@@ -37,19 +39,13 @@ classdef dpxRespContiMouse < dpxAbstractResp
         function myGetResponse(R)
             [x,y] = GetMouse(R.scrGets.windowPtr, R.mouseId); % R.mouseId is ignored on platforms other than Linux
             t=GetSecs;
-            SetMouse(R.defaultX, R.defaultY);
+            if R.doReset
+                SetMouse(R.defaultX, R.defaultY);
+            end
             R.nrSamplesTaken=R.nrSamplesTaken+1;
             R.resp.dxPx(R.nrSamplesTaken)=x-R.defaultX;
             R.resp.dyPx(R.nrSamplesTaken)=y-R.defaultY;
             R.resp.tSec(R.nrSamplesTaken)=t;
-            if R.nrSamplesTaken>=R.nrTotalSamples-1
-                % Flag dpxCoreCondition that the response is complete and
-                % can be appended to the output structure. Subtracting 1
-                % from nrTotalSamples serve to guarantee that 'given' is
-                % set despite potential rounding errors. Last sample will
-                % be NaN.
-                R.given=true;
-            end
         end
     end
     methods

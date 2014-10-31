@@ -3,6 +3,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
     properties (Access=public)
         nClusters;
         dAdEdeg; % azimuth and elevation offsets of points in cluster
+        clusterRadiusDeg;
         dotDiamPx;
         nSteps;
         lutFileName;
@@ -42,9 +43,10 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             %
             % Jacob Duijnhouwer, 2014-09-23
             S.nClusters=500;
-            S.dotDiamPx=2;
+            S.dotDiamPx=4;
             S.nSteps=4;
-            S.dAdEdeg=[0 sind(45:45:360)*.25 sind(30:30:360)*.5 ; 0 cosd(45:45:360)*.25 cosd(30:30:360)*.5];
+            S.clusterRadiusDeg=1.4; % 2.9 deg diam in Douglas et al. 2006 (Vis Res "perception of vis mot coherence");
+            S.dAdEdeg=[0 sind(45:45:360)*.5 sind(30:30:360) ; 0 cosd(45:45:360)*.5 cosd(30:30:360)];
             S.RGBAfrac1=[0 0 0 1];
             S.RGBAfrac2=[1 1 1 1];
             S.motType='phi';
@@ -73,6 +75,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             S.eleDegPerFlip=S.eleDps/S.scrGets.measuredFrameRate;
             S.motStartFlip=S.motStartSec*S.scrGets.measuredFrameRate;
             S.motStopFlip=S.motStartFlip+S.motDurSec*S.scrGets.measuredFrameRate;
+            S.dAdEdeg=S.dAdEdeg*S.clusterRadiusDeg;  
         end
         function myDraw(S)
             cols=S.palette(:,S.visDotCol);
