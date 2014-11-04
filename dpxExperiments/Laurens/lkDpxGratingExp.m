@@ -18,14 +18,14 @@ function lkDpxGratingExp
     E.scr.backRGBA=[.1 .1 .1 1];
     E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='asd DAQ-pulse'; 
+    E.txtStart='DAQ-pulse'; 
     E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
     % Settings
     %
     dirDegs=[0:45:315];
-    contrastFracs=[1];
+    contrastFracs=[0.8];
     cyclesPerDeg=[0.1];
     cyclesPerSecond=[0.5 1 2];
     E.nRepeats=6;
