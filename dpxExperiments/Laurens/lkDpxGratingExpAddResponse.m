@@ -181,7 +181,7 @@ function [S]=mergeStimResp(S,R)
     if isnan(startPulseSec) || startPulseSec==-1
         error('No start DAQ-pulse was found in the stimulus file!');
     end
-    S.durSecTiffs=numel(R.neuron(1).dFoF)/R.samplingFreq;
+    %S.durSecTiffs=numel(R.neuron(1).dFoF)/R.samplingFreq;
     % store the microscope image file folder in S
     for tr=1:S.N
         S.resp_imagesPath{tr}=R.strImPath;
@@ -200,6 +200,10 @@ function [S]=mergeStimResp(S,R)
         % perform a check of the timeseries duration with respect to start
         % and stop pulses recorded by DPX
         S.([unitstr '_dFoF'])=dpxSegmentTimeSeries('timeseries',dFoF,'sampleHz',R.samplingFreq,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec);
+    end
+    % test if the data is a proper DPXD
+    if ~dpxdIs(S)
+        error('The data struct is no longer a valid DPXD');
     end
 
     
