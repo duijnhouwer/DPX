@@ -23,11 +23,14 @@ clf;
 labels={'mono','stereo','antistereo'};
 
 %loop for right and left seperate (numerical way to determine sides, easier to use)
-sideNum={-1,1};%-1 = left, 1 = right
+sideNum={1};%-1 = left, 1 = right
 for side=1:numel(sideNum) 
     %get current side
     xDeg=abs(D.fullInducerCyl_xDeg(1));
     Cur=dpxdSubset(D,D.fullInducerCyl_xDeg==xDeg*sideNum{side});
+    if Cur.N==0
+        continue
+    end
     mono=Cur.(exp.stereoCue)==0 & Cur.(exp.lummCor)==1;
     stereo=Cur.(exp.monoCueFog)==0 & Cur.(exp.monoCueDiam)==0 & Cur.(exp.lummCor)==1;
     antistereo=Cur.(exp.monoCueFog)==0 & Cur.(exp.monoCueDiam)==0 & Cur.(exp.lummCor)==-1;
@@ -66,7 +69,7 @@ legend(h,labels);
 end
 
 function exp=whichExp(data)
-if strcmpi(data.exp_expName(1),'rdDpxExpRotCylShuffled');
+if strcmpi(data.exp_expName(1),'rdDpxExpRotCylShuffled') ||strcmpi(data.exp_expName(1),'rdDpxExpRotCylRight'); 
     exp.Id='twoFull';
     exp.name=['subject ' data.exp_subjectId{1} ': Direction of full cyl (context-driven)'];
     exp.monoCueFog='fullInducerCyl_fogFrac';
