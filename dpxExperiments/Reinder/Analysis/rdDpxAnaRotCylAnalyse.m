@@ -10,37 +10,26 @@ if nargin==1 || isempty(D)
         D{f}=data;
     end
 end
-D=dpxdMerge(D);
+D=dpxTblMerge(D);
 oldN=D.N;
 exp=whichExp(D);
 % Remove all trials in which no response was given
-D=dpxdSubset(D,D.resp_rightHand_keyNr>0);
+D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
 disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
 
 
 % for f=1:numel(D.halfInducerCyl_dotRGBA1frac)
 %     if D.halfInducerCyl_dotRGBA2frac{f}==D.halfInducerCyl_dotRGBA1frac{f}
-%         if D.halfInducerCyl_stereoLumCorr(1)==1
-%         warning(['this trial has a full white stimulus, but with a stereo tag at trial ' num2str(f)])
-%         D=rdDpxCorCheckFix(D);
-%         break
+%         if D.halfInducerCyl_stereoLumCorr(1)==-1
+%         warning(['this trial has a full white stimulus, but with a antistereo tag at trial ' num2str(f)])
+% %         D=rdDpxCorCheckFix(D);
+% %         break
 %         end
-%     else
 %     end
 % end
-        
-mono=D.(exp.stereoCue)==0;
-stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
-antistereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==-1;
-M=dpxdSubset(D,mono | mono&stereo);
-S=dpxdSubset(D,stereo | mono&stereo);
-if strcmp(exp.Id,'fullFb') || strcmp(exp.Id,'halfFb');
-    B=dpxdSubset(D,~mono&~stereo | mono&stereo);
-    varLbl='both';
-else
-    AS=dpxdSubset(D,antistereo | mono&antistereo);
-    varLbl='anti-stereo';
-end
+[M S B AS MDS lbl]=Divide(D,exp);
+clear B
+
 if fignum==2
     expId=[exp.Id ' two'];
     dpxFindFig(expId);
@@ -49,39 +38,47 @@ else
 end
 clf;
 
-labels={'mono','stereo',varLbl};
-subplot(1,2,1);
+if isfield(exp,'Shift')
+    labels={'mono','stereo',lbl.varLbl,lbl.varLblshift};
+else
+    labels={'mono','stereo',lbl.varLbl};
+end
+    subplot(1,1,1);
+
 
 h(1)=plotPsychoCurves(M,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'*r:','LineWidth',3);
-h(2)=plotPsychoCurves(S,exp.stereoCue,exp.resp,exp.Id,exp.speed,'ok-','Color',[0 .5 0],'LineWidth',2);
+h(2)=plotPsychoCurves(S,exp.stereoCue,exp.resp,exp.Id,exp.speed,'or-','LineWidth',2);
 if exist('B','var');
-    h(3)=plotPsychoCurves(B,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'+b--','LineWidth',1);
+    h(3)=plotPsychoCurves(B,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'ob-','LineWidth',2);
 elseif exist('AS','var');
-    h(3)=plotPsychoCurves(AS,exp.stereoCue,exp.resp,exp.Id,exp.speed,'+b--','LineWidth',1);
+    h(3)=plotPsychoCurves(AS,exp.stereoCue,exp.resp,exp.Id,exp.speed,'ob-','LineWidth',2);
+end
+if isfield(exp,'Shift')
+    h(4)=plotPsychoCurves(MDS,exp.stereoCue,exp.resp,exp.Id,exp.speed,'sb--','LineWidth',1);
 end
 title(exp.name)
 ylabel(exp.corPerc)
-legend(h,labels);
-subplot(1,2,2);
-h(1)=plotPsychoCurves(M,exp.speed,'DownArrow',[],[],'r:','LineWidth',3);
-h(2)=plotPsychoCurves(S,exp.speed,'DownArrow',[],[],'Color',[0 .5 0],'LineWidth',2);
-if exist('B','var');
-    h(3)=plotPsychoCurves(B,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
-elseif exist('AS','var');
-    h(3)=plotPsychoCurves(AS,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
-else
-    %nothing
-end
-legend(h,labels);
+% legend(h,labels);
+% subplot(1,2,2);
+% h(1)=plotPsychoCurves(M,exp.speed,'DownArrow',[],[],'r:','LineWidth',3);
+% h(2)=plotPsychoCurves(S,exp.speed,'DownArrow',[],[],'Color',[0 .5 0],'LineWidth',2);
+% if exist('B','var');
+%     h(3)=plotPsychoCurves(B,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+% elseif exist('AS','var');
+%     h(3)=plotPsychoCurves(AS,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+% else
+%     %nothing
+% end
+% legend(h,labels);
 
 if strcmpi(input('calc freezing? Y/N','s'),'y')
-    perc=FreezePerc(data.resp_rightHand_keyName);
+    perc=FreezePerc(D.resp_rightHand_keyName);
     D.freeze=perc;
 end
 end
 
 function  h=plotPsychoCurves(D,fieldstr,keyname,Id,speed,varargin)
-E=dpxdSplit(D,fieldstr);
+E=dpxTblSplit(D,fieldstr);
 if strcmp(Id,'bind')
     for ee=1:numel(E) %remove the zero disp in bind because onredelijk
         if E{ee}.(fieldstr)==0
@@ -139,11 +136,12 @@ else
     end
 end
 h=plot(x,y*100,varargin{:});
-axis([min(x) max(x) 0 100]);
+axis([-1 1 0 100]);
 dpxPlotHori(50,'k--');
 dpxPlotVert(0,'k--');
 xlabel(fieldstr(fieldstr~='_'));
 hold on;
+
 end
 
 function exp=whichExp(data)
@@ -177,6 +175,12 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.ex
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='reported percept, % convex';
+    if isfield(data,'halfInducerCyl_monoDispShift')
+        if sum(data.halfInducerCyl_monoDispShift)==0
+        else
+        exp.Shift='halfInducerCyl_monoDispShift';
+        end
+    end
 elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft')...
         || strcmpi(data.exp_expName(1),'rdDpxExpBindingCylRight')
     exp.Id='bind';
@@ -188,6 +192,12 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft')...
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='correct perception of target base on phys of inducer';
+    if isfield(data,'halfInducerCyl_monoDispShift')
+        if sum(data.halfInducerCyl_monoDispShift)==0
+        else
+        exp.Shift='halfInducerCyl_monoDispShift';
+        end
+    end
 elseif strcmpi(data.exp_expName(1),'rdDpxExpCentreBindCyl')
     exp.Id='bind';
     exp.name=['subject ' data.exp_subjectId{1} ': percept of full cyl (context-driven)'];
@@ -239,3 +249,36 @@ end
 % end
 % end
 
+function     [M S B AS MDS lbl]=Divide(D,exp)
+if isfield(exp,'Shift')
+    mono=D.(exp.stereoCue)==0 & D.(exp.Shift)==0;
+    stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1 & D.(exp.Shift)==0;
+    antistereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==-1 & D.(exp.Shift)==0;
+    dispShifted=D.(exp.Shift)==1;
+else
+    mono=D.(exp.stereoCue)==0;
+    stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
+    antistereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==-1;
+end
+M=dpxTblSubset(D,mono | mono&stereo);
+S=dpxTblSubset(D,stereo | mono&stereo);
+if strcmp(exp.Id,'fullFb') || strcmp(exp.Id,'halfFb');
+    B=dpxTblSubset(D,~mono&~stereo | mono&stereo);
+    lbl.varLbl='both';
+    AS=0;
+else 
+    AS=dpxTblSubset(D,antistereo | mono&antistereo);
+    lbl.varLbl='anti-stereo';
+    B=0;
+end
+if isfield(exp,'Shift')
+    MDS=dpxTblSubset(D,dispShifted);
+    lbl.varLblshift='Mono Disp Shift';
+else
+    MDS=0;
+end
+
+        
+        
+        
+end
