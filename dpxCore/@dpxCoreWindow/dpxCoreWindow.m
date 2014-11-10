@@ -165,7 +165,9 @@ classdef dpxCoreWindow < hgsetget
         end
         function set.stereoMode(W,value)
             W.stereoMode=value;
-            if strcmpi(W.stereoMode,'mono')
+            if strcmpi(W.stereoMode,'anaglyph')
+                W.stereoCode=6;
+            elseif strcmpi(W.stereoMode,'mono')
                 W.stereoCode=0;
             elseif strcmpi(W.stereoMode,'mirror')
                 W.stereoCode=4;
