@@ -1,7 +1,6 @@
 function rdFixDataTrialStructBug
     
     files=dpxUIgetfiles;
-    wb=jdWaitBar(0,'max',numel(files),'Please wait ...','Name','Progress - rdFixDataTrialStructBug');
     for i=1:numel(files)
         load(files{i});
         [didfix,newdata]=fix(data);
@@ -12,13 +11,8 @@ function rdFixDataTrialStructBug
         else
             disp(['[rdFixDataTrialStructBug] No DataTrialStructBug detected in file: ''' files{i} ''', not changed.']);
         end
-        wb=wb.update;
-        if strcmpi(wb.status,'User pressed cancel');
-            return;
-        end
+
     end
-    wb.close;
-    clear('wb');
 end
 
 function [didfix,D]=fix(D)
