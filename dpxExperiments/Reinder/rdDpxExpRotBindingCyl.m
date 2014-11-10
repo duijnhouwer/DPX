@@ -6,6 +6,10 @@ function rdDpxExpRotBindingCyl(pos,BB)
 %%report: 'base' or 'bind'
 %%i.e. rdDpxExpRotCyl('left','bind')
 
+if IsWin %disable laptop lid-button
+    DisableKeysForKbCheck([233]);
+end
+
 E=dpxCoreExperiment;
 E.txtPauseNrTrials=111;
 E.nRepeats=10;
@@ -47,22 +51,31 @@ fbCorrectStr='fbCorrect';
 fbWrongStr='fbCorrect';
 
 % Then the experiment option, make expname (used in output filename)
+if strcmpi(dpxGetUserName,'ReindAspire/Reinder')
+    
+else
 if strcmpi(BB,'base')
     E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Baseline';
 elseif strcmpi(BB,'bind')
-    E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Binding';
+    if strcmpi(BB,'base')
+        E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Baseline';
+    elseif strcmpi(BB,'bind')
+        E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Binding';
+    end
 end
 
 % Set the stimulus window option
 E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','SkipSyncTests',1);
+E.scr.set('stereoMode','mirror','SkipSyncTests',1);%'mono, mirror, anaglyph
+E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
+
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run
-modes={'mono','stereo','anti-stereo'};
+modes={'stereo','anti-stereo','mono'};%stereo, anti-stereo, mono
 for m=1:numel(modes)
-    for dsp=[-1:.2:1]
+    for dsp=[-1 -0.8 -0.4 0 0.4 0.8 1]
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
@@ -96,8 +109,9 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','fullTargetCyl');
-                        set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
+%             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);             %make a full white
             C.addStim(S);
+            
             % The half cylinder stimulus
             if strcmpi(modes{m},'mono')
                 lumcorr=1;
@@ -120,9 +134,10 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfInducerCyl');
-                        set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
+%             set(S,'dispShiftMono',true);          % make a shifted image in both sides
+%             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);             % make full white
             C.addStim(S);
-            %
+            
             E.addCondition(C);
         end
     end
