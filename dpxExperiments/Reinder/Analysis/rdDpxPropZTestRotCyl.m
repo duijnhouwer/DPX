@@ -3,6 +3,7 @@ function ZAna = rdDpxPropZTestRotCyl(disps,D)
 % makes a barplot with error bars (std) and a nice asterix if significant
 % :)
 % only for stereo
+% D input is optional data. If not given will be asked to select manually.
 
 if nargin==1 || isempty(D)
     fnames=dpxUIgetfiles;
@@ -12,17 +13,17 @@ if nargin==1 || isempty(D)
     end
 end
 D=dpxdMerge(D);
+oldN=D.N;
 exp=whichExp(D);
+D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
+disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
+
 
 mono=D.(exp.stereoCue)==0;
-stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
+stereo=D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1; % & D.(exp.lummCor)==-1;%for anti-cor %D.(exp.monoCueFog)==0 & D.(exp.monoCueDiam)==0 & D.(exp.lummCor)==1;
 EE=dpxdSubset(D,stereo | mono&stereo);
-
 EE=dpxdSplit(EE,exp.stereoCue);
 
-if rebecca
-    geen stereo en antistereo splitten
-end
 
 
 i=1;
@@ -34,55 +35,70 @@ for ee=1:numel(EE)
         i=i+1;
     end
 end
+if ~exist('E','var')
+    error('your selected disparities are not in the data set. please check this')
+end
 ZAna=cell(1,numel(E));
 for e=1:numel(E)
     corKey=zeros(1,numel(E{e}.(exp.speed)));
     for s=1:numel(E{e}.(exp.speed))
-        if E{e}.(exp.stereoCue)(s)>0
+%         if E{e}.(exp.stereoCue)(s)>0 %comment out if motion only
             if E{e}.(exp.speed)(s)>0
                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
             else
                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
             end
-        end
-        if E{e}.(exp.stereoCue)(s)<0
-            if E{e}.(exp.speed)(s)>0
-                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
-            else
-                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
-            end
-        end
-        if E{e}.(exp.stereoCue)(s)==0
-            corKey(s)=1;
-        end
+%             comment out if motion only >>>>>>>>>>>>
+%         end
+%         if E{e}.(exp.stereoCue)(s)<0
+%             if E{e}.(exp.speed)(s)>0
+%                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
+%             else
+%                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
+%             end
+%         end
+%         if E{e}.(exp.stereoCue)(s)==0
+%             corKey(s)=1;
+%         end
+        % <<<<<<<<<<<<
     end
     
     ZAna{e}.Data = corKey;
     ZAna{e}.Disp = mean(E{e}.(exp.stereoCue));
     ZAna{e}.ZMean = mean(corKey);
-    ZAna{e}.ZStd = std(corKey);
-    ZAna{e}.Interval = [ZAna{e}.ZMean-ZAna{e}.ZStd ZAna{e}.ZMean+ZAna{e}.ZStd];
+
     
 end
-P  = (ZAna{1}.ZMean*numel(ZAna{1}.Data)+ZAna{2}.ZMean*numel(ZAna{2}.Data))/(numel(ZAna{2}.Data)+numel(ZAna{2}.Data));
-SE = sqrt(P*(1-P)*(1/numel(ZAna{1}.Data)+1/numel(ZAna{2}.Data)));
-Z  = (ZAna{1}.ZMean-ZAna{2}.ZMean)/SE;
-Y=normcdf(Z,0,1);
+P  = (ZAna{3}.ZMean*numel(ZAna{3}.Data)+ZAna{2}.ZMean*numel(ZAna{2}.Data))/(numel(ZAna{2}.Data)+numel(ZAna{2}.Data));
+SE = sqrt(P*(1-P)*(1/numel(ZAna{3}.Data)+1/numel(ZAna{2}.Data)));
+Z  = (ZAna{3}.ZMean-ZAna{2}.ZMean)/SE;
+if sign(Z)==1
+    Z=Z*-1;
+end
+Y=normcdf(Z,0,1)
 
-figure;
-bar([ZAna{1}.Disp ZAna{2}.Disp],[ZAna{1}.ZMean ZAna{2}.ZMean],'r');
+for i=1:numel(ZAna)
+    x(i)=ZAna{i}.Disp;
+    y(i)=ZAna{i}.ZMean;
+end
+    
+figure
+bar(x,y)
+% bar([-1 1],[ZAna{2}.ZMean ZAna{1}.ZMean],'b'); %opgelet, near is dus links, far dus rechts.  om plotjes gelijk te laten lopen met die vna chris klink
 
-% barwitherr([ZAna{1}.ZStd ZAna{2}.ZStd],[ZAna{1}.Disp ZAna{2}.Disp],[ZAna{1}.ZMean ZAna{2}.ZMean],'r');
-iY=[ZAna{1}.ZMean ZAna{2}.ZMean];
+iY=[ZAna{3}.ZMean ZAna{2}.ZMean];
 ylim([0 1]);
-name=[data.exp_expName{1} ' ' data.exp_subjectId{1} ' proportion Z tested'];
-title(name);
-nB=['P(Z < ' num2str(Z) ') = ' num2str(Y)];
+% name=[data.exp_expName{1} ' ' data.exp_subjectId{1} ' proportion Z tested'];
+% title(name);
+nB=['P = ' num2str(Y)];
 text(ZAna{2}.Disp-0.5,0.9,nB)
-
-if Y<0.05;
+% set(gca,'XTick',[-1 1],'XTickLabel',{'Near' 'Far'});
+set(gca,'YTick',0:.1:1,'YTickLabel',0:10:100);
+ylabel('% coupling')
+xlabel('Disparity defined side')
+if Y<0.05 ;
     hold on
-    intervalX=[ZAna{1}.Disp ZAna{1}.Disp ZAna{2}.Disp ZAna{2}.Disp];
+    intervalX=[ZAna{3}.Disp ZAna{3}.Disp ZAna{2}.Disp ZAna{2}.Disp];
     intervalY=[max(iY)+0.1 max(iY)+0.15 max(iY)+0.15 max(iY)+0.1];
     plot(intervalX,intervalY,'k');
     text(0, max(iY)+0.17,'*','FontSize',22);
