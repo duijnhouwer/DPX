@@ -52,23 +52,21 @@ fbWrongStr='fbCorrect';
 
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(dpxGetUserName,'ReindAspire/Reinder')
-    
-else
-if strcmpi(BB,'base')
-    E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Baseline';
-elseif strcmpi(BB,'bind')
+    E.outputFolder='C:\tempdata-PleaseDeleteMeSenpai';
+elseif strcmpi(dpxGetUserName,'eyelink')
     if strcmpi(BB,'base')
-        E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Baseline';
+        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Baseline';
     elseif strcmpi(BB,'bind')
-        E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp2Binding';
+        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Binding';
     end
 end
+    
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
-E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','SkipSyncTests',1);%'mono, mirror, anaglyph
-E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging
+E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
+E.physScr.set('stereoMode','mirror','SkipSyncTests',1);%'mono, mirror, anaglyph
+E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
 
 
 % Add stimuli and responses to the conditions, add the conditions to
