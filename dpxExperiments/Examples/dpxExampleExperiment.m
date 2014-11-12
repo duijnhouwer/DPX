@@ -64,9 +64,13 @@ function dpxExampleExperiment(testscr)
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
     
-    % Add a plugin to use the eyelink
-    P=dpxPluginEyelink;
-    E.addPlugin(P);
+    % Add a plugin to use the eyelink, the eyelink software needs to be
+    % installed for this and the eyelink hardware needs to be hooked up.
+    % Further below you can designate one of the stimuli present in a
+    % condition to require fixation (in this example, that will be the
+    % stimulus with name 'fixdot'. 
+    %P=dpxPluginEyelink;
+    %E.addPlugin(P);
     
     % In this experiment, we vary coherence and motion direction. Define
     % the ranges of these properties here values of those here:
@@ -92,7 +96,10 @@ function dpxExampleExperiment(testscr)
         FIX.name='fixdot';
         FIX.onSec=-1;
         FIX.wDeg=0.5;
-        FIX.fixWithinDeg=10;
+        % if you have an eyelink installed, you could add the following
+        % line to require the fixation dot to be fixated within a 2 degree
+        % radius:
+        % FIX.fixWithinDeg=2;
 
         
         % Add the random dot motion stimulus to this condition, and set
