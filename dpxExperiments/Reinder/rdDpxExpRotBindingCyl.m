@@ -12,7 +12,7 @@ end
 
 E=dpxCoreExperiment;
 E.txtPauseNrTrials=111;
-E.nRepeats=10;
+E.nRepeats=2;
 
 fb='';
 
@@ -51,8 +51,8 @@ fbCorrectStr='fbCorrect';
 fbWrongStr='fbCorrect';
 
 % Then the experiment option, make expname (used in output filename)
-if strcmpi(dpxGetUserName,'ReindAspire/Reinder')
-    E.outputFolder='C:\tempdata-PleaseDeleteMeSenpai';
+if strcmpi(dpxGetUserName,'Reinder')
+    E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
 elseif strcmpi(dpxGetUserName,'eyelink')
     if strcmpi(BB,'base')
         E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Baseline';
@@ -63,18 +63,18 @@ end
     
 
 % Set the stimulus window option
-E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
-E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.physScr.set('stereoMode','mirror','SkipSyncTests',1);%'mono, mirror, anaglyph
-E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
+E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
+E.scr.set('stereoMode','mirror','skipSyncTests',1);%'mono, mirror, anaglyph
+% E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
 
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run
-modes={'stereo','anti-stereo','mono'};%stereo, anti-stereo, mono
+modes={'stereo','anti-stereo','mono'}; %stereo, anti-stereo, mono
 for m=1:numel(modes)
-    for dsp=[-1 -0.8 -0.4 0 0.4 0.8 1]
-        for rotSpeed=[-120 120]
+    for dsp=[-1 1]
+        for rotSpeed=[120 -120] % >0 --> up
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
             % The fixation cross
@@ -83,23 +83,22 @@ for m=1:numel(modes)
             C.addStim(S);
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',0.20,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'visible',false,'durSec',0.5,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             
             % The response object
-            R=dpxCoreResponse;
+            R=dpxRespKeyboard;
             set(R,'kbNames','UpArrow,DownArrow');
             set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
             set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-            set(R,'name','rightHand');
+%             set(R,'name','rightHand');
             C.addResp(R);
-            if dsp<0
-                R.correctKbNames='UpArrow';
-            elseif dsp>0
-                R.correctKbNames='DownArrow';
-            else
-                R.correctKbNames='1';
-            end
+            % the UpArrow wil just be called correct in this case. using
+            % the analysis file we will seperate bind from base, speed<0
+            % and >0, dsp<0 and >0.
+            % I think.
+            R.correctKbNames={'UpArrow','DownArrow'};
+
             
             % The full cylinder stimulus
             S=dpxStimRotCylinder;
@@ -126,6 +125,8 @@ for m=1:numel(modes)
                 dFog=0;
                 dScale=0;
                 dispa=dsp;
+            else
+                error('what you trying fool!?')
             end
             S=dpxStimRotCylinder;
             set(S,'dotsPerSqrDeg',12,'xDeg',flippos*-1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...

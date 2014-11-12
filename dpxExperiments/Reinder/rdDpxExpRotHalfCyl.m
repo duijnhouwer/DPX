@@ -5,13 +5,17 @@ function rdDpxExpRotHalfCyl(pos,fb)
 %%feedback exercise or not.
 %%i.e. rdDpxExpRotCyl('left','feedback')
 
-a=pi;
-
+if IsWin %disable laptop lid-button
+    DisableKeysForKbCheck([233]);
+end
 
 if nargin==1
     fb='feedback';
 end
 E=dpxCoreExperiment;
+E.txtPauseNrTrials=111;
+E.nRepeats=10;
+
 % handle the position option
 if strcmpi(pos,'left')
     flippos=1;
@@ -37,14 +41,20 @@ else
     fbWrongStr='fbCorrect';
 end
 
-E.txtPauseNrTrials=151;
-E.nRepeats=10;
-E.outputFolder='/Users/laurens/Dropbox/DPX/Data/Exp1training';
+if strcmpi(dpxGetUserName,'Reinder')
+    E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
+elseif strcmpi(dpxGetUserName,'eyelink')
+    if strcmpi(BB,'base')
+        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Baseline';
+    elseif strcmpi(BB,'bind')
+        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Binding';
+    end
+end
 
 % Set the stimulus window option
 E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','SkipSyncTests',1);
+E.scr.set('stereoMode','mirror','skipSyncTests',1);
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run
@@ -67,7 +77,7 @@ for m=1:numel(modes)
             set(S,'wDeg',.3,'visible',false,'durSec',0.15,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
             C.addStim(S);
             % The response object
-            R=dpxCoreResponse;
+            R=dpxRespKeyboard;
             set(R,'kbNames','UpArrow,DownArrow');
             set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
             set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
