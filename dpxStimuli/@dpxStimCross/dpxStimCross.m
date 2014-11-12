@@ -38,8 +38,9 @@ classdef dpxStimCross < dpxAbstractStim
                     Screen('SelectStereoDrawBuffer', wPtr, buffer);
                     Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);
                 end
-            else
-                error(['Unknown stereoMode ''' S.stereoMode '''.']);
+            elseif strcmpi(S.scrGets.stereoMode,'anaglyph')
+                Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);
+%                 error(['Unknown stereoMode ''' S.stereoMode '''.']);
             end
         end
     end
