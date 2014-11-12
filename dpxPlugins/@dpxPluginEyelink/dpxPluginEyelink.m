@@ -30,7 +30,7 @@ classdef dpxPluginEyelink < hgsetget
             % See also: dpxDocsEyelinkHowTo
             P.name='eyelink';
             P.info='';
-            P.pauseMenuKeyStrCell={'1!','2@'};
+            P.pauseMenuKeyStrCell={'2@','3#'};
             P.pauseMenuInfoStrCell={'Eyelink setup','Eyelink driftcorrect'};
             P.backGrayFrac=[]; % empty means copy from experiment
             P.foreGrayFrac=1;
@@ -38,7 +38,7 @@ classdef dpxPluginEyelink < hgsetget
         function ok=start(P,getExp)
             Eyelink('Shutdown');
             ok=true;
-            disp('Starting dpxPluginEyelink');            
+            disp('Starting dpxPluginEyelink');
             %
             P.el=EyelinkInitDefaults(getExp.scr.windowPtr);
             if isempty(P.backGrayFrac)
@@ -96,10 +96,12 @@ classdef dpxPluginEyelink < hgsetget
             end
         end
         function choiceIsMade=pauseMenuFunction(P)
-            % This function is common to all plugins, it is called in a loop while the pause menu is displayed (key: pause) The trial will be interupted,
-            % this function will be called, and after returning from this
-            % fucntion the next trial will start and the interrupted trial
-            % repeated at some later time.
+            % This function is common to all plugins, it is called in a
+            % loop while the pause menu is displayed (key: pause) The trial
+            % will be interupted, this function will be called in a loop,
+            % and after a choice has been made in this or the
+            % pauseMenuFunction of other plugins the next trial will start
+            % and the interrupted trial repeated at some later time.
             choiceIsMade=false;
             KbName('UnifyKeyNames');
             FlushEvents([],[],'keyDown');

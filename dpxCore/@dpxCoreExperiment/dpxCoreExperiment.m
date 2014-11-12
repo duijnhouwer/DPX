@@ -34,7 +34,7 @@ classdef dpxCoreExperiment < hgsetget
             % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
-            E.plugins={};
+            E.plugins={dpxPluginComments}; % Comments plugin loaded for all experiments, more can be added (e.g., Eyelink plugin)
             E.conditions={};
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
@@ -53,7 +53,7 @@ classdef dpxCoreExperiment < hgsetget
                 % This is the last function to call in your experiment script,
                 % it starts the experiment and saves it when finished.
                 if numel(E.conditions)==0
-                    disp('No conditions. Use your experiment-object''s (typically: dpxCoreExperiment) ''addCondition'' method to add condition objects (typically: dpxCoreCondition) to your experiment.');
+                    disp('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).');
                     return;
                 end
                 commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
@@ -129,11 +129,11 @@ classdef dpxCoreExperiment < hgsetget
                     end
                 end
                 E.stopTime=now;
-                E.showFinalSaveScreen;
-                E.save;
                 for i=1:numel(E.plugins)
                     E.plugins{i}.stop;
                 end
+                E.showFinalSaveScreen;
+                E.save;
                 E.showEndScreen;
                 E.scr.close;
             catch me
@@ -146,6 +146,7 @@ classdef dpxCoreExperiment < hgsetget
             E.conditions{end+1}=C;
         end
         function addPlugin(E,P)
+            % note, the dpxPluginComments is loaded by default
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
         end
     end
