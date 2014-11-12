@@ -57,7 +57,7 @@ classdef dpxPluginComments < hgsetget
                     ListenChar(0); % allow keyboard input to matlab
                     commandwindow; % focus on command window
                     P.inputs{end+1}=input('Type comment and press enter >>','s');
-                    P.secs{end+1}=GetSecs;
+                    P.secs{end+1}=now;
                     ListenChar(2); % Return to 'ignore keys to matlab'. This is sloppy!!! Should be returned to state that the ListenChar was in before calling ListenChar(0). (Which was MOST LIKELY 2, but you never know...). I can't find a way to request what ListenChar is (should be in output argument, but there is none ...'); 
                 else
                     % a key was registered that is either not handled
