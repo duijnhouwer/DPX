@@ -7,10 +7,10 @@ classdef dpxPluginEyelink < hgsetget
     properties (Access=public)
         % all plugins have these (todo: move to abstract class)
         name;
-        info;
         pauseMenuKeyStrCell;
         pauseMenuInfoStrCell;
         % specific for this plugin...
+        info; % information about the eyelink, provided by the eyelink
         backGrayFrac;
         foreGrayFrac;
     end
@@ -30,7 +30,7 @@ classdef dpxPluginEyelink < hgsetget
             % See also: dpxDocsEyelinkHowTo
             P.name='eyelink';
             P.info='';
-            P.pauseMenuKeyStrCell={'2@','3#'};
+            P.pauseMenuKeyStrCell={'2@','3#'}; % TOdo: asign numbers automatically so no conflict between plugins possible
             P.pauseMenuInfoStrCell={'Eyelink setup','Eyelink driftcorrect'};
             P.backGrayFrac=[]; % empty means copy from experiment
             P.foreGrayFrac=1;
@@ -101,7 +101,7 @@ classdef dpxPluginEyelink < hgsetget
             % will be interupted, this function will be called in a loop,
             % and after a choice has been made in this or the
             % pauseMenuFunction of other plugins the next trial will start
-            % and the interrupted trial repeated at some later time.
+            % and the interrupted trial be repeated at some later time.
             choiceIsMade=false;
             KbName('UnifyKeyNames');
             FlushEvents([],[],'keyDown');

@@ -88,8 +88,9 @@ function dpxExampleExperiment(testscr)
         % we make it infinite and have the response finish the trial.
         C.durSec=Inf;
         
-        % 
-        C.breakFixGraceSec=0.5;
+        % When using eyelink you might want to set a grace period for
+        % blinks, if you use really long adaptation conditions for example:
+        % C.breakFixGraceSec=0.1;
         
         % Create fixation-dot 'stimulus'. 
         FIX=dpxStimDot;
@@ -130,7 +131,7 @@ function dpxExampleExperiment(testscr)
         % We want the stimulus to go on 500 ms after the start of the
         % trial and last for half a second
         RDK.onSec=.5;
-        RDK.durSec=3;
+        RDK.durSec=2;
         % Provide a name for this stimulus, this is how the stimulus
         % will be called in the data-file. If no name is provided, the
         % name will default to the class-name (dpxStimRdk). In an

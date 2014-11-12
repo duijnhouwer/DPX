@@ -27,9 +27,10 @@ function varargout = lkDpxGratingExpAddResponse(varargin)
         gui_mainfcn(gui_State, varargin{:});
     end
     % End initialization code - DO NOT EDIT
-    
-    
-    % --- Executes just before lkDpxGratingExpAddResponse is made visible.
+end
+
+
+% --- Executes just before lkDpxGratingExpAddResponse is made visible.
 function lkDpxGratingExpAddResponse_OpeningFcn(hObject, eventdata, handles, varargin)
     % This function has no output args, see OutputFcn.
     % hObject    handle to figure
@@ -40,16 +41,18 @@ function lkDpxGratingExpAddResponse_OpeningFcn(hObject, eventdata, handles, vara
     handles.output = hObject;
     % Update handles structure
     guidata(hObject, handles);
-    
-    
-    % --- Outputs from this function are returned to the command line.
+end
+
+
+% --- Outputs from this function are returned to the command line.
 function varargout = lkDpxGratingExpAddResponse_OutputFcn(hObject, eventdata, handles)
     % varargout  cell array for returning output args (see VARARGOUT);
     % Get default command line output from handles structure
     varargout{1} = handles.output;
-    
-    
-    % --- Executes on button press in browseStimfileButton.
+end
+
+
+% --- Executes on button press in browseStimfileButton.
 function browseStimfileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for stimulus file ...');
     try
@@ -73,9 +76,9 @@ function browseStimfileButton_Callback(hObject, eventdata, handles)
         return;
     end
     set(handles.statusBar,'String','');
-    
-    
-    % --- Executes on button press in browseResponseFileButton.
+end
+
+% --- Executes on button press in browseResponseFileButton.
 function browseResponseFileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for response file ...');
     try
@@ -99,9 +102,36 @@ function browseResponseFileButton_Callback(hObject, eventdata, handles)
         set(handles.statusBar,'String',me.message);
         return;
     end
-    
-    
-    % --- Executes on button press in saveButton.
+end
+
+% --- Executes on button press in browseTimestampFileButton.
+function browseTimestampFileButton_Callback(hObject, eventdata, handles)
+    set(handles.statusBar,'String','Browsing for timestamp file ...');
+    try
+        currentPath=fileparts(get(handles.respField,'String'));
+        if isempty(currentPath)
+            currentPath='.';
+        end
+        [filestr, pathstr]=uigetfile('*_Properties.xml','Select a Las AF timestamp file ...',currentPath);
+        if filestr==0 % user canceled
+            return;
+        end
+        ff=fullfile(pathstr,filestr);
+        set(handles.timestampField,'String',ff,'ForegroundColor',[0 0 0]);
+        [tsList,errstr]=loadTimestamps(ff);
+        if ~isempty(errstr)
+            set(handles.timestampField,'ForegroundColor',[1 0 0])
+            error(errstr);
+        end
+        set(handles.statusBar,'String',[num2str(tsList) ' timestamps detected in LasAF-timestamp file.']);
+    catch me
+        set(handles.statusBar,'String',me.message);
+        keyboard
+        return;
+    end
+end
+
+% --- Executes on button press in saveButton.
 function saveButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','');
     try
@@ -114,14 +144,20 @@ function saveButton_Callback(hObject, eventdata, handles)
     try
         [resp,errstr]=loadRespFile(get(handles.respField,'String'));
         error(errstr);
-       % set(handles.statusBar,'String',[num2str(123)]);
+    catch me
+        set(handles.statusBar,'String',me.message);
+        return;
+    end
+    try
+        [tsList,errstr]=loadTimestamps(get(handles.timestampField,'String'));
+        error(errstr);
     catch me
         set(handles.statusBar,'String',me.message);
         return;
     end
     try
         set(handles.statusBar,'String','Merging data ...'); drawnow
-        data=mergeStimResp(stim.data,resp.ses); %#ok<NASGU>
+        data=mergeStimResp(stim.data,resp.ses,tsList); %#ok<NASGU>
         set(handles.statusBar,'String',''); drawnow
         % get the ses-file folder
         targetfolder=fileparts(get(handles.respField,'String'));
@@ -133,7 +169,8 @@ function saveButton_Callback(hObject, eventdata, handles)
         oldwd=pwd;
         % Let the user select a folder and a filename to save the merged data to
         cd(targetfolder);
-        set(handles.statusBar,'String','Select merge data file destination'); drawnow
+        set(handles.statusBar,'String','Select merge data file destination');
+        drawnow
         [filename, targetfolder] = uiputfile({'*.mat'}, 'Save the merged data file as ...',targetfilename);
         cd(oldwd);
         if ischar(filename)
@@ -146,7 +183,8 @@ function saveButton_Callback(hObject, eventdata, handles)
         set(handles.statusBar,'String',me.message);
         return
     end
-    
+end
+
 function [stim,errstr]=loadStimFile(stimFullFile)
     errstr=[];
     stim=load(stimFullFile);
@@ -156,15 +194,17 @@ function [stim,errstr]=loadStimFile(stimFullFile)
     if isfield(stim.data,'resp_nrUnits')
         errstr='This stimulus file already had responses added.';
     end
-    
+end
+
 function [resp,errstr]=loadRespFile(respFullFile)
     errstr=[];
     resp=load(respFullFile);
     if ~isfield(resp,'ses');
         errstr='Not a valid MountainPro SES file';
     end
-    
-function [S]=mergeStimResp(S,R)
+end
+
+function [S]=mergeStimResp(S,R,timestampList)
     % Get the relevant response data out of R and add it to S
     %
     S.resp_nrUnits=ones(1,S.N)*R.int_neuron;
@@ -177,7 +217,7 @@ function [S]=mergeStimResp(S,R)
     % txtEnd that can optionally trigger 'wait for pulse' behavior (using
     % 'magic' value 'DAQ-pulse')
     startPulseSec=str2double(regexp(S.exp_txtStart{1},'[-+]?[0-9]*\.?[0-9]+.','match'));
-    % Check that the pulses were actually recorded
+    % Check that the pulse was actually recorded
     if isnan(startPulseSec) || startPulseSec==-1
         error('No start DAQ-pulse was found in the stimulus file!');
     end
@@ -199,14 +239,52 @@ function [S]=mergeStimResp(S,R)
         dFoF=R.neuron(i).dFoF;
         % perform a check of the timeseries duration with respect to start
         % and stop pulses recorded by DPX
-        S.([unitstr '_dFoF'])=dpxSegmentTimeSeries('timeseries',dFoF,'sampleHz',R.samplingFreq,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec);
+        S.([unitstr '_dFoF'])=dpxSegmentTimeSeries('timeseries',dFoF,'timestamps',timestampList,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec);
     end
     % test if the data is a proper DPXD
     if ~dpxdIs(S)
         error('The data struct is no longer a valid DPXD');
     end
+end
 
+
+function [tsList,errstr]=loadTimestamps(filename)
+    % Parse the timestamp list from a Las AF properties.xml file
+    % Jacob Duijnhouwer, 2014-11-07
+    errstr=[];
     
-    
-    
-    
+    nTS=0;
+    tsList=nan(10^5,1); % preallocate liberal estimate of timestamps (for speed)
+    try
+        fid=fopen(filename,'r');
+    catch
+        errstr=['Could not open file ' filename ];
+        return;
+    end
+    try
+        while true
+            ln=fgets(fid, 1000);
+            if ln==-1 % end of file reached
+                break;
+            elseif isTimestampLine(ln)
+                nTS=nTS+1;
+                tsList(nTS)=parseTimestamp(ln);
+            end
+        end
+        fclose(fid);
+        tsList=tsList(1:nTS); % truncate to actual number of timestamps collected
+        tsList=unique(tsList); % timestamps are repeated for the if multiple channels were used (typically red & green)
+    catch me
+        fclose(fid);
+        errstr=me.message;
+        return;
+    end
+    % Sub-functions
+    function b=isTimestampLine(ln)
+        b=strncmp(strtrim(ln),'<TimeStamp High',numel('<TimeStamp High'));
+    end
+    function secs=parseTimestamp(ln)
+        nrStrCell=regexp(strtrim(ln),'\d+\.?\d*','match');
+        secs=str2double(nrStrCell{3});
+    end
+end
