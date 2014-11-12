@@ -1,1 +1,0 @@
-clear all%disp 'All variables and classes cleared.'
