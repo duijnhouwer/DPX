@@ -25,7 +25,6 @@ classdef dpxPluginComments < hgsetget
             %
             % See also: dpxPluginEyelink
             P.name='comments';
-            P.info='';
             P.pauseMenuKeyStrCell={'1!'}; % Todo: asign numbers automatically so no conflict between plugins possible
             P.pauseMenuInfoStrCell={'Type a comment (ENTER when done)'};
             P.secs={};
