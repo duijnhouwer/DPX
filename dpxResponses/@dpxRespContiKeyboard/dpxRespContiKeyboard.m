@@ -49,6 +49,8 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
         function myInit(R)
             R.resp.keyName{1}='';
             R.resp.keySec{1}=-1;
+            R.resp.keyFlip{1}=-1;
+            R.resp.keyReleaseSec{1}=-1;
             R.resp.keyReleaseFlip{1}=-1;
             KbName('UnifyKeyNames');
             R.nResponses=0;
@@ -64,15 +66,18 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
                         % structure for output to the caller function
                         R.nResponses=R.nResponses+1;
                         R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbName ]);
-                        R.resp.keySec{1}(R.nResponses)=keyTime;
-                        R.resp.keyReleaseFlip{1}(R.nResponses)=-1; % not released yet (note: may not happen before end of trial)
+                        R.resp.keySec{1}(R.nResponses)=keyTime; % fake precission, in reality limited to flip rate! 
+                        R.resp.keyFlip{1}(R.nResponses)=R.flipCounter; % (slightly) complicated to analyse
+                        R.resp.keyReleaseSec{1}(R.nResponses)=-1; % not released yet (note: may not happen ...
+                        R.resp.keyReleaseFlip{1}(R.nResponses)=-1; % ... before end of trial so could remain -1)
                     end
                     R.keyWasDownPrevFlip=true; % key is being held
                 end
             elseif R.keyWasDownPrevFlip
                 R.keyWasDownPrevFlip=false; % no longer holding key
                 idx=max(1,R.nResponses); % could start trial holding the key, i.e., before a response was given
-                R.resp.keyReleaseFlip{1}(idx)=R.flipCounter; % precision of release is lower than press in current design (flipcount vs GetSecs)
+                R.resp.keyReleaseSec{1}(idx)=GetSecs; % fake precission, in reality limited to flip rate! 
+                R.resp.keyReleaseFlip{1}(idx)=R.flipCounter; % (slightly) complicated to analyse
             end
         end
         function myClear(R) %#ok<MANU>
