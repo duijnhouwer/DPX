@@ -6,11 +6,13 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
         % name of key press type 'KbName('UnifyKeyNames')' on the command
         % line and press Enter. Then, type 'KbName' followed by Enter and,
         % after a second, press the key you want to use.
-        kbName='LeftArrow';
+        kbName;
+        deviceNr;
     end
     properties (Access=protected)
         nResponses;
-        keyWasDownPrevFlip;
+        trackedKeyWasDownPrevFlip;
+        kbIndex;
     end
     methods (Access=public)
         function R=dpxRespContiKeyboard
@@ -43,41 +45,43 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
             % alternative keys, each listening to one.
             %
             % See also: dpxRespKeyboard
+            R.kbName='LeftArrow';
+            R.deviceNr=-1; % see 'help KbCheck' for information
         end
     end
     methods (Access=protected)
         function myInit(R)
             R.resp.keyName{1}='';
-            R.resp.keySec{1}=-1;
-            R.resp.keyFlip{1}=-1;
-            R.resp.keyReleaseSec{1}=-1;
-            R.resp.keyReleaseFlip{1}=-1;
+            R.resp.keySec{1}=NaN;
+            R.resp.keyFlip{1}=NaN;
+            R.resp.keyReleaseSec{1}=NaN;
+            R.resp.keyReleaseFlip{1}=NaN;
             KbName('UnifyKeyNames');
             R.nResponses=0;
-            R.keyWasDownPrevFlip=false;
+            R.trackedKeyWasDownPrevFlip=false;
             ListenChar(2);
+            R.kbIndex=KbName(R.kbName);
         end
         function myGetResponse(R)
-            [keyIsDown,keyTime,keyCode]=KbCheck(-1);
-            if keyIsDown
-                if ~R.keyWasDownPrevFlip
-                    if keyCode(KbName(R.kbName));
-                        % A defined key was pressed, parcel it in the resp
-                        % structure for output to the caller function
-                        R.nResponses=R.nResponses+1;
-                        R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbName ]);
-                        R.resp.keySec{1}(R.nResponses)=keyTime; % fake precission, in reality limited to flip rate! 
-                        R.resp.keyFlip{1}(R.nResponses)=R.flipCounter; % (slightly) complicated to analyse
-                        R.resp.keyReleaseSec{1}(R.nResponses)=-1; % not released yet (note: may not happen ...
-                        R.resp.keyReleaseFlip{1}(R.nResponses)=-1; % ... before end of trial so could remain -1)
-                    end
-                    R.keyWasDownPrevFlip=true; % key is being held
+            [~,keyTime,keyCode]=KbCheck(R.deviceNr);
+            trackedKeyIsDown=keyCode(R.kbIndex);
+            if trackedKeyIsDown
+                if ~R.trackedKeyWasDownPrevFlip
+                    % The tracked key was pressed, parcel it in the resp
+                    % structure for output to the caller function
+                    R.nResponses=R.nResponses+1;
+                    R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbName ]);
+                    R.resp.keySec{1}(R.nResponses)=keyTime; % fake precission, in reality limited to flip rate!
+                    R.resp.keyFlip{1}(R.nResponses)=R.flipCounter; % (slightly) more complicated to analyse
+                    R.resp.keyReleaseSec{1}(R.nResponses)=NaN; % not released yet (note: may not happen ...
+                    R.resp.keyReleaseFlip{1}(R.nResponses)=NaN; % ... before end of trial so could remain NaN)
+                    R.trackedKeyWasDownPrevFlip=true; % key is now being held
                 end
-            elseif R.keyWasDownPrevFlip
-                R.keyWasDownPrevFlip=false; % no longer holding key
+            elseif R.trackedKeyWasDownPrevFlip % not holding anymore but was held last flip
+                R.trackedKeyWasDownPrevFlip=false; % indicate no longer holding key
                 idx=max(1,R.nResponses); % could start trial holding the key, i.e., before a response was given
-                R.resp.keyReleaseSec{1}(idx)=GetSecs; % fake precission, in reality limited to flip rate! 
-                R.resp.keyReleaseFlip{1}(idx)=R.flipCounter; % (slightly) complicated to analyse
+                R.resp.keyReleaseSec{1}(idx)=GetSecs; % fake precission, in reality limited to flip rate!
+                R.resp.keyReleaseFlip{1}(idx)=R.flipCounter; % (slightly) more complicated to analyse
             end
         end
         function myClear(R) %#ok<MANU>

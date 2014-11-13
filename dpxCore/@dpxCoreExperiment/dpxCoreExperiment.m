@@ -136,10 +136,15 @@ classdef dpxCoreExperiment < hgsetget
                 E.save;
                 E.showEndScreen;
                 E.scr.close;
+                r=input('Run dpxToolCommentEditor? [N/y] > ','s');
+                if strcmpi(strtrim(r),'y')
+                    absFileName=fullfile(E.outputFolder,E.outputFileName);
+                    dpxToolCommentEditor('filename',absFileName);
+                end
             catch me
                 sca; % screen reset
                 ListenChar(0);
-                rethrow(me)
+                rethrow(me);
             end
         end
         function addCondition(E,C)

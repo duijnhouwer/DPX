@@ -155,7 +155,9 @@ classdef dpxCoreCondition < hgsetget
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
                         C.resps{r}.getResponse(f);
-                        if C.resps{r}.given || f==C.nFlips % (at final flip always store, useful for continous resp recordings)
+                        % store when answer is given; or at last flip of
+                        % trial (useful for continuous resp recordings)
+                        if C.resps{r}.given || f==C.nFlips 
                             respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                             % Set the new end time of the trial. This way
                             % giving the response can stop the trial. If
@@ -201,12 +203,11 @@ classdef dpxCoreCondition < hgsetget
                     break;
                 end
             end
+            % The trials is now complete, clear all stim and resp objects
             for s=1:numel(C.stims)
-                % Call the clear of (all) the stimulus object(s)
                 C.stims{s}.clear;
             end
             for r=1:numel(C.resps)
-                % Call the clear of (all) the response object(s)
                 C.resps{r}.clear;
             end
         end
