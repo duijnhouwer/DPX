@@ -88,4 +88,14 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
             ListenChar(0);
         end
     end
+    methods 
+        function set.kbName(R,value)
+            try
+                KbName(value);
+            catch me
+                rethrow(me);
+            end
+            R.kbName=value;
+        end
+    end
 end

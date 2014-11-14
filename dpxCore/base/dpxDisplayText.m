@@ -28,29 +28,40 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
     p.addParamValue('forceAfterSec',Inf,@isnumeric);
     p.addParamValue('commandWindowToo',true,@islogical);
+    p.addParamValue('key','space',@dpxIsKbName);
     p.parse(windowPtr,text,varargin{:});
-    %
-    if p.Results.commandWindowToo
-        str=regexp(p.Results.str,'\\n','split');
-        for i=1:numel(str)
-            disp(str{i});
+    p=p.Results; % shorter AND now the value can be changed
+    % preprocess the string
+    % 1. Replace occurance of $STARTKEY with p.key
+    idx=strfind(p.str,'$STARTKEY');
+    if ~isempty(idx)
+        a=p.str(1:idx-1);
+        b=p.key;
+        c=p.str(idx+numel('$STARTKEY'):end);
+        p.str=[a b c];
+    end
+    % show string in command window too if requested
+    if p.commandWindowToo
+        cwstr=regexp(p.str,'\\n','split');
+        for i=1:numel(cwstr)
+            disp(cwstr{i});
         end
     end
     %
-    oldFontName=Screen('Textfont',windowPtr,p.Results.fontname);
-    oldTextSize=Screen('TextSize',windowPtr,p.Results.fontsize);
+    oldFontName=Screen('Textfont',windowPtr,p.fontname);
+    oldTextSize=Screen('TextSize',windowPtr,p.fontsize);
     [srcFactorOld, destFactorOld]=Screen('BlendFunction',windowPtr,'GL_SRC_ALPHA','GL_ONE_MINUS_SRC_ALPHA');
     startSec=GetSecs;
     % Fade-in the instructions
-    fadeText(windowPtr,p.Results,'fadein');
+    fadeText(windowPtr,p,'fadein');
     % wait for input ...
     KbName('UnifyKeyNames');
     FlushEvents([],[],'keyDown');
     pause(0.05);
     [~,~,keyCode]=KbCheck(-1);
-    while ~keyCode(KbName('space')) && ~keyCode(KbName('Escape'));
-        if GetSecs-startSec>p.Results.forceAfterSec
-            keyCode(KbName('space'))=true; % emulate button press when time is up
+    while ~keyCode(KbName(p.key)) && ~keyCode(KbName('Escape'));
+        if GetSecs-startSec>p.forceAfterSec
+            keyCode(KbName(p.key))=true; % emulate button press when time is up
         else
             [~,~,keyCode]=KbCheck(-1);
         end
@@ -59,7 +70,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     if escPressed
         % Dont fade out if escape is pressed, hurry up instead
     else
-        escPressed=fadeText(windowPtr,p.Results,'fadeout');
+        escPressed=fadeText(windowPtr,p,'fadeout');
         KbReleaseWait; % wait for key to be released
     end
     % Reset the original screen settings

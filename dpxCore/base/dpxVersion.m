@@ -49,7 +49,7 @@ function revisionNr=dpxVersion(varargin)
             elseif onlineVersion>revisionNr
                 disp(['An updated DPX (' num2str(onlineVersion) ') is available online.']);
                 if p.Results.offerupdate
-                    a=input(['Do you wish to update your local DPX to revision ' num2str(onlineVersion) '? [y/N] > '],'s');
+                    a=input(['Do you wish to update your local DPX to revision ' num2str(onlineVersion) '? [y|N] > '],'s');
                     if strcmpi(strtrim(a),'y')
                         eval(['!svn update "' DPXPATH '"']);
                     end

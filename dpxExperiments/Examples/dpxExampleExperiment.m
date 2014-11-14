@@ -165,7 +165,7 @@ function dpxExampleExperiment(testscr)
         % the command line and press Enter. Then, type 'KbName' followed by
         % Enter and, after a second, press the key you want to use.
         R.kbNames='LeftArrow,RightArrow';
-        R.allowAfterSec=0.6; % allow the response no sooner than the end of the RDK stim
+        R.allowAfterSec=RDK.onSec+RDK.durSec; % allow the response no sooner than the end of the RDK stim
         R.correctEndsTrialAfterSec=0;
         C.addResp(R);
         

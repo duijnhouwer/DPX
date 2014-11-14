@@ -14,6 +14,7 @@ classdef dpxCoreExperiment < hgsetget
         breakFixTimeOutSec;
         outputFolder;
         plugins;
+        startKey;
     end
     properties (Access=protected)
         outputFileName='undefined.mat';
@@ -40,7 +41,8 @@ classdef dpxCoreExperiment < hgsetget
             E.conditionSequence='shufflePerBlock';
             E.expName='dpxCoreExperiment';
             E.subjectId='0';
-            E.txtStart='Press and release SPACE to start'; % if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
+            E.startKey='space';
+            E.txtStart=['Press and release $STARTKEY to start']; % if txtStart is 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtPause='I N T E R M I S S I O N';
             E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
@@ -136,7 +138,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.save;
                 E.showEndScreen;
                 E.scr.close;
-                r=input('Run dpxToolCommentEditor? [N/y] > ','s');
+                r=input('Run dpxToolCommentEditor? [y|N] > ','s');
                 if strcmpi(strtrim(r),'y')
                     absFileName=fullfile(E.outputFolder,E.outputFileName);
                     dpxToolCommentEditor('filename',absFileName);
@@ -226,7 +228,7 @@ classdef dpxCoreExperiment < hgsetget
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
             else
-                dpxDisplayText(E.scr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
+                dpxDisplayText(E.scr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'key',E.startKey);
             end
         end
         function showSaveScreen(E)
@@ -234,7 +236,7 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showIntermissionScreen(E)
-            str=[E.txtPause '\n\nPress and release SPACE to continue'];
+            str=[E.txtPause '\n\nPress and release $STARTKEY to continue'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
         end
         function showPauseScreen(E)
@@ -256,8 +258,8 @@ classdef dpxCoreExperiment < hgsetget
                     end
                 end
             end
-            str='P A U S E D\n\nPress and release SPACE to continue';
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
+            str=['P A U S E D\n\nPress and release $STARTKEY to continue'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1,'key',E.startKey);
         end
         function showBreakFixScreen(E)
             disp('Gaze fixation interrupted ... ');
@@ -273,12 +275,12 @@ classdef dpxCoreExperiment < hgsetget
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
                 E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
             end
-            str=[E.txtEnd '\n\nSaving data ...\n\n'];
+            str=[E.txtEnd '\n\nSaving data ...\n\n\n\n'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
-            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1,'commandWindowToo',false);
+            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName '\n\n(Press $STARTKEY to continue)'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1,'commandWindowToo',false,'key',E.startKey);
         end
         function createFileName(E)
             if ~exist(E.outputFolder,'file')
@@ -403,6 +405,14 @@ classdef dpxCoreExperiment < hgsetget
             % call the creation function to test the validity of value, the
             % creation function will be called for real in the E.run method
             createConditionSequence(E);
+        end
+        function set.startKey(E,value)
+            [ok,str]=dpxIsKbName(value);
+            if ok
+                E.startKey=value;
+            else
+                error(['dpxCoreExperiment.startKey should be ' str]);
+            end
         end
     end
 end
