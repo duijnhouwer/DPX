@@ -13,17 +13,17 @@ end
 E=dpxCoreExperiment;
 E.txtPauseNrTrials=111;
 E.nRepeats=2;
-
-fb='';
+fullWhite=false;
+dispShift=false;
 
 % handle the position option
 if strcmpi(pos,'left')
     flippos=1;
     if strcmpi(BB,'base')
-        E.txtStart='Kijk naar het rode kruis.\n\nIs de LINKER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de LINKER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
         E.expName='rdDpxExpBaseLineCylLeft';
     elseif strcmpi(BB,'bind')
-        E.txtStart='Kijk naar het rode kruis.\n\nHoe beweegt het voorvlak van de RECHTER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de RECHTER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
         E.expName='rdDpxExpBindingCylLeft';
     else
         error(['unknown type of experiment ' BB]);
@@ -31,24 +31,19 @@ if strcmpi(pos,'left')
 elseif strcmpi(pos,'right')
     flippos=-1;
     if strcmpi(BB,'base')
-        E.txtStart='Kijk naar het rode kruis.\n\nIs de RECHTER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de RECHTER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
         E.expName='rdDpxExpBaseLineCylRight';
     elseif strcmpi(BB,'bind')
-        E.txtStart='Kijk naar het rode kruis.\n\nHoe beweegt het voorvlak van de LINKER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de LINKER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
         E.expName='rdDpxExpBindingCylRight';
     else
         error(['unknown type of experiment ' BB]);
     end
-    
 else
     error(['unknown pos mode ' pos]);
 end
 
-
-
 E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.'];
-fbCorrectStr='fbCorrect';
-fbWrongStr='fbCorrect';
 
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(dpxGetUserName,'Reinder')
@@ -60,45 +55,30 @@ elseif strcmpi(dpxGetUserName,'eyelink')
         E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Binding';
     end
 end
-    
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',2); % add ScrNr, adjust core window so [] = [] and not a default screen rect.
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','skipSyncTests',1);%'mono, mirror, anaglyph
-% E.windowed(true); % true, false, e.g. [10 10 410 310], for debugging
-
+E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run
 modes={'stereo','anti-stereo','mono'}; %stereo, anti-stereo, mono
 for m=1:numel(modes)
-    for dsp=[-1 1]
+    for dsp=[-1 -0.8 -0.4 0 0.4 0.8 1]
         for rotSpeed=[120 -120] % >0 --> up
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
+            
             % The fixation cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
             C.addStim(S);
+            
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',0.5,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
-            
-            % The response object
-            R=dpxRespKeyboard;
-            set(R,'kbNames','UpArrow,DownArrow');
-            set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
-            set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-%             set(R,'name','rightHand');
-            C.addResp(R);
-            % the UpArrow wil just be called correct in this case. using
-            % the analysis file we will seperate bind from base, speed<0
-            % and >0, dsp<0 and >0.
-            % I think.
-            R.correctKbNames={'UpArrow','DownArrow'};
-
             
             % The full cylinder stimulus
             S=dpxStimRotCylinder;
@@ -106,7 +86,9 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','fullTargetCyl');
-%             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);             %make a full white
+            if fullWhite==true %make a full white
+                set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);  
+            end
             C.addStim(S);
             
             % The half cylinder stimulus
@@ -133,9 +115,21 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfInducerCyl');
-%             set(S,'dispShiftMono',true);          % make a shifted image in both sides
-%             set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);             % make full white
+            if dispShift==true;
+                set(S,'dispShiftMono',true); % make a shifted image in both sides
+            end
+            if fullWhite==true; % make full white
+                set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
+            end
             C.addStim(S);
+            
+            % The response object
+            R=dpxRespKeyboard;
+            R.allowAfterSec=S.onSec+S.durSec;
+            set(R,'kbNames','UpArrow,DownArrow');
+            R.correctKbNames='1';
+            set(R,'correctStimName','fbCorrect','correctEndsTrialAfterSec',10000);
+            C.addResp(R);
             
             E.addCondition(C);
         end

@@ -42,8 +42,6 @@ else
     error(['unknown pos mode ' pos]);
 end
 
-
-
 E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.'];
 
 % Then the experiment option, make expname (used in output filename)

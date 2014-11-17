@@ -24,11 +24,11 @@ E.nRepeats=5;
 % handle the position option
 if strcmpi(pos,'left')
     flippos=1;
-    E.txtStart='Kijk naar het rode kruisje.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
+    E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
     E.expName='rdDpxExpRotFullCylLeft';
 elseif strcmpi(pos,'right')
     flippos=-1;
-    E.txtStart='Kijk naar het rode kruisje.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
+    E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
     E.expName='rdDpxExpRotFullCylRight';
 else
     error(['unknown pos mode ' pos]);
@@ -52,15 +52,12 @@ end
 if strcmpi(dpxGetUserName,'Reinder')
     E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
 elseif strcmpi(dpxGetUserName,'eyelink')
-    if strcmpi(BB,'base')
-        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Baseline';
-    elseif strcmpi(BB,'bind')
-        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Binding';
-    end
+    % E.outputFolder=' 
+    % dpx/Data/Exp1training
 end
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',2);
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
 E.scr.set('stereoMode','mirror','skipSyncTests',1);
 
@@ -72,36 +69,21 @@ for m=1:numel(modes)
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
+            
             % The fixation cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
             C.addStim(S);
+            
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',0.10,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
             C.addStim(S);
             % The feedback stimulus for wrong responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',0.15,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
+            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
             C.addStim(S);
-            % The response object
-            R=dpxRespKeyboard;
-            set(R,'kbNames','UpArrow,DownArrow');
-            set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
-            set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
-            set(R,'name','rightHand');
-            if rotSpeed>0 && dsp>0
-                R.correctKbNames='UpArrow';
-            elseif rotSpeed>0 && dsp<0
-                R.correctKbNames='DownArrow';
-            elseif rotSpeed<0 && dsp>0
-                R.correctKbNames='DownArrow';
-            elseif rotSpeed<0 && dsp<0
-                R.correctKbNames='UpArrow';
-            else
-                R.correctKbNames='1';
-            end
-            C.addResp(R);
+            
             % The full cylinder stimulus
             S=dpxStimRotCylinder;
             set(S,'dotsPerSqrDeg',12,'xDeg',flippos*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
@@ -132,7 +114,26 @@ for m=1:numel(modes)
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','fullCyl');
             C.addStim(S);
-            %
+            
+            % The response object
+            R=dpxRespKeyboard;
+            R.allowAfterSec=S.onSec+S.durSec;
+            set(R,'kbNames','UpArrow,DownArrow');
+            set(R,'correctStimName',fbCorrectStr,'correctEndsTrialAfterSec',10000);
+            set(R,'wrongStimName',fbWrongStr,'wrongEndsTrialAfterSec',10000);
+            if rotSpeed>0 && dsp>0
+                R.correctKbNames='UpArrow';
+            elseif rotSpeed>0 && dsp<0
+                R.correctKbNames='DownArrow';
+            elseif rotSpeed<0 && dsp>0
+                R.correctKbNames='DownArrow';
+            elseif rotSpeed<0 && dsp<0
+                R.correctKbNames='UpArrow';
+            else
+                R.correctKbNames='1';
+            end
+            C.addResp(R);
+            
             E.addCondition(C);
         end
     end
