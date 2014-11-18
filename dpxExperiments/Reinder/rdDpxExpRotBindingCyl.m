@@ -48,16 +48,16 @@ E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.'];
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(dpxGetUserName,'Reinder')
     E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
-elseif strcmpi(dpxGetUserName,'eyelink')
+elseif strcmpi(dpxGetUserName,'EyeLink-admin')
     if strcmpi(BB,'base')
-        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Baseline';
+        E.outputFolder='C:\Users\EyeLink-admin\Dropbox\DPX\Data\Exp2Baseline';
     elseif strcmpi(BB,'bind')
-        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp2Binding';
+        E.outputFolder='C:\Users\EyeLink-admin\Dropbox\DPX\Data\Exp2Binding';
     end
 end
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',2); % add ScrNr, adjust core window so [] = [] and not a default screen rect.
+E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',1); % Eyelink PC, Nr=1 : crt
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
 E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
 

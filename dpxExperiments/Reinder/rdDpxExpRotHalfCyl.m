@@ -45,12 +45,12 @@ end
 
 if strcmpi(dpxGetUserName,'Reinder')
     E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
-elseif strcmpi(dpxGetUserName,'eyelink')
-        E.outputFolder='/home/eyelink/Dropbox/dpx/Data/Exp1training';
+elseif strcmpi(dpxGetUserName,'EyeLink-admin')
+    E.outputFolder='C:\Users\EyeLink-admin\Dropbox\DPX\Data\Exp1training';
 end
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',2);
+E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',1);
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
 E.scr.set('stereoMode','mirror','skipSyncTests',1);
 
