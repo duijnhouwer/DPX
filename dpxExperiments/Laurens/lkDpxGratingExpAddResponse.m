@@ -107,6 +107,7 @@ end
 % --- Executes on button press in browseTimestampFileButton.
 function browseTimestampFileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for timestamp file ...');
+    drawnow;
     try
         currentPath=fileparts(get(handles.respField,'String'));
         if isempty(currentPath)
@@ -118,15 +119,16 @@ function browseTimestampFileButton_Callback(hObject, eventdata, handles)
         end
         ff=fullfile(pathstr,filestr);
         set(handles.timestampField,'String',ff,'ForegroundColor',[0 0 0]);
+        set(handles.statusBar,'String',['Loading ''' ff '''  ...']);
+        drawnow;
         [tsList,errstr]=loadTimestamps(ff);
         if ~isempty(errstr)
             set(handles.timestampField,'ForegroundColor',[1 0 0])
             error(errstr);
         end
-        set(handles.statusBar,'String',[num2str(tsList) ' timestamps detected in LasAF-timestamp file.']);
+        set(handles.statusBar,'String',[num2str(numel(tsList)) ' timestamps detected in LasAF-timestamp file.']);
     catch me
         set(handles.statusBar,'String',me.message);
-        keyboard
         return;
     end
 end
@@ -134,6 +136,25 @@ end
 % --- Executes on button press in saveButton.
 function saveButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','');
+    % Let the user select a folder and a filename to save the merged data to
+    % based on the name of stimulus file's name and response file's folder
+    % get the ses-file folder
+    targetfolder=fileparts(get(handles.respField,'String'));
+    % get the stimulus-file name
+    [~,targetfilename]=fileparts(get(handles.stimField,'String'));
+    % Change the extension .mat to +response.mat
+    targetfilename=[targetfilename '+Response.mat'];
+    oldwd=pwd;
+    cd(targetfolder);
+    set(handles.statusBar,'String','Select merge data file destination');
+    drawnow
+    [filename, targetfolder] = uiputfile({'*.mat'}, 'Save the merged data file as ...',targetfilename);
+    cd(oldwd);
+    if ~ischar(filename)
+        set(handles.statusBar,'String','Saving canceled');
+        return;
+    end
+    set(handles.statusBar,'String','Loading the input files ...'); drawnow
     try
         [stim,errstr]=loadStimFile(get(handles.stimField,'String'));
         error(errstr);
@@ -142,7 +163,7 @@ function saveButton_Callback(hObject, eventdata, handles)
         return;
     end
     try
-        [resp,errstr]=loadRespFile(get(handles.respField,'String'));
+        [resp,errstr]=loadRespFile(get(handles.respField,'String'));    
         error(errstr);
     catch me
         set(handles.statusBar,'String',me.message);
@@ -156,29 +177,11 @@ function saveButton_Callback(hObject, eventdata, handles)
         return;
     end
     try
-        set(handles.statusBar,'String','Merging data ...'); drawnow
+        set(handles.statusBar,'String','Merging the data ...'); drawnow
         data=mergeStimResp(stim.data,resp.ses,tsList); %#ok<NASGU>
-        set(handles.statusBar,'String',''); drawnow
-        % get the ses-file folder
-        targetfolder=fileparts(get(handles.respField,'String'));
-        % get the stimulus-file name
-        [~,targetfilename]=fileparts(get(handles.stimField,'String'));
-        % Change the extension .mat to +response.mat
-        targetfilename=[targetfilename '+Response.mat'];
-        % Cache the current folder (working directory)
-        oldwd=pwd;
-        % Let the user select a folder and a filename to save the merged data to
-        cd(targetfolder);
-        set(handles.statusBar,'String','Select merge data file destination');
-        drawnow
-        [filename, targetfolder] = uiputfile({'*.mat'}, 'Save the merged data file as ...',targetfilename);
-        cd(oldwd);
-        if ischar(filename)
-            save(fullfile(targetfolder,filename),'data');
-            set(handles.statusBar,'String',['Saved ''' fullfile(targetfolder,filename) '''.']);
-        else
-            set(handles.statusBar,'String','Saving canceled');
-        end
+        set(handles.statusBar,'String','Writing to disk ...'); drawnow
+        save(fullfile(targetfolder,filename),'data');
+        set(handles.statusBar,'String',['Saved ''' fullfile(targetfolder,filename) '''.']);
     catch me
         set(handles.statusBar,'String',me.message);
         return
