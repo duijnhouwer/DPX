@@ -7,8 +7,10 @@ function agDpxExpDDQswitches
     % for the dpxCoreExperiment object
     E.expName='agDpxExpDDQswitches';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
-    E.txtPause='';
-    E.txtPauseNrTrials=1;
+    E.startKey='UpArrow'
+    
+%     E.txtPause='';
+%     E.txtPauseNrTrials=1;
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[480 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...

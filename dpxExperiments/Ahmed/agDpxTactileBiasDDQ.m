@@ -9,6 +9,8 @@ function agDpxTactileBiasDDQ
     %
     % E.txtPause='';
     % E.txtPauseNrTrials=1;
+    E.startKey='UpArrow'
+    
     javaaddpath(which('BrainMidi.jar'));
     
     
@@ -77,9 +79,9 @@ function agDpxTactileBiasDDQ
                                 T=dpxStimTactileMIDI;
                                 T.onSec=DDQ.onSec;
                                 T.durSec=Inf;
-   
+                                
                                 T.tapOnSec=(flashSec:flashSec:durS)-flashSec;
-                                T.tapDurSec=2/60;                                
+                                T.tapDurSec=2/60;
                                 if i==1
                                     T.tapNote=[0 8];
                                 elseif i==2
