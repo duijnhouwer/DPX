@@ -1,7 +1,7 @@
 function [files, neuronsInFiles]=loadTodoList(todoListFileName)
     files={};
     neuronsInFiles={};
-    fid=fopen(todoListFileName,'r');
+    fid=fopen(todoListFileName,'r'); % open the file for reading
     if fid==-1
         error(['Could not open file ''' todoListFileName '''']);
     end
@@ -51,14 +51,14 @@ function [files, neuronsInFiles]=loadTodoList(todoListFileName)
                 timeToReadFileName=true;
             end
         end
-        fclose(fid);
+        fclose(fid); % close the file
         if numel(files)~=numel(neuronsInFiles)
             error('Not all files have a corresponding neuron-identifier list');
         end
     catch me
         % if an error occurs in the try-block, execution continues
         % here.
-        fclose(fid);
+        fclose(fid); % close the file
         where=['Error in todo-list file '''  todoListFileName ''' on line ' num2str(lineCount) ': '];
         what=me.message;
         error('lkDpxGratingExpAnalysis:loadTodoList',[where '\n' line '\n\n' what]);

@@ -1,17 +1,17 @@
-function list=parseNeuronsToDoList(code,maxN)
+function list=parseNeuronsToDoList(code,completeNeuronNrList)
     
     if all(code==0)
-        list=1:maxN;
+        list=completeNeuronNrList;
     elseif all(code>0)
         list=code;
     elseif all(code<0)
-        list=1:maxN;
+        list=completeNeuronNrList;
         % now remove the numbers in code
         for i=1:numel(code)
             list(abs(code(i)))=[];
         end
     else
-        error('The list of numbers should be either a single zero, or all negative numbers, or all positive');
+        error('The list of numbers should be either a single zero, or all negative numbers, or all be positive');
     end
 end
    

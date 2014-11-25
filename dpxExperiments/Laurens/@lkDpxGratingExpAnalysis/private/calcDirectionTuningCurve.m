@@ -10,7 +10,7 @@ function tc=calcDirectionTuningCurve(data,cellNr)
     meanDFoF=NaN(1,numel(D));
     % Make the response field name of this cellNr
     resp_field=['resp_unit' num2str(cellNr,'%.3d') '_dFoF'];
-    for i=1:numel(D)
+    for i=1:numel(D) % loop over all directions
         dirDeg(i)=D{i}.grating_dirDeg(1);
         trialMeanDFoF=NaN(1,D{i}.N);
         for t=1:D{i}.N

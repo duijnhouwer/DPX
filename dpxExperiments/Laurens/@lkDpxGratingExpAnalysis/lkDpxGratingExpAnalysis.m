@@ -8,8 +8,9 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         % explain in more detail how the items in that file should be
         % organized.
         todoListFileName;
-        analFunction;
-        oneAtATime;
+        analFunc;
+        pause;
+        showPlots;
     end
     properties (GetAccess=public,SetAccess=private)
         % The file and corresponding neuron todo lists can be viewed by the
@@ -27,19 +28,31 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             if nargin==0
                 todoFile='';
             end
-            A.oneAtATime=true;
+            A.pause='perCell'; % 'perCell', 'perFile', 'never'
             A.todoListFileName=todoFile;
-            A.analFunction='DirectionTuningCurve';
+            A.analFunc='DirectionTuningCurve';
+            A.showPlots=true;
         end
-        function run(A)
+        function output=run(A)
             for f=1:numel(A.filesToDo)
                 load(A.filesToDo{f}); % load 'data' into  memory
-                nList=parseNeuronsToDoList(A.neuronsToDo{f},data.N);
-                calcCommandString=['calc' A.analFunction]; % e.g. 'calcDirectionTuningCurve'
-                plotCommandString=['plot' A.analFunction]; % e.g. 'plotDirectionTuningCurve'
+                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(data));
+                calcCommandString=['calc' A.analFunc]; % e.g. 'calcDirectionTuningCurve'
+                plotCommandString=['plot' A.analFunc]; % e.g. 'plotDirectionTuningCurve'
+                tel=0;
                 for c=1:numel(nList)
-                    KALK=eval([calcCommandString '(data,nList(c));']);
-                    eval([plotCommandString '(KALK);']);
+                    tel=tel+1;
+                    output{tel}=eval([calcCommandString '(data,nList(c));']); %#ok<AGROW>
+                    eval([plotCommandString '(output{tel});']);
+                    dpxTilefigs;
+                    if strcmpi(A.pause,'perCell')
+                        input('<< any key to continue>>');
+                        close all;
+                    end
+                end
+                if strcmpi(A.pause,'perFile')
+                    input('<< any key to continue>>');
+                    close all;
                 end
             end
         end         
@@ -55,6 +68,23 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             end
             A.todoListFileName=value;
             [A.filesToDo,A.neuronsToDo]=loadTodoList(A.todoListFileName); %#ok<MCSUP>
+        end
+        function set.pause(A,value)
+            try
+                options={'perCell','perFile','never'};
+                if ~any(strcmpi(value,options))
+                   error; % skip to catch block
+                end
+                A.pause=value;
+            catch me
+                error(['pause should be one of: ' dpxCellOptionsToStr(options) '.']);
+            end
+        end
+        function set.showPlots(A,value)
+            if value~=0 && value~=1
+                error('showPlots must be true or false or 1 or 0');
+            end
+            A.showPlots=value;
         end
     end
 end
