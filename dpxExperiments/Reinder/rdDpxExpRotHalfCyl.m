@@ -124,6 +124,7 @@ for m=1:numel(modes)
             else
                 R.correctKbNames='1';
             end
+            set(R,'name','rightHand');
             C.addResp(R);
         end
     end

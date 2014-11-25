@@ -127,8 +127,9 @@ for m=1:numel(modes)
             R=dpxRespKeyboard;
             R.allowAfterSec=S.onSec+S.durSec;
             set(R,'kbNames','UpArrow,DownArrow');
-            R.correctKbNames='1';
             set(R,'correctStimName','fbCorrect','correctEndsTrialAfterSec',10000);
+            set(R,'name','rightHand');
+            R.correctKbNames='1';
             C.addResp(R);
             
             E.addCondition(C);
