@@ -1,0 +1,780 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>dpxCoreExperiment</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-10-13"><meta name="DC.source" content="dpxCoreExperiment.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">classdef</span> dpxCoreExperiment &lt; hgsetget
+
+    <span class="keyword">properties</span> (Access=public)
+        expName;
+        scr;
+        nRepeats;
+        conditionSequence;
+        conditions;
+        txtStart;
+        txtPause;
+        txtPauseNrTrials;
+        txtEnd;
+        txtRBGAfrac;
+        outputFolder;
+    <span class="keyword">end</span>
+    <span class="keyword">properties</span> (Access=protected)
+        outputFileName=<span class="string">'undefined.mat'</span>;
+        internalCondSeq; <span class="comment">% ordered list of condition numbers</span>
+    <span class="keyword">end</span>
+    <span class="keyword">properties</span> (GetAccess=public,SetAccess=protected)
+        subjectId;
+        experimenterId;
+        startTime;
+        stopTime;
+        trials=struct(<span class="string">'condition'</span>,[],<span class="string">'startSec'</span>,[],<span class="string">'stopSec'</span>,[],<span class="string">'resp'</span>,[]);
+        sysInfo;
+    <span class="keyword">end</span>
+    <span class="keyword">methods</span> (Access=public)
+        <span class="keyword">function</span> E=dpxCoreExperiment
+            <span class="comment">% dpxCoreExperiment</span>
+            <span class="comment">% Part of DPX suite</span>
+            <span class="comment">% http://tinyurl.com/dpxlink</span>
+            <span class="comment">% Jacob Duijnhouwer, 2014</span>
+            E.scr=dpxCoreWindow;
+            E.conditions={};
+            E.nRepeats=2;
+            E.conditionSequence=<span class="string">'shufflePerBlock'</span>;
+            E.expName=<span class="string">'dpxCoreExperiment'</span>;
+            E.subjectId=<span class="string">'0'</span>;
+            E.txtStart=<span class="string">'Press and release a key to start'</span>; <span class="comment">% if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...</span>
+            E.txtPause=<span class="string">'I N T E R M I S S I O N'</span>;
+            E.txtPauseNrTrials=Inf;
+            E.txtEnd=<span class="string">'[-: The End :-]'</span>; <span class="comment">% if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...</span>
+            E.txtRBGAfrac=[1 1 1 1];
+            E.outputFolder=<span class="string">''</span>;
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> run(E)
+            <span class="keyword">try</span>
+                <span class="comment">% This is the last function to call in your experiment script,</span>
+                <span class="comment">% it starts the experiment and saves it when finished.</span>
+                <span class="keyword">if</span> numel(E.conditions)==0
+                    disp(<span class="string">'No conditions. Use your experiment-object''s (typically: dpxCoreExperiment) ''addCondition'' method to add condition objects (typically: dpxCoreCondition) to your experiment.'</span>);
+                    <span class="keyword">return</span>;
+                <span class="keyword">end</span>
+                commandwindow; <span class="comment">% set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode</span>
+                E.startTime=now;
+                E.unifyConditions;
+                E.createConditionSequence;
+                E.sysInfo=dpxSystemInfo;
+                E.createFileName; <span class="comment">% this function also asks for subject and experimenter IDs</span>
+                E.scr.open;
+                E.signalFile(<span class="string">'save'</span>);
+                E.showStartScreen;
+                <span class="comment">% Set the trial counter to zero</span>
+                tr=0;
+                <span class="keyword">for</span> cNr=E.internalCondSeq(:)'
+                    <span class="comment">% increment the trial counter</span>
+                    tr=tr+1;
+                    E.showProgressCli(tr);
+                    <span class="comment">% Show the pause screen if appropriate (and make an</span>
+                    <span class="comment">% intermediate backup save)</span>
+                    <span class="keyword">if</span> E.txtPauseNrTrials&gt;0 &amp;&amp; mod(tr,E.txtPauseNrTrials)==0 &amp;&amp; tr&lt;numel(E.internalCondSeq)
+                        E.showSaveScreen;
+                        E.save;
+                        E.showPauseScreen;
+                    <span class="keyword">end</span>
+                    <span class="comment">% Initialize this condition, this needs information</span>
+                    <span class="comment">% about the screen. We pass it the values using get,</span>
+                    <span class="comment">% not the object itself.</span>
+                    E.conditions{cNr}.init(get(E.scr));
+                    <span class="comment">% Technically backRGBA is a condition property, but to save</span>
+                    <span class="comment">% the need to define it for all conditions I keep it in</span>
+                    <span class="comment">% the window class, with an optional override in the</span>
+                    <span class="comment">% condition class. Deal with that override now.</span>
+                    <span class="keyword">if</span> numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        defaultBackRGBA=E.scr.backRGBA;
+                        E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                    <span class="keyword">end</span>
+                    E.scr.clear;
+                    <span class="comment">% Show this condition until its duration has passed, or</span>
+                    <span class="comment">% until escape is pressed</span>
+                    [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
+                    <span class="keyword">if</span> esc
+                        disp(<span class="string">'Escape pressed.'</span>);
+                        <span class="keyword">break</span>;
+                    <span class="keyword">end</span>
+                    <span class="comment">% Store the condition number, the start and stop time,</span>
+                    <span class="comment">% and the response output (which may be empty if no</span>
+                    <span class="comment">% response is required).</span>
+                    E.trials(tr).trialnr=tr;
+                    E.trials(tr).condition=cNr;
+                    E.trials(tr).startSec=timing.startSec;
+                    E.trials(tr).stopSec=timing.stopSec;
+                    E.trials(tr).resp=resp;
+                    E.trials(tr).nrMissedFlips=nrMissedFlips;
+                    <span class="comment">% If an overriding RGBA has been defined in this condition,</span>
+                    <span class="comment">% reset the window object's backRGBA to its default,</span>
+                    <span class="keyword">if</span> numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.scr.backRGBA=defaultBackRGBA;
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+                E.stopTime=now;
+                E.showFinalSaveScreen;
+                E.save;
+                E.signalFile(<span class="string">'delete'</span>);
+                E.showEndScreen;
+                E.scr.close;
+            <span class="keyword">catch</span> me
+                caf; <span class="comment">% screen reset</span>
+                ListenChar(0);
+                rethrow(me)
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> addCondition(E,C)
+            E.conditions{end+1}=C;
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> windowed(E,win)
+            <span class="keyword">if</span> nargin==1 &amp;&amp; (~islogical(win) &amp;&amp; ~(isnumeric(win) &amp;&amp; numel(win)==4))
+                error(<span class="string">'windowed needs a second argument that is logical or a 4-element win rect'</span>);
+            <span class="keyword">end</span>
+            <span class="keyword">if</span> islogical(win)
+                <span class="keyword">if</span> win
+                    win=[10 20 500 375];
+                <span class="keyword">else</span>
+                    win=[];
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            E.scr.winRectPx=win;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">methods</span> (Access=protected)
+        <span class="keyword">function</span> save(E)
+            <span class="comment">% Convert the data</span>
+            D.exp=get(E);
+            D.exp=rmfield(D.exp,{<span class="string">'scr'</span>,<span class="string">'conditions'</span>,<span class="string">'outputFileName'</span>,<span class="string">'outputFolder'</span>,<span class="string">'trials'</span>});
+            D.stimwin=dpxGetSetables(E.scr);
+            D.stimwin.measuredFrameRate=E.scr.measuredFrameRate;
+            D=dpxFlattenStruct(D);
+            <span class="keyword">for</span> c=1:numel(E.conditions)
+                <span class="keyword">for</span> s=1:numel(E.conditions{c}.stims)
+                    stimname=E.conditions{c}.stims{s}.name;
+                    <span class="comment">% this is why unique stimulus names are required</span>
+                    TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
+                <span class="keyword">end</span>
+                <span class="keyword">if</span> c==1
+                    <span class="comment">% preallocate</span>
+                    C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
+                <span class="keyword">else</span>
+                    <span class="comment">% insert in preallocated array</span>
+                    C(c)=dpxFlattenStruct(TMP); <span class="comment">%#ok&lt;AGROW&gt;</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            <span class="comment">% Get the settings for all trials</span>
+            data=cell(1,numel(E.trials));
+            <span class="keyword">for</span> t=1:numel(E.trials)
+                TMP=dpxFlattenStruct(E.trials(t));
+                condNr=TMP.condition;
+                data{t}=dpxMergeStructs({D,TMP,C(condNr)},<span class="string">'overwrite'</span>);
+                data{t}=dpxStructMakeSingleValued(data{t});
+                data{t}.N=1;
+            <span class="keyword">end</span>
+            data=dpxTblMerge(data); <span class="comment">%#ok&lt;NASGU&gt;</span>
+            <span class="comment">% Save the data</span>
+            absFileName=fullfile(E.outputFolder,E.outputFileName);
+            save(absFileName,<span class="string">'data'</span>);
+            dpxDispFancy([<span class="string">'Data has been saved to: '''</span> absFileName <span class="string">''''</span>]);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showStartScreen(E)
+            <span class="keyword">if</span> strcmpi(E.txtStart,<span class="string">'DAQ-pulse'</span>)
+                <span class="comment">% magic value for E.txtStart, wait for pulse on DAQ device</span>
+                str=[<span class="string">'Waiting for '</span> E.txtEnd <span class="string">' ... '</span>];
+                dpxDispFancy(str);
+                dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA,<span class="string">'forceAfterSec'</span>,0,<span class="string">'fadeOutSec'</span>,-1);
+                seconds=dpxBlockUntilDaqPulseDetected(<span class="string">'delaySeconds'</span>,4,<span class="string">'resetCounter'</span>,false,<span class="string">'maxWaitSeconds'</span>,Inf);
+                E.txtStart=[E.txtStart <span class="string">' @ '</span> num2str(seconds,<span class="string">'%12f'</span>)];
+            <span class="keyword">else</span>
+                dpxDisplayText(E.scr.windowPtr,E.txtStart,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showSaveScreen(E)
+            str=[E.txtPause <span class="string">'\n\nSaving data ...'</span>];
+            dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA,<span class="string">'forceAfterSec'</span>,0,<span class="string">'fadeOutSec'</span>,-1);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showPauseScreen(E)
+            str=[E.txtPause <span class="string">'\n\nPress and release a key to continue'</span>];
+            dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA,<span class="string">'fadeInSec'</span>,-1);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showFinalSaveScreen(E)
+            <span class="keyword">if</span> strcmpi(E.txtEnd,<span class="string">'DAQ-pulse'</span>)
+                <span class="comment">% magic value for E.txtStart, wait for pulse on DAQ device</span>
+                maxWaitSec=60;
+                str=[<span class="string">'Waiting for '</span> E.txtEnd <span class="string">' (max '</span> num2str(maxWaitSec) <span class="string">' seconds) ... '</span>];
+                dpxDispFancy(str);
+                dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA,<span class="string">'forceAfterSec'</span>,0,<span class="string">'fadeOutSec'</span>,-1);
+                seconds=dpxBlockUntilDaqPulseDetected(<span class="string">'delaySeconds'</span>,0,<span class="string">'resetCounter'</span>,false,<span class="string">'maxWaitSeconds'</span>,maxWaitSec);
+                E.txtEnd=[E.txtEnd <span class="string">' @ '</span> num2str(seconds,<span class="string">'%.12f'</span>)];
+            <span class="keyword">end</span>
+            str=[E.txtEnd <span class="string">'\n\nSaving data ...\n\n'</span>];
+            dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA,<span class="string">'forceAfterSec'</span>,0,<span class="string">'fadeOutSec'</span>,-1);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showEndScreen(E)
+            str=[E.txtEnd <span class="string">'\n\nData has been saved to:\n'</span> E.outputFolder <span class="string">'\n'</span> E.outputFileName];
+            dpxDisplayText(E.scr.windowPtr,str,<span class="string">'rgba'</span>,E.txtRBGAfrac,<span class="string">'rgbaback'</span>,E.scr.backRGBA);
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> createFileName(E)
+            <span class="keyword">if</span> ~exist(E.outputFolder,<span class="string">'file'</span>)
+                <span class="keyword">try</span> mkdir(E.outputFolder);
+                <span class="keyword">catch</span> me, error([me.message <span class="string">' mkdir '</span> E.outputFolder]);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            E.subjectId=dpxGetValidId(<span class="string">'Subject ID &gt; '</span>);
+            E.experimenterId=dpxGetValidId(<span class="string">'Experimenter ID &gt; '</span>);
+            E.outputFileName=[E.expName <span class="string">'-'</span> E.subjectId <span class="string">'-'</span> datestr(now,<span class="string">'yyyymmddHHMMSS'</span>) <span class="string">'.mat'</span>];
+            testfile=fullfile(E.outputFolder,E.outputFileName);
+            <span class="keyword">if</span> exist(testfile,<span class="string">'file'</span>)
+                <span class="comment">% Extremely rare/impossible because of date+time in name</span>
+                error([<span class="string">'A file with name '</span> testfile <span class="string">' already exists.'</span>]);
+            <span class="keyword">end</span>
+            <span class="keyword">try</span> <span class="comment">% test saving to the file before running the experiment</span>
+                save(testfile);
+                delete(testfile);
+            <span class="keyword">catch</span> me
+                error([me.message <span class="string">' : '</span> testfile]);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> signalFile(E,opt)
+            <span class="comment">% handy when using shared dropbox folder as the output folder,</span>
+            <span class="comment">% indicates that someone is running the experiment and on which</span>
+            <span class="comment">% computer.</span>
+            <span class="keyword">if</span> strtrim(E.subjectId)==<span class="string">'0'</span>
+                <span class="keyword">return</span>; <span class="comment">% don't signal test runs</span>
+            <span class="keyword">end</span>
+            fname=[<span class="string">'DPX=RUNNING '</span> E.expName <span class="string">' C-'</span>  dpxGetUserName <span class="string">' S-'</span> E.subjectId <span class="string">' X-'</span> E.experimenterId <span class="string">'.mat'</span>];
+            fname=dpxSanitizeFileName(fname,<span class="string">'fname'</span>);
+            <span class="keyword">if</span> strcmpi(opt,<span class="string">'save'</span>)
+                save(fullfile(E.outputFolder,fname),<span class="string">''</span>);
+            <span class="keyword">elseif</span> strcmpi(opt,<span class="string">'delete'</span>)
+                delete(fullfile(E.outputFolder,fname));
+            <span class="keyword">else</span>
+                error([<span class="string">'Unknown signalFile option '</span> opt]);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> unifyConditions(E)
+            <span class="comment">% Before we start running the experiment, make sure all</span>
+            <span class="comment">% conditions have the same stimuli, this is required for the</span>
+            <span class="comment">% output format (dpxTbl). If one or more conditions have been</span>
+            <span class="comment">% defined without the same stimuli (as defined by the stimulus</span>
+            <span class="comment">% name) add the missing stimuli and set their visibility and</span>
+            <span class="comment">% durSec fields to 0. (Setting either to 0 would suffice but</span>
+            <span class="comment">% doing both for clarity.) Prior to the introduction of this</span>
+            <span class="comment">% function it was necessary to define all stimuli for all</span>
+            <span class="comment">% conditions, even when the stimuli were not used in that</span>
+            <span class="comment">% condition.</span>
+            <span class="comment">% Step 1: get a list of unique stimulus names and classes</span>
+            stimnames={};
+            classnames={};
+            <span class="keyword">for</span> i=1:numel(E.conditions)
+                <span class="keyword">for</span> j=1:numel(E.conditions{i}.stims)
+                    thisstimname=E.conditions{i}.stims{j}.name;
+                    <span class="keyword">if</span> isempty(intersect(stimnames,thisstimname))
+                        stimnames{end+1}=thisstimname; <span class="comment">%#ok&lt;AGROW&gt;</span>
+                        classnames{end+1}=class(E.conditions{i}.stims{j}); <span class="comment">%#ok&lt;AGROW&gt;</span>
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            <span class="comment">% Step 2: see which trial miss what and add a dummy-stim</span>
+            <span class="keyword">for</span> i=1:numel(E.conditions)
+                stimnamesPresent={};
+                <span class="keyword">for</span> j=1:numel(E.conditions{i}.stims)
+                    stimnamesPresent{end+1}=E.conditions{i}.stims{j}.name;
+                <span class="keyword">end</span>
+                stimnamesMissing=setxor(stimnamesPresent,stimnames);
+                <span class="keyword">for</span> j=1:numel(stimnamesMissing)
+                    theClassName=classnames{strcmp(stimnamesMissing{j},stimnames)};
+                    dummy=eval(theClassName);
+                    dummy.name=stimnamesMissing{j};
+                    dummy.durSec=0;
+                    dummy.visible=false;
+                    E.conditions{i}.addStim(dummy);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> createConditionSequence(E)
+            <span class="comment">% If the user defined E.conditionSequence as a list of numbers,</span>
+            <span class="comment">% use this as the condition sequence. Otherwise, if</span>
+            <span class="comment">% E.conditionSequence is an option-string, create a list on the</span>
+            <span class="comment">% option provided.</span>
+            <span class="keyword">if</span> isnumeric(E.conditionSequence)
+                <span class="comment">% a predefined order list is given</span>
+                E.internalCondSeq=E.conditionSequence(:)';
+            <span class="keyword">elseif</span> strcmpi(E.conditionSequence,<span class="string">'shufflePerBlock'</span>)
+                seq=[];
+                <span class="keyword">for</span> i=1:E.nRepeats
+                    seq=[seq randperm(numel(E.conditions))]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+                <span class="keyword">end</span>
+                E.internalCondSeq=seq;
+            <span class="keyword">else</span>
+                error([<span class="string">'Unknown conditionSequence option: '</span> E.conditionSequence ]);
+            <span class="keyword">end</span>
+            <span class="comment">% Check the validity of the condition numbers in the list</span>
+            <span class="keyword">if</span> any([E.internalCondSeq&lt;1 E.internalCondSeq&gt;numel(E.conditions)])
+                error([<span class="string">'One or more elements of the conditionSequence exceed limits [1 ... '</span> num2str(numel(E.conditions))]);
+            <span class="keyword">elseif</span> any(E.internalCondSeq-round(E.internalCondSeq))
+                error(<span class="string">'All elements of the conditionSequence should be integers'</span>);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> showProgressCli(E,tr)
+            <span class="keyword">if</span> Screen(<span class="string">'Preference'</span>, <span class="string">'Verbosity'</span>)==0
+                <span class="keyword">return</span>;
+            <span class="keyword">end</span>
+            N=numel(E.internalCondSeq);
+            maxDigits=ceil(log10(N));
+            numformat=[<span class="string">'%.'</span> num2str(maxDigits) <span class="string">'d'</span>];
+            tstr=datestr(now-E.startTime,<span class="string">'HH:MM:SS'</span>);
+            str=sprintf([<span class="string">'Trial: '</span> numformat <span class="string">'/'</span> numformat <span class="string">' (%.3d %%); Condition: '</span> numformat <span class="string">'; Start: %s in.\n'</span>], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            <span class="keyword">if</span> tr&gt;1 &amp;&amp; Screen(<span class="string">'Preference'</span>, <span class="string">'Verbosity'</span>)&lt;4
+                fprintf(repmat(<span class="string">'\b'</span>,1,numel(str)));
+            <span class="keyword">end</span>
+            fprintf(<span class="string">'%s'</span>,str);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">methods</span>
+        <span class="keyword">function</span> set.outputFolder(E,value)
+            <span class="keyword">if</span> isempty(value)
+                <span class="keyword">if</span> IsWin, value=<span class="string">'C:\temp\dpxData'</span>;
+                <span class="keyword">elseif</span> IsOSX || IsLinux, value=<span class="string">'/tmp/dpxData'</span>;
+                <span class="keyword">else</span> error(<span class="string">'Unsupported OS!'</span>);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+            error(dpxTestFolderNameValidity(value));
+            E.outputFolder=value;
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> set.conditionSequence(E,value)
+            E.conditionSequence=value;
+            <span class="comment">% call the creation function to test the validity of value, the</span>
+            <span class="comment">% creation function will be called for real in the E.run method</span>
+            createConditionSequence(E);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using AssertOpenGL (line 174)
+Problems detected in call to AssertOpenGL;
+
+Error in dpxCoreWindow (line 42)
+            AssertOpenGL;
+
+Error in dpxCoreExperiment (line 34)
+            E.scr=dpxCoreWindow;
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+classdef dpxCoreExperiment < hgsetget
+    
+    properties (Access=public)
+        expName;
+        scr;
+        nRepeats;
+        conditionSequence;
+        conditions;
+        txtStart;
+        txtPause;
+        txtPauseNrTrials;
+        txtEnd;
+        txtRBGAfrac;
+        outputFolder;
+    end
+    properties (Access=protected)
+        outputFileName='undefined.mat';
+        internalCondSeq; % ordered list of condition numbers
+    end
+    properties (GetAccess=public,SetAccess=protected)
+        subjectId;
+        experimenterId;
+        startTime;
+        stopTime;
+        trials=struct('condition',[],'startSec',[],'stopSec',[],'resp',[]);
+        sysInfo;
+    end
+    methods (Access=public)
+        function E=dpxCoreExperiment
+            % dpxCoreExperiment
+            % Part of DPX suite
+            % http://tinyurl.com/dpxlink
+            % Jacob Duijnhouwer, 2014
+            E.scr=dpxCoreWindow;
+            E.conditions={};
+            E.nRepeats=2;
+            E.conditionSequence='shufflePerBlock';
+            E.expName='dpxCoreExperiment';
+            E.subjectId='0';
+            E.txtStart='Press and release a key to start'; % if 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
+            E.txtPause='I N T E R M I S S I O N';
+            E.txtPauseNrTrials=Inf;
+            E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
+            E.txtRBGAfrac=[1 1 1 1];
+            E.outputFolder='';
+        end
+        function run(E)
+            try
+                % This is the last function to call in your experiment script,
+                % it starts the experiment and saves it when finished.
+                if numel(E.conditions)==0
+                    disp('No conditions. Use your experiment-object''s (typically: dpxCoreExperiment) ''addCondition'' method to add condition objects (typically: dpxCoreCondition) to your experiment.');
+                    return;
+                end
+                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
+                E.startTime=now;
+                E.unifyConditions;
+                E.createConditionSequence;
+                E.sysInfo=dpxSystemInfo;
+                E.createFileName; % this function also asks for subject and experimenter IDs
+                E.scr.open;
+                E.signalFile('save');
+                E.showStartScreen;
+                % Set the trial counter to zero
+                tr=0;
+                for cNr=E.internalCondSeq(:)'
+                    % increment the trial counter
+                    tr=tr+1;
+                    E.showProgressCli(tr);
+                    % Show the pause screen if appropriate (and make an
+                    % intermediate backup save)
+                    if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
+                        E.showSaveScreen;
+                        E.save;
+                        E.showPauseScreen;
+                    end
+                    % Initialize this condition, this needs information
+                    % about the screen. We pass it the values using get,
+                    % not the object itself.
+                    E.conditions{cNr}.init(get(E.scr));
+                    % Technically backRGBA is a condition property, but to save
+                    % the need to define it for all conditions I keep it in
+                    % the window class, with an optional override in the
+                    % condition class. Deal with that override now.
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        defaultBackRGBA=E.scr.backRGBA;
+                        E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                    end
+                    E.scr.clear;
+                    % Show this condition until its duration has passed, or
+                    % until escape is pressed
+                    [esc,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
+                    if esc
+                        disp('Escape pressed.');
+                        break;
+                    end
+                    % Store the condition number, the start and stop time,
+                    % and the response output (which may be empty if no
+                    % response is required).
+                    E.trials(tr).trialnr=tr;
+                    E.trials(tr).condition=cNr;
+                    E.trials(tr).startSec=timing.startSec;
+                    E.trials(tr).stopSec=timing.stopSec;
+                    E.trials(tr).resp=resp;
+                    E.trials(tr).nrMissedFlips=nrMissedFlips;
+                    % If an overriding RGBA has been defined in this condition,
+                    % reset the window object's backRGBA to its default,
+                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                        E.scr.backRGBA=defaultBackRGBA;
+                    end
+                end
+                E.stopTime=now;
+                E.showFinalSaveScreen;
+                E.save;
+                E.signalFile('delete');
+                E.showEndScreen;
+                E.scr.close;
+            catch me
+                caf; % screen reset
+                ListenChar(0);
+                rethrow(me)
+            end
+        end
+        function addCondition(E,C)
+            E.conditions{end+1}=C;
+        end
+        function windowed(E,win)
+            if nargin==1 && (~islogical(win) && ~(isnumeric(win) && numel(win)==4))
+                error('windowed needs a second argument that is logical or a 4-element win rect');
+            end
+            if islogical(win)
+                if win
+                    win=[10 20 500 375];
+                else
+                    win=[];
+                end
+            end
+            E.scr.winRectPx=win;
+        end
+    end
+    methods (Access=protected)
+        function save(E)
+            % Convert the data
+            D.exp=get(E);
+            D.exp=rmfield(D.exp,{'scr','conditions','outputFileName','outputFolder','trials'});
+            D.stimwin=dpxGetSetables(E.scr);
+            D.stimwin.measuredFrameRate=E.scr.measuredFrameRate;
+            D=dpxFlattenStruct(D);
+            for c=1:numel(E.conditions)
+                for s=1:numel(E.conditions{c}.stims)
+                    stimname=E.conditions{c}.stims{s}.name;
+                    % this is why unique stimulus names are required
+                    TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
+                end
+                if c==1
+                    % preallocate
+                    C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
+                else
+                    % insert in preallocated array
+                    C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
+                end
+            end
+            % Get the settings for all trials
+            data=cell(1,numel(E.trials));
+            for t=1:numel(E.trials)
+                TMP=dpxFlattenStruct(E.trials(t));
+                condNr=TMP.condition;
+                data{t}=dpxMergeStructs({D,TMP,C(condNr)},'overwrite');
+                data{t}=dpxStructMakeSingleValued(data{t});
+                data{t}.N=1;
+            end
+            data=dpxTblMerge(data); %#ok<NASGU>
+            % Save the data
+            absFileName=fullfile(E.outputFolder,E.outputFileName);
+            save(absFileName,'data');
+            dpxDispFancy(['Data has been saved to: ''' absFileName '''']);
+        end
+        function showStartScreen(E)
+            if strcmpi(E.txtStart,'DAQ-pulse')
+                % magic value for E.txtStart, wait for pulse on DAQ device
+                str=['Waiting for ' E.txtEnd ' ... '];
+                dpxDispFancy(str);
+                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
+                E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
+            else
+                dpxDisplayText(E.scr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
+            end
+        end
+        function showSaveScreen(E)
+            str=[E.txtPause '\n\nSaving data ...'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+        end
+        function showPauseScreen(E)
+            str=[E.txtPause '\n\nPress and release a key to continue'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
+        end
+        function showFinalSaveScreen(E)
+            if strcmpi(E.txtEnd,'DAQ-pulse')
+                % magic value for E.txtStart, wait for pulse on DAQ device
+                maxWaitSec=60;
+                str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds) ... '];
+                dpxDispFancy(str);
+                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
+                E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
+            end
+            str=[E.txtEnd '\n\nSaving data ...\n\n'];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+        end
+        function showEndScreen(E)
+            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName];
+            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA);
+        end
+        function createFileName(E)
+            if ~exist(E.outputFolder,'file')
+                try mkdir(E.outputFolder);
+                catch me, error([me.message ' mkdir ' E.outputFolder]);
+                end
+            end
+            E.subjectId=dpxGetValidId('Subject ID > ');
+            E.experimenterId=dpxGetValidId('Experimenter ID > ');
+            E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
+            testfile=fullfile(E.outputFolder,E.outputFileName);
+            if exist(testfile,'file')
+                % Extremely rare/impossible because of date+time in name
+                error(['A file with name ' testfile ' already exists.']);
+            end
+            try % test saving to the file before running the experiment
+                save(testfile);
+                delete(testfile);
+            catch me
+                error([me.message ' : ' testfile]);
+            end
+        end
+        function signalFile(E,opt)
+            % handy when using shared dropbox folder as the output folder,
+            % indicates that someone is running the experiment and on which
+            % computer.
+            if strtrim(E.subjectId)=='0'
+                return; % don't signal test runs
+            end
+            fname=['DPX=RUNNING ' E.expName ' C-'  dpxGetUserName ' S-' E.subjectId ' X-' E.experimenterId '.mat'];
+            fname=dpxSanitizeFileName(fname,'fname');
+            if strcmpi(opt,'save')
+                save(fullfile(E.outputFolder,fname),'');
+            elseif strcmpi(opt,'delete')
+                delete(fullfile(E.outputFolder,fname));
+            else
+                error(['Unknown signalFile option ' opt]);
+            end
+        end
+        function unifyConditions(E)
+            % Before we start running the experiment, make sure all
+            % conditions have the same stimuli, this is required for the
+            % output format (dpxTbl). If one or more conditions have been
+            % defined without the same stimuli (as defined by the stimulus
+            % name) add the missing stimuli and set their visibility and
+            % durSec fields to 0. (Setting either to 0 would suffice but
+            % doing both for clarity.) Prior to the introduction of this
+            % function it was necessary to define all stimuli for all
+            % conditions, even when the stimuli were not used in that
+            % condition.
+            % Step 1: get a list of unique stimulus names and classes
+            stimnames={};
+            classnames={};
+            for i=1:numel(E.conditions)
+                for j=1:numel(E.conditions{i}.stims)
+                    thisstimname=E.conditions{i}.stims{j}.name;
+                    if isempty(intersect(stimnames,thisstimname))
+                        stimnames{end+1}=thisstimname; %#ok<AGROW>
+                        classnames{end+1}=class(E.conditions{i}.stims{j}); %#ok<AGROW>
+                    end
+                end
+            end
+            % Step 2: see which trial miss what and add a dummy-stim
+            for i=1:numel(E.conditions)
+                stimnamesPresent={};
+                for j=1:numel(E.conditions{i}.stims)
+                    stimnamesPresent{end+1}=E.conditions{i}.stims{j}.name;
+                end
+                stimnamesMissing=setxor(stimnamesPresent,stimnames);
+                for j=1:numel(stimnamesMissing)
+                    theClassName=classnames{strcmp(stimnamesMissing{j},stimnames)};
+                    dummy=eval(theClassName);
+                    dummy.name=stimnamesMissing{j};
+                    dummy.durSec=0;
+                    dummy.visible=false;
+                    E.conditions{i}.addStim(dummy);
+                end
+            end
+        end
+        function createConditionSequence(E)
+            % If the user defined E.conditionSequence as a list of numbers,
+            % use this as the condition sequence. Otherwise, if
+            % E.conditionSequence is an option-string, create a list on the
+            % option provided.
+            if isnumeric(E.conditionSequence)
+                % a predefined order list is given
+                E.internalCondSeq=E.conditionSequence(:)';
+            elseif strcmpi(E.conditionSequence,'shufflePerBlock')
+                seq=[];
+                for i=1:E.nRepeats
+                    seq=[seq randperm(numel(E.conditions))]; %#ok<AGROW>
+                end
+                E.internalCondSeq=seq;
+            else
+                error(['Unknown conditionSequence option: ' E.conditionSequence ]);
+            end
+            % Check the validity of the condition numbers in the list
+            if any([E.internalCondSeq<1 E.internalCondSeq>numel(E.conditions)])
+                error(['One or more elements of the conditionSequence exceed limits [1 ... ' num2str(numel(E.conditions))]);
+            elseif any(E.internalCondSeq-round(E.internalCondSeq))
+                error('All elements of the conditionSequence should be integers');
+            end
+        end
+        function showProgressCli(E,tr)
+            if Screen('Preference', 'Verbosity')==0
+                return;
+            end
+            N=numel(E.internalCondSeq);
+            maxDigits=ceil(log10(N));
+            numformat=['%.' num2str(maxDigits) 'd'];
+            tstr=datestr(now-E.startTime,'HH:MM:SS');
+            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            if tr>1 && Screen('Preference', 'Verbosity')<4
+                fprintf(repmat('\b',1,numel(str)));
+            end
+            fprintf('%s',str);
+        end
+    end
+    methods
+        function set.outputFolder(E,value)
+            if isempty(value)
+                if IsWin, value='C:\temp\dpxData';
+                elseif IsOSX || IsLinux, value='/tmp/dpxData';
+                else error('Unsupported OS!');
+                end
+            end
+            error(dpxTestFolderNameValidity(value));
+            E.outputFolder=value;
+        end
+        function set.conditionSequence(E,value)
+            E.conditionSequence=value;
+            % call the creation function to test the validity of value, the
+            % creation function will be called for real in the E.run method
+            createConditionSequence(E);
+        end
+    end
+end
+##### SOURCE END #####
+--></body></html>
