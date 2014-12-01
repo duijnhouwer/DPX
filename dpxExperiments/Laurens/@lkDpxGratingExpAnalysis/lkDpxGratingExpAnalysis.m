@@ -52,17 +52,28 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 for c=1:numel(nList)
                     tel=tel+1;
                     output{tel}=eval([calcCommandString '(dpxd,nList(c),A.analOptions{:});']); %#ok<AGROW>
-                    eval([plotCommandString '(output{tel});']);
-                    dpxTilefigs;
-                    if strcmpi(A.pause,'perCell')
-                        input('<< any key to continue>>');
-                        close all;
+                    % add filename and cell numer
+                    output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
+                    output{tel}.cellNumber=nList(c); %#ok<AGROW>
+                    if A.showPlots
+                        dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
+                        eval([plotCommandString '(output{tel});']);
+                        if strcmpi(A.pause,'perCell')                        
+                            dpxTileFigs;
+                            [~,filestem]=fileparts(A.filesToDo{f});
+                            input(['Showing ' plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
+                            close all;
+                        end
                     end
                 end
                 if strcmpi(A.pause,'perFile')
-                    input('<< any key to continue>>');
+                    dpxTileFigs;
+                    [~,filestem]=fileparts(A.filesToDo{f});
+                    input(['Showing ' plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
                     close all;
                 end
+                % Merge all the outputs into a single DPXD
+                output=dpxdMerge(output);
             end
         end         
     end

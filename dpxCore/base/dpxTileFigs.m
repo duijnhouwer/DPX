@@ -1,4 +1,4 @@
-function figs=dpxTilefigs(figs)
+function figs=dpxTileFigs(figs)
 %TILEFIGS Tile all open figure windows around on the screen.
 %
 %   TILEFIGS places all open figure windows around on the screen with no
