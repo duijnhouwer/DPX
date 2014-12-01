@@ -1,19 +1,13 @@
 classdef lkDpxGratingExpAnalysis < hgsetget
     properties (Access=public)
-        % name of todoListFile, This should be a text-file that ends in
-        % todo.txt that should contain the filenames including absolute
-        % paths to the the merged LasAF and DPX datafiles as created using
-        % lkDpxGratingExpAddResponse. I've included an example todoListFile
-        % called 'example_todo.txt' that contains more comments that
-        % explain in more detail how the items in that file should be
+        % name of todoListFile, 
         % organized.
         todoListFileName;
         analFunc;
         analOptions;
         pause;
-        showPlots;
     end
-    properties (GetAccess=public,SetAccess=private)
+    properties (GetAccess=private,SetAccess=private)
         % The file and corresponding neuron todo lists can be viewed by the
         % user, but can not be set directly, only through loading a
         % todoListFile.
@@ -21,19 +15,62 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         neuronsToDo;
     end
     methods (Access=public)
-        function A=lkDpxGratingExpAnalysis(todoFile)
-            % This function gets called whenever the lkDpxGratingExpAnalysis is
-            % executed in the command window or in a function or script.
-            % We use it now to set default values for the public and
-            % private properties of this analysis
+        function A=lkDpxGratingExpAnalysis(neurotodoFile)
+            % lkDpxGratingExpAnalysis
+            % Analysis class for lkDpxGratingExp
+            %
+            % PROPERTIES:
+            % todoListFileName = the absolute path to a NeuroTodoFile.
+            %    A NeuroTodoFile is a text-file that ends in
+            %    "todo.txt" that should contain the filenames including
+            %    absolute paths to the the merged LasAF and DPX datafiles
+            %    as created using lkDpxGratingExpAddResponse. I've included
+            %    an example todoListFile called 'example_todo.txt' that
+            %    contains more comments that explain in more detail how the
+            %    items in that file should be.
+            % analFunc = name of analysis. All analysis are programmed to
+            %    run on a cell to cell basis. This class is basically a
+            %    wrapper to call them on the set of cells selected in the
+            %    NeuroTodoFile. The analysis function can be found in the
+            %    private folder within the "@lkDpxGratingExpAnalysis" class
+            %    folder. They come in two separate functions, for an analFunc
+            %    named XXX these would be calcXXX.m and plotXXX.m (the names
+            %    should be self-explanatory). It's always a good idea to keep
+            %    the calculations of your analysis and the visualization of
+            %    your data as separate as possible. At the time of writing
+            %    (2014-12-1) there's only one analFunc
+            %    "DirectionTuningCurve". We will make more as needed.
+            % analOptions = cell array of options that are passed to
+            %    calcXXX.m if XXX is your analFunc
+            %    "calcDirectionTuningCurve" doesnt do anything with those
+            %    (at the moment).
+            % pause = when to plot and wait for key to continue. Can be
+            %    either 'perCell', 'perFile', or 'never'. If 'never', no plots
+            %    are shown.
+            %
+            % METHODS:
+            % Once you have set the properties to your liking, run the
+            % analysis by excecuting
+            %    A.run
+            % Tip: you can like always in matlab interupt the analysis
+            %    by typing CTRL-C, followed optionally by cf to close the
+            %    figures
+            %
+            % OUTPUT:
+            % A dpxd struct with N being the number of cells. The format of
+            % this struct will depend on the calcXXX.m function that was
+            % used, but N will always be the number of cells analysed. So
+            % for "DirectionTuningCurve" this will contain, among other
+            % things, a DirectionTuningCurve for each cell.
+            %
+            
             if nargin==0
-                todoFile='';
+                neurotodoFile='';
             end
             A.pause='perCell'; % 'perCell', 'perFile', 'never'
-            A.todoListFileName=todoFile; % note: this calls the function "set.todoListFileName"
+            A.todoListFileName=neurotodoFile; % note: this calls the function "set.todoListFileName"
             A.analFunc='DirectionTuningCurve';
             A.analOptions={};
-            A.showPlots=true;
         end
         function output=run(A)
             if isempty(A.todoListFileName)
@@ -54,16 +91,16 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                     output{tel}=eval([calcCommandString '(dpxd,nList(c),A.analOptions{:});']); %#ok<AGROW>
                     % add filename and cell numer
                     output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
-                    output{tel}.cellNumber=nList(c); %#ok<AGROW>
-                    if A.showPlots
-                        dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
+                    output{tel}.cellNumber=nList(c); %#ok<AGROW> 
+                    if ~strcmpi(A.pause,'never')
+                        figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
                         eval([plotCommandString '(output{tel});']);
-                        if strcmpi(A.pause,'perCell')                        
-                            dpxTileFigs;
-                            [~,filestem]=fileparts(A.filesToDo{f});
-                            input(['Showing ' plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
-                            close all;
-                        end
+                    end
+                    if strcmpi(A.pause,'perCell')
+                        dpxTileFigs;
+                        [~,filestem]=fileparts(A.filesToDo{f});
+                        input(['Showing ' plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
+                        close(figHandle);
                     end
                 end
                 if strcmpi(A.pause,'perFile')
@@ -80,7 +117,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
     methods % set and get functions
         function set.todoListFileName(A,value)
             if isempty(value)
-                [filename,pathname]=uigetfile({'*todo.txt'},'Select a todo-list file ...');
+                [filename,pathname]=uigetfile({'*todo.txt'},'Select a NeuroTodoFile ...');
                 if ~ischar(filename) && filename==0
                     dpxDispFancy('User canceled selecting todo-list file.');
                     A.todoListFileName='';
@@ -104,12 +141,6 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             catch me
                 error(['pause should be one of: ' dpxCellOptionsToStr(options) '.']);
             end
-        end
-        function set.showPlots(A,value)
-            if value~=0 && value~=1
-                error('showPlots must be true or false or 1 or 0');
-            end
-            A.showPlots=value;
         end
     end
 end
