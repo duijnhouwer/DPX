@@ -4,7 +4,12 @@ function dpxDispFancy(msg,sym,nh,nv)
 % *  wow  *
 % *********
 
-if nargin==1
+if nargin==0
+    msg='dpxDispFancy';
+    sym='*';
+    nh=1;
+    nv=1;
+elseif nargin==1
     sym='*';
     nh=1;
     nv=1;

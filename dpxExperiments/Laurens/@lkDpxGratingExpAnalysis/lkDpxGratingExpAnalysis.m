@@ -30,12 +30,19 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 todoFile='';
             end
             A.pause='perCell'; % 'perCell', 'perFile', 'never'
-            A.todoListFileName=todoFile;
+            A.todoListFileName=todoFile; % note: this calls the function "set.todoListFileName"
             A.analFunc='DirectionTuningCurve';
             A.analOptions={};
             A.showPlots=true;
         end
         function output=run(A)
+            if isempty(A.todoListFileName)
+                dpxDispFancy('The string "todoListFileName" is empty, no data files to run analyses on.');
+                return;
+            elseif numel(A.filesToDo)==0
+                dpxDispFancy('A todo-list was loaded, but appears to contain no data files to run analyses on.');
+                return
+            end
             for f=1:numel(A.filesToDo)
                 dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
                 nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
@@ -63,6 +70,11 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         function set.todoListFileName(A,value)
             if isempty(value)
                 [filename,pathname]=uigetfile({'*todo.txt'},'Select a todo-list file ...');
+                if ~ischar(filename) && filename==0
+                    dpxDispFancy('User canceled selecting todo-list file.');
+                    A.todoListFileName='';
+                    return;
+                end
                 value=fullfile(pathname,filename);
             end
             if ~exist(value,'file')
