@@ -13,6 +13,11 @@ function jdToggleFontSizeEditor(fontsize)
     %
     % Jacob Duijnhouwer, 2014-10-13
     
+    if isunix || ismac
+        disp('only tested for windows');
+        return;
+    end
+    
     if nargin==0
         k=com.mathworks.services.FontPrefs.getCodeFont;
         if get(k,'Size')==13

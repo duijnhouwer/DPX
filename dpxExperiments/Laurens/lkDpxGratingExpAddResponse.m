@@ -242,7 +242,9 @@ function [S]=mergeStimResp(S,R,timestampList)
         dFoF=R.neuron(i).dFoF;
         % perform a check of the timeseries duration with respect to start
         % and stop pulses recorded by DPX
-        S.([unitstr '_dFoF'])=dpxSegmentTimeSeries('timeseries',dFoF,'timestamps',timestampList,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec);
+        [Ys,Ts]=dpxSegmentTimeSeries('timeseries',dFoF,'timestamps',timestampList,'starts',S.startSec-startPulseSec,'stops',S.stopSec-startPulseSec,'outputTiming','relative');
+        S.([unitstr '_dFoF'])=Ys;
+        S.([unitstr '_s'])=Ts;
     end
     % test if the data is a proper DPXD
     if ~dpxdIs(S)

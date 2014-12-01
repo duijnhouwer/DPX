@@ -9,6 +9,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         % organized.
         todoListFileName;
         analFunc;
+        analOptions;
         pause;
         showPlots;
     end
@@ -31,18 +32,19 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             A.pause='perCell'; % 'perCell', 'perFile', 'never'
             A.todoListFileName=todoFile;
             A.analFunc='DirectionTuningCurve';
+            A.analOptions={};
             A.showPlots=true;
         end
         function output=run(A)
             for f=1:numel(A.filesToDo)
-                load(A.filesToDo{f}); % load 'data' into  memory
-                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(data));
+                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
+                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
                 calcCommandString=['calc' A.analFunc]; % e.g. 'calcDirectionTuningCurve'
                 plotCommandString=['plot' A.analFunc]; % e.g. 'plotDirectionTuningCurve'
                 tel=0;
                 for c=1:numel(nList)
                     tel=tel+1;
-                    output{tel}=eval([calcCommandString '(data,nList(c));']); %#ok<AGROW>
+                    output{tel}=eval([calcCommandString '(dpxd,nList(c),A.analOptions{:});']); %#ok<AGROW>
                     eval([plotCommandString '(output{tel});']);
                     dpxTilefigs;
                     if strcmpi(A.pause,'perCell')

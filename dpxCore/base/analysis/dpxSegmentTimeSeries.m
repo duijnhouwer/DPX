@@ -1,4 +1,4 @@
-function segments=dpxSegmentTimeSeries(varargin)
+function [Ys,Ts]=dpxSegmentTimeSeries(varargin)
     
     % Cut an array into pieces defined by start and stop moments in
     % seconds.
@@ -11,19 +11,33 @@ function segments=dpxSegmentTimeSeries(varargin)
     p.addParamValue('stops',[],@isnumeric);
     p.addParamValue('check','warn',@(x)any(strcmpi('warn','err')));
     p.addParamValue('checkToleranceSamples',0,@isnumeric);
+    p.addParamValue('outputTiming','absolute',@(x)any(strcmpi(x,{'relative','absolute'})));
     p.parse(varargin{:});
     %
     if numel(p.Results.starts) ~= numel(p.Results.stops)
-        error('Numbers of starts and stops should be equal');
+        error('Numbers of starts and stops must be equal');
     end
-
+    
     checkTiming(p);
-    segments=cell(1,numel(p.Results.starts));
+    Ys=cell(1,numel(p.Results.starts));
     from=p.Results.starts;
     to=p.Results.stops;
-    for i=1:numel(segments)
-        idx=p.Results.timestamps>=from(i) & p.Results.timestamps<to(i);
-        segments{i}=p.Results.timeseries(idx);
+    if nargout==1
+        for i=1:numel(Ys)
+            idx=p.Results.timestamps>=from(i) & p.Results.timestamps<to(i);
+            Ys{i}=p.Results.timeseries(idx);
+        end
+    else
+        Ts=cell(1,numel(p.Results.starts));
+        rel=strcmpi(p.Results.outputTiming,'relative');
+        for i=1:numel(Ys)
+            idx=p.Results.timestamps>=from(i) & p.Results.timestamps<to(i);
+            Ys{i}=p.Results.timeseries(idx);
+            Ts{i}=p.Results.timestamps(idx);
+            if rel % align the time axis of this segment to from if outputTiming is 'relative'
+                Ts{i}=Ts{i}-from(i);
+            end
+        end
     end
 end
 
