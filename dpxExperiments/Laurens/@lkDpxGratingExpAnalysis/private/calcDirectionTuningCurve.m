@@ -1,8 +1,9 @@
 function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
-    % This function calcutes a direction tuning curve from a
+    % This function calculates a direction tuning curve from a
     % lkDpxExpGrating-DPXD struct, it's output can be plot with the
     % complementary plotDirectionTuningCurve
-    %
+
+    
     % Split the data according to the direction of the grating
     [Ds,Ns]=dpxdSplit(dpxd,'grating_dirDeg');
     % Preallocate the list of directions ...
