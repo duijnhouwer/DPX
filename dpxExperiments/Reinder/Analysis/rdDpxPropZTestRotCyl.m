@@ -15,7 +15,7 @@ end
 D=dpxdMerge(D);
 oldN=D.N;
 exp=whichExp(D);
-D=dpxTblSubset(D,D.resp_rightHand_keyNr>0);
+D=dpxdSubset(D,D.resp_rightHand_keyNr>0);
 disp(['Discarded ' num2str(oldN-D.N) ' out of ' num2str(oldN) ' trials for lack of response.']);
 
 
@@ -42,25 +42,25 @@ ZAna=cell(1,numel(E));
 for e=1:numel(E)
     corKey=zeros(1,numel(E{e}.(exp.speed)));
     for s=1:numel(E{e}.(exp.speed))
-%         if E{e}.(exp.stereoCue)(s)>0 %comment out if motion only
+        if E{e}.(exp.stereoCue)(s)>0 %comment out if motion only
             if E{e}.(exp.speed)(s)>0
                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
             else
                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
             end
 %             comment out if motion only >>>>>>>>>>>>
-%         end
-%         if E{e}.(exp.stereoCue)(s)<0
-%             if E{e}.(exp.speed)(s)>0
-%                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
-%             else
-%                 corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
-%             end
-%         end
-%         if E{e}.(exp.stereoCue)(s)==0
-%             corKey(s)=1;
-%         end
-        % <<<<<<<<<<<<
+        end
+        if E{e}.(exp.stereoCue)(s)<0
+            if E{e}.(exp.speed)(s)>0
+                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'DownArrow');
+            else
+                corKey(s)=strcmp(E{e}.resp_rightHand_keyName(s),'UpArrow');
+            end
+        end
+        if E{e}.(exp.stereoCue)(s)==0
+            corKey(s)=1;
+        end
+%         <<<<<<<<<<<<
     end
     
     ZAna{e}.Data = corKey;
@@ -69,9 +69,9 @@ for e=1:numel(E)
 
     
 end
-P  = (ZAna{3}.ZMean*numel(ZAna{3}.Data)+ZAna{2}.ZMean*numel(ZAna{2}.Data))/(numel(ZAna{2}.Data)+numel(ZAna{2}.Data));
-SE = sqrt(P*(1-P)*(1/numel(ZAna{3}.Data)+1/numel(ZAna{2}.Data)));
-Z  = (ZAna{3}.ZMean-ZAna{2}.ZMean)/SE;
+P  = (ZAna{2}.ZMean*numel(ZAna{2}.Data)+ZAna{1}.ZMean*numel(ZAna{1}.Data))/(numel(ZAna{1}.Data)+numel(ZAna{2}.Data));
+SE = sqrt(P*(1-P)*(1/numel(ZAna{2}.Data)+1/numel(ZAna{1}.Data)));
+Z  = (ZAna{2}.ZMean-ZAna{1}.ZMean)/SE;
 if sign(Z)==1
     Z=Z*-1;
 end
@@ -86,19 +86,19 @@ figure
 bar(x,y)
 % bar([-1 1],[ZAna{2}.ZMean ZAna{1}.ZMean],'b'); %opgelet, near is dus links, far dus rechts.  om plotjes gelijk te laten lopen met die vna chris klink
 
-iY=[ZAna{3}.ZMean ZAna{2}.ZMean];
+iY=[ZAna{2}.ZMean ZAna{1}.ZMean];
 ylim([0 1]);
 % name=[data.exp_expName{1} ' ' data.exp_subjectId{1} ' proportion Z tested'];
 % title(name);
 nB=['P = ' num2str(Y)];
-text(ZAna{2}.Disp-0.5,0.9,nB)
+text(ZAna{1}.Disp-0.5,0.9,nB)
 % set(gca,'XTick',[-1 1],'XTickLabel',{'Near' 'Far'});
 set(gca,'YTick',0:.1:1,'YTickLabel',0:10:100);
 ylabel('% coupling')
 xlabel('Disparity defined side')
 if Y<0.05 ;
     hold on
-    intervalX=[ZAna{3}.Disp ZAna{3}.Disp ZAna{2}.Disp ZAna{2}.Disp];
+    intervalX=[ZAna{2}.Disp ZAna{2}.Disp ZAna{1}.Disp ZAna{1}.Disp];
     intervalY=[max(iY)+0.1 max(iY)+0.15 max(iY)+0.15 max(iY)+0.1];
     plot(intervalX,intervalY,'k');
     text(0, max(iY)+0.17,'*','FontSize',22);
