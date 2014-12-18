@@ -4,7 +4,10 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     % complementary plotDirectionTuningCurve
 
     
-    % Split the data according to the direction of the grating
+    % Split the data according to the direction of the grating.    
+    % Ds is the DPXD called 'dpxd' split up in a DPXD per direction (so
+    % numel Ds would typically be 8). Ns is an array corrsponding to Ds
+    % that contains the N of each DPXD in Ds
     [Ds,Ns]=dpxdSplit(dpxd,'grating_dirDeg');
     % Preallocate the list of directions ...
     dirDeg=NaN(1,numel(Ds));
@@ -18,7 +21,7 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
         for t=1:Ds{i}.N
             % Get the dFoF trace of the entire t'th trial for this direction
             tSeries=Ds{i}.(dfofField){t}; 
-            % Get the correspoding time axis
+            % Get the corresponding time axis
             tAxis=Ds{i}.(timeField){t};
             % Use tAxit to limit trace to the time the stim was on
             from=Ds{i}.grating_onSec(t);
@@ -32,7 +35,7 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     tc.dirDeg{1}=dirDeg;
     tc.allDFoF{1}=dfof;
     tc.meanDFoF{1}=nanmean(dfof,1); % calculate the mean of the columns, ingore nan's
-    tc.sdDFoF{1}=nanstd(dfof,1); % calculate the standard deviation of the columns, ingore nan's
+    tc.sdDFoF{1}=nanstd(dfof,1); % calculate the standard deviation of the columns, ingore nan's.
     tc.nDFoF{1}=sum(~isnan(dfof),1); % calculate the Number of non-nan values (number of trials per direction)
     tc.N=1;
     if ~dpxdIs(tc)
