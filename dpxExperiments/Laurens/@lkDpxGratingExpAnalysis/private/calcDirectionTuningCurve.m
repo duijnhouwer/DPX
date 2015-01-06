@@ -36,7 +36,7 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     tc.allDFoF{1}=dfof;
     tc.meanDFoF{1}=nanmean(dfof,1); % calculate the mean of the columns, ingore nan's
     tc.sdDFoF{1}=nanstd(dfof,1); % calculate the standard deviation of the columns, ingore nan's.
-    tc.nDFoF{1}=sum(~isnan(dfof),1); % calculate the Number of non-nan values (number of trials per direction)
+    tc.nDFoF{1}=sum(~isnan(dfof),1); % calculate the Number of non-nan values (=number of trials per direction)
     tc.N=1;
     if ~dpxdIs(tc)
         error('tc should be a dpxd struct');

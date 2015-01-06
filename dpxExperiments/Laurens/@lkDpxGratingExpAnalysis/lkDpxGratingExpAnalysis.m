@@ -3,8 +3,8 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         % name of todoListFile, 
         % organized.
         todoListFileName;
-        analFunc;
-        analOptions;
+        anaFunc;
+        anaOpts;
         pause;
     end
     properties (GetAccess=private,SetAccess=private)
@@ -28,20 +28,20 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             %    an example todoListFile called 'example_todo.txt' that
             %    contains more comments that explain in more detail how the
             %    items in that file should be.
-            % analFunc = name of analysis. All analysis are programmed to
+            % anaFunc = name of analysis. All analysis are programmed to
             %    run on a cell to cell basis. This class is basically a
             %    wrapper to call them on the set of cells selected in the
             %    NeuroTodoFile. The analysis function can be found in the
             %    private folder within the "@lkDpxGratingExpAnalysis" class
-            %    folder. They come in two separate functions, for an analFunc
+            %    folder. They come in two separate functions, for an anaFunc
             %    named XXX these would be calcXXX.m and plotXXX.m (the names
             %    should be self-explanatory). It's always a good idea to keep
             %    the calculations of your analysis and the visualization of
             %    your data as separate as possible. At the time of writing
-            %    (2014-12-1) there's only one analFunc
+            %    (2014-12-1) there's only one anaFunc
             %    "DirectionTuningCurve". We will make more as needed.
-            % analOptions = cell array of options that are passed to
-            %    calcXXX.m if XXX is your analFunc
+            % anaOpts = cell array of options that are passed to
+            %    calcXXX.m if XXX is your anaFunc
             %    "calcDirectionTuningCurve" doesnt do anything with those
             %    (at the moment).
             % pause = when to plot and wait for key to continue. Can be
@@ -69,8 +69,8 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             end
             A.pause='perCell'; % 'perCell', 'perFile', 'never'
             A.todoListFileName=neurotodoFile; % note: this calls the function "set.todoListFileName"
-            A.analFunc='DirectionTuningCurve';
-            A.analOptions={};
+            A.anaFunc='DirectionTuningCurve';
+            A.anaOpts={};
         end
         function output=run(A)
             if isempty(A.todoListFileName)
@@ -83,12 +83,12 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             for f=1:numel(A.filesToDo)
                 dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
                 nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
-                calcCommandString=['calc' A.analFunc]; % e.g. 'calcDirectionTuningCurve'
-                plotCommandString=['plot' A.analFunc]; % e.g. 'plotDirectionTuningCurve'
+                calcCommandString=['calc' A.anaFunc]; % e.g. 'calcDirectionTuningCurve'
+                plotCommandString=['plot' A.anaFunc]; % e.g. 'plotDirectionTuningCurve'
                 tel=0;
                 for c=1:numel(nList)
                     tel=tel+1;
-                    output{tel}=eval([calcCommandString '(dpxd,nList(c),A.analOptions{:});']); %#ok<AGROW>
+                    output{tel}=eval([calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
                     % add filename and cell numer
                     output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
                     output{tel}.cellNumber=nList(c); %#ok<AGROW> 
