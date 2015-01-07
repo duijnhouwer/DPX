@@ -22,7 +22,18 @@ p.parse(T,varargin{:});
 b=true;
 
 % Check that it is a struct
-% done in inputParser
+if ~isstruct(T)
+    b=false;
+    n=[];
+    fields=[];
+    if p.Results.verbosity==1
+        warning('Not a DPXD because not a struct.');
+    end
+    if p.Results.verbosity>=2
+        error('Not a DPXD because not a struct.');
+    end
+    return;
+end
 
 % Check that it has the required N field
 if ~isfield(T,'N')

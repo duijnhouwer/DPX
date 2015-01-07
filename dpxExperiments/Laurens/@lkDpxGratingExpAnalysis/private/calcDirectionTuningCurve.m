@@ -3,6 +3,14 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     % lkDpxExpGrating-DPXD struct, it's output can be plot with the
     % complementary plotDirectionTuningCurve
 
+    % Parse 'options' input
+    p=inputParser;
+    p.addParamValue('bayesfit',true,@islogical);
+        % If true: use the bayesPhysV1 toolkit to fit tuningcurves to the data, and
+        % test which is the best model. This will determine if the cell is
+        % tuned at all, and if so, if it is direction or orientation selective.
+    p.parse(varargin{:});
+    
     
     % Split the data according to the direction of the grating.    
     % Ds is the DPXD called 'dpxd' split up in a DPXD per direction (so
@@ -38,6 +46,14 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     tc.sdDFoF{1}=nanstd(dfof,1); % calculate the standard deviation of the columns, ingore nan's.
     tc.nDFoF{1}=sum(~isnan(dfof),1); % calculate the Number of non-nan values (=number of trials per direction)
     tc.N=1;
+    if p.Results.bayesfit
+        dirDeg=repmat(dirDeg,size(dfof,1),1);
+        curvesToTest={'constant','circular_gaussian_180','circular_gaussian_360','direction_selective_circular_gaussian'};
+        B=dpxBayesPhysV1('deg',dirDeg(:),'resp',dfof(:),'curvenames',curvesToTest,'unit','dfof');
+        tc.dpxBayesPhysV1{1}=B.winnerstr;
+        tc.dpxBayesPhysV1x=B.bestCurveX;
+        tc.dpxBayesPhysV1y=B.bestCurveY;
+    end
     if ~dpxdIs(tc)
         error('tc should be a dpxd struct');
     end
