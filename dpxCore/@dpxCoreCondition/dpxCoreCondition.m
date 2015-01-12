@@ -164,18 +164,20 @@ classdef dpxCoreCondition < hgsetget
                             % the new time exceeds the original stop time,
                             % this has no effect and the trial lasts the
                             % set initially amount.
-                            stopTrialEarlyFlip=f+C.resps{r}.endsTrialAfterFlips;
-                            stimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
-                            if ~isempty(stimHandle)
-                                % Initialize the feedback stimulus so it
-                                % will be visible from now until
-                                % now+durSec. Because of this only simple
-                                % stimuli that do not require a lot of time
-                                % for initialization can be used. If this
-                                % is a problem a slight redesign of the
-                                % feedback system will be required.
-                                stimHandle.init(C.scrGets);
-                                stimHandle.visible=true;
+                            if C.resps{r}.endsTrialAfterFlips<Inf % endsTrialAfterFlips is Inf by default
+                                stopTrialEarlyFlip=f+C.resps{r}.endsTrialAfterFlips;
+                                stimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
+                                if ~isempty(stimHandle)
+                                    % Initialize the feedback stimulus so it
+                                    % will be visible from now until
+                                    % now+durSec. Because of this only simple
+                                    % stimuli that do not require a lot of time
+                                    % for initialization can be used. If this
+                                    % is a problem a slight redesign of the
+                                    % feedback system will be required.
+                                    stimHandle.init(C.scrGets);
+                                    stimHandle.visible=true;
+                                end
                             end
                         end
                     end
@@ -191,19 +193,14 @@ classdef dpxCoreCondition < hgsetget
                 end
                 % Collect start or stop time of the trial in seconds, right
                 % after the flip for accuracy.
-                if f==1
+                if f==1 % begin of condition
                     timingStruct.startSec=GetSecs;
-                elseif f==C.nFlips
-                    timingStruct.stopSec=GetSecs;
-                    break;
-                end
-                % If the response ends the trial, that happens here
-                if f>=stopTrialEarlyFlip
+                elseif f==C.nFlips || f>=stopTrialEarlyFlip % planned or early (because of response) end of trial
                     timingStruct.stopSec=GetSecs;
                     break;
                 end
             end
-            % The trials is now complete, clear all stim and resp objects
+            % The trial is now complete, clear all stim and resp objects
             for s=1:numel(C.stims)
                 C.stims{s}.clear;
             end

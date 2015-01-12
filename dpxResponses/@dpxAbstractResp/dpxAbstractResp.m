@@ -32,7 +32,7 @@ classdef dpxAbstractResp < hgsetget
         nameOfFeedBackStim='none';
         allowAfterNrFlips;
         allowUntilNrFlips;
-        endsTrialAfterFlips;
+        endsTrialAfterFlips=Inf;
     end
     properties (Access=protected)
         scrGets;
