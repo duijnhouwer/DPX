@@ -1,9 +1,9 @@
-function agDpxDDQinteractTactile
+function agDpxDDQinteractTactile_JacobDebug
     
-    % agDpxDDQinteractTactile
+    % agDpxDDQinteractTactile_JacobDebug
     
     E=dpxCoreExperiment;
-    E.expName='agDpxDDQinteractTactile';
+    E.expName='agDpxDDQinteractTactile_JacobDebug';
     E.outputFolder='C:\temp\dpxData';%/Users/iMac_2Photon/Dropbox/dpxData';    
     E.scr.set('winRectPx',[],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
     %
@@ -11,8 +11,8 @@ function agDpxDDQinteractTactile
    
     
     
-    durS=10;
-    flashSec=.5; %the alternative is 1 sec
+    durS=15;
+    flashSec=1; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
@@ -59,17 +59,17 @@ function agDpxDDQinteractTactile
                             %                             R.correctStimName='respfeedback';
                             %                             C.addResp(R);
                             %
-                            R=dpxRespContiKeyboard;
-                            R.name='LeftArrow';
-                            R.kbName='LeftArrow';
-                            R.allowAfterSec=0;
-                            C.addResp(R);
+                            R1=dpxRespContiKeyboard;
+                            R1.name='LeftArrow';
+                            R1.kbName='LeftArrow';
+                            R1.allowAfterSec=0;
+                            C.addResp(R1);
                             %
-                            R=dpxRespContiKeyboard;
-                            R.name='DownArrow';
-                            R.kbName='DownArrow';
-                            R.allowAfterSec=0;
-                            C.addResp(R);
+                            R2=dpxRespContiKeyboard;
+                            R2.name='DownArrow';
+                            R2.kbName='DownArrow';
+                            R2.allowAfterSec=0;
+                            C.addResp(R2);
                             %
                             FB=dpxStimDot;
                             set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
@@ -83,7 +83,7 @@ function agDpxDDQinteractTactile
             end
         end
     end
-    E.nRepeats=3;
+    E.nRepeats=1;
     nTrials=numel(E.conditions)*E.nRepeats;
     expectedSecs=nTrials*(durS);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
