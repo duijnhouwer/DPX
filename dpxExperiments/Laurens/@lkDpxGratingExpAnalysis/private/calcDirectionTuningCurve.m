@@ -1,8 +1,8 @@
 function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
+    
     % This function calculates a direction tuning curve from a
-    % lkDpxExpGrating-DPXD struct, it's output can be plot with the
+    % lkDpxExpGrating-DPXD struct, its output can be plot with the
     % complementary plotDirectionTuningCurve
-
     % Parse 'options' input
     p=inputParser;
     p.addParamValue('bayesfit',true,@islogical);

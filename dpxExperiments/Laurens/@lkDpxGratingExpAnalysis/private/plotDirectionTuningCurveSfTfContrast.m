@@ -10,9 +10,10 @@ function plotDirectionTuningCurveSfTfContrast(TC,i,varargin)
     cellNumber=TC.cellNumber(1);
     TC=rmfield(TC,{'file','cellNumber'});
     
-    panelNr=0;
+    
     C=dpxdSplit(TC,'contrast');
     for c=1:numel(C)
+        panelNr=0;
         gray=sqrt(1-c/numel(C));
         options={varargin{:} , 'color', [gray gray gray]}; %#ok<CCAT>
         S=dpxdSplit(C{c},'SF');

@@ -1,30 +1,5 @@
 function varargout = dpxdMergeGUI(varargin)
-    % DPXDMERGEGUI MATLAB code for dpxdMergeGUI.fig
-    %      DPXDMERGEGUI, by itself, creates a new DPXDMERGEGUI or raises the existing
-    %      singleton*.
-    %
-    %      H = DPXDMERGEGUI returns the handle to a new DPXDMERGEGUI or the handle to
-    %      the existing singleton*.
-    %
-    %      DPXDMERGEGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-    %      function named CALLBACK in DPXDMERGEGUI.M with the given input arguments.
-    %
-    %      DPXDMERGEGUI('Property','Value',...) creates a new DPXDMERGEGUI or raises the
-    %      existing singleton*.  Starting from the left, property value pairs are
-    %      applied to the GUI before dpxdMergeGUI_OpeningFcn gets called.  An
-    %      unrecognized property name or invalid value makes property application
-    %      stop.  All inputs are passed to dpxdMergeGUI_OpeningFcn via varargin.
-    %
-    %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-    %      instance to run (singleton)".
-    %
-    % See also: GUIDE, GUIDATA, GUIHANDLES
-    
-    % Edit the above text to modify the response to help dpxdMergeGUI
-    
-    % Last Modified by GUIDE v2.5 20-Oct-2014 21:22:58
-    
-    % Begin initialization code - DO NOT EDIT
+    % Tool to merge datafiles using a GUI
     gui_Singleton = 1;
     gui_State = struct('gui_Name',       mfilename, ...
         'gui_Singleton',  gui_Singleton, ...
