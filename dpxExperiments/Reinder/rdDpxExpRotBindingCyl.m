@@ -11,8 +11,8 @@ if IsWin %disable laptop lid-button
 end
 
 E=dpxCoreExperiment;
-E.txtPauseNrTrials=111;
-E.nRepeats=2;
+E.txtPauseNrTrials=120;
+E.nRepeats=20;
 fullWhite=false;
 dispShift=false;
 
@@ -65,7 +65,7 @@ E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror
 % the experiement, and run
 modes={'stereo','anti-stereo','mono'}; %stereo, anti-stereo, mono
 for m=1:numel(modes)
-    for dsp=[-1 -0.8 -0.4 0 0.4 0.8 1]
+    for dsp=[-.8 -.4 -.2 0 .2 .4 .8]
         for rotSpeed=[120 -120] % >0 --> up
             C=dpxCoreCondition;
             set(C,'durSec',2.5);

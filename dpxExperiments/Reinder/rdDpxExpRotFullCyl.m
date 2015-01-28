@@ -64,7 +64,7 @@ E.scr.set('stereoMode','mirror','skipSyncTests',1);
 % the experiement, and run
 modes={'mono','stereo','both'};
 for m=1:numel(modes)
-    for dsp=[0:.5:1]
+    for dsp=[0 0.4 1]
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
@@ -83,14 +83,14 @@ for m=1:numel(modes)
             set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
             C.addStim(S);
             
-            % The full cylinder stimulus
+            % The half cylinder stimulus
             S=dpxStimRotCylinder;
             set(S,'dotsPerSqrDeg',12,'xDeg',flippos*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','halveCyl','visible',0);
             C.addStim(S);
-            % The half cylinder stimulus
+            % The full cylinder stimulus
             if strcmpi(modes{m},'mono')
                 lumcorr=1;
                 dFog=dsp;

@@ -13,9 +13,10 @@ if nargin==1
     fb='feedback';
 end
 
+
 E=dpxCoreExperiment;
-E.txtPauseNrTrials=111;
-E.nRepeats=10;
+E.txtPauseNrTrials=120;
+E.nRepeats=8;
 
 % handle the position option
 if strcmpi(pos,'left')
@@ -58,7 +59,7 @@ E.scr.set('stereoMode','mirror','skipSyncTests',1);
 % the experiement, and run
 modes={'mono','stereo','both'};
 for m=1:numel(modes)
-    for dsp=[-1:.5:1]
+    for dsp=[-1 -.4 0 .4 1]
         for rotSpeed=[-120 120]
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
