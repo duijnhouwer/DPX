@@ -88,11 +88,11 @@ function [y]=getBestCurvesForPlotting(T,curvename,x1)
         return;
     end
     if isfield(T,'P5')
-        y=jdMakeRow(getTCval(x1,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median T.P5_median]));
+        y=dpxMakeRow(getTCval(x1,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median T.P5_median]));
     elseif ~isempty(strfind(curvename,'cosine'))
         % CRAZY!!! EVERTHING IN BAYESPHYS IS IN DEGREES EXCEPT THE COSINE FUNCTIONS!!!
-        y=jdMakeRow(getTCval(x1/180*pi,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median]));
+        y=dpxMakeRow(getTCval(x1/180*pi,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median]));
     else
-        y=jdMakeRow(getTCval(x1,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median]));
+        y=dpxMakeRow(getTCval(x1,curvename,[T.P1_median T.P2_median T.P3_median T.P4_median]));
     end
 end
