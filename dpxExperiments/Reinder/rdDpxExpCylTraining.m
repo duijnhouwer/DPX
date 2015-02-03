@@ -7,21 +7,21 @@ function rdDpxExpCylTraining(size,disparities)
 % best is to start large, with 3, and work your way down. standard is 1
 %
 % dsp = disparities using. always in steps of .2, format is the outer
-% value's. i.e: [-2 2] gives [-2:.2:2] standard is [-1 1]
+% value's. from positive to negative! i.e: [2 -2] gives [-2:.2:2] standard is [-1 1]
 
 if nargin==0
     size=1;
-    dsp=[-1:0.2:1];
+    dsp=[1:-0.2:-1];
 end
 if nargin==1
     if ~exist('disparities','var')
-        dsp=[-1:0.2:1];
+        dsp=[1:-0.2:-1];
     elseif ~exist('size','var')
         size=1;
     end
 end
 if nargin==2
-    dsp=[disparities(1):0.2:disparities(2)];
+    dsp=[disparities(1):-0.2:disparities(2)];
 end
 
 if IsWin %disable laptop lid-button
