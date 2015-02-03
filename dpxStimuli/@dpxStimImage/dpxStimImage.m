@@ -6,9 +6,16 @@ classdef dpxStimImage < dpxAbstractStim
         NrBars=4;
         HorDisp=0;
         BarConfig='even'
+        stimLoc=0;
+        stimList;
+        picNum;
+        inputFolder;
+        scale=1;
+        dots=[];
         
     end
     properties (Access=protected)
+        stimArray;
     end
     methods (Access=public)
         function S=dpxStimImage
@@ -16,54 +23,64 @@ classdef dpxStimImage < dpxAbstractStim
     end
     methods (Access=protected)
         function myInit(S)
+            file=fullfile(S.inputFolder,S.stimList{S.picNum});
+            S.stimArray=imread(file);
+            if ~isempty(S.dots)
+                S.stimArray=RandomDotOnImage(S.stimArray,S.dots);
+            end
         end
         function myDraw(S)
-            testPic=255*ones(92,112,3);
-            Texture=CalcTexture(S.NrBars,S.HorDisp,S.BarConfig,S.physScrVals,testPic);
-            texIdx=Screen('MakeTexture',S.physScrVals.windowPtr,testPic);
+            Texture=CalcTexture(S.NrBars,S.HorDisp,S.BarConfig,S.scrGets,S.stimArray);
+            texIdx=Screen('MakeTexture',S.scrGets.windowPtr,S.stimArray);
             wCnt=S.winCntrXYpx;
-            [X Z ~]=size(testPic);
+            [Z X ~]=size(S.stimArray);
+            X=X*S.scale;
+            Z=Z*S.scale;
+            
             if strcmpi(S.mode,'Encode')
-                rectOne = [wCnt+[(S.xPx-X/2)-2.2*X S.yPx-Z/2] wCnt+[(S.xPx+X/2)-2.2*X +S.yPx+Z/2]];
-                rectTwo = [wCnt+[(S.xPx-X/2)-1.1*X S.yPx-Z/2] wCnt+[(S.xPx+X/2)-1.1*X +S.yPx+Z/2]];
-                rectThree = [wCnt+[(S.xPx-X/2) S.yPx-Z/2] wCnt+[(S.xPx+X/2) +S.yPx+Z/2]];
-                rectFour = [wCnt+[(S.xPx-X/2)+1.1*X S.yPx-Z/2] wCnt+[(S.xPx+X/2)+1.1*X +S.yPx+Z/2]];
-                rectFive = [wCnt+[(S.xPx-X/2)+2.2*X S.yPx-Z/2] wCnt+[(S.xPx+X/2)+2.2*X +S.yPx+Z/2]];
-                for w=[0 1];
-                    Screen('SelectStereoDrawBuffer',S.physScrVals.windowPtr,w);
-                    Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,[],rectOne);
-                    Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,[],rectTwo);
-                    Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,[],rectThree);
-                    Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,[],rectFour);
-                    Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,[],rectFive);
-                end
-            elseif strcmpi(S.mode,'Recall')
-%                 rectMid = [wCnt+[(S.xPx-S.wPx/2) S.yPx-S.hPx/2] wCnt+[(S.xPx+S.wPx/2) +S.yPx+S.hPx/2]];
-                for B=1:2:S.NrBars*2
-                    hDispL=Texture.HorDisp.lX00(1,B);
-                    hDispR=Texture.HorDisp.rX00(1,B);
-                    
-                    picRect=[Texture.PictureRect(1,B) Texture.PictureRect(3,B) Texture.PictureRect(1,B+1) Texture.PictureRect(3,B+1)];
-                    BarsY=[picRect(2) picRect(4)];
-                    DestRectL=round([ wCnt(1)-(X/2)+hDispL wCnt(2)-(Z/2)+BarsY(1) wCnt(1)+(X/2)+hDispL wCnt(2)-(Z/2)+BarsY(2)]);
-                    DestRectR=round([ wCnt(1)-(X/2)+hDispR wCnt(2)-(Z/2)+BarsY(1) wCnt(1)+(X/2)+hDispR wCnt(2)-(Z/2)+BarsY(2)]);
-        
+                for sL=1:length(S.stimLoc)
+                    name=['pos',num2str(sL)];
+                    rect.(name) = [wCnt+[(S.xPx-X/2)+(1.1*S.stimLoc(sL))*X S.yPx-Z/2]...
+                        wCnt+[(S.xPx+X/2)+(1.1*S.stimLoc(sL))*X +S.yPx+Z/2]];
                     for w=[0 1];
-                        Screen('SelectStereoDrawBuffer',S.physScrVals.windowPtr,w);
-                        if w==0;
-                            Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,picRect,DestRectL);
-                        elseif w==1;
-                            Screen('DrawTexture',S.physScrVals.windowPtr,texIdx,picRect,DestRectR);
+                        Screen('SelectStereoDrawBuffer',S.scrGets.windowPtr,w);
+                        Screen('DrawTexture',S.scrGets.windowPtr,texIdx,[],rect.(name));
+                    end
+                end
+            elseif strcmpi(S.mode,'Occlude')
+                for sL=1:length(S.stimLoc)
+                    name=['pos',num2str(sL)];
+                    for B=1:2:S.NrBars*2
+                        hDispL=Texture.HorDisp.lX00(1,B);
+                        hDispR=Texture.HorDisp.rX00(1,B);
+                        
+                        picRect.(name)=[Texture.PictureRect(1,B) Texture.PictureRect(3,B)...
+                            Texture.PictureRect(1,B+1) Texture.PictureRect(3,B+1)];
+                        BarsY=[picRect.(name)(2)*S.scale picRect.(name)(4)*S.scale];
+                        DestRectL.(name)=round([ (wCnt(1)-(X/2)+(1.1*S.stimLoc(sL)*X))+hDispL wCnt(2)-(Z/2)+BarsY(1)...
+                            (wCnt(1)+(X/2)+(1.1*S.stimLoc(sL)*X))+hDispL wCnt(2)-(Z/2)+BarsY(2)]);
+                        DestRectR.(name)=round([ (wCnt(1)-(X/2)+(1.1*S.stimLoc(sL)*X))+hDispR wCnt(2)-(Z/2)+BarsY(1)...
+                            (wCnt(1)+(X/2)+(1.1*S.stimLoc(sL)*X)+hDispR) wCnt(2)-(Z/2)+BarsY(2)]);
+                        
+                        for w=[0 1];
+                            Screen('SelectStereoDrawBuffer',S.scrGets.windowPtr,w);
+                            if w==0;
+                                Screen('DrawTexture',S.scrGets.windowPtr,texIdx,picRect.(name),DestRectL.(name));
+                            elseif w==1;
+                                Screen('DrawTexture',S.scrGets.windowPtr,texIdx,picRect.(name),DestRectR.(name));
+                            end
                         end
                     end
                 end
                 
             end
             % topleft of screen is 0,0
-            xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
-            xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
-            rect=[xyTopLeft xyBotRite];
-            Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
+            
+            %             xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
+            %             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
+            %             rect=[xyTopLeft xyBotRite];
+            %             Screen('FillRect',S.scrGets.windowPtr,S.RGBA,rect);
+            %               what are you doing here O_O ???
         end
     end
 end
@@ -123,4 +140,18 @@ Texture.OccluderRect=Texture.BarRectXYZ(:,OccluderIdx);
 Texture.PictureRect=Texture.BarRectXYZ(:,PictureIdx);
 Texture.BarConfig=BarConfig;
 
+end
+
+function ImMatrix=RandomDotOnImage(ImMatrix,dots)
+[X Y ~]=size(ImMatrix);
+DotX=ceil(X*rand(1,dots));
+DotY=ceil(Y*rand(1,dots));
+
+for D=1:dots
+    if ImMatrix(DotX(D),DotY(D))>127.5;
+        ImMatrix(DotX(D),DotY(D))=0;
+    elseif ImMatrix(DotX(D),DotY(D))<127.5;
+        ImMatrix(DotX(D),DotY(D))=255;
+    end
+end
 end
