@@ -43,7 +43,7 @@ if isfield(exp,'Shift')
 else
     labels={'mono','stereo',lbl.varLbl};
 end
-    subplot(1,1,1);
+    subplot(1,2,1);
 
 
 h(1)=plotPsychoCurves(M,exp.monoCueFog,exp.resp,exp.Id,exp.speed,'*r:','LineWidth',3);
@@ -58,18 +58,18 @@ if isfield(exp,'Shift')
 end
 title(exp.name)
 ylabel(exp.corPerc)
-% legend(h,labels);
-% subplot(1,2,2);
-% h(1)=plotPsychoCurves(M,exp.speed,'DownArrow',[],[],'r:','LineWidth',3);
-% h(2)=plotPsychoCurves(S,exp.speed,'DownArrow',[],[],'Color',[0 .5 0],'LineWidth',2);
-% if exist('B','var');
-%     h(3)=plotPsychoCurves(B,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
-% elseif exist('AS','var');
-%     h(3)=plotPsychoCurves(AS,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
-% else
-%     %nothing
-% end
-% legend(h,labels);
+legend(h,labels);
+subplot(1,2,2);
+h(1)=plotPsychoCurves(M,exp.speed,'DownArrow',[],[],'r:','LineWidth',3);
+h(2)=plotPsychoCurves(S,exp.speed,'DownArrow',[],[],'Color',[0 .5 0],'LineWidth',2);
+if exist('B','var');
+    h(3)=plotPsychoCurves(B,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+elseif exist('AS','var');
+    h(3)=plotPsychoCurves(AS,exp.speed,'DownArrow',[],[],'b','LineWidth',1);
+else
+    %nothing
+end
+legend(h,labels);
 
 if strcmpi(input('calc freezing? Y/N','s'),'y')
     perc=FreezePerc(D.resp_rightHand_keyName);
