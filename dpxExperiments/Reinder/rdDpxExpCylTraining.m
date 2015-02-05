@@ -30,8 +30,8 @@ end
 
 
 E=dpxCoreExperiment; 
-Block=10; %number of repeats in one block
-nReps=10; %number of repeats of a total trial from +1 to -1 to +1
+Block=3; %number of repeats in one block
+nReps=12; %number of repeats of a total trial from +1 to -1 to +1
 E.txtPauseNrTrials=(numel(dsp)*4-2)*Block;
 % fullWhite=false;
 % dispShift=false;
