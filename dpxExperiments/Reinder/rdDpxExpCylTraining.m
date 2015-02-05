@@ -94,7 +94,7 @@ for rotSpeed=[120 -120] % >0 -> up
         E.addCondition(C);
     end
 end
-E.conditionSequence=repmat([1:1:numel(dsp) numel(dsp)-1:-1:1 numel(dsp)+1:1:2*numel(dsp) 2*numel(dsp)-1:-1:numel(dsp)+1],1,nReps);
+E.conditionSequence=repmat([1:1:numel(dsp) numel(dsp):-1:1 numel(dsp)+1:1:2*numel(dsp) 2*numel(dsp):-1:numel(dsp)+1],1,nReps);
 
 E.run;
 end
