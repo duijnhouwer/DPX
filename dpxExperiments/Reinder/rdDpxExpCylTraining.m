@@ -1,38 +1,40 @@
 function rdDpxExpCylTraining(size,disparities)
 %% Training for the half cylinders
-% in essence just a movie of a voncave shifting to a convex shape. Subjects
+% in essence just a movie of a concave shifting to a convex shape. Subjects
 % gives a response where the cylinder changes shape
 %
 % size = integer. arbitrary value for the size. 1 is 3x3, 2=4x4, 3=5x5
 % best is to start large, with 3, and work your way down. standard is 1
 %
 % dsp = disparities using. always in steps of .2, format is the outer
-% value's. from positive to negative! i.e: [2 -2] gives [-2:.2:2] standard is [-1 1]
+% value's. from positive to negative! i.e: [2 -2] gives [2:.2:-2] standard is [1 -1]
 
 if nargin==0
     size=1;
-    dsp=[1:-0.2:-1];
+    dsp=1:-0.2:-1;
 end
 if nargin==1
     if ~exist('disparities','var')
-        dsp=[1:-0.2:-1];
+        dsp=1:-0.2:-1;
     elseif ~exist('size','var')
         size=1;
     end
 end
 if nargin==2
-    dsp=[disparities(1):-0.2:disparities(2)];
+    dsp=disparities(1):-0.2:disparities(2);
 end
 
 if IsWin %disable laptop lid-button
-    DisableKeysForKbCheck([233]);
+    DisableKeysForKbCheck(233);
 end
 
-E=dpxCoreExperiment;
-E.txtPauseNrTrials=inf;
-E.nRepeats=20; %number of repeats of a total trial from +1 to -1 to +1
-fullWhite=false;
-dispShift=false;
+
+E=dpxCoreExperiment; 
+Block=10; %number of repeats in one block
+nReps=10; %number of repeats of a total trial from +1 to -1 to +1
+E.txtPauseNrTrials=(numel(dsp)*4-2)*Block;
+% fullWhite=false;
+% dispShift=false;
 
 % handle the position option
 
@@ -43,7 +45,7 @@ E.expName='rdDpxExpTraining';
 if strcmpi(dpxGetUserName,'Reinder')
     E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';
 elseif strcmpi(dpxGetUserName,'EyeLink-admin')
-    E.outputFolder='C:\Users\EyeLink-admin\Dropbox\DPX\Data\Exp1Training';
+    E.outputFolder='C:\Users\EyeLink-admin\Dropbox\DPX\Data\Exp0Training';
 end
 
 % Set the stimulus window option
@@ -78,18 +80,21 @@ for rotSpeed=[120 -120] % >0 -> up
             ,'onSec',0,'durSec',1,'name','halfInducerCyl');
         C.addStim(S);
         
-        % The response object
-        R=dpxRespKeyboard;
-        set(R,'kbNames','UpArrow,DownArrow');
-        set(R,'correctStimName','fbCorrect','correctEndsTrialAfterSec',10000);
-        set(R,'name','rightHand');
-        R.correctKbNames='1';
+        % The response objects
+        R=dpxRespContiKeyboard;
+        set(R,'kbName','UpArrow');
+        set(R,'name','Concave');
+        C.addResp(R);
+        
+        R=dpxRespContiKeyboard;
+        set(R,'kbName','DownArrow');
+        set(R,'name','Convex');
         C.addResp(R);
         
         E.addCondition(C);
     end
 end
-E.conditionSequence=[1:1:numel(dsp) numel(dsp)-1:-1:1 numel(dsp)+1:1:2*numel(dsp) 2*numel(dsp)-1:-1:numel(dsp)+1];
+E.conditionSequence=repmat([1:1:numel(dsp) numel(dsp)-1:-1:1 numel(dsp)+1:1:2*numel(dsp) 2*numel(dsp)-1:-1:numel(dsp)+1],1,nReps);
 
 E.run;
 end
