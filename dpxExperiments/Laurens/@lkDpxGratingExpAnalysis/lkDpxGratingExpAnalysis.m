@@ -90,7 +90,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                     tel=tel+1;
                     output{tel}=eval([calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
                     % add filename and cell numer
-                    output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
+                    output{tel}.file{3}=A.filesToDo{f}; %#ok<AGROW>
                     output{tel}.cellNumber=nList(c); %#ok<AGROW> 
                     if ~strcmpi(A.pause,'never')
                         figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
