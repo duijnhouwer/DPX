@@ -23,6 +23,7 @@ function plotDirectionTuningCurveSfTfContrast(TC,i,varargin)
                 panelNr=panelNr+1;
                 subplot(numel(S),numel(T),panelNr)
                 plotOneCurve(T{t},options{:});
+                hold on %grgrg
                 title(['SF=' num2str(T{t}.SF(1)) ',TF=' num2str(T{t}.TF(1))]); 
             end
         end
@@ -48,16 +49,20 @@ function plotOneCurve(TC,varargin)
     Y=TC.meanDFoF{1};
     E=TC.sdDFoF{1}./sqrt(TC.nDFoF{1}); % standard error of the mean
     if p.Results.bayesfit
+        plot(X,Y,'o','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
         errorbar(X,Y,E,'o','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
         hold on
-        %curveName=TC.dpxBayesPhysV1{1};
-        %curveName(curveName=='_')=' ';
+        curveName=TC.dpxBayesPhysV1{1};
+        curveName(curveName=='_')=' ';
         %dpxText(curveName);
         plot(TC.dpxBayesPhysV1x{1},TC.dpxBayesPhysV1y{1},'-','Color',col);
     else
+        plot(X,Y,'o-','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
         errorbar(X,Y,E,'o-','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
     end
-   	k=axis;
-    axis([-5 360 k(3) k(4)]);
+   	%k=axis;
+    %axis([-20 380 k(3) k(4)]);
+    xlim([-20 380])
+    'YLim(auto)'; 
     set(gca,'XTick',X);
 end

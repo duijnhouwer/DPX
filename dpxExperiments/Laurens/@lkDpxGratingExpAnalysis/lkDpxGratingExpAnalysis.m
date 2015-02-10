@@ -67,7 +67,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             if nargin==0
                 neurotodoFile='';
             end
-            A.pause='perCell'; % 'perCell', 'perFile', 'never'
+            A.pause='perFile'; % 'perCell', 'perFile', 'never'
             A.todoListFileName=neurotodoFile; % note: this calls the function "set.todoListFileName"
             A.anaFunc='DirectionTuningCurve';
             A.anaOpts={};
