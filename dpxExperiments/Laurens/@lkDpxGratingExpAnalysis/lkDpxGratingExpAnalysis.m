@@ -1,6 +1,6 @@
 classdef lkDpxGratingExpAnalysis < hgsetget
     properties (Access=public)
-        % name of todoListFile, 
+        % name of todoListFile,
         % organized.
         todoListFileName;
         anaFunc;
@@ -80,39 +80,60 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 dpxDispFancy('A todo-list was loaded, but appears to contain no data files to run analyses on.');
                 return
             end
+            infoRequest=[A.calcCommandString '(''info'')']; % e.g. 'calcDirectionTuningCurve('info')'
+            I=eval(infoRequest);
+            if strcmpi(I.per,'cell')
+                output=A.runPerCell();
+            elseif strcmpi(I.per,'file')
+                output=A.runPerFile();
+            else
+                error([infoRequest ' returned an invalid ''per'' option: ''' I.per ''' (should be ''cell'' or ''file'').']);
+            end
+        end
+    end
+    methods (Access=private)
+        function str=calcCommandString(A)
+            str=['calc' A.anaFunc]; % e.g. 'calcDirectionTuningCurve'
+        end
+        function str=plotCommandString(A)
+            str=['plot' A.anaFunc]; % e.g. 'calcDirectionTuningCurve'
+        end
+        function output=runPerCell(A)
             for f=1:numel(A.filesToDo)
                 dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
                 nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
-                calcCommandString=['calc' A.anaFunc]; % e.g. 'calcDirectionTuningCurve'
-                plotCommandString=['plot' A.anaFunc]; % e.g. 'plotDirectionTuningCurve'
                 tel=0;
                 for c=1:numel(nList)
                     tel=tel+1;
-                    output{tel}=eval([calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
+                    output{tel}=eval([A.calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
                     % add filename and cell numer
-                    output{tel}.file{3}=A.filesToDo{f}; %#ok<AGROW>
-                    output{tel}.cellNumber=nList(c); %#ok<AGROW> 
+                    output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
+                    output{tel}.cellNumber=nList(c); %#ok<AGROW>
                     if ~strcmpi(A.pause,'never')
                         figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
-                        eval([plotCommandString '(output{tel});']);
+                        eval([A.plotCommandString '(output{tel});']);
                     end
                     if strcmpi(A.pause,'perCell')
                         dpxTileFigs;
                         [~,filestem]=fileparts(A.filesToDo{f});
-                        input(['Showing ' plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
+                        disp(['Showing ' A.plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo))]);
+                        input('<<Any key to continue>>');
                         close(figHandle);
                     end
                 end
                 if strcmpi(A.pause,'perFile')
                     dpxTileFigs;
                     [~,filestem]=fileparts(A.filesToDo{f});
-                    input(['Showing ' plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) '). <<Any key to continue>>']);
+                    disp(['Showing ' A.plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) ').']);
+                    input('<<Any key to continue>>');
                     close all;
                 end
                 % Merge all the outputs into a single DPXD
                 output=dpxdMerge(output);
             end
-        end         
+            function output=runPerFile(A)
+            end
+        end
     end
     methods % set and get functions
         function set.todoListFileName(A,value)
@@ -135,11 +156,53 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             try
                 options={'perCell','perFile','never'};
                 if ~any(strcmpi(value,options))
-                   error; % skip to catch block
+                    error; % skip to catch block
                 end
                 A.pause=value;
             catch me
                 error(['pause should be one of: ' dpxCellOptionsToStr(options) '.']);
+            end
+        end
+        function set.anaFunc(A,value)
+            anaFuncFolder=[fileparts(mfilename('fullpath')) filesep 'private' filesep];
+            calcs={};
+            plots={};
+            K=dir(anaFuncFolder);
+            dispAnaFuncFolder=anaFuncFolder;
+            dispAnaFuncFolder(dispAnaFuncFolder=='\')='/';
+            for i=1:numel(K)
+                if numel(K(i).name)<4+1+2 % calc + at least one letter + .m
+                    continue;
+                elseif strncmp(K(i).name,'calc',4)
+                    calcs{end+1}=K(i).name(5:end-2);
+                elseif strncmp(K(i).name,'plot',4)
+                    plots{end+1}=K(i).name(5:end-2);
+                end
+            end
+            hasCalc=any(strcmp(value,calcs));
+            hasPlot=any(strcmp(value,plots));
+            errstr='';
+            if ~any(strcmp(value,calcs))
+                errstr=['Illegal anaFunc option: ''' value ''', because: '];
+                errstr=[errstr '\n   The file ''' dispAnaFuncFolder 'calc' value '.m'''' does not exist.'];
+            end
+            if ~any(strcmp(value,plots));
+                if isempty(errstr)
+                    errstr=['Illegal anaFunc option: ''' value ''', because: '];
+                end
+                errstr=[errstr '\n   The file ''' dispAnaFuncFolder 'plot' value '.m'''' does not exist.'];
+            end
+            if ~isempty(errstr)
+                OK=intersect(calcs,plots);
+                if numel(OK)>0
+                    errstr=[errstr '\nValid options are:'];
+                    for i=1:numel(OK)
+                        errstr=[errstr '\n   ''' OK{i} '''']; %#ok<AGROW>
+                    end
+                end
+                error('arbitrary:messageid',errstr);
+            else
+                A.anaFunc=value;
             end
         end
     end

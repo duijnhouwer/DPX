@@ -1,5 +1,9 @@
 function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     
+    if nargin==1 && strcmp(dpxd,'info')
+        tc.per='cell';
+        return;
+    end
     % This function calculates a direction tuning curve from a
     % lkDpxExpGrating-DPXD struct, its output can be plot with the
     % complementary plotDirectionTuningCurve

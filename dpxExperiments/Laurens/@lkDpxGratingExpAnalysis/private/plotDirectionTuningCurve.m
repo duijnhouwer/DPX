@@ -26,6 +26,7 @@ function plotDirectionTuningCurve(TC,i,varargin)
     xlabel('Direction (deg)');
     ylabel('mean dFoF');
     set(gca,'XTick',X);
-    titStr=[TC.file{i} ' c' num2str(TC.cellNumber(i),'%.3d')];
+    [~,fname]=fileparts(TC.file{i}); % drop path, too long
+    titStr=[fname ' c' num2str(TC.cellNumber(i),'%.3d')];
     title(titStr,'Interpreter','none');
 end

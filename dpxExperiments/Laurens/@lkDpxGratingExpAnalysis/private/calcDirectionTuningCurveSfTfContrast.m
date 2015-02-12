@@ -9,7 +9,10 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
     % calcDirectionTuningCurve to get a direction for each subset of data.
     %
     % See also: plotDirectionTuningCurveSfTfContrast
-    
+    if nargin==1 && strcmp(dpxd,'info')
+        tc.per='cell';
+        return;
+    end
     tc={};
     C=dpxdSplit(dpxd,'grating_contrastFrac');
     for c=1:numel(C)
