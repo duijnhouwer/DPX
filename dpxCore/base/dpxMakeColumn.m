@@ -1,6 +1,6 @@
 function v=dpxMakeColumn(v)
 
-% function v=jdMakeColumn(v)
+% function v=dpxMakeColumn(v)
 % checks if v is a vector (row or column) and makes sure v is a column on
 % return.
 % See also: dpxMakeRow
