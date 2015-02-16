@@ -81,7 +81,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 return
             end
             infoRequest=[A.calcCommandString '(''info'')']; % e.g. 'calcDirectionTuningCurve('info')'
-            I=eval(infoRequest);
+            I=eval(infoRequest);         
             if strcmpi(I.per,'cell')
                 output=A.runPerCell();
             elseif strcmpi(I.per,'file')
@@ -100,7 +100,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         end
         function output=runPerCell(A)
             for f=1:numel(A.filesToDo)
-                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
+                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd now is a DPX-Data structure
                 nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
                 tel=0;
                 for c=1:numel(nList)
@@ -128,11 +128,26 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                     input('<<Any key to continue>>');
                     close all;
                 end
-                % Merge all the outputs into a single DPXD
-                output=dpxdMerge(output);
+                output=dpxdMerge(output); % Merge all the outputs into a single DPXD
             end
-            function output=runPerFile(A)
+        end
+        function output=runPerFile(A)
+            output={};
+            for f=1:numel(A.filesToDo)
+                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd now is a DPX-Data structure
+                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
+                output{f}=eval([A.calcCommandString '(dpxd,nList,A.anaOpts{:});']); %#ok<AGROW>
+                if ~strcmpi(A.pause,'never')
+                    figHandle=dpxFindFig([A.filesToDo{f} num2str(numel(nList)) ' cells']);
+                    eval([A.plotCommandString '(output{tel});']);
+                    dpxTileFigs;
+                    [~,filestem]=fileparts(A.filesToDo{f});
+                    disp(['Showing ' A.plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) ').']);
+                    input('<<Any key to continue>>');
+                    close all;
+                end
             end
+            output=dpxdMerge(output); % Merge all the outputs into a single DPXD
         end
     end
     methods % set and get functions
