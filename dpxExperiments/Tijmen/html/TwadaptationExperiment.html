@@ -1,0 +1,371 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>TwadaptationExperiment</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-01-12"><meta name="DC.source" content="TwadaptationExperiment.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> TWdpxExample
+<span class="comment">% 12-01-15</span>
+<span class="comment">% Binocular rivalry experiment with gratings</span>
+
+clear <span class="string">all</span>; clf;
+
+E=dpxCoreExperiment;
+E.expName=<span class="string">'TWdpxExample'</span>;
+E.txtStart = <span class="string">'Press and release $STARTKEY to start. Use left/ right key to respond.'</span>;
+E.txtEnd= <span class="string">'The End'</span>;
+<span class="comment">%E.breakFixTimeOutSec: 0.5000</span>
+
+<span class="comment">%E.outputFolder='C:\dpxData\';</span>
+E.scr.set(<span class="string">'winRectPx'</span>,[],<span class="string">'widHeiMm'</span>,[390 295],<span class="string">'distMm'</span>,1000, <span class="keyword">...</span>
+        <span class="string">'interEyeMm'</span>,65,<span class="string">'gamma'</span>,1,<span class="string">'backRGBA'</span>,[.5 .5 .5 1], <span class="keyword">...</span>
+        <span class="string">'stereoMode'</span>,<span class="string">'mono'</span>,<span class="string">'skipSyncTests'</span>,0,<span class="string">'scrNr'</span>,0);
+
+<span class="comment">%Toff= [0.125, 0.25, 0.5, 1, 2];</span>
+Toff=0.5;
+Ton=2;
+
+<span class="keyword">for</span> c=1:numel(Toff)
+    C=dpxCoreCondition;
+    C.durSec = Ton+Toff(c);
+
+    tic;
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        <span class="comment">% STIMULUS presntation at the left side of the screen</span>
+
+        LeftCheck=dpxStimCheckerboard;
+        LeftCheck.name=<span class="string">'checksLeft'</span>;
+        LeftCheck.RGBAfrac=[.5 .5 .5 1];
+        LeftCheck.xDeg=-5;
+        LeftCheck.wDeg=4.2;
+        LeftCheck.hDeg=4.2;
+        LeftCheck.contrast=.9;
+        LeftCheck.nHoleHori=8;
+        LeftCheck.nHoleVert=8;
+        LeftCheck.sparseness=0;
+        LeftCheck.onSec = Toff(c);
+        LeftCheck.durSec = Ton;
+        C.addStim(LeftCheck);
+
+        ML = dpxStimMaskCircle;
+        ML.name=<span class="string">'maskLeft'</span>;
+        ML.xDeg=-5;
+        ML.hDeg = 2.4;
+        ML.wDeg = 2.4;
+        ML.innerDiamDeg=.5;
+        ML.outerDiamDeg=1;
+        ML.RGBAfrac=[.5 .5 .5 1];
+        ML.onSec = Toff(c);
+        ML.durSec=Ton;
+        C.addStim(ML);
+
+        GL = dpxStimGrating;
+        GL.name = <span class="string">'gratingLeft'</span>;
+        GL.xDeg=-5;
+        GL.dirDeg=45;
+        GL.squareWave=false;
+        GL.gEnvelope=true;
+        GL.cyclesPerSecond=0;
+        GL.cyclesPerDeg=6;
+        GL.wDeg=1.5;
+        GL.hDeg=1.5;
+        GL.onSec = Toff(c);
+        GL.durSec=Ton;
+        C.addStim(GL);
+
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        <span class="comment">% STIMULUS presentation at the right side of the screen</span>
+
+        RightCheck=dpxStimCheckerboard;
+        RightCheck.name=<span class="string">'checksRight'</span>;
+        RightCheck.RGBAfrac=[.5 .5 .5 1];
+        RightCheck.xDeg=5;
+        RightCheck.wDeg=4.2;
+        RightCheck.hDeg=4.2;
+        RightCheck.contrast=.9;
+        RightCheck.nHoleHori=8;
+        RightCheck.nHoleVert=8;
+        RightCheck.sparseness=0;
+        RightCheck.onSec = Toff(c);
+        RightCheck.durSec=Ton;
+        RightCheck.rndSeed=LeftCheck.rndSeed;
+        C.addStim(RightCheck);
+
+        MR = dpxStimMaskCircle;
+        MR.name=<span class="string">'maskRight'</span>;
+        MR.xDeg=5;
+        MR.hDeg = 2.4;
+        MR.wDeg = 2.4;
+        MR.innerDiamDeg=.5;
+        MR.outerDiamDeg=1;
+        MR.RGBAfrac=[.5 .5 .5 1];
+        MR.onSec = Toff(c);
+        MR.durSec=Ton;
+        C.addStim(MR);
+
+        GR = dpxStimGrating;
+        GR.name = <span class="string">'gratingRight'</span>;
+        GR.xDeg=5;
+        GR.dirDeg=-45;
+        GR.squareWave=false;
+        GR.gEnvelope=false;
+        GR.cyclesPerSecond=0;
+        GR.cyclesPerDeg=6;
+        GR.wDeg=1.5;
+        GR.hDeg=1.5;
+        GR.onSec=Toff(c);
+        GR.durSec=Ton;
+        C.addStim(GR);
+
+        CY = dpxSFM;
+<span class="comment">%         CY.name = 'cylinder';</span>
+<span class="comment">%         CY.axis,'vertsphere';</span>
+        <span class="comment">%CY.speedDps = 0.1;</span>
+        CY.wDeg=5;
+        CY.hDeg=5;
+        C.addStim(CY);
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        <span class="comment">%RESPONSE</span>
+
+        R=dpxRespKeyboard;
+        R.name=<span class="string">'keyboard'</span>;
+        R.kbNames=<span class="string">'LeftArrow,RightArrow'</span>;
+        R.allowAfterSec=Toff(c);
+        R.correctEndsTrialAfterSec=GR.onSec+GR.durSec;
+        C.addResp(R);
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+        E.addCondition(C);
+
+<span class="keyword">end</span>
+    E.nRepeats=5;
+    E.run;
+    sca;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Warning: 'svn' is not recognized as an internal or external command,
+operable program or batch file.
+ 
+INFO: Initial invocation of the PsychHID mex file failed.
+INFO: Most likely a required DLL is not installed in your system, e.g., libusb-1.0.dll
+INFO: I will now check if this is the culprit and work around it. To avoid future warnings,
+INFO: please copy the 64-Bit libusb-1.0.dll from the PsychContributed\x64 folder into your C:\WINDOWS\system32\ 
+INFO: folder or a similarly appropriate place. You can get a fresher copy of libusb-1.0.dll from 
+INFO: http://libusb.org/wiki/windows_backend if you want to stay up to date.
+INFO: Retrying now, may fail...
+</pre><pre class="codeoutput">Error using input
+Cannot call INPUT from EVALC.
+
+Error in dpxGetValidId (line 3)
+        id=strtrim(upper(input(qstr,'s')));
+
+Error in dpxCoreExperiment/createFileName (line 291)
+            E.subjectId=dpxGetValidId('Subject ID &gt; ');
+
+Error in dpxCoreExperiment/run (line 66)
+                E.createFileName; % this function also asks for subject and experimenter IDs
+
+Error in TwadaptationExperiment (line 140)
+    E.run;
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+function TWdpxExample
+% 12-01-15 
+% Binocular rivalry experiment with gratings 
+
+clear all; clf;  
+
+E=dpxCoreExperiment;
+E.expName='TWdpxExample';
+E.txtStart = 'Press and release $STARTKEY to start. Use left/ right key to respond.';
+E.txtEnd= 'The End';
+%E.breakFixTimeOutSec: 0.5000
+ 
+%E.outputFolder='C:\dpxData\';
+E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
+        'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
+        'stereoMode','mono','skipSyncTests',0,'scrNr',0);
+    
+%Toff= [0.125, 0.25, 0.5, 1, 2];
+Toff=0.5;
+Ton=2;
+    
+for c=1:numel(Toff)
+    C=dpxCoreCondition;     
+    C.durSec = Ton+Toff(c);
+    
+    tic;
+    
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % STIMULUS presntation at the left side of the screen
+                 
+        LeftCheck=dpxStimCheckerboard;
+        LeftCheck.name='checksLeft';
+        LeftCheck.RGBAfrac=[.5 .5 .5 1];
+        LeftCheck.xDeg=-5;
+        LeftCheck.wDeg=4.2;
+        LeftCheck.hDeg=4.2;
+        LeftCheck.contrast=.9;
+        LeftCheck.nHoleHori=8;
+        LeftCheck.nHoleVert=8;
+        LeftCheck.sparseness=0;
+        LeftCheck.onSec = Toff(c);
+        LeftCheck.durSec = Ton; 
+        C.addStim(LeftCheck);
+   
+        ML = dpxStimMaskCircle;
+        ML.name='maskLeft';
+        ML.xDeg=-5;
+        ML.hDeg = 2.4; 
+        ML.wDeg = 2.4;
+        ML.innerDiamDeg=.5;
+        ML.outerDiamDeg=1;
+        ML.RGBAfrac=[.5 .5 .5 1];
+        ML.onSec = Toff(c);
+        ML.durSec=Ton; 
+        C.addStim(ML);
+    
+        GL = dpxStimGrating;
+        GL.name = 'gratingLeft';
+        GL.xDeg=-5;
+        GL.dirDeg=45;
+        GL.squareWave=false;
+        GL.gEnvelope=true; 
+        GL.cyclesPerSecond=0;
+        GL.cyclesPerDeg=6;
+        GL.wDeg=1.5;
+        GL.hDeg=1.5;    
+        GL.onSec = Toff(c);
+        GL.durSec=Ton; 
+        C.addStim(GL);
+
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % STIMULUS presentation at the right side of the screen
+        
+        RightCheck=dpxStimCheckerboard;
+        RightCheck.name='checksRight';
+        RightCheck.RGBAfrac=[.5 .5 .5 1];
+        RightCheck.xDeg=5;
+        RightCheck.wDeg=4.2;
+        RightCheck.hDeg=4.2;
+        RightCheck.contrast=.9;
+        RightCheck.nHoleHori=8;
+        RightCheck.nHoleVert=8;
+        RightCheck.sparseness=0;
+        RightCheck.onSec = Toff(c);
+        RightCheck.durSec=Ton; 
+        RightCheck.rndSeed=LeftCheck.rndSeed;
+        C.addStim(RightCheck);
+        
+        MR = dpxStimMaskCircle;
+        MR.name='maskRight';
+        MR.xDeg=5;
+        MR.hDeg = 2.4; 
+        MR.wDeg = 2.4;
+        MR.innerDiamDeg=.5;
+        MR.outerDiamDeg=1;
+        MR.RGBAfrac=[.5 .5 .5 1];
+        MR.onSec = Toff(c);
+        MR.durSec=Ton; 
+        C.addStim(MR);
+
+        GR = dpxStimGrating;
+        GR.name = 'gratingRight';
+        GR.xDeg=5;
+        GR.dirDeg=-45;
+        GR.squareWave=false;
+        GR.gEnvelope=false;
+        GR.cyclesPerSecond=0;
+        GR.cyclesPerDeg=6;
+        GR.wDeg=1.5;
+        GR.hDeg=1.5;      
+        GR.onSec=Toff(c);
+        GR.durSec=Ton;
+        C.addStim(GR);
+        
+        CY = dpxSFM;
+%         CY.name = 'cylinder';
+%         CY.axis,'vertsphere';
+        %CY.speedDps = 0.1; 
+        CY.wDeg=5;
+        CY.hDeg=5;
+        C.addStim(CY);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %RESPONSE   
+        
+        R=dpxRespKeyboard;
+        R.name='keyboard';
+        R.kbNames='LeftArrow,RightArrow';
+        R.allowAfterSec=Toff(c);
+        R.correctEndsTrialAfterSec=GR.onSec+GR.durSec;
+        C.addResp(R);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        E.addCondition(C); 
+        
+end
+    E.nRepeats=5;
+    E.run;
+    sca; 
+end
+
+##### SOURCE END #####
+--></body></html>
