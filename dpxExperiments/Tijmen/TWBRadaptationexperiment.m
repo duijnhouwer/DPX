@@ -69,7 +69,7 @@ for Ton=[8, 1];
         LeftCheck.durSec = Ton; 
         C.addStim(LeftCheck);
         
-        ML = dpxStimMaskCircle;
+        ML = dpxStimMask;
         ML.name='maskLeft';
         ML.xDeg=0;
         ML.hDeg = 3.2; 
@@ -115,7 +115,7 @@ for Ton=[8, 1];
         %RightCheck.rndSeed=LeftCheck.rndSeed;
         C.addStim(RightCheck);
         
-        MR = dpxStimMaskCircle;
+        MR = dpxStimMask;
         MR.name='maskRight';
         MR.xDeg=0;
         MR.hDeg = 3.2; 
@@ -255,8 +255,8 @@ for i = 1:length(Toff)
         C.addStim(LeftCheck);
         
         for nRepeats=1:rep
-        ML = dpxStimMaskCircle;
-        ML.name = sprintf('MaskCircleLeft%d', nRepeats);
+        ML = dpxStimMask;
+        ML.name = sprintf('MaskLeft%d', nRepeats);
         ML.xDeg=0;
         ML.hDeg = 3.2; 
         ML.wDeg = 3.2;
@@ -307,8 +307,8 @@ for i = 1:length(Toff)
         C.addStim(RightCheck);
         
         for nRepeats =1:rep
-        MR = dpxStimMaskCircle;
-        MR.name = sprintf('MaskCircleRight%d', nRepeats);
+        MR = dpxStimMask;
+        MR.name = sprintf('MaskRight%d', nRepeats);
         MR.xDeg = 0;
         MR.hDeg = 3.2; 
         MR.wDeg = 3.2;
