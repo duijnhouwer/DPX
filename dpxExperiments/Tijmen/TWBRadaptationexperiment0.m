@@ -34,14 +34,14 @@ E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % sc
         'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
 end
 
-trialLength=60; 
+trialLength=30; 
 % generate Toff Times with a shuffled order
 Toff = [0.25,0.5,1]; 
 shuffle = [randperm(3); Toff]; 
 Toff = sortrows(shuffle',1); 
 Toff = Toff(:,2);
 k = 0; 
-cont0 = 8;                                                                  % s, this should be 480 for the 'real experiment'
+cont0 = 2;                                                                  % s, this should be 480 for the 'real experiment'
 adap0 = 1;                                                                  % S, this should be 1 for the 'real experiment'
 
 for Ton=[cont0, adap0];   
@@ -137,26 +137,27 @@ for Ton=[cont0, adap0];
         GR.hDeg=2.2;      
         GR.durSec=Ton;
         C.addStim(GR);
+
+        RL0 = dpxRespContiKeyboard
+        RL0.name='keyboardl';
+        RL0.kbName='LeftControl';
+        C.addResp(RL0); 
         
-        if Ton==cont0
-        R=dpxRespKeyboard;
-        R.name='keyboard1';
-        R.kbNames='LeftControl,RightControl';
-        R.allowAfterSec=0;
-        R.correctEndsTrialAfterSec=Ton;
-        C.addResp(R);
-        end  
-           
-        E.addCondition(C);        
+        RR0 = dpxRespContiKeyboard
+        RR0.name='keyboardr';
+        RR0.kbName='RightControl';
+        C.addResp(RR0);
+        
+        E.addCondition(C);  
+
 end
-        
 for i = 1:length(Toff)
     D = dpxCoreCondition;
     D.durSec = Inf;
     
     if i<3
-        cont = 30; 
-        adap= 30;  
+        cont = 1; 
+        adap= 1;  
     else 
         cont = []; 
         adap = [];                                                          % scraps the two (unnecessary) adaptation trials at the end 
@@ -173,7 +174,7 @@ for i = 1:length(Toff)
         C = dpxCoreCondition; 
         B = dpxCoreCondition;
         
-        if Ton==60
+        if Ton==trialLength
         offTime = Toff(i); 
         else 
         offTime = 0;
@@ -282,14 +283,18 @@ for i = 1:length(Toff)
         C.addStim(GR);
         end
         
-        if j < 3
-        R=dpxRespKeyboard;
-        R.name='keyboard3';
-        R.kbNames='LeftControl,RightControl';
-        R.allowAfterSec=0;
-        R.correctEndsTrialAfterSec=Ton;
-        C.addResp(R);
-        end
+        Lnames = ['Lkeyboard1'; 'Lkeyboard2'; 'Lkeyboard3']; 
+        Rnames = ['Rkeyboard1'; 'Rkeyboard2'; 'Rkeyboard3']; 
+
+        RL = dpxRespContiKeyboard
+        RL.name=Lnames(j,:); 
+        RL.kbName='LeftControl';
+        C.addResp(RL); 
+        
+        RR = dpxRespContiKeyboard
+        RR.name=Rnames(j,:); 
+        RR.kbName='RightControl';
+        C.addResp(RR);
         
       E.addCondition(B);   
       E.addCondition(C); 
