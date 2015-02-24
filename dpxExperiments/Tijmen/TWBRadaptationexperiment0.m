@@ -41,8 +41,8 @@ shuffle = [randperm(3); Toff];
 Toff = sortrows(shuffle',1); 
 Toff = Toff(:,2);
 k = 0; 
-cont0 = 480;                                                                 % s, this should be 480 for the 'real experiment'
-adap0 = 60;                                                                  % s, this should be 1 for the 'real experiment'
+cont0 = 8;                                                                 % s, this should be 480 for the 'real experiment'
+adap0 = 1;                                                                  % s, this should be 1 for the 'real experiment'
 
 for Ton=[cont0, adap0];   
     k=k+1;
@@ -73,7 +73,7 @@ for Ton=[cont0, adap0];
         ML.hDeg = 100/W.deg2px; 
         ML.wDeg = 100/W.deg2px;
         ML.innerDiamDeg=0;
-        ML.outerDiamDeg=2.2;
+        ML.outerDiamDeg=(50)/W.deg2px;
         ML.RGBAfrac=[.5 .5 .5 1];
         ML.durSec=Ton; 
         C.addStim(ML);
@@ -118,8 +118,8 @@ for Ton=[cont0, adap0];
         MR = dpxStimMaskCircle;
         MR.name='MaskCircleRight';
         MR.xDeg=0;
-        MR.hDeg = 3.2; 
-        MR.wDeg = 3.2;
+        MR.hDeg = 100/W.deg2px;; 
+        MR.wDeg = 100/W.deg2px;;
         MR.innerDiamDeg=0;
         MR.outerDiamDeg=2.2;
         MR.RGBAfrac=[.5 .5 .5 1];
@@ -133,8 +133,8 @@ for Ton=[cont0, adap0];
         GR.squareWave=false;
         GR.cyclesPerSecond=0;
         GR.cyclesPerDeg=1.75;
-        GR.wDeg=2.2;
-        GR.hDeg=2.2;      
+        GR.wDeg=(50*sqrt(2))/W.deg2px;
+        GR.hDeg=(50*sqrt(2))/W.deg2px;      
         GR.durSec=Ton;
         C.addStim(GR);
 
@@ -206,8 +206,8 @@ end
 %         ML = dpxStimMaskCircle;
 %         ML.name = sprintf('MaskCircleLeft%d', nRepeats);
 %         ML.xDeg=0;
-%         ML.hDeg = 3.2; 
-%         ML.wDeg = 3.2;
+%         ML.hDeg = 100/W.deg2px;; 
+%         ML.wDeg = 100/W.deg2px;;
 %         ML.innerDiamDeg=0;
 %         ML.outerDiamDeg=2.2;
 %         ML.RGBAfrac=[.5 .5 .5 1];
@@ -222,8 +222,8 @@ end
 %         GL.squareWave=false;
 %         GL.cyclesPerSecond=0;
 %         GL.cyclesPerDeg=1.75;
-%         GL.wDeg=2.2;
-%         GL.hDeg=2.2;    
+%         GL.wDeg=(50*sqrt(2))/W.deg2px;
+%         GL.hDeg=(50*sqrt(2))/W.deg2px;    
 %         GL.durSec = 1; 
 %         GL.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GL);
@@ -243,8 +243,8 @@ end
 %         RightCheck.name='checksRight';
 %         RightCheck.RGBAfrac=[1 1 1 1];
 %         RightCheck.xDeg=0;
-%         RightCheck.wDeg=200/W.deg2px;
-%         RightCheck.hDeg=200/W.deg2px;
+%         RightCheck.wDeg=125/W.deg2px;
+%         RightCheck.hDeg=125/W.deg2px;
 %         RightCheck.contrast=.75;
 %         RightCheck.nHori=18;
 %         RightCheck.nVert=18;
@@ -260,8 +260,8 @@ end
 %         MR = dpxStimMaskCircle;
 %         MR.name = sprintf('MaskCircleRight%d', nRepeats);
 %         MR.xDeg = 0;
-%         MR.hDeg = 3.2; 
-%         MR.wDeg = 3.2;
+%         MR.hDeg = 100/W.deg2px;; 
+%         MR.wDeg = 100/W.deg2px;;
 %         MR.innerDiamDeg=0;
 %         MR.outerDiamDeg=2.2;
 %         MR.RGBAfrac=[.5 .5 .5 1];
@@ -276,8 +276,8 @@ end
 %         GR.squareWave=false;
 %         GR.cyclesPerSecond=0;
 %         GR.cyclesPerDeg=1.75;
-%         GR.wDeg=2.2;
-%         GR.hDeg=2.2;      
+%         GR.wDeg=(50*sqrt(2))/W.deg2px;
+%         GR.hDeg=(50*sqrt(2))/W.deg2px;      
 %         GR.durSec = 1;
 %         GR.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GR);

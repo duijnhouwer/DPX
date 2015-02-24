@@ -11,9 +11,7 @@ Language = input('NL(1)/EN(2):');
 if Language ==1
 E.txtStart=sprintf('Druk op $STARTKEY en laat deze los om het experiment te starten.\nReageer met de linker- en rechtertoetspijl\n');
 E.txtEnd= 'Einde';
-end
-
-if Language ==2
+elseif Language ==2
 E.txtStart = sprintf('Press and release $STARTKEY to start the experiment. \nUse left and right key to respond\n');
 E.txtEnd= 'The End';
 end
@@ -21,6 +19,7 @@ end
 E.breakFixTimeOutSec=0.5;
  
 %E.outputFolder='C:\dpxData\';
+
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
         'stereoMode','mono','skipSyncTests',0,'scrNr',0);
@@ -69,7 +68,7 @@ for c=1:numel(Toff)
         Dot.xDeg=5; 
         C.addStim(Dot);
  
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %RESPONSE   
         
         R=dpxRespKeyboard;

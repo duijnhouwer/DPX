@@ -12,8 +12,7 @@ classdef dpxSFM < dpxAbstractStim
         veloSinus; 
         veloDecline; 
         kFrac;
-        pxStepsize 
-        dt; 
+        pxStepsize
     end
     
     properties (Access=protected)
@@ -25,7 +24,6 @@ classdef dpxSFM < dpxAbstractStim
         dotDiamPx;
         dotsRGBA;
         k; 
-        x0; 
     end
     
     methods (Access=public)
@@ -33,17 +31,17 @@ classdef dpxSFM < dpxAbstractStim
             S.dirDeg=0;
             S.wDeg=2;
             S.hDeg=2;
-            S.dotsPerSqrDeg=pi* S.hDeg.^2; 
+            S.dotsPerSqrDeg=2*pi* S.hDeg.^2*2; 
             S.speedDps = 1;     %not really important anymore, use pxStepSize to raise speed
-            S.pxStepsize = 1/100; 
+            S.pxStepsize = 4; 
             S.apert='circle';
             S.cohereFrac=1; 
             S.dotDiamDeg=.1;
+            S.dotRBGAfrac=[0 0 0 1];
             S.kFrac = .5;       % direction coherence
-            S.dotRBGAfrac=[1 1 1 1];
+            S.dotRBGAfrac=[0 0 0 1];
             S.veloSinus = 0; 
-            S.veloDecline=.95;  % decline: the velocity at the edges is 10% of the velocity at x=0
-            S.dt=0; 
+            S.veloDecline=0.9;  % decline: the velocity at the edges is 10% of the velocity at x=0
         end
     end
     
@@ -54,7 +52,6 @@ classdef dpxSFM < dpxAbstractStim
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
             S.dotXPx = S.RND.rand(1,N) * S.wPx-S.wPx/2;
-            S.x0 = S.dotXPx;
             S.dotYPx = S.RND.rand(1,N) * S.hPx-S.hPx/2;
             S.dotDirDeg = ones(1,N) * S.dirDeg;
             
@@ -69,51 +66,44 @@ classdef dpxSFM < dpxAbstractStim
                 idx = S.RND.rand(1,N)<S.kFrac;
                 S.k = zeros(1,N); 
                 S.k(:, idx) = 1; 
-                S.k(:, ~idx)=-1;  
+                S.k(:, ~idx)=-1;     
             end
           
             S.pxPerFlip = S.speedDps .* D2P / S.scrGets.measuredFrameRate;
-            S.dotsRGBA(:,1:N) = repmat(S.dotRBGAfrac(:)*F2I,1,N); 
+            S.dotsRGBA(:,1:N) = repmat(S.dotRBGAfrac(:)*F2I,1,N);
         end
         
         function myDraw(S)
             ok=applyTheAperture(S);
             if ~any(ok), return; end
             xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-            Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,1);
+            Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx/2,S.dotsRGBA(:,ok),S.winCntrXYpx,1);
         end
         function myStep(S)            
             x=S.dotXPx;
             y=S.dotYPx;
             w=S.wPx;
             h=S.hPx;
-            R=min(h,w)/2; 
-            B = sqrt(R.^2-y.^2); 
+            R=min(h,w)/2;  
+            B = sqrt(R.^2 - y.^2);   
             C = R.*cos((pi/(2*R)).*y); 
             increment = S.pxStepsize*S.pxPerFlip*ones(1,S.nDots);
+            decline = pi/asin(S.veloDecline); 
+            dx =((C)./(pi*S.pxPerFlip*2)).*(sin(((pi)./(decline*B)).*(x+S.k.*increment)) - sin((pi./(decline*B)).*x)); 
+            dy =0*S.pxPerFlip; 
             
-            S.dt = S.dt+increment; 
-            omega = (2*pi)./4; 
-            phi = acos(S.x0./R); 
-            x = B.*cos(omega.*S.dt.*S.k + phi); 
-            
-%             decline = pi/asin(S.veloDecline); 
-%             dx =((C)./(pi*S.pxPerFlip*2)).*(sin(((pi)./(decline*B)).*(x+S.k.*increment)) - sin((pi./(decline*B)).*x)); 
-%             dy =0*S.pxPerFlip;
-%             
-%             
-%               x=x+dx;        
-%               y=y+dy; 
-%               B = sqrt(R^2 - y.^2);  
-%               r=hypot(x,y);
-%               
-%                 if x(abs(x)>=B)
-%                    S.k(abs(x)>=B) = -1*S.k(abs(x)>=B); 
-%                end
-
-             S.dotXPx=x;
-             S.dotYPx=y;
-        end       
+              x=x+dx;        
+              y=y+dy; 
+              B = sqrt(R^2 - y.^2);  
+              r=hypot(x,y);
+              
+              if x(abs(x)>=B)
+                  S.k(abs(x)>=B) = -1*S.k(abs(x)>=B); 
+              end
+                  
+            S.dotXPx=x;
+            S.dotYPx=y;
+        end      
     end 
 end
 % --- HELP FUNCTION ------------------------------------------------------
