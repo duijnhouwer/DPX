@@ -44,113 +44,113 @@ k = 0;
 cont0 = 2;                                                                  % s, this should be 480 for the 'real experiment'
 adap0 = 1;                                                                  % S, this should be 1 for the 'real experiment'
 
-for Ton=[cont0, adap0];   
-    k=k+1;
-    C=dpxCoreCondition;    
-    C.durSec = Ton;
-     
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the left side of the screen
-                 
-        LeftCheck=dpxStimCheckerboard;
-        LeftCheck.name='checksLeft';
-        LeftCheck.RGBAfrac=[1 1 1 1];
-        LeftCheck.xDeg=0;
-        LeftCheck.wDeg=200/W.deg2px;
-        LeftCheck.hDeg=200/W.deg2px; 
-        LeftCheck.contrast=.75;
-        LeftCheck.nHoleHori=10;
-        LeftCheck.nHoleVert=10;
-        LeftCheck.nHori=18;
-        LeftCheck.nVert=18;
-        LeftCheck.sparseness=2/3;
-        LeftCheck.durSec = Ton; 
-        C.addStim(LeftCheck);
-        
-        ML = dpxStimMaskCircle;
-        ML.name='MaskCircleLeft';
-        ML.xDeg=0;
-        ML.hDeg = 3.2; 
-        ML.wDeg = 3.2;
-        ML.innerDiamDeg=0;
-        ML.outerDiamDeg=2.2;
-        ML.RGBAfrac=[.5 .5 .5 1];
-        ML.durSec=Ton; 
-        C.addStim(ML);
-    
-        GL = dpxStimGrating;
-        GL.name = 'gratingLeft';
-        GL.xDeg=0;
-        GL.dirDeg=-45;
-        GL.squareWave=false;
-        GL.cyclesPerSecond=0;
-        GL.cyclesPerDeg=1.75;
-        GL.wDeg=2.2;
-        GL.hDeg=2.2;    
-        GL.durSec=Ton; 
-        C.addStim(GL);
-          
-        Dot = dpxStimDot;
-        Dot.name = 'Dot';
-        Dot.xDeg=0; 
-        Dot.wDeg=0;
-        Dot.hDeg=0;
-        C.addStim(Dot);
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the right side of the screen
-        
-        RightCheck = dpxStimCheckerboard;
-        RightCheck.name='checksRight';
-        RightCheck.RGBAfrac=[1 1 1 1];
-        RightCheck.xDeg=0;
-        RightCheck.wDeg=200/W.deg2px;
-        RightCheck.hDeg=200/W.deg2px;
-        RightCheck.contrast=.75;
-        RightCheck.nHori=18;
-        RightCheck.nVert=18;
-        RightCheck.nHoleHori=10;
-        RightCheck.nHoleVert=10;
-        RightCheck.sparseness=2/3;
-        RightCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RightCheck);
-        
-        MR = dpxStimMaskCircle;
-        MR.name='MaskCircleRight';
-        MR.xDeg=0;
-        MR.hDeg = 3.2; 
-        MR.wDeg = 3.2;
-        MR.innerDiamDeg=0;
-        MR.outerDiamDeg=2.2;
-        MR.RGBAfrac=[.5 .5 .5 1];
-        MR.durSec=Ton; 
-        C.addStim(MR);
-
-        GR = dpxStimGrating;
-        GR.name = 'gratingRight';
-        GR.xDeg=0;
-        GR.dirDeg=45;
-        GR.squareWave=false;
-        GR.cyclesPerSecond=0;
-        GR.cyclesPerDeg=1.75;
-        GR.wDeg=2.2;
-        GR.hDeg=2.2;      
-        GR.durSec=Ton;
-        C.addStim(GR);
-
-        RL0 = dpxRespContiKeyboard
-        RL0.name='keyboardl';
-        RL0.kbName='LeftControl';
-        C.addResp(RL0); 
-        
-        RR0 = dpxRespContiKeyboard
-        RR0.name='keyboardr';
-        RR0.kbName='RightControl';
-        C.addResp(RR0);
-        
-        E.addCondition(C);  
-
-end
+% for Ton=[cont0, adap0];   
+%     k=k+1;
+%     C=dpxCoreCondition;    
+%     C.durSec = Ton;
+%      
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         % STIMULUS presentation at the left side of the screen
+%                  
+%         LeftCheck=dpxStimCheckerboard;
+%         LeftCheck.name='checksLeft';
+%         LeftCheck.RGBAfrac=[1 1 1 1];
+%         LeftCheck.xDeg=0;
+%         LeftCheck.wDeg=200/W.deg2px;
+%         LeftCheck.hDeg=200/W.deg2px; 
+%         LeftCheck.contrast=.75;
+%         LeftCheck.nHoleHori=10;
+%         LeftCheck.nHoleVert=10;
+%         LeftCheck.nHori=18;
+%         LeftCheck.nVert=18;
+%         LeftCheck.sparseness=2/3;
+%         LeftCheck.durSec = Ton; 
+%         C.addStim(LeftCheck);
+%         
+%         ML = dpxStimMaskCircle;
+%         ML.name='MaskCircleLeft';
+%         ML.xDeg=0;
+%         ML.hDeg = 3.2; 
+%         ML.wDeg = 3.2;
+%         ML.innerDiamDeg=0;
+%         ML.outerDiamDeg=2.2;
+%         ML.RGBAfrac=[.5 .5 .5 1];
+%         ML.durSec=Ton; 
+%         C.addStim(ML);
+%     
+%         GL = dpxStimGrating;
+%         GL.name = 'gratingLeft';
+%         GL.xDeg=0;
+%         GL.dirDeg=-45;
+%         GL.squareWave=false;
+%         GL.cyclesPerSecond=0;
+%         GL.cyclesPerDeg=1.75;
+%         GL.wDeg=2.2;
+%         GL.hDeg=2.2;    
+%         GL.durSec=Ton; 
+%         C.addStim(GL);
+%           
+%         Dot = dpxStimDot;
+%         Dot.name = 'Dot';
+%         Dot.xDeg=0; 
+%         Dot.wDeg=0;
+%         Dot.hDeg=0;
+%         C.addStim(Dot);
+%         
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         % STIMULUS presentation at the right side of the screen
+%         
+%         RightCheck = dpxStimCheckerboard;
+%         RightCheck.name='checksRight';
+%         RightCheck.RGBAfrac=[1 1 1 1];
+%         RightCheck.xDeg=0;
+%         RightCheck.wDeg=200/W.deg2px;
+%         RightCheck.hDeg=200/W.deg2px;
+%         RightCheck.contrast=.75;
+%         RightCheck.nHori=18;
+%         RightCheck.nVert=18;
+%         RightCheck.nHoleHori=10;
+%         RightCheck.nHoleVert=10;
+%         RightCheck.sparseness=2/3;
+%         RightCheck.rndSeed=LeftCheck.rndSeed;
+%         C.addStim(RightCheck);
+%         
+%         MR = dpxStimMaskCircle;
+%         MR.name='MaskCircleRight';
+%         MR.xDeg=0;
+%         MR.hDeg = 3.2; 
+%         MR.wDeg = 3.2;
+%         MR.innerDiamDeg=0;
+%         MR.outerDiamDeg=2.2;
+%         MR.RGBAfrac=[.5 .5 .5 1];
+%         MR.durSec=Ton; 
+%         C.addStim(MR);
+% 
+%         GR = dpxStimGrating;
+%         GR.name = 'gratingRight';
+%         GR.xDeg=0;
+%         GR.dirDeg=45;
+%         GR.squareWave=false;
+%         GR.cyclesPerSecond=0;
+%         GR.cyclesPerDeg=1.75;
+%         GR.wDeg=2.2;
+%         GR.hDeg=2.2;      
+%         GR.durSec=Ton;
+%         C.addStim(GR);
+% 
+%         RL0 = dpxRespContiKeyboard
+%         RL0.name='keyboardl';
+%         RL0.kbName='LeftControl';
+%         C.addResp(RL0); 
+%         
+%         RR0 = dpxRespContiKeyboard
+%         RR0.name='keyboardr';
+%         RR0.kbName='RightControl';
+%         C.addResp(RR0);
+%         
+%         E.addCondition(C);  
+% 
+% end
 for i = 1:length(Toff)
     D = dpxCoreCondition;
     D.durSec = Inf;
