@@ -23,7 +23,7 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=0;                                                                      % screen settings for philips screen
+set=1;                                                                      % screen settings for philips screen
 if set ==0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
@@ -41,45 +41,182 @@ shuffle = [randperm(3); Toff];
 Toff = sortrows(shuffle',1); 
 Toff = Toff(:,2);
 k = 0; 
-cont0 = 2;                                                                  % s, this should be 480 for the 'real experiment'
-adap0 = 1;                                                                  % S, this should be 1 for the 'real experiment'
+cont0 = 480;                                                                 % s, this should be 480 for the 'real experiment'
+adap0 = 60;                                                                  % s, this should be 1 for the 'real experiment'
 
-% for Ton=[cont0, adap0];   
-%     k=k+1;
-%     C=dpxCoreCondition;    
-%     C.durSec = Ton;
-%      
+for Ton=[cont0, adap0];   
+    k=k+1;
+    C=dpxCoreCondition;    
+    C.durSec = Ton;
+     
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % STIMULUS presentation at the left side of the screen
+                 
+        LeftCheck=dpxStimCheckerboard;
+        LeftCheck.name='checksLeft';
+        LeftCheck.RGBAfrac=[1 1 1 1];
+        LeftCheck.xDeg=0;
+        LeftCheck.wDeg=125/W.deg2px;
+        LeftCheck.hDeg=125/W.deg2px; 
+        LeftCheck.contrast=.75;
+        LeftCheck.nHoleHori=10;
+        LeftCheck.nHoleVert=10;
+        LeftCheck.nHori=18;
+        LeftCheck.nVert=18;
+        LeftCheck.sparseness=2/3;
+        LeftCheck.durSec = Ton; 
+        C.addStim(LeftCheck);
+        
+        ML = dpxStimMaskCircle;
+        ML.name='MaskCircleLeft';
+        ML.xDeg=0;
+        ML.hDeg = 100/W.deg2px; 
+        ML.wDeg = 100/W.deg2px;
+        ML.innerDiamDeg=0;
+        ML.outerDiamDeg=2.2;
+        ML.RGBAfrac=[.5 .5 .5 1];
+        ML.durSec=Ton; 
+        C.addStim(ML);
+    
+        GL = dpxStimGrating;
+        GL.name = 'gratingLeft'; 
+        GL.xDeg=0;
+        GL.dirDeg=-45;
+        GL.squareWave=false;
+        GL.cyclesPerSecond=0;
+        GL.cyclesPerDeg=1.75;
+        GL.wDeg=(50*sqrt(2))/W.deg2px;
+        GL.hDeg=(50*sqrt(2))/W.deg2px;    
+        GL.durSec=Ton; 
+        C.addStim(GL);
+          
+        Dot = dpxStimDot;
+        Dot.name = 'Dot';
+        Dot.xDeg=0; 
+        Dot.wDeg=0;
+        Dot.hDeg=0;
+        C.addStim(Dot);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % STIMULUS presentation at the right side of the screen
+        
+        RightCheck = dpxStimCheckerboard;
+        RightCheck.name='checksRight';
+        RightCheck.RGBAfrac=[1 1 1 1];
+        RightCheck.xDeg=0;
+        RightCheck.wDeg=125/W.deg2px;
+        RightCheck.hDeg=125/W.deg2px;
+        RightCheck.contrast=.75;
+        RightCheck.nHori=18;
+        RightCheck.nVert=18;
+        RightCheck.nHoleHori=10;
+        RightCheck.nHoleVert=10;
+        RightCheck.sparseness=2/3;
+        RightCheck.rndSeed=LeftCheck.rndSeed;
+        C.addStim(RightCheck);
+        
+        MR = dpxStimMaskCircle;
+        MR.name='MaskCircleRight';
+        MR.xDeg=0;
+        MR.hDeg = 3.2; 
+        MR.wDeg = 3.2;
+        MR.innerDiamDeg=0;
+        MR.outerDiamDeg=2.2;
+        MR.RGBAfrac=[.5 .5 .5 1];
+        MR.durSec=Ton; 
+        C.addStim(MR);
+
+        GR = dpxStimGrating;
+        GR.name = 'gratingRight';
+        GR.xDeg=0;
+        GR.dirDeg=45;
+        GR.squareWave=false;
+        GR.cyclesPerSecond=0;
+        GR.cyclesPerDeg=1.75;
+        GR.wDeg=2.2;
+        GR.hDeg=2.2;      
+        GR.durSec=Ton;
+        C.addStim(GR);
+
+        RL0 = dpxRespContiKeyboard
+        RL0.name='keyboardl';
+        RL0.kbName='LeftControl';
+        C.addResp(RL0); 
+        
+        RR0 = dpxRespContiKeyboard
+        RR0.name='keyboardr';
+        RR0.kbName='RightControl';
+        C.addResp(RR0);
+        
+        E.addCondition(C);  
+
+end
+% for i = 1:length(Toff)
+%     D = dpxCoreCondition;
+%     D.durSec = Inf;
+%     
+%     if i<3
+%         cont = 1; 
+%         adap= 1;  
+%     else 
+%         cont = []; 
+%         adap = [];                                                          % scraps the two (unnecessary) adaptation trials at the end 
+%     end
+%     
+%     rep = trialLength./(1+Toff(i));                                          % length of interleaved percept choice sequences = 60 seconds (1 min)  
+%     if mod(rep,1) ~0
+%         error('The trial length should be divisble by 30'); 
+%     end
+%     
+%     j = 0; 
+%     for Ton = [trialLength, cont, adap];
+%         j = j+1;
+%         C = dpxCoreCondition; 
+%         B = dpxCoreCondition;
+%         
+%         if Ton==trialLength
+%         offTime = Toff(i); 
+%         else 
+%         offTime = 0;
+%         end
+%         
+%         C.durSec = Ton;
+% 
+%         
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         % STIMULUS presentation at the left side of the screen
-%                  
+%         % STIMULUS presentation at the left side of the screen     
+%        
 %         LeftCheck=dpxStimCheckerboard;
 %         LeftCheck.name='checksLeft';
 %         LeftCheck.RGBAfrac=[1 1 1 1];
 %         LeftCheck.xDeg=0;
-%         LeftCheck.wDeg=200/W.deg2px;
-%         LeftCheck.hDeg=200/W.deg2px; 
+%         LeftCheck.wDeg=125/W.deg2px;
+%         LeftCheck.hDeg=125/W.deg2px; 
 %         LeftCheck.contrast=.75;
 %         LeftCheck.nHoleHori=10;
 %         LeftCheck.nHoleVert=10;
 %         LeftCheck.nHori=18;
 %         LeftCheck.nVert=18;
 %         LeftCheck.sparseness=2/3;
-%         LeftCheck.durSec = Ton; 
+%         LeftCheck.durSec = Inf; 
+%         LeftCheck.onSec = 0; 
 %         C.addStim(LeftCheck);
 %         
+%         for nRepeats=1:rep
 %         ML = dpxStimMaskCircle;
-%         ML.name='MaskCircleLeft';
+%         ML.name = sprintf('MaskCircleLeft%d', nRepeats);
 %         ML.xDeg=0;
 %         ML.hDeg = 3.2; 
 %         ML.wDeg = 3.2;
 %         ML.innerDiamDeg=0;
 %         ML.outerDiamDeg=2.2;
 %         ML.RGBAfrac=[.5 .5 .5 1];
-%         ML.durSec=Ton; 
+%         ML.durSec = 1;
+%         ML.onSec =(offTime + 1)*(nRepeats-1) ;
 %         C.addStim(ML);
-%     
+%              
 %         GL = dpxStimGrating;
-%         GL.name = 'gratingLeft';
+%         GL.name = sprintf('GratingLeft%d', nRepeats);
 %         GL.xDeg=0;
 %         GL.dirDeg=-45;
 %         GL.squareWave=false;
@@ -87,9 +224,11 @@ adap0 = 1;                                                                  % S,
 %         GL.cyclesPerDeg=1.75;
 %         GL.wDeg=2.2;
 %         GL.hDeg=2.2;    
-%         GL.durSec=Ton; 
+%         GL.durSec = 1; 
+%         GL.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GL);
-%           
+%         end
+%         
 %         Dot = dpxStimDot;
 %         Dot.name = 'Dot';
 %         Dot.xDeg=0; 
@@ -97,10 +236,10 @@ adap0 = 1;                                                                  % S,
 %         Dot.hDeg=0;
 %         C.addStim(Dot);
 %         
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         % STIMULUS presentation at the right side of the screen
 %         
-%         RightCheck = dpxStimCheckerboard;
+%         RightCheck=dpxStimCheckerboard;
 %         RightCheck.name='checksRight';
 %         RightCheck.RGBAfrac=[1 1 1 1];
 %         RightCheck.xDeg=0;
@@ -113,21 +252,25 @@ adap0 = 1;                                                                  % S,
 %         RightCheck.nHoleVert=10;
 %         RightCheck.sparseness=2/3;
 %         RightCheck.rndSeed=LeftCheck.rndSeed;
+%         RightCheck.durSec = Inf; 
+%         RightCheck.onSec = 0; 
 %         C.addStim(RightCheck);
 %         
+%         for nRepeats =1:rep
 %         MR = dpxStimMaskCircle;
-%         MR.name='MaskCircleRight';
-%         MR.xDeg=0;
+%         MR.name = sprintf('MaskCircleRight%d', nRepeats);
+%         MR.xDeg = 0;
 %         MR.hDeg = 3.2; 
 %         MR.wDeg = 3.2;
 %         MR.innerDiamDeg=0;
 %         MR.outerDiamDeg=2.2;
 %         MR.RGBAfrac=[.5 .5 .5 1];
-%         MR.durSec=Ton; 
+%         MR.durSec = 1; 
+%         MR.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(MR);
 % 
 %         GR = dpxStimGrating;
-%         GR.name = 'gratingRight';
+%         GR.name = sprintf('GratingRight%d', nRepeats);
 %         GR.xDeg=0;
 %         GR.dirDeg=45;
 %         GR.squareWave=false;
@@ -135,172 +278,29 @@ adap0 = 1;                                                                  % S,
 %         GR.cyclesPerDeg=1.75;
 %         GR.wDeg=2.2;
 %         GR.hDeg=2.2;      
-%         GR.durSec=Ton;
+%         GR.durSec = 1;
+%         GR.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GR);
-% 
-%         RL0 = dpxRespContiKeyboard
-%         RL0.name='keyboardl';
-%         RL0.kbName='LeftControl';
-%         C.addResp(RL0); 
+%         end
 %         
-%         RR0 = dpxRespContiKeyboard
-%         RR0.name='keyboardr';
-%         RR0.kbName='RightControl';
-%         C.addResp(RR0);
-%         
-%         E.addCondition(C);  
+%         Lnames = ['Lkeyboard1'; 'Lkeyboard2'; 'Lkeyboard3']; 
+%         Rnames = ['Rkeyboard1'; 'Rkeyboard2'; 'Rkeyboard3']; 
 % 
-% end
-for i = 1:length(Toff)
-    D = dpxCoreCondition;
-    D.durSec = Inf;
-    
-    if i<3
-        cont = 1; 
-        adap= 1;  
-    else 
-        cont = []; 
-        adap = [];                                                          % scraps the two (unnecessary) adaptation trials at the end 
-    end
-    
-    rep = trialLength./(1+Toff(i));                                          % length of interleaved percept choice sequences = 60 seconds (1 min)  
-    if mod(rep,1) ~0
-        error('The trial length should be divisble by 30'); 
-    end
-    
-    j = 0; 
-    for Ton = [trialLength, cont, adap];
-        j = j+1;
-        C = dpxCoreCondition; 
-        B = dpxCoreCondition;
-        
-        if Ton==trialLength
-        offTime = Toff(i); 
-        else 
-        offTime = 0;
-        end
-        
-        C.durSec = Ton;
-
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the left side of the screen     
-       
-        LeftCheck=dpxStimCheckerboard;
-        LeftCheck.name='checksLeft';
-        LeftCheck.RGBAfrac=[1 1 1 1];
-        LeftCheck.xDeg=0;
-        LeftCheck.wDeg=200/W.deg2px;
-        LeftCheck.hDeg=200/W.deg2px; 
-        LeftCheck.contrast=.75;
-        LeftCheck.nHoleHori=10;
-        LeftCheck.nHoleVert=10;
-        LeftCheck.nHori=18;
-        LeftCheck.nVert=18;
-        LeftCheck.sparseness=2/3;
-        LeftCheck.durSec = Inf; 
-        LeftCheck.onSec = 0; 
-        C.addStim(LeftCheck);
-        
-        for nRepeats=1:rep
-        ML = dpxStimMaskCircle;
-        ML.name = sprintf('MaskCircleLeft%d', nRepeats);
-        ML.xDeg=0;
-        ML.hDeg = 3.2; 
-        ML.wDeg = 3.2;
-        ML.innerDiamDeg=0;
-        ML.outerDiamDeg=2.2;
-        ML.RGBAfrac=[.5 .5 .5 1];
-        ML.durSec = 1;
-        ML.onSec =(offTime + 1)*(nRepeats-1) ;
-        C.addStim(ML);
-             
-        GL = dpxStimGrating;
-        GL.name = sprintf('GratingLeft%d', nRepeats);
-        GL.xDeg=0;
-        GL.dirDeg=-45;
-        GL.squareWave=false;
-        GL.cyclesPerSecond=0;
-        GL.cyclesPerDeg=1.75;
-        GL.wDeg=2.2;
-        GL.hDeg=2.2;    
-        GL.durSec = 1; 
-        GL.onSec = (offTime + 1)*(nRepeats-1) ;
-        C.addStim(GL);
-        end
-        
-        Dot = dpxStimDot;
-        Dot.name = 'Dot';
-        Dot.xDeg=0; 
-        Dot.wDeg=0;
-        Dot.hDeg=0;
-        C.addStim(Dot);
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the right side of the screen
-        
-        RightCheck=dpxStimCheckerboard;
-        RightCheck.name='checksRight';
-        RightCheck.RGBAfrac=[1 1 1 1];
-        RightCheck.xDeg=0;
-        RightCheck.wDeg=200/W.deg2px;
-        RightCheck.hDeg=200/W.deg2px;
-        RightCheck.contrast=.75;
-        RightCheck.nHori=18;
-        RightCheck.nVert=18;
-        RightCheck.nHoleHori=10;
-        RightCheck.nHoleVert=10;
-        RightCheck.sparseness=2/3;
-        RightCheck.rndSeed=LeftCheck.rndSeed;
-        RightCheck.durSec = Inf; 
-        RightCheck.onSec = 0; 
-        C.addStim(RightCheck);
-        
-        for nRepeats =1:rep
-        MR = dpxStimMaskCircle;
-        MR.name = sprintf('MaskCircleRight%d', nRepeats);
-        MR.xDeg = 0;
-        MR.hDeg = 3.2; 
-        MR.wDeg = 3.2;
-        MR.innerDiamDeg=0;
-        MR.outerDiamDeg=2.2;
-        MR.RGBAfrac=[.5 .5 .5 1];
-        MR.durSec = 1; 
-        MR.onSec = (offTime + 1)*(nRepeats-1) ;
-        C.addStim(MR);
-
-        GR = dpxStimGrating;
-        GR.name = sprintf('GratingRight%d', nRepeats);
-        GR.xDeg=0;
-        GR.dirDeg=45;
-        GR.squareWave=false;
-        GR.cyclesPerSecond=0;
-        GR.cyclesPerDeg=1.75;
-        GR.wDeg=2.2;
-        GR.hDeg=2.2;      
-        GR.durSec = 1;
-        GR.onSec = (offTime + 1)*(nRepeats-1) ;
-        C.addStim(GR);
-        end
-        
-        Lnames = ['Lkeyboard1'; 'Lkeyboard2'; 'Lkeyboard3']; 
-        Rnames = ['Rkeyboard1'; 'Rkeyboard2'; 'Rkeyboard3']; 
-
-        RL = dpxRespContiKeyboard
-        RL.name=Lnames(j,:); 
-        RL.kbName='LeftControl';
-        C.addResp(RL); 
-        
-        RR = dpxRespContiKeyboard
-        RR.name=Rnames(j,:); 
-        RR.kbName='RightControl';
-        C.addResp(RR);
-        
-      E.addCondition(B);   
-      E.addCondition(C); 
-    end
-    
-end 
+%         RL = dpxRespContiKeyboard
+%         RL.name=Lnames(j,:); 
+%         RL.kbName='LeftControl';
+%         C.addResp(RL); 
+%         
+%         RR = dpxRespContiKeyboard
+%         RR.name=Rnames(j,:); 
+%         RR.kbName='RightControl';
+%         C.addResp(RR);
+%         
+%       E.addCondition(B);   
+%       E.addCondition(C); 
+%     end
+%     
+% end 
     E.conditionSequence = 1:numel(E.conditions);
     E.nRepeats=1; 
     E.run;
