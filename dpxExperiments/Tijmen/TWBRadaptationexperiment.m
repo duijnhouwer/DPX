@@ -1,74 +1,94 @@
- function TWBRadaptationexperiment
-% 09-02-15 
+function TWBRadaptationexperiment
+% 19-01-15 
 % Binocular rivalry experiment with gratings 
 
 clear all; clf;  
 
 E=dpxCoreExperiment;
 E.expName='TWBRadaptationexperiment';
-
 Language = input('NL(1)/EN(2):');
+
 if Language ==1
-E.txtStart=sprintf('Druk op $STARTKEY en laat deze los \n om het experiment te starten.\n\n Druk eenmalig op de \n linker- en rechter controltoets.\n Interrupties: druk voor elke interruptie. \n  Continu: druk bij elke nieuwe waarneming.');
-E.txtEnd= 'Einde van het experiment';
+E.txtStart=sprintf('Druk op $STARTKEY en laat deze los om het experiment te starten.\nReageer met de linker- en rechtertoetspijl\n');
+E.txtEnd= 'Einde';
 end
 
 if Language ==2
-E.txtStart = sprintf('Press and release $STARTKEY \n to start the experiment.\n\n Press left and right\n control key once to respond.\n Interruption: press before each interruption. \n Continuous: press for every new percept.');
-E.txtEnd= 'End of the experiment';
+E.txtStart = sprintf('Press and release $STARTKEY to start the experiment. \nUse left and right key to respond\n');
+E.txtEnd= 'The End';
 end
 
-E.breakFixTimeOutSec=0;
-E.outputFolder='C:\dpxData';
+W = dpxCoreWindow;
 
-set=0;                                                                      % screen settings for philips screen
-if set ==0
-E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
+E.breakFixTimeOutSec=0.5;
+
+%E.outputFolder='C:\dpxData\';
+E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
-        'stereoMode','mirror','skipSyncTests',0,'scrNr',0); 
-else 
-E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % screen settings for eyelink
-        'distMm',1000, 'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
-        'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
-end
+        'stereoMode','mono','skipSyncTests',1,'scrNr', 1);
 
-trialLength=60; 
-% generate ToffTimes with a shuffled order
-Toff = [0.25,0.5,1]; 
-shuffle = [randperm(3); Toff]; 
-Toff = sortrows(shuffle',1); 
-Toff = Toff(:,2);
-k = 0; 
+%Toff= [0.125, 0.25, 0.5, 1, 2];
+Toff=0.5;
+Ton=1;
 
-for Ton=[8, 1];   
-    k=k+1;
-    C=dpxCoreCondition;    
-    D=dpxCoreCondition; 
-    C.durSec = Ton;
-     
-        R=dpxRespKeyboard;
-        R.name='keyboard1';
-        R.kbNames= 'space' ;
-        R.allowAfterSec=0;
-        R.correctEndsTrialAfterSec=0;
-        D.addResp(R);
-     
+length = 20;
+PCS = ones(1,length); 
+
+for Ton=[60, PCS];
+    C=dpxCoreCondition;     
+    C.durSec = Ton+Toff;
+    
+    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presntation at the left side of the screen
-                 
-        LeftCheck=dpxStimCheckerboard;
-        LeftCheck.name='checksLeft';
-        LeftCheck.RGBAfrac=[.5 .5 .5 1];
-        LeftCheck.xDeg=0;
-        LeftCheck.wDeg=5.6;
-        LeftCheck.hDeg=5.6;
-        LeftCheck.contrast=.8;
-        LeftCheck.nHoleHori=8;
-        LeftCheck.nHoleVert=8;
-        LeftCheck.sparseness=0;
-        LeftCheck.durSec = Ton; 
-        C.addStim(LeftCheck);
+        % STIMULUS presntation at the left side of the screen            
         
+<<<<<<< .mine
+        Check=dpxStimCheckerboard; 
+        Check.name='checkLeft';
+        Check.RGBAfrac=[.5 .5 .5 1];
+        Check.xDeg=-5;
+        Check.wDeg=400*(2/3)/(W.deg2px*2);
+        Check.hDeg=400*(2/3)/(W.deg2px*2);
+        Check.contrast=.5;
+        Check.nHoleHori=10;
+        Check.nHoleVert=10;
+        Check.sparseness=2/3;
+        Check.nHori=18;
+        Check.nVert=18;
+        C.addStim(Check);
+   
+        M = dpxStimMask;
+        M.name='maskLeft';
+        M.wDeg=400*(2/3)/(W.deg2px*4);
+        M.hDeg=400*(2/3)/(W.deg2px*4);
+        M.grayFrac=.5;
+        M.onSec = Toff;
+        M.durSec=Ton; 
+        M.xDeg=-5;
+        C.addStim(M);
+%         M.hDeg = 400*(2/3)/(W.deg2px*4);
+%         M.wDeg = 400*(2/3)/(W.deg2px*4);
+%         M.innerDiamDeg=0;
+%         M.outerDiamDeg=400*(2/3)/(W.deg2px*2);
+%         M.RGBAfrac=[.5 .5 .5 1];
+%         M.onSec = Toff;
+%         M.durSec=Ton; 
+%         C.addStim(M);
+%     
+        GR = dpxStimGrating;
+        GR.name = 'gratingLeft';
+        GR.xDeg=-5;
+        GR.dirDeg=45;
+        GR.squareWave=false;
+        GR.cyclesPerSecond=0;
+        GR.cyclesPerDeg=1.75;
+        GR.wDeg=200/(W.deg2px*4);
+        GR.hDeg=200/(W.deg2px*4);    
+        GR.onSec = Toff;
+        GR.durSec=Ton; 
+        C.addStim(GR);
+        
+=======
         ML = dpxStimMask;
         ML.name='maskLeft';
         ML.xDeg=0;
@@ -92,29 +112,52 @@ for Ton=[8, 1];
         GL.durSec=Ton; 
         C.addStim(GL);
           
+>>>>>>> .r403
         Dot = dpxStimDot;
-        Dot.name = 'Dot';
-        Dot.xDeg=0; 
-        Dot.wDeg=0;
-        Dot.hDeg=0;
+        Dot.name = 'dotLeft';
+        Dot.xDeg=-5; 
+        Dot.RGBAfrac=[0 0 0 1];
         C.addStim(Dot);
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the right side of the screen
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         % STIMULUS presentation at the right side of the screen
         
-        RightCheck=dpxStimCheckerboard;
-        RightCheck.name='checksRight';
-        RightCheck.RGBAfrac=[.5 .5 .5 1];
-        RightCheck.xDeg=0;
-        RightCheck.wDeg=5.6;
-        RightCheck.hDeg=5.6;
-        RightCheck.contrast=.8;
-        RightCheck.nHoleHori=8;
-        RightCheck.nHoleVert=8;
-        RightCheck.sparseness=0;
-        %RightCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RightCheck);
+        Check=dpxStimCheckerboard;
+        Check.name='checkRight';
+        Check.RGBAfrac=[.5 .5 .5 1];
+        Check.xDeg=5;
+        Check.wDeg=4.2;
+        Check.hDeg=4.2;
+        Check.contrast=.9;
+        Check.nHoleHori=8;
+        Check.nHoleVert=8;
+        Check.sparseness=0;
+        Check.rndSeed=Check.rndSeed;
+        C.addStim(Check);
         
+<<<<<<< .mine
+        M = dpxStimMask;
+        M.name='maskRight';
+        M.wDeg=400*(2/3)/(W.deg2px*4);
+        M.hDeg=400*(2/3)/(W.deg2px*4);
+        M.grayFrac=.5;
+        M.onSec = Toff;
+        M.durSec=Ton; 
+        M.xDeg=5;
+        C.addStim(M);
+        
+%         M = dpxStimMaskCircle;
+%         M.name='maskRight';
+%         M.xDeg=5;
+%         M.hDeg = 2.4; 
+%         M.wDeg = 2.4;
+%         M.innerDiamDeg=1;
+%         M.outerDiamDeg=1.5;
+%         M.RGBAfrac=[.5 .5 .5 1];
+%         M.onSec = Toff;
+%         M.durSec=Ton; 
+%         C.addStim(M);
+=======
         MR = dpxStimMask;
         MR.name='maskRight';
         MR.xDeg=0;
@@ -125,19 +168,23 @@ for Ton=[8, 1];
         MR.RGBAfrac=[.5 .5 .5 1];
         MR.durSec=Ton; 
         C.addStim(MR);
+>>>>>>> .r403
 
         GR = dpxStimGrating;
         GR.name = 'gratingRight';
-        GR.xDeg=0;
-        GR.dirDeg=45;
+        GR.xDeg=5;
+        GR.dirDeg=-45;
         GR.squareWave=false;
         GR.cyclesPerSecond=0;
-        GR.cyclesPerDeg=6./2.2;
-        GR.wDeg=2.2;
-        GR.hDeg=2.2;      
+        GR.cyclesPerDeg=6;
+        GR.wDeg=1.5;
+        GR.hDeg=1.5;      
+        GR.onSec=Toff;
         GR.durSec=Ton;
         C.addStim(GR);
         
+<<<<<<< .mine
+=======
         if Ton==8
         R=dpxRespKeyboard;
         R.name='keyboard1';
@@ -281,16 +328,18 @@ for i = 1:length(Toff)
         C.addStim(GL);
         end
         
+>>>>>>> .r403
         Dot = dpxStimDot;
-        Dot.name = 'Dot';
-        Dot.xDeg=0; 
-        Dot.wDeg=0;
-        Dot.hDeg=0;
+        Dot.name = 'dotRight';
+        Dot.xDeg=5; 
+        Dot.RGBAfrac=[0 0 0 1];
         C.addStim(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % STIMULUS presentation at the right side of the screen
+        %RESPONSE   
         
+<<<<<<< .mine
+=======
         RightCheck=dpxStimCheckerboard;
         RightCheck.name='checksRight';
         RightCheck.RGBAfrac=[.5 .5 .5 1];
@@ -334,42 +383,25 @@ for i = 1:length(Toff)
         end
         
         if j < 3
+>>>>>>> .r403
         R=dpxRespKeyboard;
-        R.name='keyboard3';
-        R.kbNames='LeftControl,RightControl';
-        R.allowAfterSec=0;
-        R.correctEndsTrialAfterSec=Ton;
+        R.name='keyboard';
+        R.kbNames='LeftArrow,RightArrow';
+        R.allowAfterSec=Toff;
+        R.correctEndsTrialAfterSec=Ton+Toff;
         C.addResp(R);
-        end
         
-      E.addCondition(B);   
-      E.addCondition(C); 
-    end
-    
-        PA = dpxStimPause;
-        PA.name = 'PA4'; 
-        PA.durSec=Inf; 
-        PA.onSec = 0; 
-        if  Language==1
-        PA.textPause1=sprintf('Uitgevoerd: %d/3', i);
-        PA.textPause2='Druk op spatiebar om door te gaan'; 
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        E.addCondition(C);  
+        
+        if Language==1
+        E.txtPause = 'O N D E R B R E K I N G'; 
         else
-        PA.textPause1=sprintf('Completed part: %d/3', i);
-        PA.textPause2='Press and release spacekey to continue';
+        E.txtPause='I N T E R M I S S I O N';
         end
-        D.addStim(PA);
-      
-        R=dpxRespKeyboard;
-        R.name='keyboard4';
-        R.kbNames= 'space' ;
-        R.allowAfterSec=0;
-        R.correctEndsTrialAfterSec=0;
-        D.addResp(R);
-        
-        E.addCondition(D);
-end 
-    E.conditionSequence = 1:numel(E.conditions);
-    E.nRepeats=1; 
+end
+    E.nRepeats=5;
     E.run;
     sca; 
 end
