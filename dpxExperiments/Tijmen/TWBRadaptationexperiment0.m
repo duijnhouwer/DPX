@@ -23,7 +23,7 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=1;                                                                      % screen settings for philips screen
+set=0;                                                                      % screen settings for philips screen
 if set ==0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
@@ -70,8 +70,8 @@ for Ton=[cont0, adap0];
         ML = dpxStimMaskCircle;
         ML.name='MaskCircleLeft';
         ML.xDeg=0;
-        ML.hDeg = 100/W.deg2px; 
-        ML.wDeg = 100/W.deg2px;
+        ML.hDeg = (50*sqrt(2))/W.deg2px; 
+        ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.innerDiamDeg=0;
         ML.outerDiamDeg=(50)/W.deg2px;
         ML.RGBAfrac=[.5 .5 .5 1];
@@ -85,8 +85,8 @@ for Ton=[cont0, adap0];
         GL.squareWave=false;
         GL.cyclesPerSecond=0;
         GL.cyclesPerDeg=1.75;
-        GL.wDeg=(50*sqrt(2))/W.deg2px;
-        GL.hDeg=(50*sqrt(2))/W.deg2px;    
+        GL.wDeg=(50)/W.deg2px;
+        GL.hDeg=(50)/W.deg2px;    
         GL.durSec=Ton; 
         C.addStim(GL);
           
@@ -118,8 +118,8 @@ for Ton=[cont0, adap0];
         MR = dpxStimMaskCircle;
         MR.name='MaskCircleRight';
         MR.xDeg=0;
-        MR.hDeg = 100/W.deg2px;; 
-        MR.wDeg = 100/W.deg2px;;
+        MR.hDeg = (50*sqrt(2))/W.deg2px;
+        MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.innerDiamDeg=0;
         MR.outerDiamDeg=2.2;
         MR.RGBAfrac=[.5 .5 .5 1];
@@ -133,8 +133,8 @@ for Ton=[cont0, adap0];
         GR.squareWave=false;
         GR.cyclesPerSecond=0;
         GR.cyclesPerDeg=1.75;
-        GR.wDeg=(50*sqrt(2))/W.deg2px;
-        GR.hDeg=(50*sqrt(2))/W.deg2px;      
+        GR.wDeg= (50)/W.deg2px;
+        GR.hDeg= (50)/W.deg2px;      
         GR.durSec=Ton;
         C.addStim(GR);
 
@@ -151,6 +151,7 @@ for Ton=[cont0, adap0];
         E.addCondition(C);  
 
 end
+
 % for i = 1:length(Toff)
 %     D = dpxCoreCondition;
 %     D.durSec = Inf;
@@ -206,8 +207,8 @@ end
 %         ML = dpxStimMaskCircle;
 %         ML.name = sprintf('MaskCircleLeft%d', nRepeats);
 %         ML.xDeg=0;
-%         ML.hDeg = 100/W.deg2px;; 
-%         ML.wDeg = 100/W.deg2px;;
+%         ML.hDeg = (50*sqrt(2))/W.deg2px;
+%         ML.wDeg = (50*sqrt(2))/W.deg2px;
 %         ML.innerDiamDeg=0;
 %         ML.outerDiamDeg=2.2;
 %         ML.RGBAfrac=[.5 .5 .5 1];
@@ -222,8 +223,8 @@ end
 %         GL.squareWave=false;
 %         GL.cyclesPerSecond=0;
 %         GL.cyclesPerDeg=1.75;
-%         GL.wDeg=(50*sqrt(2))/W.deg2px;
-%         GL.hDeg=(50*sqrt(2))/W.deg2px;    
+%         GL.wDeg= (50)/W.deg2px;
+%         GL.hDeg= (50)/W.deg2px;
 %         GL.durSec = 1; 
 %         GL.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GL);
@@ -260,8 +261,8 @@ end
 %         MR = dpxStimMaskCircle;
 %         MR.name = sprintf('MaskCircleRight%d', nRepeats);
 %         MR.xDeg = 0;
-%         MR.hDeg = 100/W.deg2px;; 
-%         MR.wDeg = 100/W.deg2px;;
+%         MR.hDeg = (50*sqrt(2))/W.deg2px; 
+%         MR.wDeg = (50*sqrt(2))/W.deg2px;
 %         MR.innerDiamDeg=0;
 %         MR.outerDiamDeg=2.2;
 %         MR.RGBAfrac=[.5 .5 .5 1];
@@ -276,8 +277,8 @@ end
 %         GR.squareWave=false;
 %         GR.cyclesPerSecond=0;
 %         GR.cyclesPerDeg=1.75;
-%         GR.wDeg=(50*sqrt(2))/W.deg2px;
-%         GR.hDeg=(50*sqrt(2))/W.deg2px;      
+%         GR.wDeg= (50)/W.deg2px;
+%         GR.hDeg= (50)/W.deg2px;  
 %         GR.durSec = 1;
 %         GR.onSec = (offTime + 1)*(nRepeats-1) ;
 %         C.addStim(GR);
@@ -301,6 +302,7 @@ end
 %     end
 %     
 % end 
+
     E.conditionSequence = 1:numel(E.conditions);
     E.nRepeats=1; 
     E.run;
