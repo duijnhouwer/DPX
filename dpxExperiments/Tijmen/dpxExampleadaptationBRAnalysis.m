@@ -34,7 +34,7 @@ function dpxExampleadaptationBRAnalysis(data)
     alternation = (sigma-labda)./2; alternation=round(abs(alternation(1:end)));
     alternationRate = alternation.*alternationTime;
     alternationRate = alternationRate(alternationRate>0);
-    perceptDuration = alternationRate(2:end) - alternationRate(1:end-1);
+    perceptDuration = alternationRate(2:end) - alternationRate(1:end-1)
     
     unifier = 1:length(perceptDuration); 
     even = unifier(mod(unifier,2)==0);
