@@ -3,7 +3,7 @@
 % Binocular rivalry experiment with gratings 
 
 clear all; clf;  
-
+KbName('UnifyKeyNames');
 E=dpxCoreExperiment;
 E.expName='TWBRadaptationexperiment';
 
@@ -280,17 +280,15 @@ for i=1
         D.addStim(GR);
         end
         
-        Lnames = ['Lkeyboard1'; 'Lkeyboard2'; 'Lkeyboard3']; 
-        Rnames = ['Rkeyboard1'; 'Rkeyboard2'; 'Rkeyboard3']; 
 
         RL = dpxRespContiKeyboard
-        RL.name=Lnames(j,:); 
+        RL.name = 'keyboardl';
         RL.kbName='LeftControl';
         D.addResp(RL); 
         
         RR = dpxRespContiKeyboard
-        RR.name=Rnames(j,:); 
-        RR.kbName='RightControl';
+        RR.name = 'keyboardr'; 
+        RR.kbName ='RightControl';
         D.addResp(RR);
         
       E.addCondition(D); 
