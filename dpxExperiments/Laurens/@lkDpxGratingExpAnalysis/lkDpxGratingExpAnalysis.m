@@ -20,15 +20,14 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             % Analysis class for lkDpxGratingExp
             %
             % PROPERTIES:
-            % todoListFileName = the absolute path to a NeuroTodoFile.
+            %  todoListFileName = the absolute path to a NeuroTodoFile.
             %    A NeuroTodoFile is a text-file that ends in
             %    "todo.txt" that should contain the filenames including
             %    absolute paths to the the merged LasAF and DPX datafiles
-            %    as created using lkDpxGratingExpAddResponse. I've included
-            %    an example todoListFile called 'example_todo.txt' that
-            %    contains more comments that explain in more detail how the
-            %    items in that file should be.
-            % anaFunc = name of analysis. All analysis are programmed to
+            %    as created using lkDpxGratingExpAddResponse. You can
+            %    create a NeuroTodoFile using 'createNeuroTodoFile' (see
+            %    METHODS).
+            %  anaFunc = name of analysis. All analysis are programmed to
             %    run on a cell to cell basis. This class is basically a
             %    wrapper to call them on the set of cells selected in the
             %    NeuroTodoFile. The analysis function can be found in the
@@ -40,21 +39,30 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             %    your data as separate as possible. At the time of writing
             %    (2014-12-1) there's only one anaFunc
             %    "DirectionTuningCurve". We will make more as needed.
-            % anaOpts = cell array of options that are passed to
+            %  anaOpts = cell array of options that are passed to
             %    calcXXX.m if XXX is your anaFunc
             %    "calcDirectionTuningCurve" doesnt do anything with those
             %    (at the moment).
-            % pause = when to plot and wait for key to continue. Can be
+            %  pause = when to plot and wait for key to continue. Can be
             %    either 'perCell', 'perFile', or 'never'. If 'never', no plots
             %    are shown.
             %
             % METHODS:
-            % Once you have set the properties to your liking, run the
-            % analysis by excecuting
-            %    A.run
-            % Tip: you can like always in matlab interupt the analysis
-            %    by typing CTRL-C, followed optionally by cf to close the
-            %    figures
+            %  run =
+            %    Once you have set the properties to your liking, run the
+            %    analysis by excecuting
+            %       A=lkDpxGratingExpAnalysis('X:\YourNeuroTodo.txt');
+            %       A.run
+            %    Tip: you can at any time interupt the analysis with CTRL-C, 
+            %    followed optionally by 'cf' to close the figures.
+            %  createNeuroTodoFile =
+            %    Brings up a file selection dialog that you can use to make
+            %    a NeuroTodoFile and save it afterward. This is a text-file
+            %    that will include additional instruction (how to select
+            %    cells and exclude files etc.)
+            %   
+            % 
+            %   
             %
             % OUTPUT:
             % A dpxd struct with N being the number of cells. The format of
@@ -72,7 +80,43 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             A.anaFunc='DirectionTuningCurve';
             A.anaOpts={};
         end
+        function createNeuroTodoFile(A)
+            files=dpxUIgetfiles;
+            if isempty(files)
+                return;
+            end
+            [filename,pathname]=uiputfile({'*todo.txt','NeuroTodoFile (*todo.txt)'; '*.*','All Files (*.*)'},'Save NeuroTodoFile as ...', 'NeuroTodo.txt');
+            if isnumeric(filename)
+                return;
+            end
+            outputFileName=fullfile(pathname,filename);
+            fid=fopen(outputFileName,'wt');
+            if fid==-1
+                error(['Could not open ''' outputFileName ''' for saving.']);
+            end
+            fprintf(fid,'%s\n','% Neuro-selection list example file, to be used with lkDpxGratingExpAnalysis');
+            fprintf(fid,'%s\n','%');
+            fprintf(fid,'%s\n','% Selection of files to analyze followed by a line with cell numbers to analyze.');
+            fprintf(fid,'%s\n','% The list of numbers should be either a single zero, or all negative numbers, or all positive');
+            fprintf(fid,'%s\n','% Example cell number lists : with interpretation ....');
+            fprintf(fid,'%s\n','% 0 :  analyze all cells, ');
+            fprintf(fid,'%s\n','% -1 -10 -12 : analyze all except 1 10 12,');
+            fprintf(fid,'%s\n','% 1 14 : analyze cell 1 and 14');
+            fprintf(fid,'%s\n','%');
+            fprintf(fid,'%s\n','% Empty lines (or containing nothing but whitespace) and lines starting with ''%'' will be ignored');
+            fprintf(fid,'%s\n','% Use ''%'' to make comments like this');
+            fprintf(fid,'%s\n\n',['% Created using ' mfilename '.createNeuroTodoFile on ' datestr(now) ]);
+            for i=1:numel(files)
+                fprintf(fid,'%s\n0\n',files{i});
+            end
+            fclose(fid);
+            A.todoListFileName=outputFileName;
+        end
         function output=run(A)
+            % Reload the files and cells per file, file may have been
+            % edited since it was loaded first.
+            [A.filesToDo,A.neuronsToDo]=loadTodoList(A.todoListFileName); %#ok<MCSUP>
+            %
             if isempty(A.todoListFileName)
                 dpxDispFancy('The string "todoListFileName" is empty, no data files to run analyses on.');
                 return;
@@ -81,7 +125,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 return
             end
             infoRequest=[A.calcCommandString '(''info'')']; % e.g. 'calcDirectionTuningCurve('info')'
-            I=eval(infoRequest);         
+            I=eval(infoRequest);
             if strcmpi(I.per,'cell')
                 output=A.runPerCell();
             elseif strcmpi(I.per,'file')
@@ -100,54 +144,47 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         end
         function output=runPerCell(A)
             for f=1:numel(A.filesToDo)
-                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd now is a DPX-Data structure
+                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
                 nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
                 tel=0;
                 for c=1:numel(nList)
                     tel=tel+1;
                     output{tel}=eval([A.calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
-                    % add filename and cell numer
-                    output{tel}.file{1}=A.filesToDo{f}; %#ok<AGROW>
-                    output{tel}.cellNumber=nList(c); %#ok<AGROW>
+                    % add filename and cell number to each subset (nr 1 is
+                    % all data, the optional next ones are the individual
+                    % sessions that were merged)
+                    for ss=1:numel(output{tel})
+                        output{tel}{ss}.file{1}=A.filesToDo{f}; %#ok<AGROW>
+                        output{tel}{ss}.cellNumber=nList(c); %#ok<AGROW>
+                    end
                     if ~strcmpi(A.pause,'never')
                         figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
-                        eval([A.plotCommandString '(output{tel});']);
+                        eval([A.plotCommandString '(output{tel},A.anaOpts{:});']);
                     end
                     if strcmpi(A.pause,'perCell')
                         dpxTileFigs;
                         [~,filestem]=fileparts(A.filesToDo{f});
                         disp(['Showing ' A.plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo))]);
-                        input('<<Any key to continue>>');
+                        input('<< Press any key to close the figures and continue with the next cell >>');
                         close(figHandle);
                     end
+                    % Now that the plotting of the complete and the
+                    % sub-sets has been done, only maintain the complete
+                    output{tel}=output{tel}{1};
                 end
                 if strcmpi(A.pause,'perFile')
                     dpxTileFigs;
                     [~,filestem]=fileparts(A.filesToDo{f});
                     disp(['Showing ' A.plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) ').']);
-                    input('<<Any key to continue>>');
+                    input('<< Press any key to close the figures and continue with the next file >>');
                     close all;
                 end
-                output=dpxdMerge(output); % Merge all the outputs into a single DPXD
+                % Merge all the outputs into a single DPXD
+                output=dpxdMerge(output);
             end
-        end
-        function output=runPerFile(A)
-            output={};
-            for f=1:numel(A.filesToDo)
-                dpxd=dpxdLoad(A.filesToDo{f}); % dpxd now is a DPX-Data structure
-                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
-                output{f}=eval([A.calcCommandString '(dpxd,nList,A.anaOpts{:});']); %#ok<AGROW>
-                if ~strcmpi(A.pause,'never')
-                    figHandle=dpxFindFig([A.filesToDo{f} num2str(numel(nList)) ' cells']);
-                    eval([A.plotCommandString '(output{tel});']);
-                    dpxTileFigs;
-                    [~,filestem]=fileparts(A.filesToDo{f});
-                    disp(['Showing ' A.plotCommandString ' of all cells in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo)) ').']);
-                    input('<<Any key to continue>>');
-                    close all;
-                end
+            function output=runPerFile(A)
             end
-            output=dpxdMerge(output); % Merge all the outputs into a single DPXD
+            
         end
     end
     methods % set and get functions

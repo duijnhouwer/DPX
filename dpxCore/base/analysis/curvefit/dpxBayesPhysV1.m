@@ -51,10 +51,12 @@ function bayesphys=dpxBayesPhysV1(varargin)
         end
     end
     % Make Bayes-Factor matrix for testing which model is best
-    BF=zeros(numel(curvenames));
+    BF=eye(numel(curvenames));
     for i=1:numel(curvenames)
         for j=1:numel(curvenames)
-            BF(i,j)=compute_bf(S{i},S{j});
+            if i~=j
+                BF(i,j)=compute_bf(S{i},S{j});
+            end
         end
     end
     % find out which model won
@@ -67,7 +69,7 @@ function bayesphys=dpxBayesPhysV1(varargin)
         end
     end
     if winidx==0
-        winstr='UNCLEAR';
+        winstr='COULDNOTFIT';
     else
         winstr=curvenames{winidx};
     end
@@ -76,7 +78,11 @@ function bayesphys=dpxBayesPhysV1(varargin)
     bayesphys.curvenames=curvenames;
     bayesphys.winnerstr=winstr;
     bayesphys.bestCurveX{1}=x1;
-    bayesphys.bestCurveY{1}=getBestCurvesForPlotting(S{winidx},winstr,x1);
+    if winidx>0 && winidx<=numel(S)
+        bayesphys.bestCurveY{1}=getBestCurvesForPlotting(S{winidx},winstr,x1);
+    else
+        bayesphys.bestCurveY{1}=nans(size(x1));
+    end
 end
 
 %--- HELP FUNCTIONS -------------------------------------------------------

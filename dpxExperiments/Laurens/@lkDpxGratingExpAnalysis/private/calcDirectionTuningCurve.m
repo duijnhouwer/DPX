@@ -7,16 +7,30 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     % This function calculates a direction tuning curve from a
     % lkDpxExpGrating-DPXD struct, its output can be plot with the
     % complementary plotDirectionTuningCurve
+    
+    % See how many sessions went into this dataset, could be merged data.
+    % If so, plot the individual session curves as well as the merged curve
+    % (merged on top and clearer line and markers)
+    tc{1}=getCurve(dpxd,cellNr,varargin{:}); % 1 is always all data
+    thisIsMergeData=numel(unique(dpxd.exp_startTime))>1;
+    if thisIsMergeData
+        D=dpxdSplit(dpxd,'exp_startTime');
+        for i=1:numel(D)
+            tc{end+1}=getCurve(D{i},cellNr,varargin{:}); %#ok<AGROW>
+        end
+    end
+end
+
+function tc=getCurve(dpxd,cellNr,varargin)
     % Parse 'options' input
     p=inputParser;
-    p.addParamValue('bayesfit',true,@islogical);
-        % If true: use the bayesPhysV1 toolkit to fit tuningcurves to the data, and
-        % test which is the best model. This will determine if the cell is
-        % tuned at all, and if so, if it is direction or orientation selective.
+    p.addParamValue('bayesfit',true,@islogical); % *
+    % * If true: use the bayesPhysV1 toolkit to fit tuningcurves to the data, and
+    % test which is the best model. This will determine if the cell is
+    % tuned at all, and if so, if it is direction or orientation selective.
     p.parse(varargin{:});
-    
-    
-    % Split the data according to the direction of the grating.    
+    %
+    % Split the data according to the direction of the grating.
     % Ds is the DPXD called 'dpxd' split up in a DPXD per direction (so
     % numel Ds would typically be 8). Ns is an array corrsponding to Ds
     % that contains the N of each DPXD in Ds
@@ -32,7 +46,7 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
         dirDeg(i)=Ds{i}.grating_dirDeg(1); % store this direction in degrees
         for t=1:Ds{i}.N
             % Get the dFoF trace of the entire t'th trial for this direction
-            tSeries=Ds{i}.(dfofField){t}; 
+            tSeries=Ds{i}.(dfofField){t};
             % Get the corresponding time axis
             tAxis=Ds{i}.(timeField){t};
             % Use tAxit to limit trace to the time the stim was on
@@ -40,20 +54,23 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
             to=from+Ds{i}.grating_durSec(t);
             tSeries=tSeries(tAxis>=from & tAxis<to);
             % Store the mean of this segment, i.e., reduce trail's response to a single value
-            dfof(t,i)=nanmean(tSeries); % nanmean because it ignores NaN's  
+            dfof(t,i)=nanmean(tSeries); % nanmean because it ignores NaN's
         end
     end
     % put the values in the output struct
-    tc.dirDeg{1}=dirDeg;
-    tc.allDFoF{1}=dfof;
+    
+    tc.dirDeg{1}=dirDeg; % vector of say 12 directions
+    tc.allDFoF{1}=dfof; % matrix of 12 columns x nRepeats. padded with NaNs if less repeats for a direction
     tc.meanDFoF{1}=nanmean(dfof,1); % calculate the mean of the columns, ingore nan's
     tc.sdDFoF{1}=nanstd(dfof,1); % calculate the standard deviation of the columns, ingore nan's.
     tc.nDFoF{1}=sum(~isnan(dfof),1); % calculate the Number of non-nan values (=number of trials per direction)
     tc.N=1;
     if p.Results.bayesfit
-        dirDeg=repmat(dirDeg,size(dfof,1),1);
+        dirDeg=repmat(dirDeg,size(dfof,1),1); % make a direction for each dfof value
+        dirDeg=dirDeg(~isnan(dfof(:))); % remove dirs for NaN-dfof values (remove padding)
+        dfof=dfof(~isnan(dfof(:))); % remove dfof for NaN-dfof values (remove padding)
         curvesToTest={'constant','circular_gaussian_180','circular_gaussian_360','direction_selective_circular_gaussian'};
-        B=dpxBayesPhysV1('deg',dirDeg(:),'resp',dfof(:),'curvenames',curvesToTest,'unit','dfof');
+        B=dpxBayesPhysV1('deg',dirDeg,'resp',dfof,'curvenames',curvesToTest,'unit','dfof');
         tc.dpxBayesPhysV1{1}=B.winnerstr;
         tc.dpxBayesPhysV1x=B.bestCurveX;
         tc.dpxBayesPhysV1y=B.bestCurveY;
