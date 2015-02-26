@@ -17,9 +17,9 @@ function agDpxTactileBiasPeripheralDDQ
     durS=2;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
-    for dotSize=1
+    for dotSize=.75
         for ddqRightFromFix=[25]
-            for ddqHei=ddqWid * [1.5]%more or less it is the point of subjective equality
+            for ddqHei=ddqWid * [1.6]%more or less it is the point of subjective equality
                 for ori=0
                     for bottomLeftTopRightFirst=[true]
                         for antiJump=false
@@ -104,7 +104,7 @@ function agDpxTactileBiasPeripheralDDQ
             end
         end
     end
-    E.nRepeats=5;
+    E.nRepeats=25;
     nTrials=numel(E.conditions)*E.nRepeats;
     expectedSecs=nTrials*(durS);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);

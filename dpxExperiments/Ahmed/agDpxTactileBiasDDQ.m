@@ -19,7 +19,7 @@ function agDpxTactileBiasDDQ
     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
-            for ddqHei=ddqWid * [1.5]%more or less it is the point of subjective equality
+            for ddqHei=ddqWid * [1.6]%more or less it is the point of subjective equality
                 for ori=0
                     for bottomLeftTopRightFirst=[true]
                         for antiJump=false
@@ -104,7 +104,7 @@ function agDpxTactileBiasDDQ
             end
         end
     end
-    E.nRepeats=5;
+    E.nRepeats=25;
     nTrials=numel(E.conditions)*E.nRepeats;
     expectedSecs=nTrials*(durS);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);

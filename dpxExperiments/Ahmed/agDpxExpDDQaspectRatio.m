@@ -1,3 +1,4 @@
+
 function agDpxExpDDQaspectRatio
     
     dpxDispFancy('Make sure only one keyboard is connected!','!',2,2);
@@ -24,6 +25,7 @@ function agDpxExpDDQaspectRatio
     for ar=aRatio
         for fs=flashSec
             for b=bottomLeftTopRightFirst;
+                for ddqRightFromFix=[0]
                 
                 C=dpxCoreCondition;
                 C.durSec=36000;
@@ -39,6 +41,7 @@ function agDpxExpDDQaspectRatio
                 set(DDQ,'oriDeg',0,'onSec',0.5,'durSec',fs*(nrSteps+1));
                 set(DDQ,'diamsDeg',[1 1 1 1]);
                 set(DDQ,'bottomLeftTopRightFirst',b);
+                set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix);
                 C.addStim(DDQ);
                 %
                 R=dpxRespKeyboard;
@@ -55,6 +58,7 @@ function agDpxExpDDQaspectRatio
                 C.addStim(FB);
                 %
                 E.addCondition(C);
+                end
                 
             end
         end

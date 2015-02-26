@@ -8,9 +8,9 @@ function agDpxExpDDQswitches
     E.expName='agDpxExpDDQswitches';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     E.startKey='UpArrow'
-    
-%     E.txtPause='';
+%     E.txtPause='Press and release $STARTKEY to start';
 %     E.txtPauseNrTrials=1;
+    
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[480 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
@@ -18,7 +18,7 @@ function agDpxExpDDQswitches
     % Generated using dpxToolStimWindowGui on 2014-09-29
     
     
-    aRatio=[1.1496];
+    aRatio=[1.4];
     flashSec=.25;
     nrSteps=10000;
     ddqWid=4;

@@ -8,8 +8,8 @@ function agDpxDDQinteractTactile
     %
     E.startKey='UpArrow'
     
-%     E.txtPause='';
-%     E.txtPauseNrTrials=1;
+    E.txtPause='';
+    E.txtPauseNrTrials=1;
     javaaddpath(which('BrainMidi.jar'));
     
     
@@ -18,7 +18,7 @@ function agDpxDDQinteractTactile
     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
-            for ddqHei=ddqWid * [1.1496]%it is the point of subjective equality
+            for ddqHei=ddqWid * [1.6]%it is the point of subjective equality
                 for ori=0
                     for bottomLeftTopRightFirst=[true]
                         for antiJump=false
