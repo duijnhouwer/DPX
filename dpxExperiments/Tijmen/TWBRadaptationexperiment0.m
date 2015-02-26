@@ -34,15 +34,15 @@ E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % sc
         'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
 end
 
-trialLength=30; 
+trialLength=60; 
 % generate Toff Times with a shuffled order
 Toff = [0.25,0.5,1]; 
 shuffle = [randperm(3); Toff]; 
 Toff = sortrows(shuffle',1); 
 Toff = Toff(:,2);
 k = 0; 
-cont0 = 8;                                                                 % s, this should be 480 for the 'real experiment'
-adap0 = 1;                                                                 % s, this should be 1 for the 'real experiment'
+cont0 = 480;                                                                 % s, this should be 480 for the 'real experiment'
+adap0 = 60;                                                                 % s, this should be 1 for the 'real experiment'
 
 for Ton=[cont0, adap0];   
     k=k+1;
@@ -153,10 +153,10 @@ for Ton=[cont0, adap0];
 end
 
 % for i = 1:length(Toff)  
-for i=1
+for i=1:length(Toff)
     if i<3
-        cont = 1; 
-        adap= 1;  
+        cont = 30; 
+        adap= 30;  
     else 
         cont = []; 
         adap = [];                                                          % scraps the two (unnecessary) adaptation trials at the end 
