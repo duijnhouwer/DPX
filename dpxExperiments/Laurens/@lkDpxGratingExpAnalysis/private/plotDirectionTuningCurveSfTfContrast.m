@@ -23,7 +23,6 @@ function plotDirectionTuningCurveSfTfContrast(TC,i,varargin)
                 panelNr=panelNr+1;
                 subplot(numel(S),numel(T),panelNr)
                 plotOneCurve(T{t},options{:});
-                hold on %grgrg
                 title(['SF=' num2str(T{t}.SF(1)) ',TF=' num2str(T{t}.TF(1))]); 
             end
         end
