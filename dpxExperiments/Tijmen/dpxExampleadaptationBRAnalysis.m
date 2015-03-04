@@ -1,12 +1,13 @@
 function [adapexp] = dpxBadaptationRAnalysis(data) 
     clear all; 
-     
-     load('C:\dpxData\TWBRadaptationexperiment-0-20150226103159.mat')
+    
+load('TWBRadaptationexperiment-0-20150304143354.mat')
 
      adapexp.alternation = []; 
      adapexp.repetition = [];
      adapexp.responsetime = []; 
      adapexp.response = []; 
+     adapexp.mixed = []; 
 
     responseTime = [];  
     l=1; nblocks=1; 
@@ -21,30 +22,69 @@ function [adapexp] = dpxBadaptationRAnalysis(data)
      
     for k=nblocks
    
-    dataLeft  = data.resp_keyboardl_keySec{k};
-    dataLeft  = dataLeft - data.startSec(k);
-    dataRight = data.resp_keyboardr_keySec{k};
-    dataRight = dataRight - data.startSec(k);
+    % presses
+    datapLeft  = data.resp_keyboardl_keySec{k};
+    datapLeft  = datapLeft - data.startSec(k)
+    datapRight = data.resp_keyboardr_keySec{k};
+    datapRight = datapRight - data.startSec(k)
+    
+    %releases
+    datarLeft  = data.resp_keyboardl_keyReleaseSec{k};
+    datarLeft  = datarLeft - data.startSec(k)
+    datarRight = data.resp_keyboardr_keyReleaseSec{k};
+    datarRight = datarRight - data.startSec(k)
+    
+    dataR = [datapRight, datarRight];
+    sigmaR = ones(1,length(dataR));
+    dataL = [datapLeft, datarLeft];
+    sigmaL = -1*ones(1,length(dataL));
+    dataM = [dataL, dataR];
+    sigmaM = zeros(1, length(dataM));
+    
+    
+    
+    allData = [dataR, dataL, dataM; sigmaR,sigmaL, sigmaM]';
+    allData = sortrows(allData,1)
+    plot(allData(:,1), allData(:,2)); 
+    
+    % duration presses
+    deltaLeft  = datarLeft - datapLeft;
+    deltaRight = datarRight - datapRight
     
     trialDuration = data.stopSec(k)-data.startSec(k);
     linspace(0,trialDuration); 
     
-    sigma=[];  
-    responseTime=[];
+    sigma = [];  
+    responseTime = [];
+    responseDuration = []; 
+    mixedDuration = []; 
 
     i=1; j=1; 
     
-    if length(dataRight) ~=0 && length(dataLeft) ~=0
-    while i<=length(dataRight) && length(dataLeft)>=j
-    if dataRight(i)<dataLeft(j)
-    sigma=[sigma 1]; 
-    responseTime = [responseTime, dataRight(i)]; 
-       i=i+1;
-    else if dataRight(i)> dataLeft(j)
-            sigma=[sigma -1]; 
-            responseTime = [responseTime, dataLeft(j)]; 
-              j=j+1;
+    if length(datapRight) ~=0 && length(datapLeft) ~=0
+    while i<=length(datapRight) && length(datapLeft)>=j
+    if datapRight(i)<datapLeft(j)
+    sigma=[sigma, 1]; 
+    responseTime = [responseTime, datapRight(i) ]; 
+    responseDuration = [responseDuration, datarLeft(j) - datapLeft(j)];  
+    
+    if datarRight(i)<datapLeft(j); 
+        mixedDuration = [mixedDuration datapLeft(j)-datarRight(i)]; 
+    end
+    
+     i=i+1;
+       
+    else if datapRight(i)> datapLeft(j)
+    sigma=[sigma, -1 ]; 
+    responseTime = [responseTime, datapLeft(j)];  
+    responseDuration = [responseDuration, datarLeft(j) - datapLeft(j)];
         end
+    
+        if datapRight(i)>datarLeft(j); 
+        mixedDuration = [mixedDuration datapRight(i)-datarLeft(j)]; 
+    end
+    
+    j=j+1;
     end
     end
     
@@ -62,16 +102,17 @@ function [adapexp] = dpxBadaptationRAnalysis(data)
     even = unifier(mod(unifier,2)==0);
     odd = unifier(mod(unifier,2)~=0);
     
+    % data array 
       adapexp.alternation{k}.interval = alternationInterval;
-      adapexp.alternation{k}.intervalmono1 = alternationInterval(even); 
+      adapexp.alternation{k}.intervalmono1 = alternationInterval(even);   
       adapexp.alternation{k}.intervalmono2 = alternationInterval(odd); 
       adapexp.repetition{k}.time = repetitionTime
       adapexp.alternation{k}.time = alternationTime; 
       adapexp.responsetime{k} = responseTime; 
       adapexp.response{k} = sigma; 
-      
+      adapexp.mixed{k} = mixedDuration; 
     end
-         
+    
     end
     
 end
