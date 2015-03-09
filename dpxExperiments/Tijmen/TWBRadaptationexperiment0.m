@@ -23,7 +23,7 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=0;                                                                      % screen settings for philips screen
+set=1;                                                                      % screen settings for philips screen
 if set ==0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
@@ -41,8 +41,8 @@ Toff = sortrows(shuffle',1);
 Toff = Toff(:,2);
 
 k = 0; 
-cont0 = 8;                                                                 % s, this should be 480 for the 'real experiment'
-adap0 = 1;                                                                 % s, this should be 1 for the 'real experiment'
+cont0 = 480;                                                                 % s, this should be 480 for the 'real experiment'
+adap0 = 60;                                                                 % s, this should be 1 for the 'real experiment'
 trialLength = 60; 
 
 for Ton=[cont0, adap0];   

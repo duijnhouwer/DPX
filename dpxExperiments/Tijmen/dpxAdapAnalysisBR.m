@@ -3,7 +3,7 @@ function [adapexp] = dpxAdapAnalysisBR(data)
     % Analysis file for TWBRadapatationexperiment0
 
     clear all;  
-    load('C:\dpxData\TWBRadaptationexperiment-0-20150309100810.mat');       % use any (latest) data from dpxData to analyze 
+    load('C:\dpxData\TWBRadaptationexperiment-TW-20150309135624.mat')     
     
      % to-be-filled array 
      adapexp.alternation    = []; 
@@ -22,21 +22,21 @@ function [adapexp] = dpxAdapAnalysisBR(data)
         nblocks = [nblocks (3*l)];  
         end
     end
-     
-for k=nblocks
+   
+for k=1
     trialDuration = data.stopSec(k) - data.startSec(k);
         
     % key presses
     datapLeft  = data.resp_keyboardl_keySec{k};
-    datapLeft  = datapLeft - data.startSec(k);
+    datapLeft  = datapLeft - data.startSec(k)
     datapRight = data.resp_keyboardr_keySec{k};
-    datapRight = datapRight - data.startSec(k);
+    datapRight = datapRight - data.startSec(k)
     
     % key releases
     datarLeft  = data.resp_keyboardl_keyReleaseSec{k};
-    datarLeft  = datarLeft - data.startSec(k);
+    datarLeft  = datarLeft - data.startSec(k)
     datarRight = data.resp_keyboardr_keyReleaseSec{k};
-    datarRight = datarRight - data.startSec(k);
+    datarRight = datarRight - data.startSec(k)
     
     % all data
     dataR = [datapRight, datarRight];
@@ -56,7 +56,8 @@ for k=nblocks
         m=m+4;
     end
     allData(isnan(allData))=trialDuration;
-        
+    
+    allData
     plot(allData(:,1), allData(:,2), 'LineWidth', 2, 'Color', [0 0 0]);  hold on; 
     line([min(allData(:,1)) trialDuration] , [0 0], 'Color', [0 0 0], 'LineStyle', '--'); 
     legend('1 = R, -1 = L', 'Location', 'northoutside'); 
