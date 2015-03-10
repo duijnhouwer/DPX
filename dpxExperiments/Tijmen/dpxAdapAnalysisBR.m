@@ -2,8 +2,8 @@ function [adapexp] = dpxAdapAnalysisBR(data)
     % Tijmen Wartenberg, 09-04-15
     % Analysis file for TWBRadapatationexperiment0
 
-    clear all;  
-    load('C:\dpxData\TWBRadaptationexperiment-TW-20150309135624.mat')     
+   clear all;  clf; 
+   load('C:\dpxData\TWBRadaptationexperiment-0-20150309100810.mat');       % use any (latest) data from dpxData to analyze 
     
      % to-be-filled array 
      adapexp.alternation    = []; 
@@ -22,21 +22,22 @@ function [adapexp] = dpxAdapAnalysisBR(data)
         nblocks = [nblocks (3*l)];  
         end
     end
-   
-for k=1
+    
+% extract information only from   
+for k=nblocks
     trialDuration = data.stopSec(k) - data.startSec(k);
         
     % key presses
     datapLeft  = data.resp_keyboardl_keySec{k};
-    datapLeft  = datapLeft - data.startSec(k)
+    datapLeft  = datapLeft - data.startSec(k);
     datapRight = data.resp_keyboardr_keySec{k};
-    datapRight = datapRight - data.startSec(k)
+    datapRight = datapRight - data.startSec(k);
     
     % key releases
     datarLeft  = data.resp_keyboardl_keyReleaseSec{k};
-    datarLeft  = datarLeft - data.startSec(k)
+    datarLeft  = datarLeft - data.startSec(k);
     datarRight = data.resp_keyboardr_keyReleaseSec{k};
-    datarRight = datarRight - data.startSec(k)
+    datarRight = datarRight - data.startSec(k);
     
     % all data
     dataR = [datapRight, datarRight];
@@ -57,13 +58,13 @@ for k=1
     end
     allData(isnan(allData))=trialDuration;
     
-    allData
+    % plot, looks nice for short and clean trials, messy and chaotifor long trials
     plot(allData(:,1), allData(:,2), 'LineWidth', 2, 'Color', [0 0 0]);  hold on; 
     line([min(allData(:,1)) trialDuration] , [0 0], 'Color', [0 0 0], 'LineStyle', '--'); 
     legend('1 = R, -1 = L', 'Location', 'northoutside'); 
     axis([min(allData(:,1))-0.5 trialDuration -1.1 1.1]);
     xlabel('time(s)');
-    ylabel('perceptual recording'); 
+    ylabel('perceptual recordings'); 
     title('perceptual recordings'); 
 
     % duration presses
@@ -72,18 +73,21 @@ for k=1
 
     sigma = [];  
     responseTime = [];
+    responseStopTime = []; 
     responseDuration = []; 
     mixedDuration = []; 
 
     % measure all the perceptual durations and alternations
     i=1; j=1; 
-    if isempty(datapRight) ==0 && isempty(datapLeft) ~=0
+    if isempty(datapRight) ==0 && isempty(datapLeft) ==0
+       
        while i<=length(datapRight) && length(datapLeft)>=j
         
         if datapRight(i)<datapLeft(j)
-        sigma=[sigma, 1]; 
+        sigma=[sigma, 1];
         responseTime = [responseTime, datapRight(i) ]; 
-        responseDuration = [responseDuration, datarLeft(j) - datapLeft(j)];  
+        responseStopTime = [responseStopTime, datarRight(i)]; 
+        responseDuration = responseStopTime - responseTime;  
     
             if datarRight(i)<datapLeft(j); 
             mixedDuration = [mixedDuration datapLeft(j)-datarRight(i)]; 
@@ -93,8 +97,10 @@ for k=1
        
         else if datapRight(i)> datapLeft(j)
         sigma=[sigma, -1 ]; 
-        responseTime = [responseTime, datapLeft(j)];  
-        responseDuration = [responseDuration, datarLeft(j) - datapLeft(j)];
+        responseTime = [responseTime, datapLeft(j)]; 
+        responseStopTime = [responseStopTime, datarLeft(j)]; 
+        responseDuration = responseStopTime - responseTime; 
+        
         end
     
             if datapRight(i)> datarLeft(j); 
@@ -112,13 +118,18 @@ for k=1
     discriminator = (sigma-labda)./2; discriminator=round(abs(discriminator(1:end)));
     responseRate = discriminator.*responseTime;
     alternationTime = responseRate(responseRate>0);
-    repetitionTime  = responseTime(responseRate==0);
-    
+    repetitionTime  = responseTime(responseRate==0);   
     alternationInterval = alternationTime(2:end) - alternationTime(1:end-1);
-    
+  
     unifier = 1:length(alternationInterval); 
     even = unifier(mod(unifier,2)==0);
     odd = unifier(mod(unifier,2)~=0);
+    
+    figure(2); 
+    hold off; 
+    plot(responseStopTime, mixedDuration, 'Color', [0 0 0]); hold on;
+    line([min(responseStopTime) max(responseStopTime)], [mean(mixedDuration) mean(mixedDuration)],'Color', [0 0 0], 'LineStyle', '--'); 
+    title('duration of mixed percept'); 
     
     % output
     adapexp.alternation{k}.interval = alternationInterval;
