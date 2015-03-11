@@ -1,9 +1,9 @@
-function [adapexp] = dpxAdapAnalysisBR(data) 
+function [adapexp, t] = dpxAdapAnalysisBR(data) 
     % Tijmen Wartenberg, 09-04-15
     % Analysis file for TWBRadapatationexperiment0
 
    clear all;  clf; 
-   load('C:\dpxData\TWBRadaptationexperiment-0-20150309100810.mat');       % use any (latest) data from dpxData to analyze 
+  load('C:\DPX\dpxExperiments\Tijmen\TWBRadaptationexperiment-TW-20150309135624.mat')      % use any (latest) data from dpxData to analyze 
     
      % to-be-filled array 
      adapexp.alternation    = []; 
@@ -58,14 +58,15 @@ for k=nblocks
     end
     allData(isnan(allData))=trialDuration;
     
-    % plot, looks nice for short and clean trials, messy and chaotifor long trials
+    % plot, looks nice for short and clean trials, but is messy and chaotic for long trials
+    figure(1)
     plot(allData(:,1), allData(:,2), 'LineWidth', 2, 'Color', [0 0 0]);  hold on; 
     line([min(allData(:,1)) trialDuration] , [0 0], 'Color', [0 0 0], 'LineStyle', '--'); 
-    legend('1 = R, -1 = L', 'Location', 'northoutside'); 
+    legend('0=M, 1 = R, -1 = L', 'Location', 'northoutside'); 
     axis([min(allData(:,1))-0.5 trialDuration -1.1 1.1]);
     xlabel('time(s)');
-    ylabel('perceptual recordings'); 
-    title('perceptual recordings'); 
+    ylabel('perceptual recordings (binary scale)'); 
+    title(['perceptual recordings - trial:' num2str(k)]); 
 
     % duration presses
 %     deltaLeft  = datarLeft - datapLeft;
@@ -91,20 +92,24 @@ for k=nblocks
     
             if datarRight(i)<datapLeft(j); 
             mixedDuration = [mixedDuration datapLeft(j)-datarRight(i)]; 
+            else 
+                mixedDuration = [mixedDuration 0]; 
             end
     
         i=i+1;
        
         else if datapRight(i)> datapLeft(j)
         sigma=[sigma, -1 ]; 
-        responseTime = [responseTime, datapLeft(j)]; 
-        responseStopTime = [responseStopTime, datarLeft(j)]; 
+        responseTime = [responseTime, datapLeft(j)];
+        responseStopTime = [responseStopTime, datarLeft(j)];
         responseDuration = responseStopTime - responseTime; 
         
         end
     
             if datapRight(i)> datarLeft(j); 
             mixedDuration = [mixedDuration datapRight(i)-datarLeft(j)]; 
+            else 
+                mixedDuration = [mixedDuration 0]; 
             end
             
         j=j+1;
@@ -113,7 +118,7 @@ for k=nblocks
     
     labda = sigma(2:end);
     labda = [labda, 0];
-    
+
     % divide the responses in alternations and repetitions
     discriminator = (sigma-labda)./2; discriminator=round(abs(discriminator(1:end)));
     responseRate = discriminator.*responseTime;
@@ -124,13 +129,15 @@ for k=nblocks
     unifier = 1:length(alternationInterval); 
     even = unifier(mod(unifier,2)==0);
     odd = unifier(mod(unifier,2)~=0);
-    
-    figure(2); 
+
     hold off; 
+    figure(2); 
     plot(responseStopTime, mixedDuration, 'Color', [0 0 0]); hold on;
     line([min(responseStopTime) max(responseStopTime)], [mean(mixedDuration) mean(mixedDuration)],'Color', [0 0 0], 'LineStyle', '--'); 
-    title('duration of mixed percept'); 
-    
+    title(['duration of mixed percept - trial:' num2str(k)]); 
+    xlabel('time (s)'); ylabel('duration (s)'); 
+    hold off; 
+
     % output
     adapexp.alternation{k}.interval = alternationInterval;
     adapexp.alternation{k}.intervalmono1 = alternationInterval(even);   
@@ -142,7 +149,24 @@ for k=nblocks
     adapexp.mixed{k} = mixedDuration; 
     
     end
-    
+   
 end
-    
+
+% mixed percepts for continous adaptation trials
+select1 = adapexp.mixed{1}(adapexp.mixed{1}>.5); 
+select2 = adapexp.mixed{4}(adapexp.mixed{4}>.5);
+select3 = adapexp.mixed{7}(adapexp.mixed{7}>.5);
+
+figure(3);
+boxplot([select1, select2, select3], [ones(1, length(select1)), 2* ones(1, length(select2)), 3*ones(1, length(select3))]); 
+title('duration mixed percepts for the adaptation trials'); 
+
+% alternation probability in the 
+rate1 = 1./(adapexp.alternation{3}.time(end)-adapexp.alternation{3}.time(1));
+rate2 = 1./(adapexp.alternation{6}.time(end)-adapexp.alternation{6}.time(1));
+rate3 = 1./(adapexp.alternation{9}.time(end)-adapexp.alternation{9}.time(1));
+rate = [rate1, rate2,rate3]
+
+figure(4);
+
 end
