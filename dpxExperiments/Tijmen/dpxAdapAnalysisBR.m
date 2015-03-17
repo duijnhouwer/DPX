@@ -167,6 +167,4 @@ rate2 = 1./(adapexp.alternation{6}.time(end)-adapexp.alternation{6}.time(1));
 rate3 = 1./(adapexp.alternation{9}.time(end)-adapexp.alternation{9}.time(1));
 rate = [rate1, rate2,rate3]
 
-figure(4);
-
 end
