@@ -8,8 +8,7 @@ n=-1;
 else 
     n=1;
 end
-
-    n = n*-1;   
+ 
     C = dpxCoreCondition;  
     C.durSec = Ton;
      
@@ -28,12 +27,15 @@ end
         LeftCheck.nHori=18;
         LeftCheck.nVert=18;
         LeftCheck.sparseness=2/3;
-        LeftCheck.durSec = 2; 
+        LeftCheck.durSec = Ton; 
         C.addStim(LeftCheck);
         
         for repeats = 1:(Ton/2)
+        n=n*-1; 
+            
         ML = dpxStimMask;
         ML.grayFrac=.5;
+        ML.pars=.5;
         ML.name = sprintf('MaskLeft%d', repeats);
         ML.typeStr='gaussian';
         ML.xDeg=0;
@@ -46,6 +48,7 @@ end
         GL = dpxStimGrating;
         GL.name = sprintf('GratingLeft%d', repeats);
         GL.xDeg=0;
+        
             switch n
             case 1
                 GL.dirDeg=-45;
@@ -54,6 +57,7 @@ end
             otherwise
                 error('Oh no! No flip could be performed!'); 
             end
+            
         GL.contrastFrac=1;
         GL.squareWave=false;
         GL.cyclesPerSecond=0;
@@ -91,9 +95,12 @@ end
         C.addStim(RightCheck);
         
         for repeats = 1:(Ton/2)
+        n=n*-1; 
+        
         MR = dpxStimMask;
         MR.name = sprintf('MaskRight%d', repeats);
         MR.grayFrac=.5;
+        MR.pars=.5;
         MR.typeStr='gaussian';
         MR.xDeg=0;
         MR.hDeg = (50*sqrt(2))/W.deg2px;

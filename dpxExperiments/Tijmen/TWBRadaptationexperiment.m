@@ -23,12 +23,12 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=0;                                                                      % screen settings for philips screen
+set=1;                                                                      % screen settings for philips screen
 if set ==0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
         'stereoMode','mirror','skipSyncTests',0,'scrNr',0); 
-else 
+else   
 E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % screen settings for eyelink
         'distMm',1000, 'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
         'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
@@ -41,9 +41,9 @@ Toff = sortrows(shuffle',1);
 Toff = Toff(:,2);
 
 k = 0; 
-cont0 = 8;                                                                 % s, this should be 480 for the 'real experiment'
-adap0 = 1;                                                                 % s, this should be 60 for the 'real experiment'
-trialLength = 60; 
+cont0 = 30;                                                                 % s, this should be 480 for the 'real experiment'
+adap0 = 10;                                                                 % s, this should be 60 for the 'real experiment'
+trialLength = 30; 
 
 for Ton=[cont0, adap0];   
     k=k+1;
@@ -70,6 +70,7 @@ for Ton=[cont0, adap0];
         
         ML = dpxStimMask;
         ML.grayFrac=.5;
+        ML.pars=.5;
         ML.name='MaskLeft';
         ML.typeStr='gaussian';
         ML.xDeg=0;
@@ -119,6 +120,7 @@ for Ton=[cont0, adap0];
         MR = dpxStimMask;
         MR.name='MaskRight';
         MR.grayFrac=.5;
+        MR.pars=.5;
         MR.typeStr='gaussian';
         MR.xDeg=0;
         MR.hDeg = (50*sqrt(2))/W.deg2px;
@@ -153,8 +155,8 @@ end
 
 for i=1:length(Toff)
     if i<3
-        cont = 30; 
-        adap= 30;  
+        cont = 10; 
+        adap = 10;  
     else 
         cont = []; 
         adap = [];                                                          % scraps the two (unnecessary) adaptation trials at the end 
@@ -202,6 +204,7 @@ for i=1:length(Toff)
         ML = dpxStimMask;
         ML.name = sprintf('MaskLeft%d', nRepeats);
         ML.grayFrac=.5;
+        ML.pars=.5;
         ML.typeStr='gaussian';
         ML.xDeg=0;
         ML.hDeg = (50*sqrt(2))/W.deg2px; 
@@ -255,6 +258,7 @@ for i=1:length(Toff)
         MR = dpxStimMask;
         MR.name = sprintf('MaskRight%d', nRepeats);
         MR.grayFrac=.5;
+        MR.pars=.5;
         MR.typeStr='gaussian';
         MR.xDeg=0;
         MR.hDeg = (50*sqrt(2))/W.deg2px; 

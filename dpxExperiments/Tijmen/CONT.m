@@ -27,6 +27,7 @@ for cont = Ton
         
         ML = dpxStimMask;
         ML.grayFrac=.5;
+        ML.pars=.5;
         ML.name='MaskLeft';
         ML.typeStr='gaussian';
         ML.xDeg=0;
@@ -76,6 +77,7 @@ for cont = Ton
         MR = dpxStimMask;
         MR.name='MaskRight';
         MR.grayFrac=.5;
+        MR.pars=.5;
         MR.typeStr='gaussian';
         MR.xDeg=0;
         MR.hDeg = (50*sqrt(2))/W.deg2px;
