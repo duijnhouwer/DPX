@@ -43,7 +43,6 @@ else
     n=1;
 end
                   
-
 for nRepeats=1:2
     C=dpxCoreCondition;
     Toff=0; 
