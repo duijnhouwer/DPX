@@ -10,12 +10,12 @@ E.expName='TWBRadaptationexperiment';
 W =dpxCoreWindow;
 
 Language = input('NL(1)/EN(2):');
-if Language ==1
+if Language == 1
 E.txtStart=sprintf('Druk op $STARTKEY en laat deze los \n om het experiment te starten.\n\n Druk eenmalig op de \n linker- en rechter controltoets.\n Interrupties: druk voor elke interruptie. \n  Continu: druk bij elke nieuwe waarneming.');
 E.txtEnd= 'Einde van het experiment';
 end
 
-if Language ==2
+if Language == 2
 E.txtStart = sprintf('Press and release $STARTKEY \n to start the experiment.\n\n Press left and right\n control key once to respond.\n Interruption: press before each interruption. \n Continuous: press for every new percept.');
 E.txtEnd= 'End of the experiment';
 end
@@ -40,6 +40,7 @@ shuffle = [randperm(3); offTime];
 offTime = sortrows(shuffle',1); 
 offTime = offTime(:,2);
 
+disp('Loading (may take a while). Please wait.'); 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Ton = 120; 
 if  mod(Ton, 2) == 0
@@ -59,7 +60,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for i=1:3
-Toff = offTime(i)
+Toff = offTime(i);
     
 Ton = 60; 
 BR(Ton, Toff); 

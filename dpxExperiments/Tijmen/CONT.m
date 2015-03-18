@@ -107,6 +107,6 @@ for cont = Ton
         
         E.addCondition(C);  
 end
-condition = E.conditions
+condition = E.conditions;
 end
 

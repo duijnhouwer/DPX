@@ -9,10 +9,9 @@ else
     n=1;
 end
 
-for repeats = 1:(Ton/2)
     n = n*-1;   
     C = dpxCoreCondition;  
-    C.durSec = 2;
+    C.durSec = Ton;
      
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the left side of the screen (right side if mirror is active)
@@ -31,19 +30,21 @@ for repeats = 1:(Ton/2)
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = 2; 
         C.addStim(LeftCheck);
-
+        
+        for repeats = 1:(Ton/2)
         ML = dpxStimMask;
         ML.grayFrac=.5;
-        ML.name='MaskLeft';
+        ML.name = sprintf('MaskLeft%d', repeats);
         ML.typeStr='gaussian';
         ML.xDeg=0;
         ML.hDeg = (50*sqrt(2))/W.deg2px; 
         ML.wDeg = (50*sqrt(2))/W.deg2px;
-        ML.durSec=2; 
+        ML.durSec= 2; 
+        ML.onSec = 2*(repeats-1) ;
         C.addStim(ML);
-        
+    
         GL = dpxStimGrating;
-        GL.name = 'gratingLeft'; 
+        GL.name = sprintf('GratingLeft%d', repeats);
         GL.xDeg=0;
             switch n
             case 1
@@ -60,7 +61,9 @@ for repeats = 1:(Ton/2)
         GL.wDeg=(50)/W.deg2px;
         GL.hDeg=(50)/W.deg2px;    
         GL.durSec=2; 
+        GL.onSec = 2*(repeats-1) ;
         C.addStim(GL);
+        end
 
         Dot = dpxStimDot;
         Dot.name = 'Dot';
@@ -87,18 +90,20 @@ for repeats = 1:(Ton/2)
         RightCheck.rndSeed=LeftCheck.rndSeed;
         C.addStim(RightCheck);
         
+        for repeats = 1:(Ton/2)
         MR = dpxStimMask;
-        MR.name='MaskRight';
+        MR.name = sprintf('MaskRight%d', repeats);
         MR.grayFrac=.5;
         MR.typeStr='gaussian';
         MR.xDeg=0;
         MR.hDeg = (50*sqrt(2))/W.deg2px;
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec=2; 
+        MR.onSec = 2*(repeats-1) ;
         C.addStim(MR);
         
         GR = dpxStimGrating;
-        GR.name = 'gratingRight';
+        GR.name = sprintf('GratingRight%d', repeats);
         GR.xDeg=0;
               switch n
             case 1
@@ -114,7 +119,9 @@ for repeats = 1:(Ton/2)
         GR.wDeg= (50)/W.deg2px;
         GR.hDeg= (50)/W.deg2px;      
         GR.durSec=2;
+        GR.onSec = 2*(repeats-1) ;
         C.addStim(GR);
+        end
 
         RL0 = dpxRespContiKeyboard;
         RL0.name='keyboardl';
@@ -126,6 +133,6 @@ for repeats = 1:(Ton/2)
         RR0.kbName='RightControl';
         C.addResp(RR0);  
         E.addCondition(C);  
-end
-   condition = E.conditions
+
+   condition = E.conditions;
 end

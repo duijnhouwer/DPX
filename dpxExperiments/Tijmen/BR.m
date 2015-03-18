@@ -116,7 +116,6 @@ rep = Ton /(1+Toff);
         
       E.addCondition(D); 
 
-condition = E.conditions
+condition = E.conditions;
 
 end
-
