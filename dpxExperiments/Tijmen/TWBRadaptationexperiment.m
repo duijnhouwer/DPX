@@ -23,7 +23,7 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=1;                                                                      % screen settings for philips screen
+set = 0;                                                                    % screen settings for philips screen
 if set ==0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
