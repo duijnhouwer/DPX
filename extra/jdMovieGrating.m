@@ -15,11 +15,11 @@ function jdMovieGrating(varargin)
     p.addOptional('pxHor',400,@(x)isnumeric(x) && ~rem(x,1) && x>0); % width of movie 
     p.addOptional('pxVer',300,@(x)isnumeric(x) && ~rem(x,1) && x>0); % height of movie
     p.addOptional('barPx',40,@(x)isnumeric(x) && x>0); % bar width
-    p.addOptional('frN',560,@(x)isnumeric(x) && ~rem(x,1) && x>0); % number of frames
-    p.addOptional('frHz',40,@(x)isnumeric(x) && x>0); % frame rate
+    p.addOptional('frN',250,@(x)isnumeric(x) && ~rem(x,1) && x>0); % number of frames
+    p.addOptional('frHz',10,@(x)isnumeric(x) && x>0); % frame rate
     p.addOptional('dXdFrPx',4,@isnumeric); % pixels displacement per frame
     p.addOptional('lum1P',0,@(x)isnumeric(x) && x>=0 && x<=1); % luminance 1, P means value [0..1] 
-    p.addOptional('lum2P',0,@(x)isnumeric(x) && x>=0 && x<=1); % luminance 2, P means value [0..1] 
+    p.addOptional('lum2P',1,@(x)isnumeric(x) && x>=0 && x<=1); % luminance 2, P means value [0..1] 
     p.addOptional('startDg',0,@isnumeric); % start phase of pattern in degrees
     p.addOptional('aaPx',4,@(x)isnumeric(x) && ~rem(x,1) && x>=0); % oversampling factor of picture to prevent aliasing,  0 means no antialiasing
     p.addOptional('verbosity_',1,@(x)any(x==[0 1 2])); % verbosity level (disp), _ denotes don't include in auto-filename
