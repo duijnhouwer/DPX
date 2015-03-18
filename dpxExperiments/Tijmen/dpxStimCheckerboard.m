@@ -38,7 +38,7 @@ classdef dpxStimCheckerboard < dpxAbstractStim
             checkerboard=checkerboard*cols(1)+(1-checkerboard)*cols(2);
             % Make the opacity layer
             % opacityLayer=cols(1)*(ones(size(checkerboard)));              % the col(1) parameter disturbs the contrast (TW & RD) 
-            opacityLayer=cols(1)*(ones(size(checkerboard)));                % newly added by TW and RD, the former statement was incorrect
+            opacityLayer = white*(ones(size(checkerboard)));                % newly added by TW and RD, the former statement was incorrect
             % Make the central hole
             if (S.nHoleHori&S.nHoleVert)>0
                 xHole=round(S.nHori/2-S.nHoleHori/2+1:S.nHori/2+S.nHoleHori/2);

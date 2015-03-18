@@ -8,7 +8,7 @@ rep = Ton /(1+Toff);
         D.durSec = Ton;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the left side of the screen     
-       
+     
         LeftCheck=dpxStimCheckerboard;
         LeftCheck.name='checksLeft';
         LeftCheck.RGBAfrac=[1 1 1 1];
