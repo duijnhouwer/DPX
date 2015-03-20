@@ -8,12 +8,12 @@ function jvDpxMultisensoryHorizontal
     %
     E.startKey='UpArrow'
     
-    E.txtPause='';
+    E.txtPause='txt';
     E.txtPauseNrTrials=1;
     javaaddpath(which('BrainMidi.jar'));
     
     
-    durS=20*1 ;
+    durS=60*3 ;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
@@ -98,8 +98,7 @@ function jvDpxMultisensoryHorizontal
                             T.tapNote=T.tapNote(1:numel(T.tapOnSec));
                             
                             
-                            else
-                                error('Unknown condition number ....');
+                           
                         end
                         C.addStim(T);
                         %
@@ -110,8 +109,8 @@ function jvDpxMultisensoryHorizontal
             end
         end
     end
-end
-E.nRepeats=1;
+
+E.nRepeats=4;
 nTrials=numel(E.conditions)*E.nRepeats;
 expectedSecs=nTrials*(durS);
 dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
