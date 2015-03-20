@@ -1,9 +1,9 @@
-function agDpxDDQinteractTactile
+function jvDpxMultisensoryHorizontal
     
-    % agDpxDDQinteractTactile
+    % jvDpxMultisensoryHorizontal
     
     E=dpxCoreExperiment;
-    E.expName='agDpxDDQinteractTactile';
+    E.expName='jvDpxMultisensoryHorizontal';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';    E.scr.set('winRectPx',[],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
     %
     E.startKey='UpArrow'
@@ -13,7 +13,7 @@ function agDpxDDQinteractTactile
     javaaddpath(which('BrainMidi.jar'));
     
     
-    durS=60*2 ;
+    durS=20*1 ;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
@@ -22,6 +22,7 @@ function agDpxDDQinteractTactile
                 for ori=0
                     for bottomLeftTopRightFirst=[true]
                         for antiJump=false
+                            
                             if ddqHei==ddqWid && antiJump
                                 continue;
                             end
@@ -91,21 +92,29 @@ function agDpxDDQinteractTactile
                             T.tapOnSec=tmp2;
                             T.tapOnSec=T.tapOnSec;%+2/60;
                             T.tapDurSec=2/60;
-                            T.tapNote=repmat([0 1 8 9],1,1000);
+                            
+                            
+                            T.tapNote=repmat([0 8 1 9],1,1000);
                             T.tapNote=T.tapNote(1:numel(T.tapOnSec));
-                            C.addStim(T);
-                            %
-                            E.addCondition(C);
+                            
+                            
+                            else
+                                error('Unknown condition number ....');
                         end
+                        C.addStim(T);
+                        %
+                        E.addCondition(C);
+                        
                     end
                 end
             end
         end
     end
-    E.nRepeats=2;
-    nTrials=numel(E.conditions)*E.nRepeats;
-    expectedSecs=nTrials*(durS);
-    dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
-    E.run;
+end
+E.nRepeats=1;
+nTrials=numel(E.conditions)*E.nRepeats;
+expectedSecs=nTrials*(durS);
+dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
+E.run;
 end
 
