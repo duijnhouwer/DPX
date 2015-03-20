@@ -108,7 +108,7 @@ function jvDpxMultisensoryVertical
             end
         end
     end
-end
+
 E.nRepeats=3;
 nTrials=numel(E.conditions)*E.nRepeats;
 expectedSecs=nTrials*(durS);
