@@ -34,6 +34,8 @@ E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % sc
         'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
 end
 
+disp('Loading (may take a while). Please wait...'); 
+
 % generate Toff Times with a shuffled order
 Toff = [0.25,0.5,1]; 
 shuffle = [randperm(3); Toff]; 

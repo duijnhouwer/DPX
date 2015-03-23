@@ -23,7 +23,7 @@ end
 E.breakFixTimeOutSec=0;
 E.outputFolder='C:\dpxData';
 
-set=1;                                                                      % screen settings for philips screen
+set=0;                                                                      % screen settings for philips screen
 if set == 0
 E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
@@ -40,9 +40,9 @@ shuffle = [randperm(3); offTime];
 offTime = sortrows(shuffle',1); 
 offTime = offTime(:,2);
 
-disp('Loading (may take a while). Please wait.'); 
+disp('Loading (may take a while). Please wait...'); 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Ton = 120; 
+Ton = 30; 
 if  mod(Ton, 2) == 0
 BF(Ton);
 [condition] = [condition, BF(Ton)];
@@ -66,6 +66,8 @@ Ton = 60;
 BR(Ton, Toff); 
 [condition] = [condition, BR(Ton, Toff)]; 
 
+if i<3
+
 Ton = 15;
 if  mod(Ton, 2) == 0
 BF(Ton); 
@@ -81,6 +83,8 @@ if  mod(Ton, 2) == 0
 BF(Ton); 
 [condition] = [condition, BF(Ton)];
 end
+end
+
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

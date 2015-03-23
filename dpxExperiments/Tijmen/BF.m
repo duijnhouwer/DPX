@@ -27,7 +27,8 @@ end
         LeftCheck.nHori=18;
         LeftCheck.nVert=18;
         LeftCheck.sparseness=2/3;
-        LeftCheck.durSec = Ton; 
+        LeftCheck.durSec = Inf; 
+        LeftCheck.onSec = 0;
         C.addStim(LeftCheck);
         
         for repeats = 1:(Ton/2)
@@ -91,6 +92,8 @@ end
         RightCheck.nHoleHori=10;
         RightCheck.nHoleVert=10;
         RightCheck.sparseness=2/3;
+        RightCheck.durSec = Inf; 
+        RightCheck.onSec = 0;
         RightCheck.rndSeed=LeftCheck.rndSeed;
         C.addStim(RightCheck);
         
@@ -139,6 +142,7 @@ end
         RR0.name='keyboardr';
         RR0.kbName='RightControl';
         C.addResp(RR0);  
+        
         E.addCondition(C);  
 
    condition = E.conditions;

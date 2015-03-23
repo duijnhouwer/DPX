@@ -22,7 +22,8 @@ for cont = Ton
         LeftCheck.nHori=18;
         LeftCheck.nVert=18;
         LeftCheck.sparseness=2/3;
-        LeftCheck.durSec = cont; 
+        LeftCheck.durSec = Inf; 
+        LeftCheck.onSec = 0; 
         C.addStim(LeftCheck);
         
         ML = dpxStimMask;
@@ -71,6 +72,8 @@ for cont = Ton
         RightCheck.nHoleHori=10;
         RightCheck.nHoleVert=10;
         RightCheck.sparseness=2/3;
+        RightCheck.durSec = Inf; 
+        RightCheck.onSec = 0; 
         RightCheck.rndSeed=LeftCheck.rndSeed;
         C.addStim(RightCheck);
         
