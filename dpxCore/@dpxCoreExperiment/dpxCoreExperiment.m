@@ -35,7 +35,7 @@ classdef dpxCoreExperiment < hgsetget
             % http://tinyurl.com/dpxlink
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
-            E.plugins={dpxPluginComments}; % Comments plugin loaded for all experiments, more can be added (e.g., Eyelink plugin)
+            E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
@@ -154,6 +154,9 @@ classdef dpxCoreExperiment < hgsetget
         end
         function addPlugin(E,P)
             % note, the dpxPluginComments is loaded by default
+            if ~isobject(P)
+                error('[dpxCoreExperiment] Plugin added with addPlugin must be an object.');
+            end
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
         end
     end
@@ -171,7 +174,6 @@ classdef dpxCoreExperiment < hgsetget
                     stimname=E.conditions{c}.stims{s}.name;
                     % this is why unique stimulus names are required
                     TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
-                    
                 end
                 for s=1:numel(E.conditions{c}.trigs)
                     trigname=E.conditions{c}.trigs{s}.name;
@@ -195,14 +197,9 @@ classdef dpxCoreExperiment < hgsetget
                 for p=1:numel(E.plugins)
                     TMP.plugin.(E.plugins{p}.name)=dpxGetSetables(E.plugins{p});
                     TMP.plugin.(E.plugins{p}.name)=rmfield(TMP.plugin.(E.plugins{p}.name),{'name','pauseMenuKeyStrCell','pauseMenuInfoStrCell'});
-                    if p==1
-                        % preallocate
-                        P(1:numel(E.plugins))=dpxFlattenStruct(TMP);
-                    else
-                        % insert in preallocated array
-                        P(c)=dpxFlattenStruct(TMP);
-                    end
                 end
+                P=dpxFlattenStruct(TMP);
+                clear TMP;
             end
             % Get the settings for all trials
             data=cell(1,numel(E.trials));
