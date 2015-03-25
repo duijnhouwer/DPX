@@ -3,7 +3,7 @@ function [adapexp, t] = dpxAdapAnalysisBR(data)
     % Analysis file for TWBRadapatationexperiment0
 
    clear all;  clf; 
-  load('C:\DPX\dpxExperiments\Tijmen\TWBRadaptationexperiment-TW-20150309135624.mat')      % use any (latest) data from dpxData to analyze 
+    load('C:\DPX\dpxExperiments\Tijmen\TWBRadaptationexperiment-TW-20150323134846.mat')    % use any (latest) data from dpxData to analyze 
     
      % to-be-filled array 
      adapexp.alternation    = []; 
@@ -12,7 +12,7 @@ function [adapexp, t] = dpxAdapAnalysisBR(data)
      adapexp.response       = []; 
      adapexp.mixed          = []; 
      
-    % select only the trials with respones
+    % select only the trials with responses
     l=1; nblocks=1;
     while nblocks(end)+1< length(data.condition)  
         if mod(nblocks(end),3)==0
@@ -50,7 +50,9 @@ for k=nblocks
     allData = [dataR, dataL, dataM; sigmaR,sigmaL, sigmaM]';
     allData = sortrows(allData,1);
     
-    % order all the data to make a plot
+    % order all the data to make a plot for the adaptation trials (with
+    % report)
+    
     m=1; 
     while (m+1)<length(allData)
         allData([m,m+1],:) = allData([m+1,m],:);
@@ -69,8 +71,8 @@ for k=nblocks
     title(['perceptual recordings - trial:' num2str(k)]); 
 
     % duration presses
-%     deltaLeft  = datarLeft - datapLeft;
-%     deltaRight = datarRight - datapRight;
+    % deltaLeft  = datarLeft - datapLeft;
+    % deltaRight = datarRight - datapRight;
 
     sigma = [];  
     responseTime = [];

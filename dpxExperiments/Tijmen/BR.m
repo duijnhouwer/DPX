@@ -58,6 +58,7 @@ rep = Ton /(1+Toff);
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
+        D.addStim(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen
@@ -116,8 +117,7 @@ rep = Ton /(1+Toff);
         RR.kbName ='RightControl';
         D.addResp(RR);
       
-          D.addStim(Dot);
-      E.addCondition(D); 
+        E.addCondition(D); 
 
 condition = E.conditions;
 

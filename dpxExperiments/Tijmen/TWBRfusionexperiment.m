@@ -5,7 +5,7 @@ clear all; clf;
 condition = []; 
 KbName('UnifyKeyNames');
 E=dpxCoreExperiment;
-E.expName='TWBRadaptationexperiment';
+E.expName='TWBRfusionexperiment';
 
 W =dpxCoreWindow;
 
