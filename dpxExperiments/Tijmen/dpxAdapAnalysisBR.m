@@ -1,10 +1,10 @@
-function [adapexp, t] = dpxAdapAnalysisBR(data) 
+function [adapexp] = dpxAdapAnalysisBR(data) 
     % Tijmen Wartenberg, 09-04-15
     % Analysis file for TWBRadapatationexperiment0
 
    clear all;  clf; 
-    load('C:\DPX\dpxExperiments\Tijmen\TWBRadaptationexperiment-TW-20150323134846.mat')    % use any (latest) data from dpxData to analyze 
-    
+   load('C:\DPX\dpxExperiments\Tijmen\TWBRadaptationexperiment-JM-20150326104544.mat')   % use any (latest) data from dpxData to analyze 
+   
      % to-be-filled array 
      adapexp.alternation    = []; 
      adapexp.repetition     = [];
@@ -167,6 +167,6 @@ title('duration mixed percepts for the adaptation trials');
 rate1 = 1./(adapexp.alternation{3}.time(end)-adapexp.alternation{3}.time(1));
 rate2 = 1./(adapexp.alternation{6}.time(end)-adapexp.alternation{6}.time(1));
 rate3 = 1./(adapexp.alternation{9}.time(end)-adapexp.alternation{9}.time(1));
-rate = [rate1, rate2,rate3]
+rate = [rate1, rate2,rate3];
 
 end

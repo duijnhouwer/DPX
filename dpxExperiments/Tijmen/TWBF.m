@@ -1,4 +1,4 @@
-function [condition] = BF( Ton )
+function [condition] = TWBF( Ton )
 
 W =dpxCoreWindow;
 E=dpxCoreExperiment;

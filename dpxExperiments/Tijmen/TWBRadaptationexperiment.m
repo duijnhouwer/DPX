@@ -4,8 +4,8 @@
 
 clear all; clf;  
 KbName('UnifyKeyNames');
-E=dpxCoreExperiment;
-E.expName='TWBRadaptationexperiment';
+E=dpxCoreExperiment; 
+E.expName='TWBRadaptationexperiment'
 
 W =dpxCoreWindow;
 
@@ -40,7 +40,7 @@ disp('Loading (may take a while). Please wait...');
 Toff = [0.25,0.5,1]; 
 shuffle = [randperm(3); Toff]; 
 Toff = sortrows(shuffle',1); 
-Toff = Toff(:,2);
+Toff = Toff(:,2)
 
 k = 0; 
 cont0 = 30;                                                                 % s, this should be 480 for the 'real experiment'
@@ -296,9 +296,11 @@ for i=1:length(Toff)
       E.addCondition(D); 
     end 
 end 
+
     E.conditions
     E.conditionSequence = 1:numel(E.conditions);
     E.nRepeats=1; 
     E.run;
     sca; 
+    
  end

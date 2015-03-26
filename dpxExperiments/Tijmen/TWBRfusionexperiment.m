@@ -44,18 +44,18 @@ disp('Loading (may take a while). Please wait...');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Ton = 30; 
 if  mod(Ton, 2) == 0
-BF(Ton);
-[condition] = [condition, BF(Ton)];
+TWBF(Ton);
+[condition] = [condition, TWBF(Ton)];
 end
 
 Ton = 30;
-CONT(Ton);
-[condition] = [condition, CONT(Ton)]; 
+TWCONT(Ton);
+[condition] = [condition, TWCONT(Ton)]; 
 
 Ton = 30;
 if  mod(Ton, 2) == 0
-BF(Ton); 
-[condition] = [condition, BF(Ton)];
+TWBF(Ton); 
+[condition] = [condition, TWBF(Ton)];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -63,25 +63,25 @@ for i=1:3
 Toff = offTime(i);
     
 Ton = 60; 
-BR(Ton, Toff); 
-[condition] = [condition, BR(Ton, Toff)]; 
+TWBR(Ton, Toff); 
+[condition] = [condition, TWBR(Ton, Toff)]; 
 
 if i<3
 
 Ton = 15;
 if  mod(Ton, 2) == 0
-BF(Ton); 
-[condition] = [condition, BF(Ton)];
+TWBF(Ton); 
+[condition] = [condition, TWBF(Ton)];
 end
 
 Ton = 30;
-CONT(Ton);
-[condition] = [condition, CONT(Ton)]; 
+TWCONT(Ton);
+[condition] = [condition, TWCONT(Ton)]; 
 
 Ton = 15;
 if  mod(Ton, 2) == 0
-BF(Ton); 
-[condition] = [condition, BF(Ton)];
+TWBF(Ton); 
+[condition] = [condition, TWBF(Ton)];
 end
 end
 
