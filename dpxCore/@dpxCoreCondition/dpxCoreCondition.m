@@ -93,22 +93,24 @@ classdef dpxCoreCondition < hgsetget
             % Loop over all video-flips (frames) of the trial
             nrMissedFlips=0;
             breakKeys={'Escape','Pause'};
-            f=0; % flipCounter
+            f=0; % flipCounter, locks in 0 until f=1 is set after ...
+            waitingForFixation=true;  ... the fixation stimulus is fixated (if eyelink is used) ...
+            waitingForTriggers=true; ... and the optional dpxTrialTriggers are all satified (typically keypress)
             while f<=C.nFlips
                 % Lock in frame-0 until all trial-triggers are go. Stimuli
                 % with onSec<=0 will show already (e.g. fixation dot
                 % waiting for go-condition fixation using eyelink)
                 if f>0
-                    f=f+1;
-                end
-               %     nGo=0;
-               %     for g=1:numel(C.trigs)
-               %         nGo=nGo+C.trigs{g}.go;
-               %     end
-               %     if nGo==numel(C.trigs)
-               %         f=1; % Lift the lock: start the trial
-               %     end
-               % end
+                    f=f+1; % increment flip counter since lock release
+                else
+                    nGo=0;
+                    for g=1:numel(C.trigs)
+                        nGo=nGo+C.trigs{g}.go;
+                    end
+                    if nGo==numel(C.trigs)
+                        waitingForTriggers=false; % Lift the lock
+                    end
+                end              
                 % Check the break keys
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
@@ -123,7 +125,7 @@ classdef dpxCoreCondition < hgsetget
                 % Check the gaze-fixation status
                 if isempty(stimNumberToFixate) 
                    if f==0
-                       f=1; % just start the trial immediately
+                       waitingForFixation=false; % just relase the fixation lock immediately
                    end
                 else
                     [ok,str]=C.stims{stimNumberToFixate}.fixationStatus; 
@@ -143,13 +145,18 @@ classdef dpxCoreCondition < hgsetget
                         end
                     else
                         if f==0
-                            Eyelink('Message', 'FIRSTFIXATION'); % set a time-stamp in EDF file (this function takes ~0.000091 seconds on a 2008 iMac)
-                            f=1; % start the condition (timestamp collected after flip below)
-                        else 
+                            waitingForFixation=false;
+                        else
+                            if f==1
+                                Eyelink('Message', 'STARTTRIAL'); % set a time-stamp in the EDF file on the Eyelink computer (this function takes ~0.000091 seconds on a 2008 iMac)
+                            end
                             % fixation was restored within the graceperiod
                             C.flipsSinceBreakFix=[];
                         end
                     end
+                end
+                if f==0 && ~waitingForTriggers && ~waitingForFixation
+                    f=1; % start the trial, timestamp collected after flip below (will correspond to STARTTRIAL in EDF if eyelink is used
                 end
                 % Get the response(s)
                 for r=1:numel(C.resps)
