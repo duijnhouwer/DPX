@@ -143,7 +143,7 @@ function dpxExampleExperimentWithText(testscr)
         MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
         
         % Add  a text stimulus
-        TEXT=dpxStimText;
+        TEXT=dpxStimTextSimple;
         TEXT.str=['Condition #' num2str(conditionCounter,'%3d') '\nLeftArrow to start ...'];
         TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
         TEXT.durSec=0; % stimulus disappears when flip-1 is reached
