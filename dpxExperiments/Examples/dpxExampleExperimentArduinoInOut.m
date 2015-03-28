@@ -84,6 +84,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
         % which stimulus to turn on when the correct answer is given. It
         % does in no way instruct the Arduino to use pin13 for the output.
         REW=dpxStimArduinoPulse;
+        REW.pinNr=13;
         REW.name='pin13';
         REW.visible=false;
         %

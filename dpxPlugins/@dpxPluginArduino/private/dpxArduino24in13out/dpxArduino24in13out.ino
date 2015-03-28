@@ -4,7 +4,10 @@
 
 const int responsePin2 = 2;
 const int responsePin4 = 4;
-const int rewardPin = 13;
+const int outPinJ = 10;
+const int outPinK = 11;
+const int outPinL = 12;
+const int outPinM = 13;
 const int buttonPressPin2= 10;
 const int buttonPressPin4= 12;
 bool responsePin2isOn = false;
@@ -14,12 +17,15 @@ void setup()
 {
   pinMode(responsePin2,INPUT);
   pinMode(responsePin4,INPUT);
-  pinMode(rewardPin,OUTPUT);
-  pinMode(buttonPressPin2,OUTPUT);
-  pinMode(buttonPressPin4,OUTPUT);
-  digitalWrite(buttonPressPin2,LOW);
-    digitalWrite(buttonPressPin4,LOW);
-  digitalWrite(rewardPin,LOW);
+  //
+  pinMode(outPinJ,OUTPUT);
+  pinMode(outPinK,OUTPUT);
+  pinMode(outPinL,OUTPUT);
+  pinMode(outPinM,OUTPUT);
+  digitalWrite(outPinJ,LOW);
+  digitalWrite(outPinK,LOW);
+  digitalWrite(outPinL,LOW);
+  digitalWrite(outPinM,LOW);
   // Setup the Serial link with matlab
   Serial.begin(9600);
   Serial.println('a');
@@ -72,11 +78,35 @@ void loop()
    // available on the input side of the arduino. So in this case when 
    // transferred a reward signal from matlab.
    char frommatlab=Serial.read();
-   if (frommatlab=='R') {
-    digitalWrite(rewardPin,HIGH);
-  } 
-  else if (frommatlab=='r') { // keep high until set low explicitly
-    digitalWrite(rewardPin,LOW);
+   // J = 10
+   if (frommatlab=='J') {
+    digitalWrite(outPinJ,HIGH);
+   } 
+   else if (frommatlab=='j') { // keep high until set low explicitly
+     digitalWrite(outPinJ,LOW);
+   }
+   // K = 11
+   if (frommatlab=='K') {
+    digitalWrite(outPinK,HIGH);
+   } 
+   else if (frommatlab=='k') { // keep high until set low explicitly
+     digitalWrite(outPinK,LOW);
+   }
+   // L = 12 
+   if (frommatlab=='L') {
+    digitalWrite(outPinL,HIGH);
+   } 
+   else if (frommatlab=='l') { // keep high until set low explicitly
+     digitalWrite(outPinL,LOW);
+   }
+   // M=13 
+   if (frommatlab=='M') {
+    digitalWrite(outPinM,HIGH);
+   } 
+   else if (frommatlab=='m') { // keep high until set low explicitly
+     digitalWrite(outPinM,LOW);
+   }
  }
- }
+ 
+  
 

@@ -2,18 +2,18 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
     
     properties (Access=public)
         serialPortTag;
-        onChar;
-        offChar;
+        pinNr;
     end
     properties (Access=protected)
         ser; % the serial port connection to the arduino, to be setup by dpxPluginArduino
+        onChar;
+        offChar;
     end
     methods (Access=public)
         function S=dpxStimArduinoPulse
             % Set the defaults in the constructor (i.e., here)
             S.serialPortTag='dpxArduinoTag';
-            S.onChar='R';
-            S.offChar='r';
+            S.pinNr=13;
         end
     end
     methods (Access=protected)
@@ -34,6 +34,16 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
         end
         function myClear(S)
             fprintf(S.ser,'%c',S.offChar);
+        end
+    end
+    methods
+        function set.pinNr(S,value)
+            if ~any(value==[10 11 12 13])
+                error('dpxStimArduinoPulse output should be on pin 10, 11, 12, or 13');
+            end
+            S.pinNr=value;
+            S.onChar=char(64+value); % J K L or M
+            S.offChar=char(64+32+value); % j k l or m
         end
     end
 end
