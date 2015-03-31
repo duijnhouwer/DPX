@@ -3,10 +3,10 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
     properties (Access=public)
         Voff;
         Von;
-        channelOnSec;
-        channelDurSec;
+        channelOnSec; % can be a single on time or a pattern ...
+        channelDurSec; ... with a corresponding array of durations
         channelNr;
-        daqNr;
+        daqNr; % set to -666 manually for debugging without an MCC
     end
     properties (Access=protected)
         channelOnFlip;
@@ -16,8 +16,8 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
         function S=dpxStimMccAnalogOut
             % S=dpxStimMccAnalogOut
             % Output a Voltage on Measurement Computer USB-1208FS.
-            % Channel 0: between pin 13 and a ground pin, e.g., 9, 12, or 15
-            % Channel 1: between pin 14 and a ground pin, e.g., 9, 12, or 15
+            % Channel 0: between pin 13 and a ground pin (9, 12, and 15 are ground pins)
+            % Channel 1: between pin 14 and a ground pin
             %
             % Voltage will be Von during the stimulus interval from onSec
             % to onSec+durSec, and Voff outside this interval.
@@ -25,20 +25,32 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
             % See also: DaqPins, DaqDeviceIndex, DaqAOut
             S.Voff=0;
             S.Von=4;
+            S.channelNr=0; % typically a single 0 or 1, but can be any other pattern that will be repeated
             S.daqNr=DaqDeviceIndex([],0);
-            DaqAOut(S.daqNr,0,0);
-            DaqAOut(S.daqNr,1,0);
-            S.channelNr=0; % can be a single 0 or 1 or any other pattern that will be repeated         
+            if isempty(S.daqNr)
+                warning('No Measurement Computer USB-1208FS detected.');
+            else
+                DaqAOut(S.daqNr,0,0);
+                DaqAOut(S.daqNr,1,0);
+            end
         end
     end
     methods (Access=protected)
         function myInit(S)
+            if isempty(S.daqNr)
+                error('No Measurement Computer USB-1208FS detected.');
+            end
             S.channelOnFlip=round(S.channelOnSec*S.scrGets.measuredFrameRate+S.onFlip);
             S.channelOffFlip=S.channelOnFlip+round(S.channelDurSec*S.scrGets.measuredFrameRate);
-            DaqAOut(S.daqNr,0,S.Voff/4.095);
-            DaqAOut(S.daqNr,1,S.Voff/4.095);
+            if S.daqNr~=-666
+                DaqAOut(S.daqNr,0,S.Voff/4.095);
+                DaqAOut(S.daqNr,1,S.Voff/4.095);
+            end
         end
         function myDraw(S)
+            if S.daqNr==-666
+                return;
+            end
             ons=find(S.flipCounter==S.channelOnFlip);
             offs=find(S.flipCounter==S.channelOffFlip);
             for i=ons(:)'
@@ -70,6 +82,12 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
                 error('channel should be a vector of zeros and ones');
             end
             S.channelNr=value;
+         end
+         function set.daqNr(S,value)
+             if value==-666
+                 disp(['[' mfilename '] debugging is enabled because daqNr is -666, MCC will not set any voltages']);
+             end
+             S.daqNr=value;
          end
     end
 end
