@@ -62,15 +62,15 @@ for t=2:numel(T)
             % not sure this works anymore .... jd 2014-06-13
             nCyclopeansCurrent=numel(M.Cyclopean.data);
             M.Cyclopean.pointers=[ M.Cyclopean.pointers(:)' T{t}.Cyclopean.pointers(:)'+nCyclopeansCurrent ];
-            for cf=1:numel(T{t}.Cyclopean.data)
-                M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{cf};
+            for ci=1:numel(T{t}.Cyclopean.data)
+                M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{ci};
             end
         else
             if iscell(thistab.(thisname))
                 try
                     M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
                 catch me
-                    cf;
+                    sca;
                     disp('An error occured in dpxdMerge, please contact Jacob with the following information:');
                     disp('- - -   C U T   H E R E   - - - ');
                     disp(['Date = ' datestr(now)]);
