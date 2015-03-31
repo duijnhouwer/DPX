@@ -21,7 +21,7 @@ function revisionNr=dpxVersion(varargin)
     
     p = inputParser;   % Create an instance of the inputParser class.
     p.addOptional('checkonline',true,@(x)islogical(x) | x==1 | x==0);
-    p.addOptional('offerupdate',true,@(x)islogical(x) | x==1 | x==0);
+    p.addOptional('offerupdate',false,@(x)islogical(x) | x==1 | x==0);
     p.parse(varargin{:});
     
     fp=mfilename('fullpath');

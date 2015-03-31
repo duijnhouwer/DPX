@@ -70,17 +70,17 @@ for t=2:numel(T)
                 try
                     M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
                 catch me
-                    caf;
+                    cf;
                     disp('An error occured in dpxdMerge, please contact Jacob with the following information:');
                     disp('- - -   C U T   H E R E   - - - ');
                     disp(['Date = ' datestr(now)]);
-                    disp(['dpxVersion = ' num2str(dpxVersion('checkonline',false,'offerupdate',false))]);
+                    SystemInfo = dpxSystemInfo %#ok<NASGU>
                     disp(['thisname = ' thisname]);
                     disp(['error message = ' me.message]);
                     disp(' - - -   C U T   H E R E   - - - ');
+                    disp('Cut the above and paste in an email to : j.duijnhouwer@gmail.com');
                     disp('Please also provide a copy of the experiment file you were running.');
                     disp('Sorry for the inconvenience!');
-                    disp('Jacob: j.duijnhouwer@gmail.com');
                     error(' ');
                 end;
             elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname))
