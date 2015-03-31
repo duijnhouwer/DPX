@@ -30,6 +30,16 @@ classdef dpxStimGrating < dpxAbstractStim
             S.hDeg=10;
         end
     end
+%     methods (Access=public)
+%         function M=dpxStimMaskCircle
+%                     M.name='mask';
+%                     M.wDeg=G.wDeg*sqrt(2)+1;
+%                     M.hDeg=G.wDeg*sqrt(2)+1;
+%                     M.outerDiamDeg=G.wDeg;
+%                     M.innerDiamDeg=G.wDeg-5;
+%                     M.RGBAfrac=[.1 .1 .1 1];=dpxStimGrating
+%         end
+    
     methods (Access=protected)
         function myInit(S)
             D2P=S.scrGets.deg2px; % degrees to pixels deg*D2P=px

@@ -24,10 +24,10 @@ function lkDpxGratingExp
     %
     % Settings
     %
-    dirDegs=[0:45:315];
-    contrastFracs=[0.8];
-    cyclesPerDeg=[0.1];
-    cyclesPerSecond=[0.5 1 2];
+    dirDegs=[0:45:315]; %[90]
+    contrastFracs=[0.8 0.5];
+    cyclesPerDeg=[0.05];
+    cyclesPerSecond=[1 2];
     E.nRepeats=6;
     stimSec=4;
     isiSec=4;

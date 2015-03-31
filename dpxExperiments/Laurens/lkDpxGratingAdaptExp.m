@@ -3,7 +3,7 @@ function lkDpxGratingAdaptExp
     E.expName='lkDpxGratingAdaptExp';
     % Screen settings:
     set(E.scr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
-        ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.25 0.25 0.25 1] ...
+        ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.1 0.1 0.1 1] ...
         ,'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',1);
     % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
@@ -14,32 +14,32 @@ function lkDpxGratingAdaptExp
     % Set these strings to 'DAQ-pulse' to start the experiment when a the
     % Leica microscope gives a pulse.
     E.txtStart='asd DAQ-pulse';
-    E.txtEnd='asd DAQ-pulse';
+    E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
     % Adap
     adapDirDeg=45;
-    adapContrastFracs=.5;
-    adapCyclesPerDeg=.1;
+    adapContrastFracs=.8;
+    adapCyclesPerDeg=.05;
     adapCyclesPerSecond=1;
     % Test
     testDirDegs=[0:22.5:360-22.5];
-    testContrastFracs=.5;%[.25 .5 1];
-    testCyclesPerDeg=.1;%[.05 .1 .2];
+    testContrastFracs=.8;%[.25 .5 1];
+    testCyclesPerDeg=.05;%[.05 .1 .2];
     testCyclesPerSecond=1;%[.5 1 2];
     % Shared
     diamDeg=45;
     contrastFadeAtEdgeRampLengthDeg=1;
     grayLevelFractionOfMaxRange=0.25;
     % Timing
-    initialAdapSec=2;
+    initialAdapSec=40;
     itiaSec=2;
-    topupSec=5;
+    topupSec=6;
     blankSec=2;
-    testSec=2;
-    itibSec=2;
+    testSec=4;
+    itibSec=0;
     %
-    E.nRepeats=2;
+    E.nRepeats=1;
     %
     firstTrialSec=itiaSec + initialAdapSec + itibSec;
     topupTrialSec=itiaSec + topupSec + blankSec + testSec + itibSec;
@@ -61,11 +61,32 @@ function lkDpxGratingAdaptExp
     S.contrastFrac=adapContrastFracs;
     S.grayFrac=grayLevelFractionOfMaxRange;
     S.squareWave=true;
-    S.maskStr='circle';
-    S.maskPars=contrastFadeAtEdgeRampLengthDeg;
+    %S.maskStr='circle';
+    %S.maskPars=contrastFadeAtEdgeRampLengthDeg;
     S.onSec=itiaSec;
     S.durSec=initialAdapSec;
     gratingdefaults=get(S);% copy all properties of adap stim
+    %
+    M=dpxStimMaskCircle;
+    M.name='mask';
+    M.wDeg=S.wDeg*sqrt(2)+1;
+    M.hDeg=S.wDeg*sqrt(2)+1;
+    M.outerDiamDeg=S.wDeg;
+    M.innerDiamDeg=S.wDeg-5;
+    M.RGBAfrac=[.1 .1 .1 1];
+    %
+    V=dpxStimMccAnalogOut;
+    V.name='mcc';
+    V.onSec=0;
+    V.durSec=C.durSec;
+    V.channelOnSec=S.onSec;
+    V.channelDurSec=S.durSec;
+    V.Voff=0;
+    V.Von=4;
+    V.channelNr=0;                
+    %
+    C.addStim(V);
+    C.addStim(M);                
     C.addStim(S);
     %
     E.addCondition(C);
@@ -84,6 +105,26 @@ function lkDpxGratingAdaptExp
                     set(S,gratingdefaults);
                     S.name='adap';
                     S.durSec=topupSec;
+                    M=dpxStimMaskCircle;
+                    M.name='maskadapt';
+                    M.wDeg=S.wDeg*sqrt(2)+1;
+                    M.hDeg=S.wDeg*sqrt(2)+1;
+                    M.outerDiamDeg=S.wDeg;
+                    M.innerDiamDeg=S.wDeg-5;
+                    M.RGBAfrac=[.1 .1 .1 1];
+                    %
+                    V=dpxStimMccAnalogOut;
+                    V.name='mccadapt';
+                    V.onSec=0;
+                    V.durSec=C.durSec;
+                    V.channelOnSec=S.onSec;
+                    V.channelDurSec=S.durSec;
+                    V.Voff=0;
+                    V.Von=4;
+                    V.channelNr=0;
+                    %
+                    C.addStim(V)
+                    C.addStim(M);
                     C.addStim(S);
                     %
                     % Add the test stimulus
@@ -96,6 +137,26 @@ function lkDpxGratingAdaptExp
                     S.contrastFrac=cont;
                     S.onSec=itiaSec+topupSec+blankSec;
                     S.durSec=testSec;
+                    M=dpxStimMaskCircle;
+                    M.name='masktest';
+                    M.wDeg=S.wDeg*sqrt(2)+1;
+                    M.hDeg=S.wDeg*sqrt(2)+1;
+                    M.outerDiamDeg=S.wDeg;
+                    M.innerDiamDeg=S.wDeg-5;
+                    M.RGBAfrac=[.1 .1 .1 1];
+                    %
+                    V=dpxStimMccAnalogOut;
+                    V.name='mcctest';
+                    V.onSec=0;
+                    V.durSec=C.durSec;
+                    V.channelOnSec=S.onSec;
+                    V.channelDurSec=S.durSec;
+                    V.Voff=0;
+                    V.Von=4;
+                    V.channelNr=0;
+                    %
+                    C.addStim(V);
+                    C.addStim(M);
                     C.addStim(S);
                     %
                     E.addCondition(C);                
