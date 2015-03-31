@@ -51,7 +51,7 @@ function jdDpxExpHalfDomeRdk
             R1=dpxRespContiMouse;
             R1.name='mouseBack';
             R1.doReset=false;
-            R1.mouseId=14;
+            R1.mouseId=9;
             R1.defaultX=1920;
             R1.defaultY=1080/2;
             R1.allowUntilSec=C.durSec;
@@ -60,7 +60,7 @@ function jdDpxExpHalfDomeRdk
             R2=dpxRespContiMouse;
             R2.name='mouseSide';
             R2.doReset=true;
-            R2.mouseId=11;
+            R2.mouseId=12;
             R2.defaultX=1920;
             R2.defaultY=1080/2;
             R2.allowUntilSec=C.durSec;
