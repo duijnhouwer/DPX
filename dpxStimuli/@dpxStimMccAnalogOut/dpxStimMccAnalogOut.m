@@ -13,13 +13,22 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
     end
     methods (Access=public)
         function S=dpxStimMccAnalogOut
-            % S=dpxStimMccAnalogOut
-            % Output a Voltage on Measurement Computer USB-1208FS.
-            % pin 13 and a ground pin (9, 12, and 15 are ground pins)
-            % pin 14 and a ground pin
+            % S=dpxStimMccAnalogOut 
+            % Output a pattern of voltages on Measurement Computing
+            % USB-1208FS.
+            % Part of dpx toolbox
             %
-            % Voltage will be Von during the stimulus interval from onSec
-            % to onSec+durSec, and Voff outside this interval.
+            % 'pinNr' 13 or 14, pin on MCC between which and ground the
+            % voltage will be set (9, 12, and 15 are ground pins).
+            % 'stepSec' moment(s) since STIM on that voltage will change to
+            % corresponding value in 'voltSec' array.
+            % 'initVolt' is the voltage set during initialization, before
+            % the start of the trial. It is automatically set to 0
+            % (hardcoded) at the end.
+            %
+            % daqNr the MCC to use, empty (default) is autodetect, -666 activates a debugging mode (no MCC needed            
+            %
+            % Massively overhauled on 2013-03-31 (Jacob)
             %
             % See also: DaqPins, DaqDeviceIndex, DaqAOut
             S.initVolt=0;
@@ -41,9 +50,11 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
                 error('No Measurement Computer USB-1208FS detected.');
             end
             S.checkSettings;
-            S.stepFlip=round(S.stepSec{:}*S.scrGets.measuredFrameRate+S.onFlip);
+            S.stepFlip=round(S.onFlip+S.stepSec{:}*S.scrGets.measuredFrameRate);
             if S.daqNr~=-666
                 DaqAOut(S.daqNr,S.channelNr,S.initVolt/4.095);
+            else
+                disp(['Volt on pin ' num2str(S.pinNr) ' is now ' num2str(S.initVolt)]);
             end
         end
         function myDraw(S)
@@ -52,13 +63,15 @@ classdef dpxStimMccAnalogOut < dpxAbstractStim
                 if S.daqNr~=-666
                     DaqAOut(S.daqNr,S.channelNr,S.stepVolt{:}(stepidx)/4.095);
                 else
-                    disp(['Volt on channel ' num2str(S.channelNr) ' is now ' num2str(S.stepVolt{:}(stepidx))]);
+                    disp(['Volt on pin ' num2str(S.pinNr) ' is now ' num2str(S.stepVolt{:}(stepidx))]);
                 end
             end
         end
         function myClear(S)
             if S.daqNr~=-666
                 DaqAOut(S.daqNr,S.channelNr,0);
+            else
+                disp(['Volt on pin ' num2str(S.pinNr) ' is now 0']);
             end
         end
         function checkSettings(S)
