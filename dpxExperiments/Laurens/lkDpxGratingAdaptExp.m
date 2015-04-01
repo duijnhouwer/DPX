@@ -2,7 +2,7 @@ function lkDpxGratingAdaptExp
     E=dpxCoreExperiment;
     E.expName='lkDpxGratingAdaptExp';
     % Screen settings:
-    set(E.scr,'winRectPx',[0 0 192 108],'widHeiMm',[531 298] ...
+    set(E.scr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
         ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.1 0.1 0.1 1] ...
         ,'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',1);
     % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
@@ -13,18 +13,18 @@ function lkDpxGratingAdaptExp
     %
     % Set these strings to 'DAQ-pulse' to start the experiment when a the
     % Leica microscope gives a pulse.
-    E.txtStart='asd DAQ-pulse';
+    E.txtStart='DAQ-pulse';
     E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
     % Adap
     adapDirDeg=45;
-    adapContrastFracs=.8;
+    adapContrastFracs=1.0;
     adapCyclesPerDeg=.05;
     adapCyclesPerSecond=1;
     % Test
     testDirDegs=[0:22.5:360-22.5];
-    testContrastFracs=.8;%[.25 .5 1];
+    testContrastFracs=1.0;%[.25 .5 1];
     testCyclesPerDeg=.05;%[.05 .1 .2];
     testCyclesPerSecond=1;%[.5 1 2];
     % Shared
