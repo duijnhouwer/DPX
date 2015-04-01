@@ -63,11 +63,10 @@ function lkDpxGratingExp
                     V.name='mcc';
                     V.onSec=0;
                     V.durSec=C.durSec;
-                    V.channelOnSec=G.onSec;
-                    V.channelDurSec=G.durSec;
-                    V.Voff=0;
-                    V.Von=4;
-                    V.channelNr=0;
+                    V.initVolt=0;
+                    V.stepSec=[G.onSec G.onSec+G.durSec];
+                    V.stepVolt=[4 0];
+                    V.pinNr=13;
                     %
                     C.addStim(V);
                     C.addStim(M);

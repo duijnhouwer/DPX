@@ -2,7 +2,7 @@ function lkDpxGratingAdaptExp
     E=dpxCoreExperiment;
     E.expName='lkDpxGratingAdaptExp';
     % Screen settings:
-    set(E.scr,'winRectPx',[0 0 400 300],'widHeiMm',[531 298] ...
+    set(E.scr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
         ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.1 0.1 0.1 1] ...
         ,'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',1);
     % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
@@ -32,14 +32,14 @@ function lkDpxGratingAdaptExp
     contrastFadeAtEdgeRampLengthDeg=1;
     grayLevelFractionOfMaxRange=0.25;
     % Timing
-    initialAdapSec=4/4;
-    itiaSec=2/4;
-    topupSec=6/4;
-    blankSec=2/4;
-    testSec=4/4;
-    itibSec=0/4;
+    initialAdapSec=40;
+    itiaSec=2;
+    topupSec=6;
+    blankSec=2;
+    testSec=4;
+    itibSec=0;
     %
-    E.nRepeats=1;
+    E.nRepeats=6;
     %
     firstTrialSec=itiaSec + initialAdapSec + itibSec;
     topupTrialSec=itiaSec + topupSec + blankSec + testSec + itibSec;
@@ -52,43 +52,42 @@ function lkDpxGratingAdaptExp
     C=dpxCoreCondition;
     C.durSec=firstTrialSec;
     % Add the adaptation stimulus
-    S=dpxStimGrating;
-    S.name='adap';
-    S.wDeg=diamDeg;
-    S.dirDeg=adapDirDeg;
-    S.cyclesPerSecond=adapCyclesPerSecond;
-    S.cyclesPerDeg=adapCyclesPerDeg;
-    S.contrastFrac=adapContrastFracs;
-    S.grayFrac=grayLevelFractionOfMaxRange;
-    S.squareWave=true;
+    A=dpxStimGrating;
+    A.name='adap';
+    A.wDeg=diamDeg;
+    A.dirDeg=adapDirDeg;
+    A.cyclesPerSecond=adapCyclesPerSecond;
+    A.cyclesPerDeg=adapCyclesPerDeg;
+    A.contrastFrac=adapContrastFracs;
+    A.grayFrac=grayLevelFractionOfMaxRange;
+    A.squareWave=true;
     %S.maskStr='circle';
     %S.maskPars=contrastFadeAtEdgeRampLengthDeg;
-    S.onSec=itiaSec;
-    S.durSec=initialAdapSec;
-    gratingdefaults=get(S);% copy all properties of adap stim
+    A.onSec=itiaSec;
+    A.durSec=initialAdapSec;
+    gratingDefaults=get(A);% copy all properties of adap stim
     %
     M=dpxStimMaskCircle;
     M.name='mask';
-    M.wDeg=S.wDeg*sqrt(2)+1;
-    M.hDeg=S.wDeg*sqrt(2)+1;
-    M.outerDiamDeg=S.wDeg;
-    M.innerDiamDeg=S.wDeg-5;
+    M.wDeg=A.wDeg*sqrt(2)+1;
+    M.hDeg=A.wDeg*sqrt(2)+1;
+    M.outerDiamDeg=A.wDeg;
+    M.innerDiamDeg=A.wDeg-5;
     M.RGBAfrac=[.1 .1 .1 1];
+    maskDefaults=get(M);
     %
     V=dpxStimMccAnalogOut;
     V.name='mcc';
     V.onSec=0;
     V.durSec=C.durSec;
-    V.channelOnSec=S.onSec;
-    V.channelDurSec=S.durSec;
-    V.Voff=0;
-    V.Von=4;
-    V.channelNr=0;  
-    V.daqNr=-666;
+    V.initVolt=0;
+    V.stepSec=[A.onSec A.onSec+A.durSec];
+    V.stepVolt=[3 0];
+    V.pinNr=13;               
     %
-   % C.addStim(V);
+    C.addStim(V);
     C.addStim(M);                
-    C.addStim(S);
+    C.addStim(A);
     %
     E.addCondition(C);
     %
@@ -102,65 +101,46 @@ function lkDpxGratingAdaptExp
                     C.durSec=topupTrialSec;
                     %
                     % Add the adaptation stimulus
-                    S=dpxStimGrating;
-                    set(S,gratingdefaults);
-                    S.name='adap';
-                    S.durSec=topupSec;
-                    M=dpxStimMaskCircle;
-                    M.name='maskadapt';
-                    M.wDeg=S.wDeg*sqrt(2)+1;
-                    M.hDeg=S.wDeg*sqrt(2)+1;
-                    M.outerDiamDeg=S.wDeg;
-                    M.innerDiamDeg=S.wDeg-5;
-                    M.RGBAfrac=[.1 .1 .1 1];
-                    %
-                    V=dpxStimMccAnalogOut;
-                    V.name='mccadapt';
-                    V.onSec=0;
-                    V.durSec=C.durSec;
-                    V.channelOnSec=S.onSec;
-                    V.channelDurSec=S.durSec;
-                    V.Voff=0;
-                    V.Von=4;
-                    V.channelNr=0;
-                    V.daqNr=-666;
-                    %
-    %                C.addStim(V)
-                    C.addStim(M);
-                    C.addStim(S);
+                    A=dpxStimGrating;
+                    set(A,gratingDefaults);
+                    A.name='adap';
+                    A.durSec=topupSec;
                     %
                     % Add the test stimulus
-                    S=dpxStimGrating;
-                    set(S,gratingdefaults);
-                    S.name='test';
-                    S.dirDeg=direc;
-                    S.cyclesPerSecond=tf;
-                    S.cyclesPerDeg=sf;
-                    S.contrastFrac=cont;
-                    S.onSec=itiaSec+topupSec+blankSec;
-                    S.durSec=testSec;
+                    T=dpxStimGrating;
+                    set(T,gratingDefaults);
+                    T.name='test';
+                    T.dirDeg=direc;
+                    T.cyclesPerSecond=tf;
+                    T.cyclesPerDeg=sf;
+                    T.contrastFrac=cont;
+                    T.onSec=itiaSec+topupSec+blankSec;
+                    T.durSec=testSec;
+                    % 
+                    % Add the mask
                     M=dpxStimMaskCircle;
-                    M.name='masktest';
-                    M.wDeg=S.wDeg*sqrt(2)+1;
-                    M.hDeg=S.wDeg*sqrt(2)+1;
-                    M.outerDiamDeg=S.wDeg;
-                    M.innerDiamDeg=S.wDeg-5;
+                    set(M,maskDefaults);
+                    M.name='maskadapt';
+                    M.wDeg=A.wDeg*sqrt(2)+1;
+                    M.hDeg=A.wDeg*sqrt(2)+1;
+                    M.outerDiamDeg=A.wDeg;
+                    M.innerDiamDeg=A.wDeg-5;
                     M.RGBAfrac=[.1 .1 .1 1];
                     %
+                    % Add the MCC stim
                     V=dpxStimMccAnalogOut;
-                    V.name='mcctest';
+                    V.name='mcc';
                     V.onSec=0;
                     V.durSec=C.durSec;
-                    V.channelOnSec=S.onSec;
-                    V.channelDurSec=S.durSec;
-                    V.Voff=0;
-                    V.Von=4;
-                    V.channelNr=0;
-                    V.daqNr=-666;
+                    V.initVolt=0;
+                    V.stepSec=[A.onSec A.onSec+A.durSec  T.onSec T.onSec+T.durSec];
+                    V.stepVolt=[3 0 4 0];
+                    V.pinNr=13;
                     %
-     %               C.addStim(V);
+                    C.addStim(V)
                     C.addStim(M);
-                    C.addStim(S);
+                    C.addStim(A);
+                    C.addStim(T);
                     %
                     E.addCondition(C);                
                 end
