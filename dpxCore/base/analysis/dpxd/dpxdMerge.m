@@ -81,7 +81,7 @@ for t=2:numel(T)
                     disp('Cut the above and paste in an email to : j.duijnhouwer@gmail.com');
                     disp('Please also provide a copy of the experiment file you were running.');
                     disp('Sorry for the inconvenience!');
-                    error(' ');
+                    keyboard%error(' ');
                 end;
             elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname))
                 M.(thisname)=[ M.(thisname) thistab.(thisname) ];
