@@ -32,4 +32,4 @@ If everything is installed properly, running [dpxExampleExperiment](https://gith
 
 ### Troubleshooting
 
-If you encounter any problems have look in the DPX-wiki. Also make sure to search the PTB website. If the problem persists, please send a description of the problem to j.duijnhouwer+DPX (at) gmail (dot) com.
+If you encounter any problems please look in the issues section (exclamation point in toolbar to the right) whether your problem has been encountered (and hopefully) solved before. If the problem persists, please raise a new issue, and I will promptly ignore it until I have time to solve it.
