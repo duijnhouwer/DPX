@@ -32,4 +32,4 @@ If everything is installed properly, running [dpxExampleExperiment](https://gith
 
 ### Troubleshooting
 
-If you encounter any problems please look in the issues section (exclamation point in toolbar to the right) whether your problem has been encountered (and hopefully) solved before. If the problem persists, please raise a new issue, and I will promptly ignore it until I have time to solve it.
+If you encounter any problems please look in the issues section (exclamation point in toolbar to the right) whether your problem has been encountered (and hopefully) solved before. If the problem persists, please raise a new issue.
