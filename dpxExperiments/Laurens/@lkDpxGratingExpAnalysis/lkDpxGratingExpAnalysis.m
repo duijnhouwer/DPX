@@ -152,8 +152,8 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                     % all data, the optional next ones are the individual
                     % sessions that were merged)
                     for ss=1:numel(output{tel})
-                        output{tel}{ss}.file{1}=A.filesToDo{f}; %#ok<AGROW>
-                        output{tel}{ss}.cellNumber=nList(c); %#ok<AGROW>
+                        output{tel}{ss}.file{1}=A.filesToDo{f};
+                        output{tel}{ss}.cellNumber=nList(c);
                     end
                     if ~strcmpi(A.pause,'never')
                         figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
@@ -168,7 +168,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                     end
                     % Now that the plotting of the complete and the
                     % sub-sets has been done, only maintain the complete
-                    output{tel}=output{tel}{1};
+                    output{tel}=output{tel}{1}; %#ok<AGROW>
                 end
                 if strcmpi(A.pause,'perFile')
                     dpxTileFigs;
@@ -224,13 +224,12 @@ classdef lkDpxGratingExpAnalysis < hgsetget
                 if numel(K(i).name)<4+1+2 % calc + at least one letter + .m
                     continue;
                 elseif strncmp(K(i).name,'calc',4)
-                    calcs{end+1}=K(i).name(5:end-2);
+                    calcs{end+1}=K(i).name(5:end-2); %#ok<AGROW>
                 elseif strncmp(K(i).name,'plot',4)
-                    plots{end+1}=K(i).name(5:end-2);
+                    plots{end+1}=K(i).name(5:end-2); %#ok<AGROW>
                 end
             end
-            hasCalc=any(strcmp(value,calcs));
-            hasPlot=any(strcmp(value,plots));
+            % Check that the calc and plot functions are defined
             errstr='';
             if ~any(strcmp(value,calcs))
                 errstr=['Illegal anaFunc option: ''' value ''', because: '];

@@ -7,6 +7,8 @@ function plotDirectionTuningCurve(TC,varargin)
     p.addParamValue('bayesfit',true,@islogical);
     p.parse(varargin{:});
     
+    keyboard
+    
     for ss=[2:numel(TC) 1] % SubSets of the data, 1 is always all data
         if ss==1 && numel(TC)==1
             marker='none';

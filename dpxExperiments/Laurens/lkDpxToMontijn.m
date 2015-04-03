@@ -1,4 +1,4 @@
-function structMP=lkDpxGratingToMontijn(filename)
+function structMP=lkDpxToMontijn(filename)
     
     % Conversion function for output of dpxGratingExp style 2-photon
     % microscope experiments (TF TS contrast grating) to Jorrit Montijn
@@ -13,8 +13,15 @@ function structMP=lkDpxGratingToMontijn(filename)
         files2convert={filename};
     end
     for i=1:numel(files2convert)
-        dpxData=load(files2convert{i});
-        structMP(i)=convert(dpxData.data); %#ok<AGROW>
+        dpxData=dpxdLoad(files2convert{i});
+        switch dpxData.exp_expName{1}
+            case 'lkDpxGratingExp'
+                structMP(i)=convertLkDpxGratingExp(dpxData); %#ok<AGROW>
+            case 'lkDpxGratingAdaptExp'
+                structMP(i)=convertLkDpxGratingAdaptExp(dpxData); %#ok<AGROW>
+            otherwise
+                error(['Conversion of ' dpxData.exp_expName{1} ' not implemented']);
+        end
         outfile=createOutputFilename(files2convert{i});
         save(outfile,'structMP');
         disp(['Saved ''' outfile '''.']);
@@ -28,7 +35,13 @@ function of=createOutputFilename(filename)
 end
 
 
-function M=convert(K)
+function M=convertLkDpxGratingExp(K)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%% convertLkDpxGratingExp %%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     % Fill out the fields in the structMP (the name of the datastruct in
     % the Jorrit Montijn datafiles, with (converted) values from the Chris
     % Klink datafile.
@@ -49,7 +62,7 @@ function M=convert(K)
     
     % Ik denk dat dit het nummer is van het stim scherm in psychtoolbox,
     % lijkt me niet belangrijk
-    M.intUseScreen='who gives a fuck';%  2
+    M.intUseScreen='who gives a crap';%  2
     
     % Dit lijkt me flag voor of het wel of niet een echt experiment was
     % oid, om de stimulus danwel de analyse te debuggen. Ik hardcode dat op
@@ -205,7 +218,7 @@ function M=convert(K)
     % de pas te gaan lopen) en brede averaging windows. Wel iets om in de
     % gaten te houden.
     
-        % Dit is wat verwarrend, OFF in Montijn betekend wanneer de stim
+    % Dit is wat verwarrend, OFF in Montijn betekend wanneer de stim
     % uitgaat. K.LOG.OFF is het moment waarop de OFF phase van de Klink
     % stimulus begint, gaat dus vooraf aan ON van die trial. Ik gebruik
     % daarom nu als OFF voor de ene trial de OFF van de volgende, dat zou
@@ -229,6 +242,66 @@ function M=convert(K)
     M.Speed = K.grating_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
     % Spatfreq per presentatie
     M.SpatialFrequency = K.grating_cyclesPerDeg; % [1x80 double]
+end
+
+
+function M=convertLkDpxGratingAdaptExp(K)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%% convertLkDpxGratingAdaptExp %%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % For clarity, I removed the comments from this function as far as they
+    % are identical to the convertLkDpxGratingExp.
+    M.strFile=K.exp_expName{1};
+    M.dblCheckInterval=1.0000e-03;
+    M.intPortCam1=0;% 7
+    M.intPortCam2=0;% 8
+    M.intUseScreen='who gives a crap';%  2
+    M.debug=0; % 0
+    M.dblScreenDistance_cm=K.scr_distMm(1)/10;
+    M.dblScreenWidth_cm=K.scr_widHeiMm{1}(1)/10; % 34
+    M.dblScreenHeight_cm=K.scr_widHeiMm{1}(2)/10; % 27
+    M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
+    M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
+    M.intScreenWidth_pix=K.scr_winRectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.scr_winRectPx{1}(4); % 1024
+    Mm2Pix = M.intScreenWidth_pix/(M.dblScreenWidth_cm*10);
+    Deg2Pix = tand(1).*(M.dblScreenDistance_cm*10)*Mm2Pix;
+    M.dblStimSizeRetinalDegrees=K.test_wDeg(1);
+    M.dblSpatialFrequency=K.test_cyclesPerDeg; % lijst van lengte nTrials
+    M.dblTotalCycles=-1;
+    M.amplitude = K.test_contrastFrac;
+    M.bgIntStim = K.test_grayFrac;
+    M.bgInt = 'who cares'; % 128
+    M.str90Deg = '0 deg is right, 90 deg is up';
+    M.intNumRepeats = K.exp_nRepeats(1); % 5
+    M.vecOrientations = unique(K.test_dirDeg); % e.g. [0 22.5000 45 67.5000 90 112.5000 135 157.5000]
+    s=input('Enter the microscopes''s frame duration in seconds [Can be found in the XML file, Default: 0.039 ms] >> ','s');
+    if isempty(strtrim(s))
+        M.dblSecsForSingleFrame = 0.0390;
+    else
+        M.dblSecsForSingleFrame = str2double(s);
+    end
+    M.intStimTypes = numel(unique(K.condition));
+    M.vecPresStimOri = K.test_dirDeg;
+    M.vecTrialStartPulses = 'doesnt seem to be used'; % [1x80 double]
+    M.vecTrialStimOnPulses = 'doesnt seem to be used';% [1x80 double]
+    M.vecTrialStimMidPulses = 'doesnt seem to be used'; % [1x80 double]
+    M.vecTrialStimOffPulses = 'doesnt seem to be used'; % [1x80 double]
+    M.intStimNumber = K.N;
+    M.TrialNumber = 1:K.N; % [1x80 double]
+    startpulseSecs=str2double(K.exp_txtStart{1}(find(K.exp_txtStart{1}=='@')+1:end));
+    endpulseSecs=str2double(K.exp_txtEnd{1}(find(K.exp_txtEnd{1}=='@')+1:end));
+    stimOnRelativeToStartPulseSeconds = K.test_onSec + K.startSec - startpulseSecs;
+    M.ActOnPulses = stimOnRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
+    stimOffRelativeToStartPulseSeconds = K.test_onSec + K.test_durSec + K.startSec - startpulseSecs;
+    M.ActOffPulses = stimOffRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
+    M.Orientation = K.test_dirDeg;
+    M.Direction = 1.0*K.test_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
+    M.Speed = K.test_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+    M.SpatialFrequency = K.test_cyclesPerDeg; % [1x80 double]
 end
 
 

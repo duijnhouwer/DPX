@@ -1,10 +1,7 @@
-function plotDirectionTuningCurveSfTfContrast(TC,i,varargin)
-    % TC is a tuningcurve DPXD made by calcDirectionTuningCurve of 1 or
-    % more cells. i is the cell-number to be plot.
- 
-    if nargin==1 || isempty(i)
-        i=1;
-    end
+function plotDirectionTuningCurveSfTfContrast(TC,varargin)
+    % TC is a tuningcurve DPXD made by calcDirectionTuningCurve of 1 cell
+    
+    TC=TC{1};
     
     fileName=TC.file{1};
     cellNumber=TC.cellNumber(1);
@@ -23,17 +20,17 @@ function plotDirectionTuningCurveSfTfContrast(TC,i,varargin)
                 panelNr=panelNr+1;
                 subplot(numel(S),numel(T),panelNr)
                 plotOneCurve(T{t},options{:});
-                title(['SF=' num2str(T{t}.SF(1)) ',TF=' num2str(T{t}.TF(1))]); 
+                title(['SF=' num2str(T{t}.SF(1)) ',TF=' num2str(T{t}.TF(1))]);
             end
         end
     end
     xlabel('Direction (deg)');
     ylabel('mean dFoF');
     %
-   % titStr=[fileName ' c' num2str(cellNumber,'%.3d')];
-   % titStr(titStr=='\')='/'; % otherwise dpxSuptitle interprets ....
-   % titStr(titStr=='_')='-'; % ... these as markup-codes (e.g. subscript)
-   % dpxSuptitle(titStr);
+    % titStr=[fileName ' c' num2str(cellNumber,'%.3d')];
+    % titStr(titStr=='\')='/'; % otherwise dpxSuptitle interprets ....
+    % titStr(titStr=='_')='-'; % ... these as markup-codes (e.g. subscript)
+    % dpxSuptitle(titStr);
 end
 
 function plotOneCurve(TC,varargin)
@@ -59,9 +56,9 @@ function plotOneCurve(TC,varargin)
         plot(X,Y,'o-','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
         errorbar(X,Y,E,'o-','MarkerFaceColor',col,'MarkerEdgeColor',col,'Color',col);
     end
-   	%k=axis;
+    %k=axis;
     %axis([-20 380 k(3) k(4)]);
     xlim([-20 380])
-    'YLim(auto)'; 
+    %'YLim(auto)';
     set(gca,'XTick',X);
 end
