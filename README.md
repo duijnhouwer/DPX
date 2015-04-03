@@ -1,12 +1,12 @@
 ![DPX](https://github.com/duijnhouwer/dpx/blob/master/dpxDocs/dpxLogo.png)
 
----
-
 ### Introduction
 
-DPX is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of Psychtoolbox (PTB) which needs to be installed on your system for DPX to function. DPX provides a simple way to create and manage experiments owing to it's object-oriented design. Stimuli and responses measures are programmed as modules that can be plugged into the tried and tested core of DPX. Data output is an integral part of the core as well. DPX automatically saves all aspects of the experiments as an easy to work-with structure called DPXD. Functions to create analyses based on DPXD-structs are included. DPX stands for Duijnhouwer-Psychtoolbox-Experiments.
+DPX is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of Psychtoolbox (PTB) which needs to be installed on your system for DPX to function. DPX is designed to create and manage experiments in a way that promotes simplicity and code-reuse. Stimuli and responses measures are modules that can be plugged into the tried and tested core of DPX. The core takes care of all the bookkeeping that is common to any experiment, including data output. DPX automatically saves all aspects of the experiments as an easy to work-with format called DPXD. Functions to create analyses based on DPXD-structs are included. 
 
-I like to think that DPX relates to PTB as LaTeX to TeX. All the hard work---low-level graphics processing, keeping track of timing, etc.---is done by PTB, and DPX provides a convenient, structured yet flexible environment to create and manage experiments. If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the creators of PTB.
+I like to think that DPX relates to PTB as LaTeX to TeX. All the hard work---low-level graphics processing, keeping track of timing, etc.---is done by PTB, and DPX provides a convenient, structured yet flexible environment to run experiments. If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the creators of PTB.
+
+DPX stands for Duijnhouwer-Psychtoolbox-Experiments.
 
 ### Requirements
 
@@ -21,16 +21,14 @@ To use DPX you need the following:
 To obtain the DPX files and give Matlab access to them:
 
 * Change the current working directory of Matlab to the location where you wish to install the DPX toolbox. For example, to move to the default location for Matlab toolboxes on Windows you could type
-  cd('C:\Users\YOURUSERNAME\Documents\MATLAB')
+  `cd('C:\Users\YOURUSERNAME\Documents\MATLAB')`
 * Download DPX from Google Code to your system by Copy/Pasting the following to the Matlab command window
-  `!svn checkout https://github.com/duijnhouwer/dpx DPX`
-* Place DPX on the Matlab path.
-The easiest way to do this is by right clicking the "DPX"-folder in the "Current Folder"-panel (on the left in Matlab's default layout) > select "Add to Path/Selected folders and subfolders". Then enter savepath in the command window.
-Alternatively you could use the pathtool command but you'll have to manually remove all folders containing ".svn" (Subversion uses these normally hidden folders for internal housekeeping.)
+  `!svn checkout https://github.com/duijnhouwer/dpx/trunk DPX`
+* Add the newly created folder "DPX" and its subfolders to the path using Matlab's `pathtool`.
 
 ### Test
 
-If everything is installed properly, running dpxExampleExperiment should present you with a basic 2AFC left-right motion discrimination experiment. Use dpxExampleExperimentAnalysis to plot the psychometric curve.
+If everything is installed properly, running [dpxExampleExperiment](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperiment.m) should present you with a basic 2AFC left-right motion discrimination experiment. Use [dpxExampleExperimentAnalysis](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperimentAnalysis.m) to plot a psychometric curve of the data. I have heavily commented these examples so that they can serve as DPX tuturials.
 
 ### Troubleshooting
 
