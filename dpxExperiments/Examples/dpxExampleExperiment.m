@@ -81,7 +81,6 @@ function dpxExampleExperiment(testscr)
         % The experiment will have numel(cohFrac) condition. We will now
         % create these conditions one at a time in this loop. Tip: use
         % nested for loop for multiple stimulus dimensions.
-        
         C=dpxCoreCondition;
         
         % Set the duration of the condition (trial). In this example,
