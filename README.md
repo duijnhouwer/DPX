@@ -28,8 +28,8 @@ To obtain the DPX files and give Matlab access to them:
 
 ### Test
 
-If everything is installed properly, running [dpxExampleExperiment](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperiment.m) should present you with a basic 2AFC left-right motion discrimination experiment. Use [dpxExampleExperimentAnalysis](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperimentAnalysis.m) to plot a psychometric curve of the data. I have heavily commented these examples so that they can serve as DPX tuturials.
+If everything is installed properly, running [`dpxExampleExperiment`](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperiment.m) should present you with a basic 2AFC left-right random-dot motion discrimination experiment. Use [`dpxExampleExperimentAnalysis`](https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperimentAnalysis.m) to plot a psychometric curve of the data. I have heavily commented these examples so that they can serve as DPX tuturials.
 
 ### Troubleshooting
 
-If you encounter any problems please look in the issues section (exclamation point in toolbar to the right) whether your problem has been encountered (and hopefully) solved before. If the problem persists, please raise a new issue.
+If you encounter any problems please look in the issues section (exclamation point in toolbar to the right) whether your problem has been encountered and (hopefully) solved before. If the problem persists, please raise a new issue.
