@@ -15,7 +15,7 @@ To use DPX you need the following:
 
  * A Windows, Mac OS X, or Linux computer. I've tested DPX on Windows 7 SP1, Ubuntu 12.04 and 14.04, and Mac OS X 10.6.8 and 10.9.5.
  * Matlab. DPX was tested with 2012b, 2014a and 2014b. I expect that any version since the introduction object-oriented syntax (in 2008b) will work.
- * Psychtoolbox-3. [Installation instructions](http://psychtoolbox.org/PsychtoolboxDownload). Try and test PTB before installing installing DPX, have a look at help Psychdemos. If this is the first time you run PTB, there will likely be some steps to take, most notably restarting Matlab. Carefully read the instructions PTB spews onto the command window.
+ * Psychtoolbox-3. [Installation instructions](http://psychtoolbox.org/PsychtoolboxDownload). Try and test PTB before installing installing DPX, have a look at `help Psychdemos`. If this is the first time you run PTB, there will likely be some steps to take, most notably restarting Matlab. Carefully read the instructions PTB spews onto the command window.
 
 ### Installation
 
