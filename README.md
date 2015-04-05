@@ -2,11 +2,11 @@
 
 ### Introduction
 
-DPX is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of Psychtoolbox (PTB) which needs to be installed on your system for DPX to function. DPX is designed to create and manage experiments in a way that promotes simplicity and code-reuse. Stimuli and responses measures are modules that can be plugged into the tried and tested core of DPX. The core takes care of all the bookkeeping that is common to any experiment, including data output. DPX automatically saves all aspects of the experiments as an easy to work-with format called DPXD. Functions to create analyses based on DPXD-structs are included. 
+Duijnhouwer Psychtoolbox Experiments (DPX) is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of Psychtoolbox (PTB) which needs to be installed on your system for DPX to function. DPX is designed to create and manage experiments in a way that promotes simplicity and code-reuse. Stimuli and responses measures are modules that can be plugged into the tried and tested core of DPX. The core takes care of all the bookkeeping that is common to any experiment, including data output. DPX automatically saves all aspects of the experiments as an easy to work-with format called DPXD. Functions to create analyses based on DPXD-structs are included. 
 
-I like to think that DPX relates to PTB as LaTeX to TeX. All the hard work---low-level graphics processing, keeping track of timing, etc.---is done by PTB, and DPX provides a convenient, structured yet flexible environment to run experiments. If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the creators of PTB.
+I like to think that DPX relates to PTB as LaTeX to TeX. All the hard work---low-level graphics processing, keeping track of timing, etc.---is done by PTB, and DPX provides a convenient, structured yet flexible 'macro' environment to create experiments. 
 
-DPX stands for Duijnhouwer-Psychtoolbox-Experiments.
+If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the creators of PTB.
 
 ### Requirements
 
