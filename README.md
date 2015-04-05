@@ -7,7 +7,7 @@ Duijnhouwer-Psychtoolbox-Experiments (DPX) is a Matlab toolbox for creating and 
 
 I like to think that DPX relates to PTB as [LaTeX to TeX](http://www.haverford.edu/mathematics/resources/LaTeX_vs_TeX.php). All the hard work---low-level graphics processing, keeping track of timing, etc.---is done by PTB, and DPX provides a convenient, structured, yet flexible environment to prepare, run, and analyse experiments.
 
-If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the creators of PTB.
+If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the PTB.
 
 ### Requirements
 
