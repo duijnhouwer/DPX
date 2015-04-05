@@ -21,10 +21,10 @@ To use DPX you need the following:
 
 To obtain the DPX files and give Matlab access to them:
 
-* Change the current working directory of Matlab to the location where you wish to install the DPX toolbox. For example, to move to the default location for Matlab toolboxes on Windows you could type
-  `cd('C:\Users\YOURUSERNAME\Documents\MATLAB')`
-* Download DPX from Google Code to your system by Copy/Pasting the following to the Matlab command window
-  `!svn checkout https://github.com/duijnhouwer/dpx/trunk DPX`
+* Change the current working directory of Matlab to the location where you wish to install the DPX toolbox. For example, to move to the default location for Matlab toolboxes on Windows you could type:
+  ```cd('C:\Users\YOURUSERNAME\Documents\MATLAB')```
+* Download DPX from Google Code to your system by copying the following to the Matlab command window
+  ```!svn checkout https://github.com/duijnhouwer/dpx/trunk DPX```
 * Add the newly created folder "DPX" and its subfolders to the path using Matlab's `pathtool`.
 
 ### Test
