@@ -5,7 +5,7 @@
 
 Duijnhouwer-Psychtoolbox-Experiments (DPX) is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of Psychtoolbox (PTB) which needs to be installed on your system for DPX to function. DPX is designed to create and manage experiments in a way that promotes simplicity and code reuse. Stimuli and response measures are designed as modules that are plugged into the tried and tested core of DPX. A wide range of these modules currently exists, and creating new ones is straightforward. The core takes care of all the bookkeeping that is common to any experiment, including data output. DPX automatically saves all aspects of the experiments as an easy to work-with format called DPXD. Functions to create analyses based on DPXD-structs are included. 
 
-I like to think that DPX relates to PTB as [LaTeX to TeX](http://www.haverford.edu/mathematics/resources/LaTeX_vs_TeX.php). All the hard work (low-level graphics processing, keeping track of timing, etc.) is done by PTB, and DPX provides a convenient, structured, yet flexible environment to prepare, run, and analyse experiments.
+I like to think that DPX relates to PTB as [LaTeX to TeX](http://www.haverford.edu/mathematics/resources/LaTeX_vs_TeX.php). All the hard work (low-level graphics processing, keeping track of timing, etc.) is done by PTB while DPX provides an easy, structured, yet flexible environment to prepare, run, and analyse experiments.
 
 If you publish work for which DPX was used you should [cite](http://psychtoolbox.org/credits) the PTB.
 
