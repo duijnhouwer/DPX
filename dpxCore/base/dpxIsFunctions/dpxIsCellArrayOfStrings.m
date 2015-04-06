@@ -9,6 +9,7 @@ function [ok,str]=dpxIsCellArrayOfStrings(value)
     % [ok,str]=dpxIsCellArrayOfStrings(a)
     % if ~ok, error('a should be ' str); end
 
+    ok=true;
     str='a cell array of strings'; 
     if ~iscell(value)
         ok=false;
@@ -18,8 +19,6 @@ function [ok,str]=dpxIsCellArrayOfStrings(value)
                 ok=false;
                 return;
             end
-        end
-    else
-        ok=true;
+        end       
     end
 end

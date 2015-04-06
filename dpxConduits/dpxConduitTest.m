@@ -39,14 +39,20 @@ classdef dpxConduitTest < hgsetget
     end
     methods
         function set.inFields(CNDT,value)
+            if ischar(value)
+                value={value};
+            end
             [ok,str]=dpxIsCellArrayOfStrings;
-            if ~ok, error(['inFields should be ' str]); end
-            CBDT.inFields=value;
+            if ~ok, error(['inFields should be a string or ' str ' containing fields as they appear in the DPXD of this experiment']); end
+            CNDT.inFields=value;
         end
         function set.outFields(CNDT,value)
+            if ischar(value)
+                value={value};
+            end
             [ok,str]=dpxIsCellArrayOfStrings;
-            if ~ok, error(['outFields should be ' str]); end
-            CBDT.outFields=value;
+            if ~ok, error(['outFields should be a string or ' str ' containing fields as they appear in the DPXD of this experiment']); end
+            CNDT.outFields=value;
         end
     end
 end
