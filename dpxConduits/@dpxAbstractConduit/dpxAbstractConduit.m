@@ -1,26 +1,19 @@
-classdef dpxConduitTest < hgsetget
+classdef (Abstract) dpxAbstractConduit < hgsetget
     
     properties (Access=public)
         inFields;
         outFields;
     end
     properties (Access=protected)
+        firstTrial;
         inputValues;
     end
     methods (Access=public)
-        function CNDT=dpxConduitTest
-            % dpxConduitTest
-            % Example of a dpxConduit class that does nothing particularly useful but
-            % demonstrate the mechanism of the conduit concept. It takes as input the
-            % motion direction of a random dot stimulus in the previous trial, and the
-            % direction discrimination response given by the observer. If the response was
-            % correct, reverse the motion on the next trial, otherwise keep the motion
-            % unchanged.
-            % dxpConduitQuest will be a more useful example but I haven't programmed that
-            % yet.
+        function CNDT=dpxAbstractConduit
             inFields={}; % cell array of parameter names as they appear in the DPXD struct
             outFields={}; % cell array of parameter names as they appear in the DPXD struct
             inputValues={};
+            firstTrial=true;
         end
         function input(CNDT,stims,resps,trigs)
             CNDT.inputValues={};
@@ -31,8 +24,8 @@ classdef dpxConduitTest < hgsetget
             
         end
         function condition=output(CNDT,condition)
-            if isempty(CNDT.inputValues)
-                % first trial, do nothing
+            if CNDT.firstTrial
+                CNDT.firstTrial=false;
                 return;
             end
         end
