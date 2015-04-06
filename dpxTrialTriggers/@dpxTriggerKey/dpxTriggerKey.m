@@ -1,7 +1,7 @@
 classdef dpxTriggerKey < hgsetget
     properties (Access=public)
         name;
-        kbName='g'; 
+        kbName; 
     end
     properties (Access=private)
         triggered;
@@ -9,7 +9,8 @@ classdef dpxTriggerKey < hgsetget
     methods (Access=public)
         function T=dpxTriggerKey
             % dpxTriggerKey
-            % Part of the DPX toolbox
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer 2015-03-25
             %
             % To find the name for key that you wish to use type the
@@ -17,7 +18,7 @@ classdef dpxTriggerKey < hgsetget
             %   KbName('UnifyKeyNames') % [ENTER]
             %   KbName % [ENTER]
             %   ... [Key you wish to use] 
-
+            T.kbName='g'; % g for go is the default
             T.triggered=false;
         end
         function bool=go(T)

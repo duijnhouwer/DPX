@@ -12,8 +12,8 @@ function idx=dpxGetKey(names)
     %
     % Otherwise, IDX is 0.
     %
-    % Part of DPX framework
-    % http://tinyurl.com/dpxlink
+    % Part of DPX: An experiment preparation system
+    % http://duijnhouwer.github.io/DPX/
     % Jacob Duijnhouwer, 2014-10-21
     
     idx=0;

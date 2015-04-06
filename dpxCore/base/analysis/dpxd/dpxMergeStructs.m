@@ -1,5 +1,5 @@
 function u=dpxMergeStructs(s,str)
-    % U=jdPTBmergeStructs(S,[STR])
+    % U=dpxMergeStructs(S,[STR])
     % Merge the structures in cell-array of structures S,
     % Either all structures need to have with unique fieldnames, or make them
     % unique in one of three ways:
@@ -22,8 +22,16 @@ function u=dpxMergeStructs(s,str)
     %   dpxMergeStructs({monkey banana})
     %   dpxMergeStructs({monkey banana},{'monkey ','food '})
     %
-    % See also jdPTBflattenStruct
+    % See also dpxFlattenStruct
     
+    if ~iscell(s)
+        error('First argument must be a cell array of structs');
+    end
+    for i=1:numel(s)
+        if ~isstruct(s{i})
+            error(['All elements of first argument must be structs, but element ' num2str(i) ' is a ' class(s{i}) '.']);
+        end
+    end
     if nargin==1 || ischar(str) && strcmpi(str,'auto');
         str='auto';
         useLabels=checkFieldnameConflict(s);

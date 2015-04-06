@@ -21,8 +21,8 @@ classdef dpxPluginEyelink < hgsetget
     end
     methods (Access=public)
         function P=dpxPluginEyelink
-            % Part of DPX framework
-            % http://tinyurl.com/dpxlink
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014-10-27
             %
             % Plugin to use Eyelink for gaze tracking in DPX.
@@ -121,5 +121,4 @@ classdef dpxPluginEyelink < hgsetget
             end
         end
     end
-    
 end

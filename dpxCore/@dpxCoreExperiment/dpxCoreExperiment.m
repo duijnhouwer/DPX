@@ -6,6 +6,7 @@ classdef dpxCoreExperiment < hgsetget
         nRepeats;
         conditionSequence;
         conditions;
+        conduits; 
         txtStart;
         txtPause;
         txtPauseNrTrials;
@@ -31,12 +32,13 @@ classdef dpxCoreExperiment < hgsetget
     methods (Access=public)
         function E=dpxCoreExperiment
             % dpxCoreExperiment
-            % Part of DPX framework
-            % http://tinyurl.com/dpxlink
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
+            E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
             E.expName='dpxCoreExperiment';
@@ -58,7 +60,7 @@ classdef dpxCoreExperiment < hgsetget
                     disp('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).');
                     return;
                 end
-                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen DPX mode
+                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen mode
                 E.startTime=now;
                 E.unifyConditions;
                 E.createConditionSequence;
@@ -96,6 +98,16 @@ classdef dpxCoreExperiment < hgsetget
                         defaultBackRGBA=E.scr.backRGBA;
                         E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
                     end
+                    % If there are any conduits added to the experiment, iterate over them
+                    % now and update the condition settings according to how the conduit
+                    % is defined and on information store at the end of the previous trial
+                    % (see below). If this is the first trial the conduit will know about
+                    % that and either do nothing or initialize itself, depending on how it
+                    % is defined.
+                    % See dpxConduitTest and dpxConduitQuest for examples.
+                    for i=1:numel(E.conduits)
+                        E.conditions{cNr}=E.conduits{i}.output(E.conditions{cNr});
+                    end
                     % Show this condition until its duration has passed, or
                     % until escape is pressed
                     [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
@@ -124,6 +136,12 @@ classdef dpxCoreExperiment < hgsetget
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
                     E.trials(tr).nrMissedFlips=nrMissedFlips;
+                    % If there are any conduits added to the experiment, iterate over them
+                    % now and get the stimulus and response settings so it can use them to
+                    % change settings of the next (or a future) condition (see above)
+                    for i=1:numel(E.conduits)
+                        E.conduits{i}.input(E.conditions{cNr}.stims,E.conditions{cNr}.resps,E.conditions{cNr}.trigs);        
+                    end
                     % If an overriding RGBA has been defined in this condition,
                     % reset the window object's backRGBA to its default,
                     if numel(E.conditions{cNr}.overrideBackRGBA)==4
@@ -150,12 +168,21 @@ classdef dpxCoreExperiment < hgsetget
             end
         end
         function addCondition(E,C)
+            if ~isobject(C) || isempty(strfind(class(S),'Condition')) || strncmp(class(S),'dpx',numel('dpx'))>0
+                error('Argument should be an object whose class-name contains ''Condition'', typically ''dpxCoreCondition''.');
+            end 
             E.conditions{end+1}=C;
+        end
+        function addConduit(E,C)
+            if ~isobject(C) || strncmp(class(S),'dpxConduit',numel('dpxConduit'))>0
+                error('Argument should be an object whose class-name starts with ''dpxConduit''.');
+            end
+            E.conduit{end+1}=C;
         end
         function addPlugin(E,P)
             % note, the dpxPluginComments is loaded by default
-            if ~isobject(P)
-                error('[dpxCoreExperiment] Plugin added with addPlugin must be an object.');
+            if ~isobject(P) || strncmp(class(S),'dpxPlugin',numel('dpxPlugin'))>0
+                error('Argument should be an object whose class-name starts with ''dpxPlugin''.');
             end
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
         end
@@ -189,6 +216,25 @@ classdef dpxCoreExperiment < hgsetget
                     C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                 end
             end
+            % Format the conduits
+            clear TMP;
+            if numel(E.conduits)==0
+                CNDT=struct; % empty struct
+            else
+                for c=1:numel(E.conduits)
+                    name=E.conduits{c}.trigs{s}.name;
+                    % this is why unique trialtrigger names are required
+                    TMP.(name)=dpxGetSetables(E.conduits{c});
+                    TMP.(name)=rmfield(TMP.(name),'name');
+                    if c==1
+                        % preallocate
+                        CNDT(1:numel(E.conduits))=dpxFlattenStruct(TMP);
+                    else
+                        % insert in preallocated array
+                        CNDT(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
+                    end
+                end
+            end
             % Format the plugins
             clear TMP;
             if numel(E.plugins)==0
@@ -206,7 +252,7 @@ classdef dpxCoreExperiment < hgsetget
             for t=1:numel(E.trials)
                 TMP=dpxFlattenStruct(E.trials(t));
                 condNr=TMP.condition;
-                data{t}=dpxMergeStructs({D,P,TMP,C(condNr)},'overwrite');
+                data{t}=dpxMergeStructs({D,P,CNDT,TMP,C(condNr)},'overwrite');
                 data{t}=dpxStructMakeSingleValued(data{t});
                 data{t}.N=1;
             end
@@ -311,6 +357,7 @@ classdef dpxCoreExperiment < hgsetget
             % introduction of this function it was necessary to define all
             % stimuli for all conditions, even when the stimuli were not
             % used in that condition.
+            
             % Step 1: get a list of unique stimulus names and classes
             stimnames={};
             classnames={};

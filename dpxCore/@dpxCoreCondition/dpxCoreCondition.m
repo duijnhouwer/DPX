@@ -10,7 +10,7 @@ classdef dpxCoreCondition < hgsetget
         stims={};
         % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using addStim
         resps={};
-        % Cell array of trial-trigger objects (e.g. dpxGoconEyelink,dpxGoconStartKey) to be added using addTrialTrigger
+        % Cell array of trial-trigger objects (e.g. dpxTriggerKey) to be added using addTrialTrigger
         trigs={};
     end
     properties (Access=protected)
@@ -260,12 +260,12 @@ classdef dpxCoreCondition < hgsetget
                 G.name=class(G);
             end
             C.trigs{end+1}=G;
-            % Check that all gocons have unique names, this is important
+            % Check that all trialTriggers have unique names, this is important
             % for the output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.trigs,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All trial-triggers in a condition need unique names');
+                error('All TrialTriggers in a condition need unique names');
             end
         end
     end

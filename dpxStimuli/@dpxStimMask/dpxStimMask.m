@@ -14,7 +14,25 @@ classdef dpxStimMask < dpxAbstractStim
     end
     methods (Access=public)
         function S=dpxStimMask
-            % Set the defaults in the constructur (here)
+            % dpxStimMask 
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/
+            % Jacob Duijnhouwer, 2014
+            %
+            % dpxStimMask is deprecated, it is maintained for backward compatibility until
+            % 29-Feb-2016. Use dpxStimMaskCircle, dpxStimMaskGaussian, dpxStimMaskTiff
+            % instead.
+            %
+            % The reason that it is deprecated is that working with the typeStr and type
+            % dependent parameters in pars is messy. Separate classes is much cleaner and
+            % clearer.
+            % 
+            % Todo: make an abstract dpxStimMask class to inherit all the things
+            % mask-stimuli have in common.
+            %
+            % See also: dpxStimMaskCircle, dpxStimMaskGaussian, dpxStimMaskTiff
+            
+            warning('dpxStimMask is deprecated and will be removed on 29-Feb-2016. Type ''help dpxStimMask'' for info.');
             S.typeStr='circle';
             S.pars=1;
             S.wDeg=5;

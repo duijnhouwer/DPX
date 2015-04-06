@@ -17,8 +17,8 @@ classdef dpxPluginComments < hgsetget
     end
     methods (Access=public)
         function P=dpxPluginComments
-            % Part of DPX framework
-            % http://tinyurl.com/dpxlink
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014-11-12
             %
             % Plugin to add comments to experiment

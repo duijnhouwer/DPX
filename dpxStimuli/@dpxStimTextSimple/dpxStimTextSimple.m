@@ -24,7 +24,7 @@ classdef dpxStimTextSimple < dpxAbstractStim
             %     
             % See also: dpxStimText, dpxExampleExperimentWithText
             %
-            % Todo: make winRext adapt to the standard X and Y coordinates
+            % Todo: make winRect adapt to the standard xDeg and yDeg coordinates
             % that any stimulus has. Add more set function with error
             % checking.
             S.str='Welcome to DPX!\n*^_^*';

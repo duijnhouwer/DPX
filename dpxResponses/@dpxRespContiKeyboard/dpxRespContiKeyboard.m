@@ -18,7 +18,7 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
         function R=dpxRespContiKeyboard
             % dpxRespContiKeyboard
             % Part of the DPX toolkit
-            % http://tinyurl.com/dpxlink
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014-10-08
             %
             % This response class can be used to register continous

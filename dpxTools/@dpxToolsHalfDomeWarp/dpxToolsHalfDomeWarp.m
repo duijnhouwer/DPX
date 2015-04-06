@@ -25,7 +25,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
         function W=dpxToolsHalfDomeWarp
             % W=dpxToolsHalfDomeWarp
             % Part of the DPX toolkit
-            % http://tinyurl.com/dpxlink
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014-10-10
             %
             % This tool can be used to create lookup tables for warping

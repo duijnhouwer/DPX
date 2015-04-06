@@ -1,6 +1,7 @@
 function [ok,str]=dpxIsKbName(value)
-    % Part of DPX framework
-    % http://tinyurl.com/dpxlink
+    % [ok,str]=dpxIsKbName(value)
+    % Part of DPX: An experiment preparation system
+    % http://duijnhouwer.github.io/DPX/
     % Jacob Duijnhouwer, 2014-11-13
     try
         if ~ischar(value)
