@@ -168,20 +168,20 @@ classdef dpxCoreExperiment < hgsetget
             end
         end
         function addCondition(E,C)
-            if ~isobject(C) || isempty(strfind(class(S),'Condition')) || strncmp(class(S),'dpx',numel('dpx'))>0
+            if ~isobject(C) || isempty(strfind(class(C),'Condition')) || strncmp(class(C),'dpx',numel('dpx'))==0
                 error('Argument should be an object whose class-name contains ''Condition'', typically ''dpxCoreCondition''.');
             end 
             E.conditions{end+1}=C;
         end
-        function addConduit(E,C)
-            if ~isobject(C) || strncmp(class(S),'dpxConduit',numel('dpxConduit'))>0
+        function addConduit(E,U)
+            if ~isobject(U) || strncmp(class(U),'dpxConduit',numel('dpxConduit'))==0
                 error('Argument should be an object whose class-name starts with ''dpxConduit''.');
             end
-            E.conduit{end+1}=C;
+            E.conduit{end+1}=U;
         end
         function addPlugin(E,P)
             % note, the dpxPluginComments is loaded by default
-            if ~isobject(P) || strncmp(class(S),'dpxPlugin',numel('dpxPlugin'))>0
+            if ~isobject(P) || strncmp(class(S),'dpxPlugin',numel('dpxPlugin'))==0
                 error('Argument should be an object whose class-name starts with ''dpxPlugin''.');
             end
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
@@ -204,10 +204,10 @@ classdef dpxCoreExperiment < hgsetget
                 end
                 for s=1:numel(E.conditions{c}.trigs)
                     trigname=E.conditions{c}.trigs{s}.name;
-                    % this is why unique trialtrigger names are required
-                    TMP.(trigname)=dpxGetSetables(E.conditions{c}.trigs{s});
-                    TMP.(trigname)=rmfield(TMP.(trigname),'name');
+                    trialtrigger.(trigname)=dpxGetSetables(E.conditions{c}.trigs{s});
+                    trialtrigger.(trigname)=rmfield(trialtrigger.(trigname),'name');
                 end
+                TMP.trialtrigger=trialtrigger; clear trialtrigger;
                 if c==1
                     % preallocate
                     C(1:numel(E.conditions))=dpxFlattenStruct(TMP);

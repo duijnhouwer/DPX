@@ -144,6 +144,7 @@ function dpxExampleExperimentWithText(testscr)
         
         % Add  a text stimulus
         TEXT=dpxStimTextSimple;
+        TEXT.name='text';
         TEXT.str=['Condition #' num2str(conditionCounter,'%3d') '\nLeftArrow to start ...'];
         TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
         TEXT.durSec=0; % stimulus disappears when flip-1 is reached
@@ -163,6 +164,7 @@ function dpxExampleExperimentWithText(testscr)
         % Type help dpxTriggerKey for help on finding the name of the key
         % you wish to use.
         TRIG=dpxTriggerKey;
+        TRIG.name='startkey';
         TRIG.kbName='LeftArrow';
         C.addTrialTrigger(TRIG);
         

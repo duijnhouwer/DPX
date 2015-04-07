@@ -19,6 +19,8 @@ function [ok,str]=dpxIsCellArrayOfStrings(value)
                 ok=false;
                 return;
             end
-        end       
+        end   
+        % note that {} is also ok, because the for-loop never starts. I
+        % like this behavior, so keeping it in
     end
 end
