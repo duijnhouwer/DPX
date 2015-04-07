@@ -21,6 +21,9 @@ classdef dpxTriggerKey < hgsetget
             T.kbName='g'; % g for go is the default
             T.triggered=false;
         end
+        function T=init(T)
+            T.triggered=false;
+        end
         function bool=go(T)
             % Does this trigger allow the start of the trial?
             if ~T.triggered

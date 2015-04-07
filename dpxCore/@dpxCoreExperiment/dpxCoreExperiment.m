@@ -31,10 +31,8 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods (Access=public)
         function E=dpxCoreExperiment
-            % dpxCoreExperiment
-            % Part of DPX: An experiment preparation system
-            % http://duijnhouwer.github.io/DPX/
-            % Jacob Duijnhouwer, 2014
+            % dpxCoreExperiment Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/ Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
@@ -54,8 +52,8 @@ classdef dpxCoreExperiment < hgsetget
         end
         function run(E)
             try
-                % This is the last function to call in your experiment script,
-                % it starts the experiment and saves it when finished.
+                % This is the last function to call in your experiment script, it starts
+                % the experiment and saves it when finished.
                 if numel(E.conditions)==0
                     disp('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).');
                     return;
@@ -73,78 +71,77 @@ classdef dpxCoreExperiment < hgsetget
                 E.showStartScreen;
                 % Set the trial counter to zero
                 tr=0;
-                while tr<numel(E.internalCondSeq)
-                    % not for, must be able to change list as we go
-                    % increment the trial counter
-                    tr=tr+1;
+                while tr<numel(E.internalCondSeq) % while, not for. we must be able to change list as we go
+                    tr=tr+1; % increment the trial counter
                     cNr=E.internalCondSeq(tr);
+                    CC=E.conditions{cNr}; % CC is the current conditions. Only for legibility
                     E.showProgressCli(tr);
-                    % Show the itnermission screen if appropriate (and make an
-                    % intermediate backup save)
+                    % Show the intermission screen if appropriate (and make an intermediate
+                    % backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
                         E.showSaveScreen;
                         E.save;
                         E.showIntermissionScreen;
                     end
-                    % Initialize this condition, this needs information
-                    % about the screen. We pass it the values using get,
-                    % not the object itself.
-                    E.conditions{cNr}.init(get(E.scr));
-                    % Technically backRGBA is a condition property, but to save
-                    % the need to define it for all conditions I keep it in
-                    % the window class, with an optional override in the
-                    % condition class. Here we deal with that override:
-                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                    % Initialize this condition, this needs information about the screen. We
+                    % pass it the values using get, not the object itself.
+                    CC.init(get(E.scr));
+                    % Technically backRGBA is a condition property, but to save the need to
+                    % define it for all conditions I keep it in the window class, with an
+                    % optional override in the condition class. Here we deal with that
+                    % override:
+                    if numel(CC.overrideBackRGBA)==4
                         defaultBackRGBA=E.scr.backRGBA;
-                        E.scr.backRGBA=E.conditions{cNr}.overrideBackRGBA;
+                        E.scr.backRGBA=CC.overrideBackRGBA;
                     end
-                    % If there are any conduits added to the experiment, iterate over them
-                    % now and update the condition settings according to how the conduit
-                    % is defined and on information store at the end of the previous trial
-                    % (see below). If this is the first trial the conduit will know about
-                    % that and either do nothing or initialize itself, depending on how it
-                    % is defined.
-                    % See dpxConduitTest and dpxConduitQuest for examples.
+                    % If there are any conduits added to the experiment, iterate over them now
+                    % and update the condition settings according to how the conduit is defined
+                    % and on information store at the end of the previous trial (see below). If
+                    % this is the first trial the conduit will know about that and either do
+                    % nothing or initialize itself, depending on how it is defined. See
+                    % dpxConduitTest and dpxConduitQuest for examples.
                     for i=1:numel(E.conduits)
-                        E.conditions{cNr}=E.conduits{i}.output(E.conditions{cNr});
+                        CC=E.conduits{i}.output(CC);
                     end
-                    % Show this condition until its duration has passed, or
-                    % until escape is pressed
-                    [completionStr,timing,resp,nrMissedFlips]=E.conditions{cNr}.show;
+                    % Now SHOW this condition until its duration has passed (or until escape is
+                    % pressed, fixation is broken ...)
+                    [completionStr,timing,resp,nrMissedFlips]=CC.show;
                     % Handle the completion status of the trial
                     if strcmpi(completionStr,'Escape')
+                        % The Escape button was pressed. Stop the experiment
                         break;
                     elseif strcmpi(completionStr,'Pause')
-                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
+                        % The pause button was pressed. The current trials is lost, it can be
+                        % recognized in the data file by stopSec==-1
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
-                        E.showPauseScreen;                  
-                        % the skipped trial can be recognized by stopSec==-1
+                        E.showPauseScreen; % Show the pause screen (with plugin UIs)               
                     elseif strcmpi(completionStr,'BreakFixation')
-                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr));
+                        % Fixation ouside required area.The current trials is lost, it can be
+                        % recognized in the data file by stopSec==-1
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
-                        E.showBreakFixScreen;
-                        % the skipped trial can be recognized by stopSec==-1
+                        E.showBreakFixScreen; % Show the eyelink options
                     elseif ~strcmpi(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
                     end
-                    % Store the condition number, the start and stop time,
-                    % and the response output (which may be empty if no
-                    % response is required).
+                    % Store the condition number, the start and stop time, and the response
+                    % output (which may be empty if no response is required).
                     E.trials(tr).trialnr=tr;
                     E.trials(tr).condition=cNr;
                     E.trials(tr).startSec=timing.startSec;
                     E.trials(tr).stopSec=timing.stopSec;
                     E.trials(tr).resp=resp;
                     E.trials(tr).nrMissedFlips=nrMissedFlips;
-                    % If there are any conduits added to the experiment, iterate over them
-                    % now and get the stimulus and response settings so it can use them to
-                    % change settings of the next (or a future) condition (see above)
+                    % If there are any conduits added to the experiment, iterate over them now
+                    % and get the information it is allowed to have to change settings of a
+                    % future (typically next) condition (see above)
                     for i=1:numel(E.conduits)
-                        E.conduits{i}.input(E.conditions{cNr}.stims,E.conditions{cNr}.resps,E.conditions{cNr}.trigs);        
+                         E.conduits{i}.input(CC.stims,CC.trigs,E.trials(tr));       
                     end
-                    % If an overriding RGBA has been defined in this condition,
-                    % reset the window object's backRGBA to its default,
-                    if numel(E.conditions{cNr}.overrideBackRGBA)==4
+                    % If an overriding RGBA has been defined in this condition, reset the
+                    % window object's backRGBA to its default,
+                    if numel(CC.overrideBackRGBA)==4
                         E.scr.backRGBA=defaultBackRGBA;
                     end
                 end
@@ -347,16 +344,14 @@ classdef dpxCoreExperiment < hgsetget
             end
         end
         function unifyConditions(E)
-            % Before we start running the experiment, make sure all
-            % conditions have the same stimuli, this is required for the
-            % output format (DPXD). If one or more conditions have been
-            % defined without the same stimuli (as defined by the stimulus
-            % name) ADD placeholder stimuli with default values BUT SET
-            % their visibility and durSec fields to 0. (Setting either to 0
-            % would suffice but doing both for clarity.) Prior to the
-            % introduction of this function it was necessary to define all
-            % stimuli for all conditions, even when the stimuli were not
-            % used in that condition.
+            % Before we start running the experiment, make sure all conditions have the
+            % same stimuli, this is required for the output format (DPXD). If one or
+            % more conditions have been defined without the same stimuli (as defined by
+            % the stimulus name) ADD placeholder stimuli with default values BUT SET
+            % their visibility and durSec fields to 0. (Setting either to 0 would
+            % suffice but doing both for clarity.) Prior to the introduction of this
+            % function it was necessary to define all stimuli for all conditions, even
+            % when the stimuli were not used in that condition.
             
             % Step 1: get a list of unique stimulus names and classes
             stimnames={};
@@ -388,10 +383,9 @@ classdef dpxCoreExperiment < hgsetget
             end
         end
         function createConditionSequence(E)
-            % If the user defined E.conditionSequence as a list of numbers,
-            % use this as the condition sequence. Otherwise, if
-            % E.conditionSequence is an option-string, create a list on the
-            % option provided.
+            % If the user defined E.conditionSequence as a list of numbers, use this as
+            % the condition sequence. Otherwise, if E.conditionSequence is an
+            % option-string, create a list on the option provided.
             if isnumeric(E.conditionSequence)
                 % a predefined order list is given
                 E.internalCondSeq=E.conditionSequence(:)';
@@ -446,8 +440,8 @@ classdef dpxCoreExperiment < hgsetget
         end
         function set.conditionSequence(E,value)
             E.conditionSequence=value;
-            % call the creation function to test the validity of value, the
-            % creation function will be called for real in the E.run method
+            % call the creation function to test the validity of value, the creation
+            % function will be called for real in the E.run method
             createConditionSequence(E);
         end
         function set.startKey(E,value)
