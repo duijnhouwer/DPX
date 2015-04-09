@@ -2,12 +2,12 @@ function revisionNr=dpxVersion(varargin)
     
     % revisionNr=dpxVersion(varargin)
     %
-    % dpxVersion('checkonline',false,'offerupdate',false)
+    % dpxVersion('svncompare',false,'offerupdate',false)
     %       returns current local DPX revision
     %
-    % dpxVersion('checkonline',true,'offerupdate',false)
-    %       returns current local DPX revision and notifies if newer
-    %       version is available online
+    % dpxVersion('svncompare',true,'offerupdate',false)
+    %       returns current local DPX revision and notifies the availability of a new
+    %       version in the SVN repository
     %
     % dpxVersion('offerupdate',true)
     %       returns current local DPX revision and notifies if newer
@@ -20,15 +20,14 @@ function revisionNr=dpxVersion(varargin)
     % See also: dpxSystemInfo
     
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addOptional('checkonline',true,@(x)islogical(x) | x==1 | x==0);
-    p.addOptional('offerupdate',false,@(x)islogical(x) | x==1 | x==0);
+    p.addOptional('svncompare',true,@(x)islogical(x) | x==1 | x==0);
+    p.addOptional('offerupdate',true,@(x)islogical(x) | x==1 | x==0);
     p.parse(varargin{:});
     
     fp=mfilename('fullpath');
     DPXPATH=fp(1:strfind(fp,'dpxCore')-2); 
     % !svn update "C:\Users\jacob\Documents\MATLAB\DPX\" failed on SVN version 1.8.10 (r1615264) 
     % However, !svn update "C:\Users\jacob\Documents\MATLAB\DPX" DID work! Hence "-2" [Jacob 2014-10-21]
-    
     try
         str=evalc(['!svn info "' DPXPATH '"']);
         revisionNr=extractNumber(str);
@@ -40,9 +39,9 @@ function revisionNr=dpxVersion(varargin)
     end
     
     try
-        if p.Results.checkonline || p.Results.offerupdate
-            disp(['Checking local DPX (version ' num2str(revisionNr) ') against ''https://duijnhouwer-psychtoolbox-experiments.googlecode.com/svn/trunk'' ...']);
-            str=evalc('!svn info https://duijnhouwer-psychtoolbox-experiments.googlecode.com/svn/trunk');
+        if p.Results.svncompare || p.Results.offerupdate
+            disp(['Checking local DPX (version ' num2str(revisionNr) ') against ''https://github.com/duijnhouwer/dpx/trunk'' ...']);
+            str=evalc('!svn info https://github.com/duijnhouwer/dpx/trunk');
             onlineVersion=extractNumber(str);
             if onlineVersion==revisionNr
                 disp('You have the latest DPX.');
@@ -53,10 +52,10 @@ function revisionNr=dpxVersion(varargin)
                     if strcmpi(strtrim(a),'y')
                         eval(['!svn update "' DPXPATH '"']);
                     end
-                    revisionNr=dpxVersion('checkonline',false);
+                    revisionNr=dpxVersion('svncompare',false);
                     disp(['You now have the latest DPX revision (' num2str(revisionNr) ').']);
                 else
-                    disp('Run dpxVersion to update your DPX.');
+                    disp('Run dpxVersion(''offerupdate'',true) to update your DPX.');
                 end
             end
         end

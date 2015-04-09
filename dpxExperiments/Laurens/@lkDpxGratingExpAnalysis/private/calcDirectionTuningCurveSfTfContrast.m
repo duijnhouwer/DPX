@@ -21,6 +21,7 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
     splitidx=0;
     %keyboard
     C=dpxdSplit(dpxd,'grating_contrastFrac');
+    
     for c=1:numel(C)
         CS=dpxdSplit(C{c},'grating_cyclesPerDeg');
         for s=1:numel(CS)

@@ -231,25 +231,33 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             end
             % Check that the calc and plot functions are defined
             errstr='';
-            if ~any(strcmp(value,calcs))
+            if ~any(strcmp(value,calcs)) && ~isempty(value)
                 errstr=['Illegal anaFunc option: ''' value ''', because: '];
                 errstr=[errstr '\n   The file ''' dispAnaFuncFolder 'calc' value '.m'''' does not exist.'];
             end
-            if ~any(strcmp(value,plots));
+            if ~any(strcmp(value,plots)) && ~isempty(value)
                 if isempty(errstr)
                     errstr=['Illegal anaFunc option: ''' value ''', because: '];
                 end
                 errstr=[errstr '\n   The file ''' dispAnaFuncFolder 'plot' value '.m'''' does not exist.'];
             end
-            if ~isempty(errstr)
+            if ~isempty(errstr) || isempty(value)
                 OK=intersect(calcs,plots);
                 if numel(OK)>0
                     errstr=[errstr '\nValid options are:'];
                     for i=1:numel(OK)
-                        errstr=[errstr '\n   ''' OK{i} '''']; %#ok<AGROW>
+                        errstr=[errstr '\n   ' num2str(i)  ' ''' OK{i} '''']; %#ok<AGROW>
                     end
                 end
-                error('arbitrary:messageid',errstr);
+                while true
+                    fprintf(errstr);
+                    fprintf('\n');
+                    N=str2double(input('Pick a method >> ','s'));
+                    if any(N==1:numel(OK))
+                        A.anaFunc=calcs{N};
+                        break;
+                    end
+                end
             else
                 A.anaFunc=value;
             end

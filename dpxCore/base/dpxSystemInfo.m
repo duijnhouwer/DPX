@@ -12,6 +12,6 @@ function info=dpxSystemInfo
     info.opengl=ogl.Version;
     info.renderer=ogl.Renderer;
     info.ptb=ptb.version;
-    info.dpx=dpxVersion('checkonline',false,'offerupdate',false);
+    info.dpx=dpxVersion('svncompare',false,'offerupdate',false);
 end
 
