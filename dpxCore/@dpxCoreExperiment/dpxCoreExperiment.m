@@ -201,10 +201,9 @@ classdef dpxCoreExperiment < hgsetget
                 end
                 for s=1:numel(E.conditions{c}.trigs)
                     trigname=E.conditions{c}.trigs{s}.name;
-                    trialtrigger.(trigname)=dpxGetSetables(E.conditions{c}.trigs{s});
-                    trialtrigger.(trigname)=rmfield(trialtrigger.(trigname),'name');
+                    TMP.trialtrigger.(trigname)=dpxGetSetables(E.conditions{c}.trigs{s});
+                    TMP.trialtrigger.(trigname)=rmfield(TMP.trialtrigger.(trigname),'name');
                 end
-                TMP.trialtrigger=trialtrigger; clear trialtrigger;
                 if c==1
                     % preallocate
                     C(1:numel(E.conditions))=dpxFlattenStruct(TMP);
