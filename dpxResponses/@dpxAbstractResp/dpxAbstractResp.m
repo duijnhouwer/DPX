@@ -16,7 +16,7 @@ classdef dpxAbstractResp < hgsetget
         % onset.
         allowAfterSec=0;
         allowUntilSec=3600;
-        % The object name, when left empty, this will default to the
+        % The object name.  Left empty, this will default to the
         % class-name when added to condition
         name='';
     end
@@ -30,15 +30,15 @@ classdef dpxAbstractResp < hgsetget
         % of resp will automatically be output in the DPXD output file.
         resp;
         nameOfFeedBackStim='none';
-        allowAfterNrFlips;
-        allowUntilNrFlips;
+        allowAfterNrFlips=[];
+        allowUntilNrFlips=[];
         endsTrialAfterFlips=Inf;
     end
     properties (Access=protected)
-        scrGets;
+        scrGets=[];
         kbNamesCell={};
         correctKbNamesCell={};
-        flipCounter;
+        flipCounter=[];
     end
     methods (Access=public)
         function R=dpxAbstractResp
@@ -77,7 +77,7 @@ classdef dpxAbstractResp < hgsetget
         end
     end
     methods (Access=protected)
-        function myInit(R)
+        function myInit(R) %#ok<*MANU>
         end
         function myGetResponse(R)
         end

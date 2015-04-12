@@ -22,7 +22,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
     E.expName='dpxExampleExperimentArduinoOut';
     E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
+        'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     
     % Add the dpxArduino plugin
     % THis starts and stops the Serial port connection to the Arduino.
@@ -43,9 +43,6 @@ function dpxExampleExperimentArduinoInOut(testscr)
     cohFrac=[-1 -.5 .5 1];
     for c=1:numel(cohFrac)
         
-        % The experiment will have numel(cohFrac) condition. We will now
-        % create these conditions one at a time in this loop. Tip: use
-        % nested for loop for multiple stimulus dimensions.
         C=dpxCoreCondition;
         
         % Set the duration of the condition (trial). In this example,
@@ -86,7 +83,22 @@ function dpxExampleExperimentArduinoInOut(testscr)
         REW=dpxStimArduinoPulse;
         REW.pinNr=13;
         REW.name='pin13';
-        REW.visible=false;
+        REW.visible=false; % dpxRespArduinoPulse can turn this on
+        %
+        % Make a punishment (main aspect of this that adds a delay between this
+        % trial and the next by means of the 'wrongEndsTrialAfterSec' property of
+        % the dpxRespArduinoPulse object.). I also make the background a bit
+        % brighter so that there is a visual consequence to the behavior (to make
+        % clear that the response is in fact registered, plus the increased
+        % brightness will add additional unpleasantness for the rodent subject. but
+        % don't overdo it, the animal should not suffer and punishment should not
+        % interfere with the visual processing of subsequent stimuli.
+        PUN=dpxStimRect;
+        PUN.RGBAfrac=[.8 .8 .8 1];
+        PUN.wDeg=100; % entire ...
+        PUN.hDeg=100;  ... screen
+        PUN.name='punishment';
+        PUN.visible=false; % dpxRespArduinoPulse can turn this on
         %
         % Add the stimuli to the condition
         C.addStim(RDK); % random dot kinematogram
@@ -114,6 +126,8 @@ function dpxExampleExperimentArduinoInOut(testscr)
         end    
         A.correctStimName='pin13'; % After correct response, turn on the stim with this name (see above)
         A.correctEndsTrialAfterSec=.5; % Make that "pin13" stimulus last for .5 seconds, then end the trial
+        A.wrongStimName='punishment';
+        A.wrongEndsTrialAfterSec=3;
         C.addResp(A);
 
         % Add this condition to the experiment
