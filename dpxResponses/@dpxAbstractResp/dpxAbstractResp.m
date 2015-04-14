@@ -33,6 +33,12 @@ classdef dpxAbstractResp < hgsetget
         allowAfterNrFlips=[];
         allowUntilNrFlips=[];
         endsTrialAfterFlips=Inf;
+        % Option to make a trial with a wrong answer (typically an animal that
+        % answered to early) be repeated at some later point in the experiment.
+        % The response class should be programmed to set this depending on the
+        % logic of the experiment. dpxCoreCondition checks this and signals
+        % dpxCoreExperiment to redo the trial if necessary.
+        redoTrial=false;
     end
     properties (Access=protected)
         scrGets=[];

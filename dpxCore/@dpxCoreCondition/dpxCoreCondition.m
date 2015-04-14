@@ -6,11 +6,14 @@ classdef dpxCoreCondition < hgsetget
         breakFixGraceSec;
     end
     properties (SetAccess=protected,GetAccess=public)
-        % Cell array of stimulus objects (e.g. dpxStimDot) to be added using addStim
+        % Cell array of stimulus objects (e.g. dpxStimDot) to be added using
+        % addStim
         stims={};
-        % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using addStim
+        % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using
+        % addStim
         resps={};
-        % Cell array of trial-trigger objects (e.g. dpxTriggerKey) to be added using addTrialTrigger
+        % Cell array of trial-trigger objects (e.g. dpxTriggerKey) to be added
+        % using addTrialTrigger
         trigs={};
     end
     properties (Access=protected)
@@ -24,34 +27,33 @@ classdef dpxCoreCondition < hgsetget
     end
     methods (Access=public)
         function C=dpxCoreCondition
-            % The duration of this condition (unless prematurely ended by
-            % a response, see below)
+            % The duration of this condition (unless prematurely ended by a response,
+            % see below)
             C.durSec=2;
-            % Leave this 'false' to use the backRGBA defined in the
-            % dpxCoreWindow class, or set it to a 4-element RGBA vector. The
-            % advantage of this design is that the RGBA for the background
-            % doesn't have to be defined for each condition as most of the time
-            % the background will be the same for all conditions
+            % Leave this 'false' to use the backRGBA defined in the dpxCoreWindow
+            % class, or set it to a 4-element RGBA vector. The advantage of this design
+            % is that the RGBA for the background doesn't have to be defined for each
+            % condition as most of the time the background will be the same for all
+            % conditions
             C.overrideBackRGBA=false;
             C.breakFixGraceSec=.2; % how long does a blink last??
         end
         function init(C,scrGets)
-            % Initialize the dpxCoreCondition object Store a copy of the
-            % values in scr, do not change any of these values (I would
-            % make them read only if Matlab allowed for that). Changing
-            % scrGets won't change the scr object from which they were
-            % derived. Doing so would mess up any calculations that depend
-            % on them.
+            % Initialize the dpxCoreCondition object Store a copy of the values in scr,
+            % do not change any of these values (I would make them read only if Matlab
+            % allowed for that). Changing scrGets won't change the scr object from
+            % which they were derived. Doing so would mess up any calculations that
+            % depend on them.
             C.scrGets=scrGets;
             % Calculate the duration of the trial in flips
             C.nFlips=round(C.durSec*C.scrGets.measuredFrameRate);
-            % Initialize all stimulus objects that have been added using
-            % calls to addStim in the experiment script.
+            % Initialize all stimulus objects that have been added using calls to
+            % addStim in the experiment script.
             for s=1:numel(C.stims)
                 C.stims{s}.init(scrGets);
             end
-            % Initialize all response objects that have been added using
-            % calls to addStim in the experiment script.
+            % Initialize all response objects that have been added using calls to
+            % addStim in the experiment script.
             for r=1:numel(C.resps)
                 C.resps{r}.init(scrGets);
             end
@@ -63,12 +65,11 @@ classdef dpxCoreCondition < hgsetget
             C.breakFixGraceFlips=round(C.breakFixGraceSec*C.scrGets.measuredFrameRate);
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
-            % This is the function called from dpxCoreExperiment as it
-            % works itself through the list of trials...
+            % This is the function called from dpxCoreExperiment as it works itself
+            % through the list of trials...
             if isempty(C.scrGets)
                 error('dpxCoreCondition has not been initialized');
             end
-            winPtr=C.scrGets.windowPtr;
             completionStatus='OK';
             stopTrialEarlyFlip=Inf;
             % Initialize the timing struct
@@ -93,17 +94,19 @@ classdef dpxCoreCondition < hgsetget
                 end
             end
             % Initialize the video-blank timeer
-            vbl=Screen('Flip',winPtr,0);
+            vbl=Screen('Flip',C.scrGets.windowPtr,0);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Loop over all video-flips (frames) of the trial
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             nrMissedFlips=0;
             breakKeys={'Escape','Pause'};
             f=0; % flipCounter, locks in 0 until f=1 is set after ...
-            waitingForFixation=true;  ... the fixation stimulus is fixated (if eyelink is used) ...
-            waitingForTriggers=true; ... and the optional dpxTrialTriggers are all satified (typically keypress)
+            waitingForFixation=true; % the fixation stimulus is fixated (if eyelink is used)
+            waitingForTriggers=true; % and the optional dpxTrialTriggers are all satified (typically keypress)
             while f<=C.nFlips
-                % Lock in frame-0 until all trial-triggers are go. Stimuli
-                % with onSec<=0 will show already (e.g. fixation dot
-                % waiting for go-condition fixation using eyelink)
+                % Lock in frame-0 until all trial-triggers are go. Stimuli with onSec<=0
+                % will show already (e.g. fixation dot waiting for go-condition fixation
+                % using eyelink)
                 if f>0
                     f=f+1; % increment flip counter since lock release
                 else
@@ -114,7 +117,7 @@ classdef dpxCoreCondition < hgsetget
                     if nGo==numel(C.trigs)
                         waitingForTriggers=false; % Lift the lock
                     end
-                end              
+                end
                 % Check the break keys
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
@@ -125,16 +128,21 @@ classdef dpxCoreCondition < hgsetget
                 for s=numel(C.stims):-1:1
                     C.stims{s}.stepAndDraw(f);
                 end
-                Screen('DrawingFinished',winPtr);  
+                Screen('DrawingFinished',C.scrGets.windowPtr);
                 % Check the gaze-fixation status
-                if isempty(stimNumberToFixate) 
-                   if f==0
-                       waitingForFixation=false; % just relase the fixation lock immediately
-                   end
+                if isempty(stimNumberToFixate)
+                    % No fixation is required in this condition, so simply release the fixation
+                    % lock immediately
+                    if f==0
+                        waitingForFixation=false;
+                    end
                 else
-                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus; 
+                    % Fixation is required, check if the stimulus that needs fixation is indeed
+                    % being looked at
+                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus;
                     if ~ok
-                        if f==0 
+                        % Stimulus is not being looked at
+                        if f==0
                             % just keep waiting for first-fixation
                         elseif isempty(C.flipsSinceBreakFix)
                             % fixation interrupted, enter grace period
@@ -148,7 +156,9 @@ classdef dpxCoreCondition < hgsetget
                             end
                         end
                     else
-                        if f==0
+                        % Stimulus is being looked at
+                        if f==0 
+                            % release the flip-zero lock
                             waitingForFixation=false;
                         else
                             if f==1
@@ -166,44 +176,47 @@ classdef dpxCoreCondition < hgsetget
                 for r=1:numel(C.resps)
                     if ~C.resps{r}.given
                         C.resps{r}.getResponse(f);
-                        % store when answer is given; or at last flip of
-                        % trial (useful for continuous resp recordings)
-                        if C.resps{r}.given || f==C.nFlips 
+                        % store when answer is given; or at last flip of trial (useful for
+                        % continuous resp recordings)
+                        if C.resps{r}.given || f==C.nFlips
                             respStruct.(C.resps{r}.name)=C.resps{r}.resp;
-                            % Set the new end time of the trial. This way
-                            % giving the response can stop the trial. If
-                            % the new time exceeds the original stop time,
-                            % this has no effect and the trial lasts the
-                            % set initially amount.
+                            % Set the new end time of the trial. This way giving the response can stop
+                            % the trial. If the new time exceeds the original stop time, this has no
+                            % effect and the trial lasts the set initially amount.
                             if C.resps{r}.endsTrialAfterFlips<Inf % endsTrialAfterFlips is Inf by default
                                 stopTrialEarlyFlip=f+C.resps{r}.endsTrialAfterFlips;
                                 stimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
                                 if ~isempty(stimHandle)
-                                    % Initialize the feedback stimulus so it
-                                    % will be visible from now until
-                                    % now+durSec. Because of this only simple
-                                    % stimuli that do not require a lot of time
-                                    % for initialization can be used. If this
-                                    % is a problem a slight redesign of the
-                                    % feedback system will be required.
+                                    % Initialize the feedback stimulus so it will be visible from now until
+                                    % now+durSec. Because of this only simple stimuli that do not require a lot
+                                    % of time for initialization can be used. If this is a problem a slight
+                                    % redesign of the feedback system will be required.
                                     stimHandle.init(C.scrGets);
                                     stimHandle.visible=true;
                                 end
+                            end
+                            % Check if this response has been set up to necesitate a redo of the
+                            % condition. For example in experiments in which the subjects (typically
+                            % animals) were not allowed to respond before the end of the stimulus and the
+                            % trial was prematurely ended because they did. It is up to definition of
+                            % the response class to set this depending on the logic of the condition
+                            % (see dpxRespArduinoPulse for an example)
+                            if C.resps{r}.redoTrial
+                                completionStatus='REDOTRIAL';
                             end
                         end
                     end
                 end
                 % Wait until it's time, then flip the video buffer
-                [vbl,~,~,dDeadlineSecs]=Screen('Flip',winPtr,vbl+0.85/C.scrGets.measuredFrameRate);
-                % If this flip missed the deadline, increase the
-                % nrMissedFlips counter. Note that the 'Screen flip?'
-                % documentation states that "... The automatic detection of
-                % deadline-miss is not fool-proof ..."
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',C.scrGets.windowPtr,vbl+0.85/C.scrGets.measuredFrameRate);
+                % If this flip missed the deadline, increase the nrMissedFlips counter.
+                % Note that the 'Screen flip?' documentation of Psychtoolbox states that
+                % "... The automatic detection of deadline-miss is not fool-proof ..."
                 if dDeadlineSecs>0
-                    nrMissedFlips=nrMissedFlips+1; 
+                    nrMissedFlips=nrMissedFlips+1;
                 end
-                % Collect start or stop time of the trial in seconds, right
-                % after the flip for accuracy.
+                % Collect start or stop time of the trial in seconds, right after the flip
+                % for accuracy.
                 if f==1 % begin of condition
                     timingStruct.startSec=GetSecs;
                 elseif f==C.nFlips || f>=stopTrialEarlyFlip % planned or early (because of response) end of trial
@@ -222,9 +235,8 @@ classdef dpxCoreCondition < hgsetget
         function addStim(C,S)
             % Add a stimulus object to the condition
             if isempty(S.name)
-                % If no name is provided (not recommended) use the class
-                % name of the object as the stimulus name that will show up
-                % in the output DPXD struct
+                % If no name is provided (not recommended) use the class name of the object
+                % as the stimulus name that will show up in the output DPXD struct
                 S.name=class(S);
             end
             % Store all values of the public (interface) variables of the stimulus so
@@ -232,8 +244,8 @@ classdef dpxCoreCondition < hgsetget
             % conditon is shown;
             S.lockInitialPublicState;
             C.stims{end+1}=S;
-            % Check that all responses have unique names, this is important
-            % for the output format (DPXD)
+            % Check that all responses have unique names, this is important for the
+            % output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.stims,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
@@ -250,8 +262,8 @@ classdef dpxCoreCondition < hgsetget
             if strcmpi(R.name,'none')
                 error(['Reponse object name cannot be ''' R.name '''.']);
             end
-            % Check that all responses have unique names, this is important
-            % for the output format (DPXD)
+            % Check that all responses have unique names, this is important for the
+            % output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.resps,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
@@ -264,8 +276,8 @@ classdef dpxCoreCondition < hgsetget
                 G.name=class(G);
             end
             C.trigs{end+1}=G;
-            % Check that all trialTriggers have unique names, this is important
-            % for the output format (DPXD)
+            % Check that all trialTriggers have unique names, this is important for the
+            % output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.trigs,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
@@ -275,8 +287,8 @@ classdef dpxCoreCondition < hgsetget
     end
     methods (Access=protected)
         function stimHandle=getStimNamed(C,name)
-            % Returns a handle to the stimulus whose name field corresponds
-            % to the string in name
+            % Returns a handle to the stimulus whose name field corresponds to the
+            % string in name
             stimHandle=[];
             if strcmpi(name,'none')
                 return;
@@ -305,12 +317,14 @@ classdef dpxCoreCondition < hgsetget
             elseif value<=0
                 error('Condition duration (durSec) has to be longer than zero');
             elseif value>3600*24*7
-                % user probably defined the duration to be infinite (Inf)
-                % and uses the response to quit the trials. The for-loop in
-                % show does not take end-values larger than intmax without
-                % complaining with a warning. Therefore, silently truncate
-                % the value here to a week in seconds, likely enough for
-                % any experiment.
+                % User probably defined the duration to be infinite (Inf) and uses the
+                % response to quit the trials. The for-loop in show does not take
+                % end-values larger than intmax without complaining with a warning.
+                % Therefore, silently truncate the value here to a week in seconds, likely
+                % enough for any experiment.
+                % 2015-04-14: just occured to me that the show loop of the condition is not
+                % a for loop anymore. Inf values should be no problem. I'm leaving this is
+                % for now, no time to test at now. MARKED FOR CLEANUP
                 value=3600*24*7;
             end
             C.durSec=value;

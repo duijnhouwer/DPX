@@ -113,15 +113,18 @@ classdef dpxCoreExperiment < hgsetget
                     elseif strcmpi(completionStr,'Pause')
                         % The pause button was pressed. The current trials is lost, it can be
                         % recognized in the data file by stopSec==-1
-                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showPauseScreen; % Show the pause screen (with plugin UIs)               
                     elseif strcmpi(completionStr,'BreakFixation')
                         % Fixation ouside required area.The current trials is lost, it can be
                         % recognized in the data file by stopSec==-1
-                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showBreakFixScreen; % Show the eyelink options
+                     elseif strcmpi(completionStr,'RedoTrial')
+                        newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
+                        E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                     elseif ~strcmpi(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
                     end
@@ -301,7 +304,7 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1,'key',E.startKey);
         end
         function showBreakFixScreen(E)
-            disp('Gaze fixation interrupted ... ');
+            disp('Gaze fixation lost ... ');
             dpxDisplayText(E.scr.windowPtr,'','rgba',E.scr.backRGBA,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',E.breakFixTimeOutSec,'commandWindowToo',true);
         end
         function showFinalSaveScreen(E)

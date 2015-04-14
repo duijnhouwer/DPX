@@ -101,9 +101,10 @@ function dpxExampleExperimentArduinoInOut(testscr)
         PUN.visible=false; % dpxRespArduinoPulse can turn this on
         %
         % Add the stimuli to the condition
+        C.addStim(PUN); % reward, must be top of the list because it should block out the rest
         C.addStim(RDK); % random dot kinematogram
         C.addStim(REW); % reward
-        
+
         % Create and add a response object to record the lick detector
         %
         % This is the input side of the Arduino. The sketch
@@ -114,20 +115,35 @@ function dpxExampleExperimentArduinoInOut(testscr)
         % "dpxRespArduinoPulse.m" so we set those ports here.
         %
         A=dpxRespArduinoPulse;
-        A.name='lick'; % this is how it will show up in the datafile
+        A.name='timelylick'; % this is how will show up in the datafile
         A.allowAfterSec=RDK.onSec+RDK.durSec; % only allow after stim is finished
         A.pins=[2 4]; % Listen for letters '2' and '4' on serial port. Note, numerical array, not characters!
         if RDK.cohereFrac<0 % If motion goes to the left ...
-            A.correctPins=2;  ... the lickdetector connected to Pin 2 should be used
+            A.rewardProb=[1 0];  ... the lickdetector connected to Pin 2 will give certain reward
         elseif RDK.cohereFrac>0
-            A.correctPins=4; ... otherwhise the one to Pin 4
+            A.rewardProb=[0 1]; ... otherwise the one to Pin 4 will give certain reward
         else
-            A.correctPins=3;
+            A.rewardProb=[.7 .7]; % there is no correct answer. hence give randomly at rate of rat's mean performance
         end    
         A.correctStimName='pin13'; % After correct response, turn on the stim with this name (see above)
         A.correctEndsTrialAfterSec=.5; % Make that "pin13" stimulus last for .5 seconds, then end the trial
         A.wrongStimName='punishment';
         A.wrongEndsTrialAfterSec=3;
+        C.addResp(A);
+ 
+        % Add a second lickdetector object that listens to the same lickdetector,
+        % but that is listening from the very beginning until the response should
+        % be given. Any response detected by this object will lead to punishment
+        % (bright screen and time out) 
+        A=dpxRespArduinoPulse;
+        A.name='earlylick';
+        A.allowAfterSec=-1;
+        A.allowUntilSec=RDK.onSec+RDK.durSec-.25; % just before the 'timelick' object starts listening
+        A.pins=[2 4];
+        A.rewardProb=[0 0]; % response is never correct
+        A.wrongStimName='punishment';
+        A.wrongEndsTrialAfterSec=3;
+        A.redoTrialIfWrong=true; % a prematurely ended trial need to be re-tried later
         C.addResp(A);
 
         % Add this condition to the experiment
