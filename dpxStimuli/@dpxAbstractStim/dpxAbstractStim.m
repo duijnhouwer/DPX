@@ -11,7 +11,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         hDeg; % Height of the stimulus
         aDeg; % Rotation of stimuli around screen normal. Currently (10/2014) no stimuli use this, placeholder.
         name; % defaults to class-name when added to condition
-        fixWithinDeg; % if larger that >0, fixation on stim is required
+        fixWithinDeg; % if larger that >0, fixation on stim is required within fixWithinDeg degrees from (xDeg,yDeg)
         rndSeed; % the seed of the stim's internal randstream
     end
     properties (SetAccess=public,GetAccess=protected)
@@ -194,6 +194,15 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             end
             S.rndSeed=value;
             S.RND=RandStream('mt19937ar','Seed',S.rndSeed); %#ok<MCSUP>
+        end
+        function set.name(S,value)
+            if ~ischar(value)
+                error('stimulus name must be a string');
+            end
+            if any(isspace(value))
+                 error(['stimulus name ''' value ''' contains whitespace characters']);
+            end
+            S.name=value;
         end
     end
 end

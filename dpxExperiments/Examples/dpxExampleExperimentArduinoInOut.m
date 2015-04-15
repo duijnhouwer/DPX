@@ -24,16 +24,13 @@ function dpxExampleExperimentArduinoInOut(testscr)
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     
-    % Add the dpxArduino plugin
-    % THis starts and stops the Serial port connection to the Arduino.
-    % It is necessary to first upload this sketch
-    % ".\DPX\dpxPlugins\@dpxPluginArduino\private\dpxArduino24in13out\dpxArduino24in13out.ino"
-    % to the flash memory of the Arduino!
-    % See ".\DPX\dpxDocs\Arduino In Out.docx" for information on how to do
-    % that. Also see in that document how to lookup the string that
-    % indicates the USB port to which your Arduino is connected. It can be
-    % found in the Arduino interface.
-    %
+    % Add the dpxArduino plugin This opens and closes the Serial port connection to the
+    % Arduino. It is necessary to first upload this sketch
+    % ".\DPX\dpxPlugins\@dpxPluginArduino\private\dpxArduinoDigiIO\dpxArduinoDigiIO.ino"
+    % to the flash memory of the Arduino! See ".\DPX\dpxDocs\Arduino In Out.docx" for
+    % information on how to do that. That document also describes how to lookup the string
+    % that indicates the USB port to which your Arduino is connected. It can be found in
+    % the Arduino GUI.
     ARD=dpxPluginArduino;
     set(ARD,'comPortStr','COM3'); % IMPORTANT, UPDATE 'COM3' TO YOUR ACTUAL PORT (SEE ABOVE)
     E.addPlugin(ARD);
@@ -42,32 +39,16 @@ function dpxExampleExperimentArduinoInOut(testscr)
     % the ranges of these properties here values of those here:
     cohFrac=[-1 -.5 .5 1];
     for c=1:numel(cohFrac)
-        
         C=dpxCoreCondition;
-        
-        % Set the duration of the condition (trial). In this example,
-        % we make it infinite and have the response finish the trial.
         C.durSec=Inf;
-        
         % Create the Random Dot stimulus
         RDK=dpxStimRdk;
-        % Set the coherence. Note,  dpxStimRdk takes the sign of the coherence to multiply the
-        % direction with. So if the property dirDeg is 0 (right) a
-        % condition with negative coherence will move left.
         RDK.cohereFrac=cohFrac(c);
-        % Set the diameter of the RDK
         RDK.wDeg=20;
         RDK.hDeg=20;
-        % We want the stimulus to go on 500 ms after the start of the
-        % trial and last for 2 seconds
         RDK.onSec=.5;
         RDK.durSec=2;
-        % Provide a name for this stimulus, this is how the stimulus
-        % will be called in the data-file. If no name is provided, the
-        % name will default to the class-name (dpxStimRdk). In an
-        % experiment, no two stimuli can have the same name, not even
-        % if they are in different conditions.
-        RDK.name='motionStim'; % no spaces allowed in name
+        RDK.name='motionStim';
         %
         % Create the Arduino output pulse stimulus
         % This Stimulus modules sends the letters 'R' and 'r' over the

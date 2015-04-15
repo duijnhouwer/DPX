@@ -90,4 +90,15 @@ classdef dpxAbstractResp < hgsetget
         function myClear(R)
         end
     end
+    methods
+       function set.name(S,value)
+            if ~ischar(value)
+                error('response name must be a string');
+            end
+            if any(isspace(value))
+                error(['response name ''' value ''' contains whitespace characters']);
+            end
+            S.name=value;
+       end
+    end
 end
