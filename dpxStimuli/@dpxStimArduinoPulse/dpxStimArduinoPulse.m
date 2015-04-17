@@ -6,8 +6,8 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
     end
     properties (Access=protected)
         ser; % the serial port connection to the arduino, to be setup by dpxPluginArduino
-        onChar;
-        offChar;
+        onChar; % set automatically with pinNr
+        offChar; % set automatically with pinNr
     end
     methods (Access=public)
         function S=dpxStimArduinoPulse
@@ -22,6 +22,7 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
             if isempty(S.ser)
                 error('dpx:stim',['[dpxStimArduinoPulse] Could not connect to serial-port with tag ' S.serialPortTag '\n\tTIP: dpxPluginArduino must be added to the experiment']);
             end
+            fprintf(S.ser,'%c',S.offChar);
         end
         function myDraw(S)
             % Only called when S.visible is true (unlike myStep)
