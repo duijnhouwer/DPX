@@ -252,6 +252,9 @@ function M=convertLkDpxGratingAdaptExp(K)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    % First, remove the long initial adaptation trial, it seem to mess up the montijn
+    % analysis. Jacob, 2015-04-20
+    K=dpxdSubset(K,K.adap_durSec<max(K.adap_durSec));
     % For clarity, I removed the comments from this function as far as they
     % are identical to the convertLkDpxGratingExp.
     M.strFile=K.exp_expName{1};

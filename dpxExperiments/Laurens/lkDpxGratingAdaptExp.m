@@ -43,9 +43,6 @@ function lkDpxGratingAdaptExp
     %
     firstTrialSec=itiaSec + initialAdapSec + itibSec;
     topupTrialSec=itiaSec + topupSec + blankSec + testSec + itibSec;
-    nrTestConditions=numel(testDirDegs) * numel(testContrastFracs) * numel(testCyclesPerDeg) * numel(testCyclesPerSecond);
-    nrTrials=nrTestConditions * E.nRepeats + 1; % + 1 to account for the long adaptation trial
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(topupTrialSec)+initialAdapSec+itibSec+10)) ' s recording pattern in LasAF.']);
     %
     % Create the one initial adaptation condition
     %
@@ -93,10 +90,14 @@ function lkDpxGratingAdaptExp
     %
     % Create all topup-conditions
     %
+    nrTestConditions=0;
     for direc=testDirDegs(:)'
         for cont=testContrastFracs(:)'
             for sf=testCyclesPerDeg(:)'
                 for tf=testCyclesPerSecond(:)'
+                    %
+                    nrTestConditions=nrTestConditions+1;
+                    %
                     C=dpxCoreCondition;
                     C.durSec=topupTrialSec;
                     %
@@ -155,8 +156,9 @@ function lkDpxGratingAdaptExp
     % not be repeated in subsequent block
     seq=1; % the initial long adaptation condition
     for i=1:E.nRepeats
-        seq=[seq randperm(nrTestConditions-1)+1 ];
+        seq=[seq randperm(nrTestConditions)+1 ]; %#ok<AGROW>
     end
     E.conditionSequence=seq;
+    dpxDispFancy(['Please set-up a ' num2str(ceil((numel(seq)-1)*topupTrialSec+initialAdapSec+itibSec+10)) ' s recording pattern in LasAF.']);
     E.run;
 end
