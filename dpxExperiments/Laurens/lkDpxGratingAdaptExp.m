@@ -23,7 +23,7 @@ function lkDpxGratingAdaptExp
     adapCyclesPerDeg=.05;
     adapCyclesPerSecond=1;
     % Test
-    testDirDegs=[0:22.5:360-22.5];
+    testDirDegs=[0:22.5:337.5];
     testContrastFracs=1.0;%[.25 .5 1];
     testCyclesPerDeg=.05;%[.05 .1 .2];
     testCyclesPerSecond=1;%[.5 1 2];
@@ -39,7 +39,7 @@ function lkDpxGratingAdaptExp
     testSec=4;
     itibSec=0;
     %
-    E.nRepeats=6;
+    E.nRepeats=1;
     %
     firstTrialSec=itiaSec + initialAdapSec + itibSec;
     topupTrialSec=itiaSec + topupSec + blankSec + testSec + itibSec;
