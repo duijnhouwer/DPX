@@ -24,7 +24,7 @@ function setFields=dpxWhichSetFields(obj)
             % Practically it's inconvenient because dbstop if all error
             % will stop here. Think of a better method someday ... 666
             obj.(allFields{i})=obj.(allFields{i});
-        catch me
+         catch me
             if strcmpi(me.identifier,'MATLAB:class:SetProhibited')
                 okToSet(i)=false;
             end
