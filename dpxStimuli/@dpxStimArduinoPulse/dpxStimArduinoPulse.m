@@ -43,7 +43,7 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
                 error('dpxStimArduinoPulse output should be on pin 10, 11, 12, or 13');
             end
             S.pinNr=value;
-            S.onChar=char(64+value); % J K L or M
+            S.onChar=char(64+value); % J K L or M 
             S.offChar=char(64+32+value); % j k l or m
         end
     end
