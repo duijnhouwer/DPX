@@ -4,10 +4,10 @@ classdef dpxAbstractResp < hgsetget
         % The names of the stimuli that will be displayed as positive or
         % negative feedback. The stimulus in the dpxCoreCondition class or
         % derived class will use this string to look up the feedback
-        % stimulus by its 'name' field. Set to 'none' when no feedback is
+        % stimulus by its 'name' field. Set to '' when no feedback is
         % desired.
-        correctStimName='none';
-        wrongStimName='none';
+        correctStimName='';
+        wrongStimName='';
         % Time that the trial continues after the answer has been given.
         % Can be different for correct and incorrect trials.
         correctEndsTrialAfterSec=0.05;
@@ -29,7 +29,7 @@ classdef dpxAbstractResp < hgsetget
         % measures, such as key-names or mouse-click positions. The fields
         % of resp will automatically be output in the DPXD output file.
         resp;
-        nameOfFeedBackStim='none';
+        nameOfFeedBackStim='';
         allowAfterNrFlips=[];
         allowUntilNrFlips=[];
         endsTrialAfterFlips=Inf;
@@ -38,7 +38,7 @@ classdef dpxAbstractResp < hgsetget
         % The response class should be programmed to set this depending on the
         % logic of the experiment. dpxCoreCondition checks this and signals
         % dpxCoreExperiment to redo the trial if necessary.
-        redoTrial=false;
+        redoTrial;
     end
     properties (Access=protected)
         scrGets=[];
@@ -70,6 +70,7 @@ classdef dpxAbstractResp < hgsetget
             R.allowAfterNrFlips=round(R.allowAfterSec*scrGets.measuredFrameRate);
             R.allowUntilNrFlips=round(R.allowUntilSec*scrGets.measuredFrameRate);
             R.scrGets=scrGets;
+            R.redoTrial='';
             myInit(R);
         end
         function getResponse(R,flipCounter)

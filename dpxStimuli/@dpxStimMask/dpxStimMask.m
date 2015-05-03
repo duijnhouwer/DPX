@@ -19,13 +19,13 @@ classdef dpxStimMask < dpxAbstractStim
             % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
             %
-            % dpxStimMask is deprecated, it is maintained for backward compatibility until
-            % 29-Feb-2016. Use dpxStimMaskCircle, dpxStimMaskGaussian, dpxStimMaskTiff
-            % instead.
+            % dpxStimMask is deprecated, it is maintained for backward compatibility
+            % until 29-Feb-2016. Use dpxStimMaskCircle, dpxStimMaskGaussian,
+            % dpxStimMaskTiff instead.
             %
-            % The reason that it is deprecated is that working with the typeStr and type
-            % dependent parameters in pars is messy. Separate classes is much cleaner and
-            % clearer.
+            % The reason that it is deprecated is that working with the typeStr and
+            % type dependent parameters in pars is messy. The use of separate classes
+            % is much cleaner and clearer.
             % 
             % Todo: make an abstract dpxStimMask class to inherit all the things
             % mask-stimuli have in common.

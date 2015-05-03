@@ -16,8 +16,8 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
             R.serialPortTag='dpxArduinoTag';
             R.pins=[2 4];
             R.rewardProb=[1 0];
-            R.redoTrialIfWrong=false; % if true, a trial with an incorrect answer 
-              % will be re-tried at some random future moment in the experiment (see
+            R.redoTrialIfWrong='never'; % if 'immediate' or 'sometime', a trial with an incorrect answer 
+              % will be re-tried immediately or at some random future moment in the experiment (see
               % dpxCoreExperiment, dpxCoreCondition, look for 'REDOTRIAL')
         end
     end
@@ -57,7 +57,7 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
                         %disp('REWARD');
                         R.nameOfFeedBackStim=R.correctStimName;
                         R.endsTrialAfterFlips=round(R.correctEndsTrialAfterSec*R.scrGets.measuredFrameRate);
-                        R.redoTrial=false;
+                        R.redoTrial='never';
                     else
                         %disp('PUNISH');
                         R.nameOfFeedBackStim=R.wrongStimName;
@@ -85,5 +85,11 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
             end
             S.rewardProb=value;        
         end
+        function set.redoTrialIfWrong(S,value)
+            if ~any(strcmpi(value,{'never','immediately','sometime'}))
+                error('redoTrialIfWrong should be ''never'', ''immediately'', or ''sometime''');
+            end
+            S.redoTrialIfWrong=value;
+        end       
     end 
 end

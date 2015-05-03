@@ -75,7 +75,7 @@ classdef dpxCoreExperiment < hgsetget
                     tr=tr+1; % increment the trial counter
                     cNr=E.internalCondSeq(tr);
                     CC=E.conditions{cNr}; % CC is the current conditions. Only for legibility
-                    E.showProgressCli(tr);
+                    E.showProgressCli(tr); % command line interface progress information
                     % Show the intermission screen if appropriate (and make an intermediate
                     % backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
@@ -99,12 +99,12 @@ classdef dpxCoreExperiment < hgsetget
                     % and on information store at the end of the previous trial (see below). If
                     % this is the first trial the conduit will know about that and either do
                     % nothing or initialize itself, depending on how it is defined. See
-                    % dpxConduitTest and dpxConduitQuest for examples.
+                    % dpxConduitTest and dpxConduitQuest for examples. 
                     for i=1:numel(E.conduits)
-                        CC=E.conduits{i}.output(CC);
+                        CC=E.conduits{i}.fromPreviousTrial(CC);
                     end
-                    % Now SHOW this condition until its duration has passed (or until escape is
-                    % pressed, fixation is broken ...)
+                    % Now present this condition until its duration has passed (or until escape
+                    % is pressed, fixation is broken ...)
                     [completionStr,timing,resp,nrMissedFlips]=CC.show;
                     % Handle the completion status of the trial
                     if strcmpi(completionStr,'Escape')
@@ -122,8 +122,11 @@ classdef dpxCoreExperiment < hgsetget
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                         E.showBreakFixScreen; % Show the eyelink options
-                     elseif strcmpi(completionStr,'RedoTrial')
+                    elseif strcmpi(completionStr,'RedoTrial')
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
+                        E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
+                    elseif strcmpi(completionStr,'RedoTrialNow')
+                        newTr=tr+1;
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                     elseif ~strcmpi(completionStr,'OK')
                         error(['Unknown completion status: ''' completionStr '''.']); 
@@ -140,7 +143,7 @@ classdef dpxCoreExperiment < hgsetget
                     % and get the information it is allowed to have to change settings of a
                     % future (typically next) condition (see above)
                     for i=1:numel(E.conduits)
-                         E.conduits{i}.input(CC.stims,CC.trigs,E.trials(tr));       
+                         E.conduits{i}.toNextTrail(CC.stims,E.trials(tr));       
                     end
                     % If an overriding RGBA has been defined in this condition, reset the
                     % window object's backRGBA to its default,
@@ -177,7 +180,7 @@ classdef dpxCoreExperiment < hgsetget
             if ~isobject(U) || strncmp(class(U),'dpxConduit',numel('dpxConduit'))==0
                 error('Argument should be an object whose class-name starts with ''dpxConduit''.');
             end
-            E.conduit{end+1}=U;
+            E.conduits{end+1}=U;
         end
         function addPlugin(E,P)
             % note, the dpxPluginComments is loaded by default
@@ -221,7 +224,7 @@ classdef dpxCoreExperiment < hgsetget
                 CNDT=struct; % empty struct
             else
                 for c=1:numel(E.conduits)
-                    name=E.conduits{c}.trigs{s}.name;
+                    name=E.conduits{c}.name;
                     % this is why unique trialtrigger names are required
                     TMP.(name)=dpxGetSetables(E.conduits{c});
                     TMP.(name)=rmfield(TMP.(name),'name');

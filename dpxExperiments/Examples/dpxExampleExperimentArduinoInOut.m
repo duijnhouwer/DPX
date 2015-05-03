@@ -137,6 +137,4 @@ function dpxExampleExperimentArduinoInOut(testscr)
     % and the window remains visible (obscuring the matlab environment),
     % type the shorthand 'cf' and press Enter.
     E.run;
-    %
-    
 end

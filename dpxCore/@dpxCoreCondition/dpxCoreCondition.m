@@ -195,14 +195,20 @@ classdef dpxCoreCondition < hgsetget
                                     stimHandle.visible=true;
                                 end
                             end
-                            % Check if this response has been set up to necesitate a redo of the
+                            % Check if this response has been set up to necessitate a redo of the
                             % condition. For example in experiments in which the subjects (typically
                             % animals) were not allowed to respond before the end of the stimulus and the
                             % trial was prematurely ended because they did. It is up to definition of
                             % the response class to set this depending on the logic of the condition
                             % (see dpxRespArduinoPulse for an example)
-                            if C.resps{r}.redoTrial
-                                completionStatus='REDOTRIAL';
+                            if ~strcmpi(C.resps{r}.redoTrial,'never')
+                                if strcmpi(C.resps{r}.redoTrial,'immediately')
+                                    completionStatus='REDOTRIALNOW';
+                                elseif strcmpi(C.resps{r}.redoTrial,'sometime')
+                                    completionStatus='REDOTRIAL';
+                                else
+                                    error(['illegal redoTrial string: ' C.resps{r}.redoTrial]);
+                                end
                             end
                         end
                     end
@@ -290,7 +296,7 @@ classdef dpxCoreCondition < hgsetget
             % Returns a handle to the stimulus whose name field corresponds to the
             % string in name
             stimHandle=[];
-            if strcmpi(name,'none')
+            if isempty(name)
                 return;
             end
             for s=1:numel(C.stims)

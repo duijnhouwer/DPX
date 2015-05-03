@@ -5,7 +5,7 @@ classdef dpxConduitTest < dpxAbstractConduit
     properties (Access=protected)
     end
     methods (Access=public)
-        function CNDT=dpxConduitTest
+        function U=dpxConduitTest
             % dpxConduitTest
             % Example of a dpxConduit class that does nothing particularly useful but
             % demonstrate the mechanism of the conduit concept. It takes as input the
@@ -15,22 +15,24 @@ classdef dpxConduitTest < dpxAbstractConduit
             % unchanged.
             % dxpConduitQuest will be a more useful example but I haven't programmed that
             % yet.
+            
+            U.name='dpxConduitTest';
         end
-        function input(CNDT,stims,resps,trigs)
-            CNDT.inputValues={};
+    end
+    methods (Access=protected)
+        function nextDir=myFunction(U,prevDir,key)
             
+            keyboard
             
-            % TODO WORK IN PROGRESS
-            
-            
-        end
-        function condition=output(CNDT,condition)
-            if isempty(CNDT.inputValues)
-                % first trial, do nothing
-                return;
+            if prevDir>0 && strcmpi(key,'LeftArrow') || prevDir<0 && strcmpi(key,'RightArrow')
+                disp('incorrect response was given')
+                nextDir=prevDir; % repeat the same direction
+            else
+                disp('correct response was given')
+                nextDir=[]; % empty means leave condition untoucjed
             end
         end
     end
 end
-          
-        
+
+
