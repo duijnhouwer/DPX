@@ -59,7 +59,7 @@ classdef dpxCoreCondition < hgsetget
             end
             % Initialize all trialtriggers (set the trigger state to false)
             for t=1:numel(C.trigs)
-                C.trigs{r}.init();
+                C.trigs{t}.init();
             end
             C.flipsSinceBreakFix=[];
             C.breakFixGraceFlips=round(C.breakFixGraceSec*C.scrGets.measuredFrameRate);

@@ -59,7 +59,7 @@ function agDpxExpOnlyVisual
                 % Add  a text stimulus
                 TEXT=dpxStimTextSimple;
                 TEXT.name='text';
-                TEXT.str=['Condition #' num2str(conditionCounter,'%3d') '\nLeftArrow to start ...'];
+                TEXT.str=['Condition #' num2str(conditionCounter,'%3d') '\n' E.startKey ' to start ...'];
                 TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
                 TEXT.durSec=0; % stimulus disappears when flip-1 is reached
                 
@@ -84,11 +84,11 @@ function agDpxExpOnlyVisual
                 R.allowAfterSec=0;
                 C.addResp(R);
                 
-%                 R=dpxRespContiKeyboard;
-%                 R.name='DownArrow';
-%                 R.kbName='DownArrow';
-%                 R.allowAfterSec=0;
-%                 C.addResp(R);
+                 R=dpxRespContiKeyboard;
+                 R.name='DownArrow';
+                 R.kbName='DownArrow';
+                 R.allowAfterSec=0;
+                 C.addResp(R);
                 
                 %
                 E.addCondition(C);
