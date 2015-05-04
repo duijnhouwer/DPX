@@ -124,7 +124,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
         A.rewardProb=[0 0]; % response is never correct
         A.wrongStimName='punishment';
         A.wrongEndsTrialAfterSec=3;
-        A.redoTrialIfWrong=true; % a prematurely ended trial need to be re-tried later
+        A.redoTrialIfWrong='sometime'; % a prematurely ended trial need to be re-tried later
         C.addResp(A);
 
         % Add this condition to the experiment

@@ -60,6 +60,9 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.flipCounter=0;
             S.stepCounter=0;
         end
+        %function disp(S)
+      %      dpxGetSetables(S)
+    %    end
         function lockInitialPublicState(S)
             % addStim of the condition class will call this function to store a copy of
             % all publicly settable parameters of this stimulus in initialPublicState.

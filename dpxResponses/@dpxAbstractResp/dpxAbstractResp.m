@@ -1,44 +1,41 @@
 classdef dpxAbstractResp < hgsetget
     
     properties (Access=public)
-        % The names of the stimuli that will be displayed as positive or
-        % negative feedback. The stimulus in the dpxCoreCondition class or
-        % derived class will use this string to look up the feedback
-        % stimulus by its 'name' field. Set to '' when no feedback is
-        % desired.
+        % The names of the stimuli that will be displayed as positive or negative
+        % feedback. The stimulus in the dpxCoreCondition class or derived class
+        % will use this string to look up the feedback stimulus by its 'name'
+        % field. Set to '' when no feedback is desired.
         correctStimName='';
         wrongStimName='';
-        % Time that the trial continues after the answer has been given.
-        % Can be different for correct and incorrect trials.
+        % Time that the trial continues after the answer has been given. Can be
+        % different for correct and incorrect trials.
         correctEndsTrialAfterSec=0.05;
         wrongEndsTrialAfterSec=0.05;
-        % Time window in which the response can be given relative to trial
-        % onset.
+        % Time window in which the response can be given relative to trial onset.
         allowAfterSec=0;
         allowUntilSec=3600;
-        % The object name.  Left empty, this will default to the
-        % class-name when added to condition
+        % The object name.  Left empty, this will default to the class-name when
+        % added to condition
         name='';
     end
     properties (GetAccess=public,SetAccess=protected)
-        % A logical (true/false) indicating that a valid response has been
-        % received
+        % A logical (true/false) indicating that a valid response has been received
         given;
-        % A structure representing the respones, this is defined in myInit,
-        % and can be changed in derived classes for different response
-        % measures, such as key-names or mouse-click positions. The fields
-        % of resp will automatically be output in the DPXD output file.
+        % A structure representing the respones, this is defined in myInit, and can
+        % be changed in derived classes for different response measures, such as
+        % key-names or mouse-click positions. The fields of resp will automatically
+        % be output in the DPXD output file.
         resp;
         nameOfFeedBackStim='';
         allowAfterNrFlips=[];
         allowUntilNrFlips=[];
         endsTrialAfterFlips=Inf;
         % Option to make a trial with a wrong answer (typically an animal that
-        % answered to early) be repeated at some later point in the experiment.
-        % The response class should be programmed to set this depending on the
-        % logic of the experiment. dpxCoreCondition checks this and signals
+        % answered to early) be repeated at some later point in the experiment. The
+        % response class should be programmed to set this depending on the logic of
+        % the experiment. dpxCoreCondition checks this and signals
         % dpxCoreExperiment to redo the trial if necessary.
-        redoTrial;
+        redoTrial='never'; % not set by user, but needs getacces to be visible to dpxCoreCondition
     end
     properties (Access=protected)
         scrGets=[];
@@ -50,16 +47,15 @@ classdef dpxAbstractResp < hgsetget
         function R=dpxAbstractResp
             % dpxAbstractResp - Abstract class for dpxResp classes.
             %
-            % Classes for registering participant-responses, e.g.
-            % dpxRespKeyboard, inherit basic properties and methods from
-            % this abstract class. Abstract means no objects can be created
-            % from this class, it only serves to be inherited. The names of
-            % all derived classes should be of the format dpxRespXXXXX.
+            % Classes for registering participant-responses, e.g. dpxRespKeyboard,
+            % inherit basic properties and methods from this abstract class. Abstract
+            % means no objects can be created from this class, it only serves to be
+            % inherited. The names of all derived classes should be of the format
+            % dpxRespXXXXX.
             %
-            % Until 20140905 only a keyboard response functionality was
-            % present in the form of class 'dpxCoreResponse'. That class
-            % has since been split into this abstract class and the derived
-            % class dpxRespKeyboard.
+            % Until 20140905 only a keyboard response functionality was present in the
+            % form of class 'dpxCoreResponse'. That class has since been split into
+            % this abstract class and the derived class dpxRespKeyboard.
             %
             % See also: dpxAbstractStim, dpxRespKeyboard
             %
@@ -70,7 +66,7 @@ classdef dpxAbstractResp < hgsetget
             R.allowAfterNrFlips=round(R.allowAfterSec*scrGets.measuredFrameRate);
             R.allowUntilNrFlips=round(R.allowUntilSec*scrGets.measuredFrameRate);
             R.scrGets=scrGets;
-            R.redoTrial='';
+            R.redoTrial='never';
             myInit(R);
         end
         function getResponse(R,flipCounter)
@@ -92,7 +88,7 @@ classdef dpxAbstractResp < hgsetget
         end
     end
     methods
-       function set.name(S,value)
+        function set.name(S,value)
             if ~ischar(value)
                 error('response name must be a string');
             end
@@ -100,6 +96,15 @@ classdef dpxAbstractResp < hgsetget
                 error(['response name ''' value ''' contains whitespace characters']);
             end
             S.name=value;
-       end
+        end
+        function set.redoTrial(S,value)
+            % This has SetAccess protected and can't be set by the user, interesting to
+            % learn that the internal setting runs over this function as well, extra
+            % way of making sure no bugs are introduced by for example typo's
+            if ~any(strcmpi(value,{'never','immediately','sometime'}))
+                error('redoTrial should be ''never'', ''immediately'', or ''sometime''');
+            end
+            S.redoTrial=value;
+        end
     end
 end
