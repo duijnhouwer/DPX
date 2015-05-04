@@ -255,13 +255,13 @@ classdef dpxCoreCondition < hgsetget
             nameList=cellfun(@(x)get(x,'name'),C.stims,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All stimuli in a condition need unique names');
+                error('All stimuli in a condition need a unique name');
             end
         end
         function addResp(C,R)
             % Add a response object to the condition
             if isempty(R.name)
-                R.name=class(R);
+                R.name=class(R); % no name provided default to classname
             end
             C.resps{end+1}=R;
             % Check that the name is not 'none', this is an reserved name
@@ -273,13 +273,13 @@ classdef dpxCoreCondition < hgsetget
             nameList=cellfun(@(x)get(x,'name'),C.resps,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All responses in a condition need unique names');
+                error('All responses in a condition need a unique name');
             end
         end
         function addTrialTrigger(C,G)
             % Add a trial-trigger object to the condition
             if isempty(G.name)
-                G.name=class(G);
+                G.name=class(G); % no name provided default to classname
             end
             C.trigs{end+1}=G;
             % Check that all trialTriggers have unique names, this is important for the
@@ -287,7 +287,7 @@ classdef dpxCoreCondition < hgsetget
             nameList=cellfun(@(x)get(x,'name'),C.trigs,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
-                error('All TrialTriggers in a condition need unique names');
+                error('All TrialTriggers in a condition need a unique name');
             end
         end
     end

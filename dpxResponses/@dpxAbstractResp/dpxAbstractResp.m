@@ -1,4 +1,4 @@
-classdef dpxAbstractResp < hgsetget
+classdef (Abstract) dpxAbstractResp < hgsetget
     
     properties (Access=public)
         % The names of the stimuli that will be displayed as positive or negative

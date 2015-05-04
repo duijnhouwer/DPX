@@ -80,38 +80,12 @@ function dpxExampleExperimentWithText(testscr)
         % we make it infinite and have the response finish the trial.
         C.durSec=Inf;
         
-        % When using eyelink you might want to set a grace period for
-        % blinks, if you use really long adaptation conditions for example:
-        % C.breakFixGraceSec=0.1;
-        
         % Create fixation-dot 'stimulus'. 
         FIX=dpxStimDot;
         FIX.name='fixdot';
         FIX.onSec=-1;
         FIX.wDeg=0.5;
-        % if you have an eyelink installed, you could add the following
-        % line to require the fixation dot to be fixated within a 2 degree
-        % radius:
-        % FIX.fixWithinDeg=2;
-
-        
-        % Add the random dot motion stimulus to this condition, and set
-        % the properties. Remember, to get a list of all properties and
-        % their current values of a stimulus object (or any object for
-        % that matter) use get with the object as the argument (e.g.
-        % get(S)). You don't have to memorize the properties. Moreover,
-        % all these properties and their value per trial will be stored
-        % in the data-file.
-        
-        % [The RDK is one of the earliest stimuli I've programmed for
-        % DPX. The design is that new stimuli can be added as modules,
-        % little files that inherit from dpxAbstractStim like dpxStimRdk
-        % does, or that inherit from an existing stimulus (say you want
-        % the RDK to have some additional exotic behavior, don't tweak
-        % the dpxStimRdk file, but instead inherit from that class into
-        % a new class, say dpxStimRdkExotic, and add the properties and
-        % override the methods as required. This way the stimulus
-        % modules (classes) stay clean and backward compatible.]
+ 
         RDK=dpxStimRdk;
         % Set the coherence. Note,  dpxStimRdk takes the sign of the coherence to multiply the
         % direction with. So if the property dirDeg is 0 (right) a
@@ -124,23 +98,7 @@ function dpxExampleExperimentWithText(testscr)
         % trial and last for half a second
         RDK.onSec=.5;
         RDK.durSec=2;
-        % Provide a name for this stimulus, this is how the stimulus
-        % will be called in the data-file. If no name is provided, the
-        % name will default to the class-name (dpxStimRdk). In an
-        % experiment, no two stimuli can have the same name, not even
-        % if they are in different conditions.
         RDK.name='motionStim'; % no spaces allowed in name
-
-        
-        % Add a semi-transparent mask for over the RDK
-        MASK=dpxStimMaskGaussian;
-        MASK.name='envelope';
-        MASK.RGBAfrac=E.scr.backRGBA;
-        MASK.sigmaDeg=5;
-        MASK.onSec=RDK.onSec;
-        MASK.durSec=RDK.durSec;
-        MASK.wDeg=RDK.wDeg+RDK.dotDiamDeg;      
-        MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
         
         % Add  a text stimulus
         TEXT=dpxStimTextSimple;
@@ -153,7 +111,6 @@ function dpxExampleExperimentWithText(testscr)
         % Add the stimuli to the condition
         C.addStim(FIX); % first added will be on top
         C.addStim(TEXT);
-        C.addStim(MASK);
         C.addStim(RDK);
         
         % Add a trial trigger. The experiment will be stuck in flip-0 until
