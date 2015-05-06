@@ -3,11 +3,12 @@ function [ok,str]=dpxIsKbName(value)
     % Part of DPX: An experiment preparation system
     % http://duijnhouwer.github.io/DPX/
     % Jacob Duijnhouwer, 2014-11-13
+    
+    KbName('UnifyKeyNames'); % this is the only place in DPX where KbName('UnifyKeyNames'); is set, I should find a more proper spot sometime
     try
         if ~ischar(value)
             error;
         end
-        KbName('UnifyKeyNames');
         KbName(value); % will error if value is not a valid key-name
         ok=true;
     catch

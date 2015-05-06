@@ -87,5 +87,4 @@ classdef dpxPluginArduino < hgsetget
             end
         end
     end
-    
 end

@@ -43,9 +43,13 @@ classdef dpxStimAAAAA < dpxAbstractStim
     end
     methods
         function set.RGBAfrac(S,value)
-            [ok,str]=dpxIsRGBAfrac(value);
+            if value=='?'
+                disp('RGBAfrac (numeric): red-green-blue-opacity values [0..1] of the stimulus.');
+                return;
+            end
+            [ok,errstr]=dpxIsRGBAfrac(value);
             if ~ok
-                error(['RBGAfrac should be a ' str]);
+                error(['RBGAfrac should be a ' errstr]);
             else
                 S.RGBAfrac=value;
             end

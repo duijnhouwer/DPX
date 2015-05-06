@@ -20,36 +20,40 @@ classdef dpxStimDot < dpxAbstractStim
             S.RGBA = S.RGBAfrac * S.scrGets.whiteIdx;
         end
         function myDraw(S)
-            wPtr=S.scrGets.windowPtr;
             diam=max(1,S.wPx);
             if strcmpi(S.scrGets.stereoMode,'mono')
-                Screen('DrawDots',wPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
+                Screen('DrawDots',S.scrGets.windowPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
             elseif strcmpi(S.scrGets.stereoMode,'mirror')
                 for buffer=0:1
-                    Screen('SelectStereoDrawBuffer', wPtr, buffer);
-                    Screen('DrawDots',wPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
+                    Screen('SelectStereoDrawBuffer', S.scrGets.windowPtr, buffer);
+                    Screen('DrawDots',S.scrGets.windowPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);
                 end
             else
                 error(['Unknown stereoMode ''' S.stereoMode '''.']);
             end
         end
     end
-end
-
-
-function drawCross(S)
-    wPtr=S.scrGets.windowPtr;
-    crossXY=max(1,S.wPx);
-    if strcmpi(S.scrGets.stereoMode,'mono')
-        Screen('DrawLines',wPtr,[0 0 S.xPx-crossXY S.yPx+crossXY;S.xPx-crossXY S.yPx+crossXY 0 0] ...
-            ,S.crossW,S.RGBA(:),S.winCntrXYpx);
-    elseif strcmpi(S.scrGets.stereoMode,'mirror')
-        for buffer=0:1
-            Screen('SelectStereoDrawBuffer', wPtr, buffer);
-            Screen('DrawLines',wPtr,[0 0 S.xPx-crossXY S.yPx+crossXY;S.xPx-crossXY S.yPx+crossXY 0 0] ...
-                ,S.crossW,S.RGBA(:),S.winCntrXYpx);
+    methods
+        function set.shape(S,value)
+            if value=='?'
+                disp('shape (char): not used anymore. Originally intended to toggle between dot and cross option, but has been split in separate classes since. Maintained for backward compatibility');
+                return;
+            end
+            if ~isempty(value)
+                error('Property ''shape'' is not used and should remain empty ([]). Maintained only for backward compatibility.');
+            end
         end
-    else
-        error(['Unknown stereoMode ''' S.stereoMode '''.']);
+        function set.RGBAfrac(S,value)
+            if value=='?'
+                disp('RGBAfrac (numeric): red-green-blue-opacity values [0..1] of the dot.');
+                return;
+            end
+            [ok,errstr]=dpxIsRGBAfrac(value);
+            if ~ok
+                error(['RBGAfrac should be a ' errstr]);
+            else
+                S.RGBAfrac=value;
+            end
+        end
     end
 end
