@@ -1,17 +1,22 @@
 classdef dpxCoreWindow < hgsetget
     
     properties (Access=public)
-        winRectPx;
-        widHeiMm;
-        pixelBits;
-        distMm;
-        interEyeMm;
-        gamma;
-        backRGBA;
-        stereoMode;
-        skipSyncTests;
-        verbosity0min5max;
-        scrNr;
+        % NOTE sensible values have to be present here because the set
+        % methods of each of these will run the "initValues" functions in
+        % which dependencies are calculated. TODO: look into matlab
+        % "dependent" attribute to see if this can be done in a more
+        % elegant way
+        winRectPx=[0 0 640 480]+20;
+        widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
+        pixelBits=32;
+        distMm=600;
+        interEyeMm=65;
+        gamma=1;
+        backRGBA=[.5 .5 .5 1];
+        stereoMode='mono';
+        skipSyncTests=0;
+        verbosity0min5max=3;
+        scrNr=[];
     end
     properties (GetAccess=public,SetAccess=private)
         distPx;
@@ -40,17 +45,6 @@ classdef dpxCoreWindow < hgsetget
             % Part of DPX suite
             % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
             % Jacob Duijnhouwer, 2014
-            W.winRectPx=[0 0 960 540]+30;
-            W.widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
-            W.pixelBits=32;
-            W.distMm=600;
-            W.interEyeMm=65;
-            W.gamma=1;
-            W.backRGBA=[.5 .5 .5 1];
-            W.stereoMode='mono';
-            W.skipSyncTests=0;
-            W.verbosity0min5max=3;
-            W.scrNr=[];
             AssertOpenGL;
             W=initValues(W);
             if IsWin

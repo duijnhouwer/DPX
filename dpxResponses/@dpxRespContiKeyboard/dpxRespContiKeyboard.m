@@ -41,6 +41,7 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
             % to one.
             %
             % See also: dpxRespKeyboard
+            KbName('UnifyKeyNames');
             R.kbName='LeftArrow';
             R.deviceNr=-1; % see 'help KbCheck' for information
         end
@@ -52,7 +53,6 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
             R.resp.keyFlip{1}=NaN;
             R.resp.keyReleaseSec{1}=NaN;
             R.resp.keyReleaseFlip{1}=NaN;
-            KbName('UnifyKeyNames');
             R.nResponses=0;
             R.trackedKeyWasDownPrevFlip=false;
             ListenChar(2);

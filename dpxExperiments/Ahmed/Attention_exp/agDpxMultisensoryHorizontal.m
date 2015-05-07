@@ -91,7 +91,7 @@ for dotSize=1
                                 %
                                 R=dpxRespContiKeyboard;
                                 R.name='LeftArrow';
-                                R.kbName='left';
+                                R.kbName='LeftArrow';
                                 R.allowAfterSec=0;
                                 C.addResp(R);
 %                                 %
