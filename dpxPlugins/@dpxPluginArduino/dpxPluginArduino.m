@@ -1,8 +1,8 @@
 classdef dpxPluginArduino < hgsetget
     
     % If you're about to make additional plugins, I recommend creating
-    % dpxAbstractPlugin to inherit from first, as in dpxAbstractStim and
-    % dpxAbstractResp
+    % dpxAbstractPlugin to inherit from first, as in dpxAbstractStim,
+    % dpxAbstractResp, and dpxAbstractTrigger 
     
     properties (Access=public)
         % all plugins have these (todo: move to abstract class)
@@ -29,7 +29,7 @@ classdef dpxPluginArduino < hgsetget
             %
             % See also: dpxDocsArduinoHowTo
             P.name='arduino';
-            P.pauseMenuKeyStrCell={'4$@'}; % TOdo: asign numbers automatically so no conflict between plugins possible
+            P.pauseMenuKeyStrCell={'4$'}; % TOdo: asign numbers automatically so no conflict between plugins possible
             P.pauseMenuInfoStrCell={'List Arduino Sketch code'};
             P.tag='dpxArduinoTag';
             P.comPortStr='';
@@ -76,13 +76,13 @@ classdef dpxPluginArduino < hgsetget
             FlushEvents([],[],'keyDown');
             [keyIsDown,~,keyCode]=KbCheck(-1);
             if keyIsDown
-                % The eyelink plugin has 2 control keys:
+                % The Arduino plugin has 2 control keys:
                 if keyCode(KbName(P.pauseMenuKeyStrCell{1}))
                     disp('Arduino Sketch code listing not implemented yet.');
                     choiceIsMade=true;
                 else
                     % a key was registered that is either not handled
-                    % during pause, or is for another plugin than eyelink
+                    % during pause, or is for another plugin than Arduino
                 end
             end
         end

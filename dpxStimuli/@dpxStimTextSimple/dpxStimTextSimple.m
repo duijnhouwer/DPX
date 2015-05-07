@@ -1,7 +1,7 @@
 classdef dpxStimTextSimple < dpxAbstractStim   
     properties (Access=public)    
         str; 
-        RGBAfrac; % A four element vector of values between [0..1] representing red-green-blue-opacity of the letters;
+        RGBAfrac; 
         fontname;
         fontsize;
     end
