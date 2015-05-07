@@ -4,7 +4,7 @@ function agDpxMultisensoryHorizontal
 KbName('UnifyKeyNames');
 E=dpxCoreExperiment;
 E.expName='agDpxMultisensoryHorizontal';
-E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
+E.outputFolder='D:\'%'/Users/iMac_2Photon/Dropbox/dpxData';
 testscr=[20 20 800 600];
 
 E.scr.set('winRectPx',testscr,'widHeiMm',[400 300],...
@@ -95,11 +95,11 @@ for dotSize=1
                                 R.allowAfterSec=0;
                                 C.addResp(R);
 %                                 %
-%                                 R=dpxRespContiKeyboard;
-%                                 R.name='Down';
-%                                 R.kbName='Down';
-%                                 R.allowAfterSec=0;
-%                                 C.addResp(R);
+                                R=dpxRespContiKeyboard;
+                                R.name='Down';
+                                R.kbName='DownArrow';
+                                R.allowAfterSec=0;
+                                C.addResp(R);
 %                                 %
                                 FB=dpxStimDot;
                                 set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
