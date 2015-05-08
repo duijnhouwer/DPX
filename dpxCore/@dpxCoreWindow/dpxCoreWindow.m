@@ -18,7 +18,7 @@ classdef dpxCoreWindow < hgsetget
         verbosity0min5max=3;
         scrNr=[];
     end
-    properties (GetAccess=public,SetAccess=protected,Hidden=true)
+    properties (GetAccess=public,SetAccess=protected)
         distPx;
         mm2px;
         deg2px;

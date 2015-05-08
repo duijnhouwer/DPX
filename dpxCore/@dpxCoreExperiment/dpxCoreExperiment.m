@@ -21,7 +21,7 @@ classdef dpxCoreExperiment < hgsetget
         outputFileName='undefined.mat';
         internalCondSeq; % ordered list of condition numbers
     end
-    properties (GetAccess=public,SetAccess=protected,Hidden=true)
+    properties (GetAccess=public,SetAccess=protected)
         subjectId;
         experimenterId;
         startTime;
