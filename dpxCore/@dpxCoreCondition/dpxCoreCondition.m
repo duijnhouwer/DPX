@@ -5,7 +5,7 @@ classdef dpxCoreCondition < hgsetget
         overrideBackRGBA;
         breakFixGraceSec;
     end
-    properties (SetAccess=protected,GetAccess=public)
+    properties (GetAccess=public,SetAccess=protected,Hidden=true)
         % Cell array of stimulus objects (e.g. dpxStimDot) to be added using
         % addStim
         stims={};

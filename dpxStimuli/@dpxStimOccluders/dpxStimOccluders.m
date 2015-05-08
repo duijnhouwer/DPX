@@ -14,7 +14,7 @@ classdef dpxStimOccluders < dpxAbstractStim
         NrEncoding=5;
         PicDir='C:\Users\Reinder\Documents\School\Masterstage Stereoblind\DPX\dpxExperiments\Reinder\rdDpxFaceStimuli';
     end
-    properties(GetAccess=public, SetAccess=private)
+    properties(GetAccess=public,SetAccess=protected,Hidden=true)
         StimArray;
         Block;
     end

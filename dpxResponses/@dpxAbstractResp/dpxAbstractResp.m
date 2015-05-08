@@ -18,7 +18,7 @@ classdef (Abstract) dpxAbstractResp < hgsetget
         % added to condition
         name='';
     end
-    properties (GetAccess=public,SetAccess=protected)
+    properties (GetAccess=public,SetAccess=protected,Hidden=true)
         % A logical (true/false) indicating that a valid response has been received
         given;
         % A structure representing the respones, this is defined in myInit, and can

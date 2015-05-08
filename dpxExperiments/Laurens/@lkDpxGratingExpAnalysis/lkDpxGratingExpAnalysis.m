@@ -7,10 +7,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         anaOpts;
         pause;
     end
-    properties (GetAccess=private,SetAccess=private)
-        % The file and corresponding neuron todo lists can be viewed by the
-        % user, but can not be set directly, only through loading a
-        % todoListFile.
+    properties (Access=protected)
         filesToDo;
         neuronsToDo;
     end
@@ -113,7 +110,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         function output=run(A)
             % Reload the files and cells per file, file may have been
             % edited since it was loaded first.
-            [A.filesToDo,A.neuronsToDo]=loadTodoList(A.todoListFileName); %#ok<MCSUP>
+            [A.filesToDo,A.neuronsToDo]=loadTodoList(A.todoListFileName);
             %
             if isempty(A.todoListFileName)
                 dpxDispFancy('The string "todoListFileName" is empty, no data files to run analyses on.');
