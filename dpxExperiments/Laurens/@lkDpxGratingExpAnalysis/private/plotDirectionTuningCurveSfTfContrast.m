@@ -1,6 +1,19 @@
 function plotDirectionTuningCurveSfTfContrast(TC,varargin)
     % TC is a tuningcurve DPXD made by calcDirectionTuningCurve of 1 cell
     
+    % TC is the output of calcPlotDirectionTUningCurvesSfTfContrast
+    % It has 1 element (if data is based on one recording) or 3 or more. If
+    % the data is based on 2 or more recordings the first element will be the
+    % analysis of all the merged data and the subsequent elements will be the
+    % analysis based on the individual recordings. THis plot function currently
+    % only plots the first, merged data, not the components. It does work for
+    % the simpler case without SfTf and Contrast splitting
+    %
+    % Note: I regret making the analysis so that it splits the data per
+    % component internally. The whole analysis has become very complicated and
+    % bug prone. In hindsight, I rather had run the analysis on the merged
+    % files and components by programming the neurotodo files to run on the
+    % merged file and on the seperate component files. 
     TC=TC{1};
     
     fileName=TC.file{1};
