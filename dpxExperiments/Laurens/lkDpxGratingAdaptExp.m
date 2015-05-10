@@ -159,6 +159,11 @@ function lkDpxGratingAdaptExp
         seq=[seq randperm(nrTestConditions)+1 ]; %#ok<AGROW>
     end
     E.conditionSequence=seq;
-    dpxDispFancy(['Please set-up a ' num2str(ceil((numel(seq)-1)*topupTrialSec+initialAdapSec+itibSec+10)) ' s recording pattern in LasAF.']);
+    expDur=0;
+    for i=1:numel(seq)
+        expDur=expDur+E.conditions{seq(i)}.durSec;
+    end
+    keyboard
+    dpxDispFancy(['Please set-up a ' num2str(expDur+20) ' s recording pattern in LasAF.']);
     E.run;
 end

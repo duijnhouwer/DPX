@@ -76,13 +76,13 @@ function lkDpxGratingExp
                     MCC.name='mcc';
                     MCC.allowUntilSec=C.durSec;
                     C.addResp(MCC);
-                    %
+                    %lkDpxGratingExp
                     E.addCondition(C);
                 end
             end
         end    
     end
     nrTrials=numel(E.conditions) * E.nRepeats;
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 10 s)']);
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 120 s)']);
     E.run;
 end
