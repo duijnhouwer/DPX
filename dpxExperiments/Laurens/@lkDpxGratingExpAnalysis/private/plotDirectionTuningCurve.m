@@ -1,13 +1,10 @@
 function plotDirectionTuningCurve(TC,varargin)
-    % TC is a tuningcurve DPXD made by calcDirectionTuningCurve of 1 or
-    % more cells. i is the cell-number to be plot.
-        
-    % Parse 'options' input
+  
     p=inputParser;
     p.addParamValue('bayesfit',true,@islogical);
     p.parse(varargin{:});
     
-    for ss=[2:numel(TC) 1] % SubSets of the data, 1 is always all data
+    for ss=[2:numel(TC) 1] % SubSets of the data, 1 is always all data, plot that last (on top)
         if ss==1 && numel(TC)==1
             marker='none';
             lStyle='-';

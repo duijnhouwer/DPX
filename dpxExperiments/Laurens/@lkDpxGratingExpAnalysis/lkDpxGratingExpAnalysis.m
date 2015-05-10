@@ -130,7 +130,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             end
         end
     end
-    methods (Access=private)
+    methods (Access=protected)
         function str=calcCommandString(A)
             str=['calc' A.anaFunc]; % e.g. 'calcDirectionTuningCurve'
         end
@@ -140,32 +140,34 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         function output=runPerCell(A)
             for f=1:numel(A.filesToDo)
                 dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
-                nList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd));
-                tel=0;
-                for c=1:numel(nList)
-                    tel=tel+1;
-                    output{tel}=eval([A.calcCommandString '(dpxd,nList(c),A.anaOpts{:});']); %#ok<AGROW>
+                cellNumList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd)); % cell number list
+                celTel=0;
+                for c=1:numel(cellNumList)
+                    celTel=celTel+1;
+                    cmd=[A.calcCommandString '(dpxd,cellNumList(c),A.anaOpts{:});']; % e.g. calcDirectionTuningCurveSfTfContrast(dpxd,cellNumList(c),A.anaOpts{:}); 
+                    output{celTel}=eval(cmd); %#ok<AGROW>
                     % add filename and cell number to each subset (nr 1 is
                     % all data, the optional next ones are the individual
                     % sessions that were merged)
-                    for ss=1:numel(output{tel})
-                        output{tel}{ss}.file{1}=A.filesToDo{f};
-                        output{tel}{ss}.cellNumber=nList(c);
+                    for ss=1:numel(output{celTel})
+                        output{celTel}{ss}.file=cellstr(repmat(A.filesToDo{f},output{celTel}{ss}.N,1))';
+                        output{celTel}{ss}.cellNumber=repmat(cellNumList(c),1,output{celTel}{ss}.N);
                     end
                     if ~strcmpi(A.pause,'never')
-                        figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(nList(c),'%.3d')]);
-                        eval([A.plotCommandString '(output{tel},A.anaOpts{:});']);
+                        figHandle=dpxFindFig([A.filesToDo{f} ' c' num2str(cellNumList(c),'%.3d')]);
+                        cmd=[A.plotCommandString '(output{celTel},A.anaOpts{:});'];
+                        eval(cmd);
                     end
                     if strcmpi(A.pause,'perCell')
                         dpxTileFigs;
                         [~,filestem]=fileparts(A.filesToDo{f});
-                        disp(['Showing ' A.plotCommandString ' of cell ' num2str(nList(c)) ' (' num2str(c) '/' num2str(numel(nList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo))]);
+                        disp(['Showing ' A.plotCommandString ' of cell ' num2str(cellNumList(c)) ' (' num2str(c) '/' num2str(numel(cellNumList)) ') in file ''' filestem ''' (' num2str(f) '/' num2str(numel(A.filesToDo))]);
                         input('<< Press any key to close the figures and continue with the next cell >>');
                         close(figHandle);
                     end
                     % Now that the plotting of the complete and the
                     % sub-sets has been done, only maintain the complete
-                    output{tel}=output{tel}{1}; %#ok<AGROW>
+                    output{celTel}=output{celTel}{1}; %#ok<AGROW>
                 end
                 if strcmpi(A.pause,'perFile')
                     dpxTileFigs;
