@@ -9,11 +9,13 @@ p=inputParser;
 p.addOptional('missingfields','warnskip',@(x)any(strcmpi(x,{'warnskip','silentskip','error'})));
 p.parse(varargin{:});
 
-if ~iscell(T) && numel(T)==1
+if isempty(T)
     M=T;
     return;
-end
-if ~iscell(T) && numel(T)>1
+elseif ~iscell(T) && numel(T)==1
+    M=T;
+    return;
+elseif ~iscell(T) && numel(T)>1
     TT=cell(1,numel(T));
     for f=1:numel(T)
         TT{f}=T(f);

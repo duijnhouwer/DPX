@@ -65,6 +65,10 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
                         R.redoTrial=R.redoTrialIfWrong;
                     end
                 end
+            else
+                R.resp.char='';
+                R.resp.sec=[];
+                R.given=false;
             end
         end
         function myClear(R)
@@ -80,7 +84,7 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
             S.pinsChar=char(48+value); %#ok<MCSUP> % char(48) equals '0'
         end     
         function set.rewardProb(S,value)
-            if any(value<0 | value>1)
+            if ~isnumeric(value) || any(value<0 | value>1)
                 error('rewardProb need to be values between 0 and 1 (probablity of reward for corresponding pin)'); 
             end
             S.rewardProb=value;        

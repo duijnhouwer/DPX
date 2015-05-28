@@ -40,11 +40,14 @@ function fullnames=dpxUIgetfiles(varargin)
             qstr=cell(0);
             qstr{1}=[pathnames{1} ' ...'];
             qstr{end+1}=['...' filesep filenames{1}];
-            for i=2:n
+            for i=2:min(constant,n)
                 if ~strcmp(pathnames{i},pathnames{i-1})
                     qstr{end+1}=[pathnames{i} ' ...'];
                 end
                 qstr{end+1}=['...' filesep filenames{i}];
+            end
+            if n>MAXFILESLISTED
+                qstr{end+1}=['... and ' num2str(MAXFILESLISTED-n) ' more files (truncated)'];
             end
             qstr{end+1}='';
             if n>1
@@ -119,11 +122,14 @@ function fullnames=makeNewSelection(startdir)
             qstr=cell(0);
             qstr{1}=[pathnames{1} ' ...'];
             qstr{end+1}=['...' filesep filenames{1}];
-            for i=2:n
+            for i=2:min(n,MAXFILESLISTED)
                 if ~strcmp(pathnames{i},pathnames{i-1})
                     qstr{end+1}=[pathnames{i} ' ...'];
                 end
                 qstr{end+1}=['...' filesep filenames{i}];
+            end
+            if n>MAXFILESLISTED
+                qstr{end+1}=['... and ' num2str(MAXFILESLISTED-n) ' more files (truncated)'];
             end
             qstr{end+1}='';
             qstr{end+1}=[num2str(n) ' files selected. Select more files?'];
@@ -144,9 +150,19 @@ function fullnames=makeNewSelection(startdir)
             return;
         elseif strcmp(astr,BT1) % Yes, select more'
             % do this while loop once more
+        elseif isempty(astr)
+            % probably closed the window with the red-cross in right top corner (or equivalent in non-windows 7)
+            fullnames={};
+            return;
         else
             error(['Unexpected return value: ' astr '.']);
         end
         pause(.01); % process user interupt (e.g. CTRL-C)
     end
+end
+
+
+function n=MAXFILESLISTED
+    % a constant for use in multiple functions
+    n=40;
 end

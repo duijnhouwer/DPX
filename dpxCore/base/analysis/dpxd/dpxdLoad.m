@@ -34,7 +34,12 @@ function [dpxd,theRest]=dpxdLoad(filename)
     
     dpxd={};
     theRest=struct;
-    K=load(filename);
+    try
+        K=load(filename);
+    catch me
+        error(['Could not load ' filename '. Is it a DPXD file?']);
+        return;
+    end
     flds=fieldnames(K);
     for i=1:numel(flds)
         thisVar=K.(flds{i});
@@ -52,5 +57,8 @@ function [dpxd,theRest]=dpxdLoad(filename)
         % If there is only one dpxd in the cell array, copy that into a
         % singular dpxds-struct now.
         dpxd=dpxd{1};
+    end
+    if isempty(fieldnames(theRest))
+        theRest=[];
     end
 end

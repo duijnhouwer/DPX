@@ -1,6 +1,9 @@
 function files=jdDpxExpHalfDomeRdkAnalysis(files)
     if nargin==0
         files=dpxUIgetfiles;
+        if isempty(files)
+            return;
+        end
     end
     E={};
     for i=1:numel(files)
@@ -15,17 +18,21 @@ function files=jdDpxExpHalfDomeRdkAnalysis(files)
         clear D;
     end
     E=dpxdMerge(E);
-    E=dpxdSplit(E,'exp_subjectId');
+    E=dpxdSplit(E,'exp_subjectId'); % split per mouse
     C={};
-    for i=1:numel(E)
+    for i=1:numel(E) % for each mouse, get the curves
         C{end+1}=getSpeedCurves(E{i}); %#ok<AGROW>
     end
     % calculate mean traces per mouse (pooled over sessions)
     C=getMeanYawTracesPerMouse(C);
     % add a virtual mouse that is the mean of all others
     C=addMeanMouse(C);
+    % 
+    C=getOffsetPerSecond(C);
     % plot the curves, panel per mouse
     plotTraces(C);
+    % plot the drifts relative to stat
+    plotDriftScatter(C);
 end
 
 
@@ -48,16 +55,17 @@ function C=getSpeedCurves(D)
     if ~dpxdIs(C)
         error('not a valid DPXD!');
     end
+    %- sub function
     function [yaw,time]=getYawTrace(S,interval)
         yaw=cell(1,S.N);
-        for t=1:S.N
-            from=interval(1)+S.rdk_motStartSec(t);
-            till=interval(2)+S.rdk_motStartSec(t);
-            idx=S.resp_mouseBack_tSec{t}>=from & S.resp_mouseBack_tSec{t}<till;
+        for tt=1:S.N
+            from=interval(1)+S.rdk_motStartSec(tt);
+            till=interval(2)+S.rdk_motStartSec(tt);
+            idx=S.resp_mouseBack_tSec{tt}>=from & S.resp_mouseBack_tSec{tt}<till;
             idx=idx(:)'; % make sure is row
-            yaw{t}=mean([S.resp_mouseSideYaw{t}(idx);S.resp_mouseBackYaw{t}(idx)],1);
+            yaw{tt}=mean([S.resp_mouseSideYaw{tt}(idx);S.resp_mouseBackYaw{tt}(idx)],1);
         end
-        time=S.resp_mouseBack_tSec{t}(idx);
+        time=S.resp_mouseBack_tSec{tt}(idx);
         time=time-time(1)+interval(1);
     end
 end
@@ -80,12 +88,13 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
         D.resp_mouseBack_dxPx{t}=D.resp_mouseBack_dxPx{t}+1920;
         D.resp_mouseSide_dxPx{t}=D.resp_mouseSide_dxPx{t}+1920;
     end
-    % Step 3, smooth the data 50 ms running average (3 60-Hz samples)
+    % Step 3, smooth the data N*16.6667 ms running average (3 60-Hz samples is 50 ms)
+    SMOOTHFAC=3;
     for t=1:D.N
-            D.resp_mouseBack_dxPx{t}=smooth(D.resp_mouseBack_dxPx{t},30)';
-            D.resp_mouseBack_dyPx{t}=smooth(D.resp_mouseBack_dyPx{t},30)';
-            D.resp_mouseSide_dxPx{t}=smooth(D.resp_mouseSide_dxPx{t},30)';
-            D.resp_mouseSide_dyPx{t}=smooth(D.resp_mouseSide_dyPx{t},30)';
+            D.resp_mouseBack_dxPx{t}=smooth(D.resp_mouseBack_dxPx{t},SMOOTHFAC)';
+            D.resp_mouseBack_dyPx{t}=smooth(D.resp_mouseBack_dyPx{t},SMOOTHFAC)';
+            D.resp_mouseSide_dxPx{t}=smooth(D.resp_mouseSide_dxPx{t},SMOOTHFAC)';
+            D.resp_mouseSide_dyPx{t}=smooth(D.resp_mouseSide_dyPx{t},SMOOTHFAC)';
     end
     % Step 4, rename the mouse fields that code yaw (these should not
     % change from session to session but to be extra cautious we're gonna
@@ -139,9 +148,14 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
 end
 
 function C=getMeanYawTracesPerMouse(C)
+    % calculate mean traces per mouse (pooled over sessions)
     for i=1:numel(C)
         for v=1:C{i}.N
-            % determine median length of trace, discard the rest
+            % determine median length of trial, discard the trials that have a
+            % different length. This should be rare but it is still better to use the
+            % unequal length averaging. I don't know why that is currently commented
+            % out, i must have had problems with that when i wrote it in Dec-2014. I'll
+            % look into it again if the data is promising enough Jacob, 2015-05-18
             len=[];
             for tr=1:numel(C{i}.yaw{v})
                 len(end+1)=numel(C{i}.yaw{v}{tr});
@@ -155,6 +169,8 @@ function C=getMeanYawTracesPerMouse(C)
                 Y(tr,:)=dpxMakeRow( C{i}.yaw{v}{ok(tr)} );
             end
             C{i}.yawMean{v}=mean(Y,1);
+            C{i}.yawSEM{v}=std(Y,1)/sqrt(size(Y,1));
+            C{i}.yawN{v}=size(Y,1);
             %   C{i}.preStimYawN{v}=n;
             %   C{i}.preStimYawSd{v}=sd;
             %  [mn,n,sd]=dpxMeanUnequalLengthVectors(C{i}.conStimYaw{v},'align','begin');
@@ -183,24 +199,94 @@ end
 
 function plotTraces(C)
     nMice=numel(C);
-    cols='kbbggrr';
-    wid=[1 1.5 1.5 2 2 2.5 2.5];
     for i=1:nMice
         [~,order]=sort(abs(C{i}.speed));
-        subplot(nMice,1,i)
+        subplot(ceil(nMice/3),3,i)
         tel=0;
         for v=order(:)'
             tel=tel+1;
             if C{i}.speed(v)<0
-                lStyle='--'; else lStyle='-';
-            end 
-            N=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-            plot(C{i}.time{v}(1:N),C{i}.yawMean{v}(1:N),'LineStyle',lStyle,'LineWidth',wid(tel),'Color',cols(tel));
-            hold on
+                Nleft=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                leftX=C{i}.time{v}(1:Nleft);
+                leftY=C{i}.yawMean{v}(1:Nleft);
+            elseif C{i}.speed(v)==0
+                Nstat=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                statX=C{i}.time{v}(1:Nstat);
+                statY=C{i}.yawMean{v}(1:Nstat);
+            elseif C{i}.speed(v)>0
+                Nright=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                riteX=C{i}.time{v}(1:Nright);
+                riteY=C{i}.yawMean{v}(1:Nright);
+            end
         end
+        minN=min([Nleft Nstat Nright]);
+        leftX=leftX(1:minN);
+        leftY=leftY(1:minN);
+        statX=statX(1:minN);
+        statY=statY(1:minN);
+        riteX=riteX(1:minN);
+        riteY=riteY(1:minN);
+        plot(leftX,leftY,'LineStyle','-','LineWidth',2,'Color','r');        hold on
+        plot(statX,statY,'LineStyle','-','LineWidth',2,'Color','k');
+        plot(riteX,riteY,'LineStyle','-','LineWidth',2,'Color','b');
+        patch([leftX leftX(end:-1:1)],[statY leftY(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');
+        patch([riteX riteX(end:-1:1)],[statY riteY(end:-1:1)],'b','FaceAlpha',.1,'LineStyle','none');
+        axis tight
+        dpxText(C{i}.mus{1});
         dpxPlotHori;
         dpxPlotVert;
+        xlabel('Time since motion onset (s)');
+        ylabel('Yaw (a.u.)');
     end
     
 end
+
+
+function C=getOffsetPerSecond(C)
+    nMice=numel(C);
+    for i=1:nMice
+        [~,order]=sort(abs(C{i}.speed));
+        tel=0;
+        for v=order(:)'
+            tel=tel+1;
+            if C{i}.speed(v)<0
+                Nleft=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                leftX=C{i}.time{v}(1:Nleft);
+                leftY=C{i}.yawMean{v}(1:Nleft);
+            elseif C{i}.speed(v)==0
+                Nstat=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                statX=C{i}.time{v}(1:Nstat);
+                statY=C{i}.yawMean{v}(1:Nstat);
+            elseif C{i}.speed(v)>0
+                Nright=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
+                riteX=C{i}.time{v}(1:Nright);
+                riteY=C{i}.yawMean{v}(1:Nright);
+            end
+        end
+        minN=min([Nleft Nstat Nright]);
+        leftX=leftX(1:minN);
+        leftY=leftY(1:minN);
+        statX=statX(1:minN);
+        statY=statY(1:minN);
+        riteX=riteX(1:minN);
+        riteY=riteY(1:minN);
+        C{i}.leftDriftPerSecond=sum(leftY-statY)/(statX(end)-statX(1));
+        C{i}.rightDriftPerSecond=sum(riteY-statY)/(statX(end)-statX(1));
+    end    
+end
+
+
+function plotDriftScatter(C)
+    dpxFindFig('DriftScatter');
+    x=[];
+    y=[];
+    for i=1:numel(C)-1 % don't include the pooled mouse
+        x(i)=C{i}.leftDriftPerSecond;
+        y(i)=C{i}.rightDriftPerSecond;
+    end
+    dpxScatStat(x,y,'test','ttest');
+    xlabel('Speed during left - speed during static (a.u/second)');
+    ylabel('Speed during right - speed during static (a.u/second)');
+end
+
 
