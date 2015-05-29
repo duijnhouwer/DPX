@@ -7,6 +7,8 @@ function jdMovieRandomDots(varargin)
     %    % A 4-second movie of a 3.5-pixels per frame leftward grating:
     %    jdMovieRandomDots('dX',-3.5,'frHz',30,'frN',120)
     %
+    % See also: jdMovieToArray
+    %
     % Jacob Duijnhouwer, October 2014
     
     p=inputParser;
@@ -14,13 +16,13 @@ function jdMovieRandomDots(varargin)
     p.addOptional('filename','',@(x)ischar(x) || isempty(x));
     p.addOptional('pxHor',400,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % width of movie
     p.addOptional('pxVer',300,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % height of movie
-    p.addOptional('frN',30,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % number of frames
+    p.addOptional('frN',90,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % number of frames
     p.addOptional('frHz',30,@(x)isnumeric(x) && x>0 && numel(x)==1); % frame rate
     p.addOptional('nDots',500,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % number of dots
     p.addOptional('dX',3,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
     p.addOptional('dY',0,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
     p.addOptional('dotRadiusPx',6,@(x)isnumeric(x) && x>0 && numel(x)==1 && ~mod(x,2)); % dot radius in pixels, must be even!
-    p.addOptional('stepFr',1,@(x)isnumeric(x) && x>0 && numel(x)==1); % number of steps a dot takes befores being refreshed
+    p.addOptional('stepFr',Inf,@(x)isnumeric(x) && x>0 && numel(x)==1); % number of steps a dot takes befores being refreshed
     p.addOptional('coherence',1,@(x)isnumeric(x) && x>=0 && x<=1 && numel(x)==1); % coherent motion fraction
     p.addOptional('revphi',false,@(x)islogical(x) || x==1 || x==0);
     p.addOptional('RGB0',[.5 .5 .5],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb background
