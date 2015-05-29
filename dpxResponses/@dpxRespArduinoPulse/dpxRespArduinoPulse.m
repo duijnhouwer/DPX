@@ -30,12 +30,17 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
             if numel(R.pins)~=numel(R.rewardProb)
                 error('pins and rewardProb arrays don''t correspond');
             end
+            % Initialize the empty response structure
+            R.resp.pinNr=-1;
+            R.resp.sec=-1;
         end
         function myGetResponse(R)
             if IsWin
                 newlinechars=2;
             else
-                warning('Check how many newline char on non-win platforms (i expect 1), fix code, remove this warning');
+                if mod(R.flipCounter,50)==10
+                    warning('Check how many newline char on your non-win platforms (i expect 1), implement in code, remove this warning');
+                end
                 newlinechars=1;
             end
             nBytes=R.ser.BytesAvailable;
@@ -50,8 +55,8 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
                 fromarduino=fread(R.ser,nBytes,'uchar');    
                 fromarduino=char(fromarduino(end-newlinechars));
                 if any(fromarduino==R.pinsChar)
-                    R.resp.char=fromarduino;
-                    R.resp.sec=GetSecs;
+                    R.resp.pinNr=str2double(fromarduino); % one response per trial
+                    R.resp.sec=GetSecs; % one response per trial
                     R.given=true;
                     if rand<R.rewardProb(fromarduino==R.pinsChar)
                         %disp('REWARD');
@@ -65,10 +70,6 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
                         R.redoTrial=R.redoTrialIfWrong;
                     end
                 end
-            else
-                R.resp.char='';
-                R.resp.sec=[];
-                R.given=false;
             end
         end
         function myClear(R)
