@@ -1,2 +1,4 @@
 ##DPX: _An Experiment Preparation System_
-See <http://duijnhouwer.github.io/DPX/>
+
+For information and installation instructions, see
+<http://duijnhouwer.github.io/DPX/>
