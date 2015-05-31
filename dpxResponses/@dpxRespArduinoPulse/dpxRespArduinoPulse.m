@@ -32,7 +32,7 @@ classdef dpxRespArduinoPulse < dpxAbstractResp
             end
             % Initialize the empty response structure
             R.resp.pinNr=-1;
-            R.resp.sec=-1;
+            R.resp.sec=-Inf;
         end
         function myGetResponse(R)
             if IsWin
