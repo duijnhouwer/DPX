@@ -2,6 +2,7 @@ classdef dpxStimDynDotQrt < dpxAbstractStim
     
     properties (Access=public)
         flashSec;
+        pwmFrac;
         diamsDeg;
         RGBAsFrac;
         oriDeg;
@@ -23,11 +24,17 @@ classdef dpxStimDynDotQrt < dpxAbstractStim
             % Type: get(dpxStimDynDotQrt) for more info
             % Type: edit dpxStimDynDotQrt for full info
             %
-            % Note: bottomLeftTopRightFirst nomemclature is based on
-            % oriDeg=0 orientation with both wDeg and hDeg positive.
+            % Note: bottomLeftTopRightFirst nomemclature is based on oriDeg=0
+            % orientation with both wDeg and hDeg positive.
             %
             % Jacob Duijnhouwer, 2014-09-08
+            %
+            % 2015-05-31: Added 'pwmFrac' property. For pulse width modulation. Default
+            % 1: behavior identical to before addition. If, for example, .75, then
+            % final 25% of flash will be invisible;
+            
             S.flashSec=.25;
+            S.pwmFrac=1; 
             S.diamsDeg=[1 1 1 1];
             S.RGBAsFrac={[1 1 1 1],[1 1 1 1],[1 1 1 1],[1 1 1 1]};
             S.oriDeg=0;
@@ -86,9 +93,20 @@ classdef dpxStimDynDotQrt < dpxAbstractStim
         function myStep(S)
             S2F=S.scrGets.measuredFrameRate;
             S.flipInCycle=S.flipInCycle+1;
-            S.showOddPair=S.flipInCycle<round(S.flashSec*S2F);
-            if S.flipInCycle>=round(S.flashSec*2*S2F)
+            if S.flipInCycle>round(S.flashSec*2*S2F)
                 S.flipInCycle=0;
+            end
+            S.showOddPair=S.flipInCycle<round(S.flashSec*S2F);
+            %
+            % Do the Pulse Width Modulation stuff (added 2015-5-31)
+            if S.flipInCycle>round(S.flashSec*S.pwmFrac*S2F) && S.showOddPair
+                % this is the final, blocked out part of flash1
+                S.visible=false;
+            elseif S.flipInCycle>round((S.flashSec+S.flashSec*S.pwmFrac)*S2F) && ~S.showOddPair
+                % this is the final, blocked out part of flash2
+                S.visible=false;
+            else
+                S.visible=true; 
             end
         end
     end
@@ -98,6 +116,13 @@ classdef dpxStimDynDotQrt < dpxAbstractStim
                  S.antiJump=value;
             else
                 error('antiJump must be logical (true or false)');
+            end
+        end
+        function set.pwmFrac(S,value)
+            if isnumeric(value) && value>=0 && value<=1
+               S.pwmFrac=value; 
+            else
+                error('pwmFrac must be a number between 0 and 1');
             end
         end
     end
