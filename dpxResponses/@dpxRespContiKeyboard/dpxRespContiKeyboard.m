@@ -67,7 +67,7 @@ classdef dpxRespContiKeyboard < dpxAbstractResp
                     % to the caller function
                     R.nResponses=R.nResponses+1;
                     R.resp.keyName{1}=strtrim([ R.resp.keyName{1} ' ' R.kbName ]);
-                    R.resp.keySec{1}(R.nResponses)=keyTime; % fake precission, in reality limited to flip rate!
+                    R.resp.keySec{1}(R.nResponses)=keyTime; % overly precise, in reality limited to flip rate!
                     R.resp.keyFlip{1}(R.nResponses)=R.flipCounter; % (slightly) more complicated to analyse
                     R.resp.keyReleaseSec{1}(R.nResponses)=NaN; % not released yet (note: may not happen ...
                     R.resp.keyReleaseFlip{1}(R.nResponses)=NaN; % ... before end of trial so could remain NaN)

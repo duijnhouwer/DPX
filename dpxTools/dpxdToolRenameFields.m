@@ -139,9 +139,6 @@ function askToMakeBackups(files)
             [~,fname,ext]=fileparts(files{i});
             copyfile(files{i},fullfile(foldername,[fname ext]));
         end
-    else
-        disp('User canceled');
-        return;
     end
 end
 
