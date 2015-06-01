@@ -22,6 +22,7 @@ function dpxdToolRenameFields(old,new)
         files={files};
     end
     [old,new]=expandWildCardFields(files,old,new);
+    [old,new]=checkInput(old,new);
     checkThatNoneOfTheNewNamesAreAlreadyInTheDPXD(new,files)
     askToMakeBackups(files);
     replaceTheFields(files,old,new);
@@ -129,8 +130,8 @@ end
 
 function askToMakeBackups(files)
     qst='The files you select will be updated and overwritten. This cannot be undone.\nDo you want to make backup copies first?';
-    f=questdlg(qst, 'dpxdToolRenameFields: Create backups first?', 'Select backup folder...','Cancel','Cancel');
-    if ~strcmpi(f,'Cancel')
+    f=questdlg(qst, 'dpxdToolRenameFields: Create backups first?', 'Select backup folder...','Continue without backup','Select backup folder...');
+    if strcmpi(f,'Select backup folder...')
         foldername=uigetdir(pwd,'Select (or create) a folder to make backup copies of the selected DPXDs in');
         for i=1:numel(files)
             [~,fname,ext]=fileparts(files{i});
