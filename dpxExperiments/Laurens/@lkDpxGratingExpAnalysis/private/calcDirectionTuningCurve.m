@@ -34,7 +34,7 @@ function tc=getCurve(dpxd,cellNr,varargin)
     % Ds is the DPXD called 'dpxd' split up in a DPXD per direction (so
     % numel Ds would typically be 8). Ns is an array corrsponding to Ds
     % that contains the N of each DPXD in Ds
-    [Ds,Ns]=dpxdSplit(dpxd,'grating_dirDeg');
+    [Ds,Ns]=dpxdSplit(dpxd,'test_dirDeg');
     % Preallocate the list of directions ...
     dirDeg=NaN(1,numel(Ds));
     % Preallocate the table of responses
@@ -43,15 +43,15 @@ function tc=getCurve(dpxd,cellNr,varargin)
     dfofField=['resp_unit' num2str(cellNr,'%.3d') '_dFoF']; % e.g., if cellNr is 1, 'resp_unit001_dFoF'
     timeField=['resp_unit' num2str(cellNr,'%.3d') '_s']; % e.g., if cellNr is 1, 'resp_unit001_s'
     for i=1:numel(Ds) % loop over all directions
-        dirDeg(i)=Ds{i}.grating_dirDeg(1); % store this direction in degrees
+        dirDeg(i)=Ds{i}.test_dirDeg(1); % store this direction in degrees
         for t=1:Ds{i}.N
             % Get the dFoF trace of the entire t'th trial for this direction
             tSeries=Ds{i}.(dfofField){t};
             % Get the corresponding time axis
             tAxis=Ds{i}.(timeField){t};
             % Use tAxit to limit trace to the time the stim was on
-            from=Ds{i}.grating_onSec(t);
-            to=from+Ds{i}.grating_durSec(t);
+            from=Ds{i}.test_onSec(t);
+            to=from+Ds{i}.test_durSec(t);
             tSeries=tSeries(tAxis>=from & tAxis<to);
             % Store the mean of this segment, i.e., reduce trail's response to a single value
             dfof(t,i)=nanmean(tSeries); % nanmean because it ignores NaN's

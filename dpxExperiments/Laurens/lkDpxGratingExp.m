@@ -40,7 +40,7 @@ function lkDpxGratingExp
                     C.durSec=stimSec+isiSec;           
                     %
                     G=dpxStimGrating;
-                    G.name='grating';
+                    G.name='test';
                     G.wDeg=65;
                     G.dirDeg=direc;
                     G.cyclesPerSecond=tf;

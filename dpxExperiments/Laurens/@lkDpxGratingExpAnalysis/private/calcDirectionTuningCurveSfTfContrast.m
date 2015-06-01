@@ -20,12 +20,12 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
     tc={};
     splitidx=0;
     %keyboard
-    C=dpxdSplit(dpxd,'grating_contrastFrac');
+    C=dpxdSplit(dpxd,'test_contrastFrac');
     
     for c=1:numel(C)
-        CS=dpxdSplit(C{c},'grating_cyclesPerDeg');
+        CS=dpxdSplit(C{c},'test_cyclesPerDeg');
         for s=1:numel(CS)
-            CST=dpxdSplit(CS{s},'grating_cyclesPerSecond');
+            CST=dpxdSplit(CS{s},'test_cyclesPerSecond');
             for t=1:numel(CST)
                 KK=calcDirectionTuningCurve(CST{t},cellNr,varargin{:}); % KK = Komplete+Komponents
                 % Since february 2015 or so calcDirectionTuningCurve returns a cell-array
@@ -36,9 +36,9 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
                 splitidx=splitidx+1;
                 for iKK=1:numel(KK)
                     tc{iKK}{splitidx}=KK{iKK}; %#ok<AGROW>
-                    tc{iKK}{splitidx}.contrast=CST{t}.grating_contrastFrac(1); %#ok<AGROW>
-                    tc{iKK}{splitidx}.SF=CST{t}.grating_cyclesPerDeg(1);
-                    tc{iKK}{splitidx}.TF=CST{t}.grating_cyclesPerSecond(1);
+                    tc{iKK}{splitidx}.contrast=CST{t}.test_contrastFrac(1); %#ok<AGROW>
+                    tc{iKK}{splitidx}.SF=CST{t}.test_cyclesPerDeg(1);
+                    tc{iKK}{splitidx}.TF=CST{t}.test_cyclesPerSecond(1);
                 end
             end
         end
