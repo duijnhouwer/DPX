@@ -21,11 +21,16 @@ function dpxdToolRenameFields(old,new)
     elseif ischar(files)
         files={files};
     end
+    isDpxd=dpxdIsFile(files);
+    if sum(~isDpxd)>0
+        warning([num2str(sum(~isDpxd)) ' of the ' num2str(numel(isDpxd)) ' files you selected were not DPXD files. They will be ignored']);
+        files=files(isDpxd);
+    end
     [old,new]=expandWildCardFields(files,old,new);
     [old,new]=checkInput(old,new);
     checkThatNoneOfTheNewNamesAreAlreadyInTheDPXD(new,files)
     askToMakeBackups(files);
-    replaceTheFields(files,old,new);
+    replaceTheFieldsAndSave(files,old,new);
     disp('Done.');
 end
 
@@ -34,9 +39,10 @@ function checkThatNoneOfTheNewNamesAreAlreadyInTheDPXD(new,files)
     err='';
     for idxf=1:numel(files)
         try
-            dpxd=dpxdLoad(files{idxf});
+            [dpxd,theRest]=dpxdLoad(files{idxf});
         catch me
-            rethrow(me);
+            disp(me.message); % probably not a DPXD file
+            continue; % with next file
         end
         F=fieldnames(dpxd);
         for in=1:numel(new)
@@ -53,14 +59,15 @@ function checkThatNoneOfTheNewNamesAreAlreadyInTheDPXD(new,files)
 end
 
 
-function replaceTheFields(files,old,new)
-    for idxf=1:numel(files)
-        [~,fname,ext]=fileparts(files{idxf});
-        disp(['Renaming fields in file ' num2str(idxf) '/' num2str(numel(files)) ': ''' [fname ext] '''.' ]);
+function replaceTheFieldsAndSave(files,old,new)
+    for i=1:numel(files)
+        [~,fname,ext]=fileparts(files{i});
+        disp(['Renaming fields in file ' num2str(i) '/' num2str(numel(files)) ': ''' [fname ext] '''.' ]);
         try
-            [dpxd,theRest]=dpxdLoad(files{idxf});
+            [dpxd,theRest]=dpxdLoad(files{i});
         catch me
-            rethrow(me);
+            disp(me.message); % probably not a DPXD file
+            continue; % with next file
         end
         % rename the old into the new
         for oi=1:numel(old)
@@ -69,9 +76,9 @@ function replaceTheFields(files,old,new)
         end
         % save the updated datafile
         if ~isempty(theRest)
-            save(files{idxf},'dpxd','theRest');
+            save(files{i},'dpxd','theRest');
         else
-            save(files{idxf},'dpxd');
+            save(files{i},'dpxd');
         end
     end
 end
@@ -106,11 +113,12 @@ function [old,new]=expandWildCardFields(files,old,new)
     oldExpandedFields={};
     newExpandedFields={};
     for i=1:numel(files)
-        % try
-        dpxd=dpxdLoad(files{i});
-        % catch me
-        %      rethrow(me);
-        % end
+        try
+            dpxd=dpxdLoad(files{i});
+        catch me
+            disp(me.message); % probably not a DPXD file 
+            continue; % with next file 
+        end
         F=fieldnames(dpxd);
         for w=1:numel(wildcardfieldsOld)
             beginstrOld=wildcardfieldsOld{w}(1:end-1);
@@ -119,7 +127,7 @@ function [old,new]=expandWildCardFields(files,old,new)
             eOld=F(matchIdx);
             eNew=cell(size(eOld));
             for ee=1:numel(eOld)
-                eNew{ee}=[beginstrNew eOld{ee}(numel(beginstrOld):end)];
+                eNew{ee}=[beginstrNew eOld{ee}(numel(beginstrOld)+1:end)];
             end
             oldExpandedFields={oldExpandedFields{:} eOld{:}}'; %#ok<CCAT>
             newExpandedFields={newExpandedFields{:} eNew{:}}'; %#ok<CCAT>
@@ -129,6 +137,8 @@ function [old,new]=expandWildCardFields(files,old,new)
     new(isWildCard)=[];
     old={old{:} oldExpandedFields{:}}';
     new={new{:} newExpandedFields{:}}';
+    old=unique(old);
+    new=unique(new);
 end
 
 

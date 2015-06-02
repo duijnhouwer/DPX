@@ -37,8 +37,8 @@ function [dpxd,theRest]=dpxdLoad(filename)
     try
         K=load(filename);
     catch me
+        disp(me.message);
         error(['Could not load ' filename '. Is it a DPXD file?']);
-        return;
     end
     flds=fieldnames(K);
     for i=1:numel(flds)
@@ -48,6 +48,9 @@ function [dpxd,theRest]=dpxdLoad(filename)
         else
             theRest.(flds{i})=thisVar;
         end
+    end
+    if isempty(dpxd)
+        error(['The file ''' filename ''' did not contain a DPXD structure']);
     end
     if numel(dpxd)==1
         % multiple dpxd structs will end up in a cell array, but as of
