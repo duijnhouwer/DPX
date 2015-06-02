@@ -1,4 +1,3 @@
-
 function agDpxExpDDQaspectRatio
     
     dpxDispFancy('Make sure only one keyboard is connected!','!',2,2);
@@ -9,10 +8,10 @@ function agDpxExpDDQaspectRatio
     E.expName='agDpxExpDDQaspectRatio';
     E.startKey='UpArrow'
     
-    E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
+    E.outputFolder='/Users/iMac_2Photon/Desktop/AhmedData';
     testscr=[20 20 800 600];
     % Use E.scr.gui to bring up the gui to set the screen properties
-    E.scr.set('winRectPx',testscr,'widHeiMm',[400 300], ...
+    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',4); % Generated using dpxToolStimWindowGui on 2014-09-29
     %[0+1680 0 1280+1680 960]
@@ -25,7 +24,7 @@ function agDpxExpDDQaspectRatio
     for ar=aRatio
         for fs=flashSec
             for b=bottomLeftTopRightFirst;
-                for ddqRightFromFix=[0]
+                for ddqRightFromFix=[-15]
                 
                 C=dpxCoreCondition;
                 C.durSec=36000;
@@ -63,9 +62,9 @@ function agDpxExpDDQaspectRatio
             end
         end
     end
-    E.nRepeats=10;
+    E.nRepeats=15;
     nTrials=numel(E.conditions)*E.nRepeats;
-    expectedSecs=nTrials*(.5+.02);
+    expectedSecs=nTrials*(.5+.2);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
     E.run;
     

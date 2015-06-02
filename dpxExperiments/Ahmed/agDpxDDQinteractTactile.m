@@ -13,14 +13,14 @@ function agDpxDDQinteractTactile
     javaaddpath(which('BrainMidi.jar'));
     
     
-    durS=60*2 ;
+    durS=62.5*2 ;
     flashSec=.5; %the alternative is 1 sec
     ddqWid=4;
     for dotSize=1
         for ddqRightFromFix=[0]
-            for ddqHei=ddqWid * [1.2]%it is the point of subjective equality
+            for ddqHei=ddqWid * [1.3]%it is the point of subjective equality
                 for ori=0
-                    for bottomLeftTopRightFirst=[true]
+                    for bottomLeftTopRightFirst=[false]
                         for antiJump=false
                             if ddqHei==ddqWid && antiJump
                                 continue;
@@ -102,7 +102,7 @@ function agDpxDDQinteractTactile
             end
         end
     end
-    E.nRepeats=2;
+    E.nRepeats=5;
     nTrials=numel(E.conditions)*E.nRepeats;
     expectedSecs=nTrials*(durS);
     dpxDispFancy(['This experiment is expected to take about ' dpxSeconds2readable(expectedSecs) '.']);
