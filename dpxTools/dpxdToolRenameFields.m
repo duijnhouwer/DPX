@@ -1,13 +1,13 @@
 function dpxdToolRenameFields(old,new)
     
     % dpxdToolRenameFields(old,new)
-    % 
+    %
     % Rename structure fields in DPXDs. A file selector will open. old and new
     % are string or a cell array of strings corresponding to the old and the
     % new fieldnames. old and new should be of equal length, it's a 1-to-1
     % mapping. The field names can end with a wildcard ('*'), the matching part
     % (only beginning at the time of writing) will be replaced with the
-    % corresponding parts in new. 
+    % corresponding parts in new.
     %
     % EXAMPLE:
     %   dpxdToolRenameFields('grating_*','test_*');
@@ -27,57 +27,6 @@ function dpxdToolRenameFields(old,new)
     askToMakeBackups(files);
     replaceTheFields(files,old,new);
     disp('Done.');
-end
-
-
-function [old,new]=checkInput(old,new)
-    % make cell
-    if ischar(old)
-        old={old};
-    end
-    if ischar(new)
-        new={new};
-    end
-    % check unique names per old and new
-    n=numel(old);
-    old=unique(old,'stable');
-    if n~=numel(old)
-        error('old field names should be unique');
-    end
-    n=numel(new);
-    new=unique(new,'stable');
-    if n~=numel(new)
-        error('new field names should be unique');
-    end
-    % check all uniques names across old and new, this function can't be used
-    % to swap fieldnames, at least not in one step. it can be achieved in
-    % multiple steps with a temporary dummy field name
-    if numel(old)+numel(new)~=numel(unique([old new]))
-        error('field names can not occur in old and in new. if you want to swap fieldnames you''ll need an intermediate dummy-name in a two step process');
-    end
-    % check all are strings
-    if ~all(cellfun(@ischar,old))
-        error('old field names should all be strings');
-    end
-    if ~all(cellfun(@ischar,new))
-        error('new field names should all be strings');
-    end
-    % check numbers match
-    if numel(old)~=numel(new)
-        error('Number of old and new field names should correspond');
-    end
-    % check that if there are wildcards they are at the end of the string
-    for i=1:numel(old)
-        if any(old{i}=='*')
-            if old{i}(end)~='*'
-                error(['Old field ''' old{i} ''' contains a wildcard, but they can only be used at the end of the string'])
-            end
-            if new{i}(end)~='*'
-                error(['Old field ''' old{i} ''' ends with a wildcard, but the corresponding new field doesn''t'])
-            end
-        end
-    end
-    
 end
 
 
@@ -146,8 +95,10 @@ end
 function [old,new]=expandWildCardFields(files,old,new)
     isWildCard=false(size(old));
     for i=1:numel(old)
-        if old{i}(end)=='*';
+        if old{i}(end)=='*' && new{i}(end)=='*'
             isWildCard(i)=true;
+        elseif old{i}(end)=='*' && new{i}(end)~='*' || old{i}(end)~='*' && new{i}(end)=='*'
+            error('When using wildcards, both corresponding old and new fields need to end with a asterisk (*)');
         end
     end
     wildcardfieldsOld=old(isWildCard);
@@ -155,11 +106,11 @@ function [old,new]=expandWildCardFields(files,old,new)
     oldExpandedFields={};
     newExpandedFields={};
     for i=1:numel(files)
-       % try
-            dpxd=dpxdLoad(files{i});
-       % catch me
-      %      rethrow(me);
-       % end
+        % try
+        dpxd=dpxdLoad(files{i});
+        % catch me
+        %      rethrow(me);
+        % end
         F=fieldnames(dpxd);
         for w=1:numel(wildcardfieldsOld)
             beginstrOld=wildcardfieldsOld{w}(1:end-1);
@@ -173,10 +124,83 @@ function [old,new]=expandWildCardFields(files,old,new)
             oldExpandedFields={oldExpandedFields{:} eOld{:}}'; %#ok<CCAT>
             newExpandedFields={newExpandedFields{:} eNew{:}}'; %#ok<CCAT>
         end
-    end  
+    end
     old(isWildCard)=[];
     new(isWildCard)=[];
- 	old={old{:} oldExpandedFields{:}}';
+    old={old{:} oldExpandedFields{:}}';
     new={new{:} newExpandedFields{:}}';
 end
+
+
+
+function [old,new]=checkInput(old,new)
+    % make cell
+    if ischar(old)
+        old={old};
+    end
+    if ischar(new)
+        new={new};
+    end
+    % check unique names per old and new
+    n=numel(old);
+    old=unique(old,'stable');
+    if n~=numel(old)
+        error('old field names should be unique');
+    end
+    n=numel(new);
+    new=unique(new,'stable');
+    if n~=numel(new)
+        error('new field names should be unique');
+    end
+    % check if number of old and new fields match
+    if numel(old)~=numel(new)
+        error('Number of old and new field names should correspond');
+    end
+    % check all uniques names across old and new, this function can't be used
+    % to swap fieldnames, at least not in one step. it can be achieved in
+    % multiple steps with a temporary dummy field name
+    if numel(old)+numel(new)~=numel(unique([old new]))
+        error('field names can not occur in old and in new. if you want to swap fieldnames you''ll need an intermediate dummy-name in a two step process');
+    end
+    % check all are strings
+    if ~all(cellfun(@ischar,old))
+        error('old field names should all be strings');
+    end
+    if ~all(cellfun(@ischar,new))
+        error('new field names should all be strings');
+    end
+    % check all strings have non zeros length
+    if any(cellfun(@numel,old)==0)
+        error('old field names should have non-zero length, no empty strings allowed');
+    end
+    if any(cellfun(@numel,new)==0)
+        error('new field names should have non-zero length, no empty strings allowed');
+    end
+    % check all strings are free of whitespaces
+    if any(cellfun(@(x)any(isspace(x)),old))
+        error('old field names may not contain whitespace');
+    end
+    if any(cellfun(@(x)any(isspace(x)),new))
+        error('new field names may not contain whitespace');
+    end
+    % check all strings are free of periods
+    if any(cellfun(@(x)any(strfind(x,'.')),old))
+        error('old field names may not contain periods (.)');
+    end
+    if any(cellfun(@(x)any(strfind(x,'.')),new))
+        error('new field names may not contain periods (.)');
+    end
+    % check that if there are wildcards they are at the end of the string
+    for i=1:numel(old)
+        if any(old{i}=='*')
+            if old{i}(end)~='*'
+                error(['Old field ''' old{i} ''' contains a wildcard, but they can only be used at the end of the string'])
+            end
+            if new{i}(end)~='*'
+                error(['Old field ''' old{i} ''' ends with a wildcard, but the corresponding new field doesn''t'])
+            end
+        end
+    end
+end
+
 
