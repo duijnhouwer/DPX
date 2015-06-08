@@ -23,7 +23,7 @@ function A=jdMovieToArray(filename)
         A=nan(obj.Height,obj.Width, 1 ,floor(obj.duration*obj.FrameRate));
     end
     fr=0;
-    while obj.CurrentTime<1
+    while obj.CurrentTime<obj.duration
         fr=fr+1;
         A(:,:,:,fr)=obj.readFrame;
     end
