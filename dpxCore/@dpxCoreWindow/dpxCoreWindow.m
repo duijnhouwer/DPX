@@ -107,6 +107,10 @@ classdef dpxCoreWindow < hgsetget
             % color is completely translucent (alpha==0)
             if ~isempty(W.windowPtr) && W.backRGBA(4)>0
                 Screen('FillRect',W.windowPtr,W.backRGBA*W.whiteIdx);
+                % note that clearing the entire window will set the background color of the
+                % window to the clear color, ie., future Screen('Flip') commands will clear
+                % to the new background clear color specified in Screen('FillRect').
+                % (http://docs.psychtoolbox.org/FillRect)
             end
         end
         function close(W)

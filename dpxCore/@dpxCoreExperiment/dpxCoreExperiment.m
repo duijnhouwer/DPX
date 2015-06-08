@@ -93,6 +93,7 @@ classdef dpxCoreExperiment < hgsetget
                     if numel(CC.overrideBackRGBA)==4
                         defaultBackRGBA=E.scr.backRGBA;
                         E.scr.backRGBA=CC.overrideBackRGBA;
+                        E.scr.clear;
                     end
                     % If there are any conduits added to the experiment, iterate over them now
                     % and update the condition settings according to how the conduit is defined

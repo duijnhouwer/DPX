@@ -23,11 +23,12 @@ function files=jdDpxExpHalfDomeRdkAnalysis(files)
     for i=1:numel(E) % for each mouse, get the curves
         C{end+1}=getSpeedCurves(E{i}); %#ok<AGROW>
     end
+    plotAllYawToCheckClipping(C);
     % calculate mean traces per mouse (pooled over sessions)
     C=getMeanYawTracesPerMouse(C);
     % add a virtual mouse that is the mean of all others
     C=addMeanMouse(C);
-    % 
+    %
     C=getOffsetPerSecond(C);
     % plot the curves, panel per mouse
     plotTraces(C);
@@ -37,18 +38,24 @@ end
 
 
 function C=getSpeedCurves(D)
-    S{1}=dpxdSubset(D,D.rdk_aziDps<0);
-    S{2}=dpxdSubset(D,D.rdk_aziDps==0);
-    S{3}=dpxdSubset(D,D.rdk_aziDps>0);
+    if false
+        S{1}=dpxdSubset(D,D.rdk_aziDps<0);
+        S{2}=dpxdSubset(D,D.rdk_aziDps==0);
+        S{3}=dpxdSubset(D,D.rdk_aziDps>0);
+    elseif true
+        S{1}=dpxdSubset(D,D.rdk_aziDps==-10|D.rdk_aziDps==-40);
+        S{2}=dpxdSubset(D,D.rdk_aziDps==0);
+        S{3}=dpxdSubset(D,D.rdk_aziDps==10|D.rdk_aziDps==40);
+    end
     C.speed=[];
     for i=1:numel(S)
         C.speed(i)=S{i}.rdk_aziDps(1);
         C.mus{i}=S{i}.exp_subjectId{1};
         preStimYaw=getYawTrace(S{i},[-.5 0]);
-        [C.yaw{i},C.time{i}]=getYawTrace(S{i},[-.5 2]);
+        [C.yawRaw{i},C.time{i}]=getYawTrace(S{i},[-.5 2]);
         % subtract the baseline speed
         for t=1:numel(preStimYaw)
-            C.yaw{i}{t}=C.yaw{i}{t}-nanmean(preStimYaw{t});
+            C.yaw{i}{t}=C.yawRaw{i}{t}-nanmean(preStimYaw{t});
         end
     end
     C.N=numel(C.speed);
@@ -91,10 +98,10 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
     % Step 3, smooth the data N*16.6667 ms running average (3 60-Hz samples is 50 ms)
     SMOOTHFAC=3;
     for t=1:D.N
-            D.resp_mouseBack_dxPx{t}=smooth(D.resp_mouseBack_dxPx{t},SMOOTHFAC)';
-            D.resp_mouseBack_dyPx{t}=smooth(D.resp_mouseBack_dyPx{t},SMOOTHFAC)';
-            D.resp_mouseSide_dxPx{t}=smooth(D.resp_mouseSide_dxPx{t},SMOOTHFAC)';
-            D.resp_mouseSide_dyPx{t}=smooth(D.resp_mouseSide_dyPx{t},SMOOTHFAC)';
+        D.resp_mouseBack_dxPx{t}=smooth(D.resp_mouseBack_dxPx{t},SMOOTHFAC)';
+        D.resp_mouseBack_dyPx{t}=smooth(D.resp_mouseBack_dyPx{t},SMOOTHFAC)';
+        D.resp_mouseSide_dxPx{t}=smooth(D.resp_mouseSide_dxPx{t},SMOOTHFAC)';
+        D.resp_mouseSide_dyPx{t}=smooth(D.resp_mouseSide_dyPx{t},SMOOTHFAC)';
     end
     % Step 4, rename the mouse fields that code yaw (these should not
     % change from session to session but to be extra cautious we're gonna
@@ -191,13 +198,14 @@ function C=addMeanMouse(C)
     for v=1:C{end}.N
         Y={};
         for i=1:numel(C)
-           Y{end+1}=C{i}.yawMean{v}; %#ok<AGROW>
+            Y{end+1}=C{i}.yawMean{v}; %#ok<AGROW>
         end
         C{end}.yawMean{v}=dpxMeanUnequalLengthVectors(Y);
     end
 end
 
 function plotTraces(C)
+    findfig('TheWayOfTheMouse');
     nMice=numel(C);
     for i=1:nMice
         [~,order]=sort(abs(C{i}.speed));
@@ -272,7 +280,7 @@ function C=getOffsetPerSecond(C)
         riteY=riteY(1:minN);
         C{i}.leftDriftPerSecond=sum(leftY-statY)/(statX(end)-statX(1));
         C{i}.rightDriftPerSecond=sum(riteY-statY)/(statX(end)-statX(1));
-    end    
+    end
 end
 
 
@@ -288,5 +296,26 @@ function plotDriftScatter(C)
     xlabel('Speed during left - speed during static (a.u/second)');
     ylabel('Speed during right - speed during static (a.u/second)');
 end
+
+
+function plotAllYawToCheckClipping(C)
+    findfig('YawBreaker');
+    for i=1:numel(C)
+        subplot(ceil(numel(C)/5),5,i);
+        for s=1:numel(C{i}.yawRaw)
+            for t=1:numel(C{i}.yawRaw{s})
+                plot(C{i}.yawRaw{s}{t}(1:2:end),'Color',[0 0 0 .01]);
+                hold on;
+            end
+        end
+        jdYaxis(-1080/2,1080/2);
+        jdPlotHori(500,'r-');
+        jdPlotHori(-500,'r-');
+    end
+end
+
+
+
+
 
 

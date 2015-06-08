@@ -96,5 +96,20 @@ classdef dpxRespKeyboard < dpxAbstractResp
             end
             S.redoTrialIfWrong=value;
         end
+        function set.kbNames(S,value)
+            if ~ischar(value)
+                error('kbNames should be string (e.g., ''LeftArrow,RightArrow'')');
+            end
+            value(isspace(value))=[];% remove any whitespace;
+            S.kbNames=value;
+        end  
+        function set.correctKbNames(S,value)
+            if ~ischar(value)
+                error('correctKbNames should be string (e.g., ''LeftArrow'')');
+            end
+            value(isspace(value))=[];% remove any whitespace;
+            S.correctKbNames=value;
+        end  
+        
     end
 end
