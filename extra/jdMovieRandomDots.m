@@ -30,7 +30,7 @@ function jdMovieRandomDots(varargin)
     p.addOptional('RGB0',[.5 .5 .5],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb background
     p.addOptional('RGB1',[0 0 0],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 1
     p.addOptional('RGB2',[1 1 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
-    p.addOptional('aaPx',4,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by oversampling the frames followed by linear downscaling. 0 means no anti-aliasing, 4 is a sensible value
+    p.addOptional('aaPx',8,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by oversampling the frames followed by linear downscaling. 0 means no anti-aliasing, 8 is a sensible value
     p.addOptional('verbosity_',1,@(x)any(x==[0 1 2]) && numel(x)==1); % verbosity level (disp), _ denotes don't include in auto-filename
     p.parse(varargin{:});
     p=p.Results;
@@ -146,7 +146,7 @@ function [M,rdk]=drawFrame(f,p,rdk)
             % fully random
             rdk.age=floor(rand(p.nDots,1)*p.stepFr); % 0s 1s 2s ... (nStepFr-1)s
             rdk.dirGroup=ceil(rand(p.nDots,1)*numel(p.deltaDeg)); % 1s and 2s
-            rdk.colorGroup=ceil(rand(p.nDots,1)*(1+all(p.RGB1==p.RGB2))); % 1s and 2s
+            rdk.colorGroup=ceil(rand(p.nDots,1)*(1+~all(p.RGB1==p.RGB2))); % 1s and 2s
         end
     else
         if p.stepFr>=0 && ~isinf(p.stepFr)
