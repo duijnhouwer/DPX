@@ -1,31 +1,31 @@
 function jdSpeedContrast
     
     
-    [speedDomain,targetResp]=rodmanAlbrightData('6A');
+    [speedDomain,targetResp]=getRodmanAlbright1987Data('6A');
     rodmanAlbright1987;
-
+    
 end
 
 function rodmanAlbright1987
     findfig('RodmanAlbright');
     clf;
     %
-    [speedDomain,targetResp]=rodmanAlbrightData('6A');
+    [speedDomain,targetResp]=getRodmanAlbright1987Data('6A');
     out=fitSimpleToData(speedDomain,targetResp);
     plotDataAndFit(speedDomain,targetResp,out,[2 4 1]);
     %
-    [speedDomain,targetResp]=rodmanAlbrightData('6B');
+    [speedDomain,targetResp]=getRodmanAlbright1987Data('6B');
     out=fitSimpleToData(speedDomain,targetResp);
     plotDataAndFit(speedDomain,targetResp,out,[2 4 2]);
     %
-    [speedDomain,targetResp]=rodmanAlbrightData('7A');
+    [speedDomain,targetResp]=getRodmanAlbright1987Data('7A');
     out=fitSimpleToData(speedDomain,targetResp);
     plotDataAndFit(speedDomain,targetResp,out,[2 4 3]);
     %
-    [speedDomain,targetResp]=rodmanAlbrightData('7B');
+    [speedDomain,targetResp]=getRodmanAlbright1987Data('7B');
     out=fitSimpleToData(speedDomain,targetResp);
     plotDataAndFit(speedDomain,targetResp,out,[2 4 4]);
-
+    
 end
 
 function [R,X,I]=speedResponseSimple(varargin)
@@ -45,9 +45,9 @@ function [R,X,I]=speedResponseSimple(varargin)
     dom=p.Results.domainDps;
     X=normpdf(dom,p.Results.Xoff,p.Results.Xsig);
     
-   %   X=normpdf(dom, 0 ,p.Results.Xsig);
-      
-      
+    %   X=normpdf(dom, 0 ,p.Results.Xsig);
+    
+    
     I=normpdf(dom,-p.Results.Xoff,p.Results.Isig);
     X=X./sum(X);
     I=I./sum(I);
@@ -102,7 +102,7 @@ function out=fitSimpleToData(speedDomain,targetResp)
     %
     % Set sensible estimated and boundaries
     maxS=max(speedDomain);
-    minS=min(speedDomain);
+    minS=-max(speedDomain); % force symmetric domain even if data [1 ... fast]
     %
     XsigEst=maxS/3;
     XoffEst=speedDomain(find(targetResp==max(targetResp),1));
@@ -111,7 +111,7 @@ function out=fitSimpleToData(speedDomain,targetResp)
     RoEst=min(targetResp(:));
     AEst=max(targetResp(:));
     EST=[ XsigEst XoffEst IsigEst  IgainEst  RoEst AEst ];
-    LOB=[ 25      0       25       eps       -100  eps  ];
+    LOB=[ 10      0       10       eps       -100  eps  ];
     UPB=[ maxS*10 maxS*2  maxS*10  10        100   100  ];
     %
     % Run the fit in a loop with different starting values, choose the best R2
@@ -123,7 +123,7 @@ function out=fitSimpleToData(speedDomain,targetResp)
         if i>1
             EST=LOB+rand(size(LOB)).*(UPB-LOB);
         end
-        [FIT,~,residual] = lsqcurvefit(@fitFunc, EST, speedDomain, targetResp, LOB, UPB, options);  
+        [FIT,~,residual] = lsqcurvefit(@fitFunc, EST, speedDomain, targetResp, LOB, UPB, options);
         thisR2=jdR2(targetResp(:),residual(:));
         if thisR2>bestR2
             out.speedDomain=speedDomain;
@@ -188,7 +188,7 @@ function out=fitComplexToData(speedDomain,targetResp)
         if i>1
             EST=LOB+rand(size(LOB)).*(UPB-LOB);
         end
-        [FIT,~,residual] = lsqcurvefit(@fitFunc, EST, speedDomain, targetResp, LOB, UPB, options);  
+        [FIT,~,residual] = lsqcurvefit(@fitFunc, EST, speedDomain, targetResp, LOB, UPB, options);
         thisR2=jdR2(targetResp(:),residual(:));
         if thisR2>bestR2
             out.speedDomain=speedDomain;
@@ -232,7 +232,7 @@ end
 function plotDataAndFit(speeds,targetResp,fit,spn)
     %
     % Plot the data
-     subplot(spn(1),spn(2),spn(3),'align');
+    subplot(spn(1),spn(2),spn(3),'align');
     plot(speeds,targetResp,'ko');
     hold on
     %
@@ -273,67 +273,61 @@ function plotDataAndFit(speeds,targetResp,fit,spn)
     ylabel('Response (IPS)');
     jdText(['R2 = ' num2str(fit.r2,'%.2f')]);
 end
-    
- 
 
 
-function [speed,resp]=rodmanAlbrightData(figStr)
+
+
+function [speed,resp]=getRodmanAlbright1987Data(figStr)
     % Data copied form Rodman & Albright 1987 figure 6 and 7
     if strcmpi(figStr,'6A')
         speed=[-64 -32 -16 -8 8  16 32 64];
         resp= [0   9   14  13 18 17 16 3];
-      %  speed=imresize(speed,[1 2*numel(speed)],'bilinear');
-      %  resp=imresize(resp,[1 2*numel(resp)],'bilinear'); 
+        %  speed=imresize(speed,[1 2*numel(speed)],'bilinear');
+        %  resp=imresize(resp,[1 2*numel(resp)],'bilinear');
     elseif strcmpi(figStr,'6B')
         speed=[-40 -20 -10 -5 -2.5 -1.25 1.25 2.5 5 10 20 40];
         resp=[16 19 12 5 2 1 5 7 6 17.5 30 24];
     elseif strcmpi(figStr,'7A')
         speed=[-40 -20 -10 -5 5 10 20 40];
         resp=[-3 -2 -1.5 -1 0.5 2 6 7.5];
-       % speed=imresize(speed,[1 2*numel(speed)],'bilinear');
-       % resp=imresize(resp,[1 2*numel(resp)],'bilinear');
+        % speed=imresize(speed,[1 2*numel(speed)],'bilinear');
+        % resp=imresize(resp,[1 2*numel(resp)],'bilinear');
     elseif strcmpi(figStr,'7B')
         speed=[-80 -40 -20 -10 -5 -2.5 2.5 5 10 20 40 80];
         resp=[-2 -6.5 -9 -7 -4 -5 5 13 24 30 21 18];
     else
-        error('No such rodmanAlbrightData');
+        error('No such getRodmanAlbright1987Data');
     end
     % set the minimum response to zero + somehting
-  resp=resp-min(resp)+5;
-  %  resp=resp/max(resp)*100;
+    resp=resp-min(resp);
 end
 
-
-
-
-
-function old
-    findfig('jdSpeedContrast');
-    clf;
-    
-    Xoff=[0 20 50]
-    colNr=1;
-    for i=1:numel(Xoff)
-        for contr=[0 2.^[-6:1:0]]
-            [R,dom,M,X,I]=speedResponse('Xsig',150,'Ioff',-Xoff(i),'Isig',100,'Xoff',Xoff(i),'contrast',contr);
-            opacity=.1+sqrt(contr)*.9;
-            %
-            % M, X, I
-            subplot(3,numel(Xoff),0*numel(Xoff)+colNr,'align')
-            plot(dom,M,'Color',[0 1 0 opacity],'LineWidth',3); hold on
-            plot(dom,X,'Color',[1 0 0 opacity],'LineWidth',2);
-            plot(dom,I,'Color',[0 0 1 opacity],'LineWidth',2); axis tight
-            %
-            % (X-I)*M linear
-            subplot(3,numel(Xoff),1*numel(Xoff)+colNr,'align')
-            plot(dom,R,'Color',[0 0 0 opacity],'LineWidth',2); hold on, axis tight
-            %
-            % (X-I)*M semilogx
-            subplot(3,numel(Xoff),2*numel(Xoff)+colNr,'align')
-            semilogx(dom(dom>0),R(dom>0),'Color',[0 0 0 opacity],'LineWidth',2); hold on, axis tight
-            %semilogx(dom(R==max(R)),max(R),'o','MarkerFaceColor',[0 0 0 opacity],'LineWidth',2);
-        end
-        colNr=colNr+1;
+function [speed,resp,contr]=getKrekelbergVanWezelAlbright2006Data(figStr)
+    % Data copied form Rodman & Albright 1987 figure 6 and 7
+    if strcmpi(figStr,'6A')
+        speed=[ 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64];
+        contr=[0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.7 0.7 0.7 0.7 0.7 0.7 0.7];
+        resp=[10.5 12.4 15.5 16.25 14.9 11 8.5 12 14 15.5 18.75 19 17.5 12.5 13 15 17.6 21 22.6 21.5 18.5 13 15 17.7 21.5 23.75 23.5 21];
+    elseif strcmpi(figStr,'3A')
+        speed=[ 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64];
+        contr=[0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.7 0.7 0.7 0.7 0.7 0.7 0.7];
+        resp=[12 15 20 24 14 8 7.5 19 22.5 35 46 43 25 14 20 32.5 55 68 71 55 41 21 26 41 68 93 83 60];
+    elseif strcmpi(figStr,'3B')
+        speed=[ 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64];
+        contr=[0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.7 0.7 0.7 0.7 0.7 0.7 0.7];
+        resp=[10 15 18 18 14.5 9.5 7 21 30 35 40 35 20 7.5 22 30 38 48 51 34 10 21 30 31 53 55 25 7.5];
+    elseif strcmpi(figStr,'3C')
+        speed=[ 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64];
+        contr=[0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.7 0.7 0.7 0.7 0.7 0.7 0.7];
+        resp=[0.5 0.5 2 5.5 3 1.3 0.7 1 1.5 3 4.5 9 7.5 2.5 1.1 1.9 3.9 8.25 9.5 7 3.5 0.5 0.6 0.5 0.9 5 7.8 9.7];
+    elseif strcmpi(figStr,'3D')
+        speed=[ 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64 1 2 4 8 16 32 64];
+        contr=[0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.7 0.7 0.7 0.7 0.7 0.7 0.7];
+        resp=[40 51 56 55 41 22 14 30 38 50 51 45 38 18 20 35 50 55 43 21 8 17.5 21 36 55 54 15 8];
+    else
+        error('No such getRodmanAlbright1987Data');
     end
-    % tilefigs
 end
+
+
+

@@ -6,7 +6,7 @@ function agDpxMultisensoryHorizontal
     E.expName='agDpxMultisensoryHorizontal';
     E.outputFolder='/Users/iMac_2Photon/Desktop/AhmedData';
     testscr=[20 20 800 600];
-    E.startKey='UpArrow'
+    E.startKey='UpArrow';
     E.txtPause='Please take a rest and call the experimenter\n ';
     E.txtPauseNrTrials=3;
     
