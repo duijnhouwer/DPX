@@ -83,6 +83,7 @@ function lkDpxGratingExp
         end    
     end
     nrTrials=numel(E.conditions) * E.nRepeats;
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+10)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 120 s)']);
+    voordezekerheid=120;
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+voordezekerheid)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(voordezekerheid) ' s)']);
     E.run;
 end
