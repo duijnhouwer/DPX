@@ -32,6 +32,7 @@ function jdMovieRandomDots(varargin)
     p.addOptional('RGB2',[1 1 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
     p.addOptional('aaPx',8,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by oversampling the frames followed by linear downscaling. 0 means no anti-aliasing, 8 is a sensible value
     p.addOptional('verbosity_',1,@(x)any(x==[0 1 2]) && numel(x)==1); % verbosity level (disp), _ denotes don't include in auto-filename
+    p.addOptional('play',true,@islogical);
     p.parse(varargin{:});
     p=p.Results;
     
@@ -87,7 +88,9 @@ function jdMovieRandomDots(varargin)
         fprintf(repmat('\b',1,numel(str)));
         fprintf('%s\n','Done.');
     end
-    implay(fullfile(wObj.Path,wObj.Filename));
+    if p.play
+        implay(fullfile(wObj.Path,wObj.Filename));
+    end
 end
 
 % --- HELP FUNCTIONS ------------------------------------------------------
