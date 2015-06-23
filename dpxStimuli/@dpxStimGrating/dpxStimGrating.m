@@ -29,17 +29,7 @@ classdef dpxStimGrating < dpxAbstractStim
             S.wDeg=10;
             S.hDeg=10;
         end
-    end
-%     methods (Access=public)
-%         function M=dpxStimMaskCircle
-%                     M.name='mask';
-%                     M.wDeg=G.wDeg*sqrt(2)+1;
-%                     M.hDeg=G.wDeg*sqrt(2)+1;
-%                     M.outerDiamDeg=G.wDeg;
-%                     M.innerDiamDeg=G.wDeg-5;
-%                     M.RGBAfrac=[.1 .1 .1 1];=dpxStimGrating
-%         end
-    
+    end  
     methods (Access=protected)
         function myInit(S)
             D2P=S.scrGets.deg2px; % degrees to pixels deg*D2P=px
@@ -84,13 +74,13 @@ classdef dpxStimGrating < dpxAbstractStim
         end
     end
     methods
-       % function set.grayFrac(S,value)
-       %     if isempty(value)
-       %     if ~isnumeric(value) || ~isempty(value) && (value<0 || value>1)
-       %         error('grayFrac should be a fraction');
-       %     end
-       %     E.grayFrac=value;
-       % end
+        %function set.grayFrac(S,value)
+        % I'm not sure why this commented out (jacob 2015-06-23)
+        %    if ~isnumeric(value) || ~isempty(value) && (value<0 || value>1)
+        %        error('grayFrac should be a fraction');
+        %    end
+        %    S.grayFrac=value;
+        %end
     end
 end
 
