@@ -15,10 +15,14 @@ function lkDpxGratingExp
     % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
     %
     E.scr.gamma=1.0;
-    E.scr.backRGBA=[.1 .1 .1 1];
+    E.scr.backRGBA=[.25 .25 .25 1];
     E.scr.verbosity0min5max=2;
     E.scr.winRectPx=[0 0 1920 1080] ;
-    E.txtStart='DAQ-pulse'; 
+    if IsLinux
+        E.txtStart='DAQ-pulse';
+    else
+        E.txtStart='asd DAQ-pulse';
+    end
     E.txtEnd='';
     E.txtPauseNrTrials=0;
     %
@@ -42,11 +46,12 @@ function lkDpxGratingExp
                     G=dpxStimGrating;
                     G.name='test';
                     G.wDeg=65;
+                    G.hDeg=65;
                     G.dirDeg=direc;
                     G.cyclesPerSecond=tf;
                     G.cyclesPerDeg=sf;
                     G.contrastFrac=cont;
-                    G.grayFrac=.25;
+                    G.grayFrac=E.scr.backRGBA(1);
                     G.squareWave=true;
                     G.onSec=isiSec/2;
                     G.durSec=stimSec;
@@ -57,7 +62,7 @@ function lkDpxGratingExp
                     M.hDeg=G.wDeg*sqrt(2)+1;
                     M.outerDiamDeg=G.wDeg;
                     M.innerDiamDeg=G.wDeg-5;
-                    M.RGBAfrac=[.1 .1 .1 1];
+                    M.RGBAfrac=E.scr.backRGBA;
                     %
                     V=dpxStimMccAnalogOut;
                     V.name='mcc';
@@ -68,22 +73,24 @@ function lkDpxGratingExp
                     V.stepVolt=[4 0];
                     V.pinNr=13;
                     %
-                    C.addStim(V);
-                    C.addStim(M);
-                    C.addStim(G);
-                    %
                     MCC=dpxRespMccCounter;
                     MCC.name='mcc';
                     MCC.allowUntilSec=C.durSec;
-                    C.addResp(MCC);
-                    %lkDpxGratingExp
+                    %
+                    C.addStim(M);
+                    C.addStim(G);
+                    if IsLinux % lab computer is linux, only use MCC there
+                        C.addStim(V);
+                        C.addResp(MCC);
+                    end
+                    %
                     E.addCondition(C);
                 end
             end
         end    
     end
     nrTrials=numel(E.conditions) * E.nRepeats;
-    voordezekerheid=120;
+    voordezekerheid=120; % extra tijd ivm te vroeg stoppen Leica
     dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+voordezekerheid)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(voordezekerheid) ' s)']);
     E.run;
 end
