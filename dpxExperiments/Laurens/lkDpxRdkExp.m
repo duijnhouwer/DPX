@@ -51,7 +51,7 @@ function lkDpxRdkExp
                 S.dirDeg=direc;
                 S.speedDps=speed;
                 S.dotsPerSqrDeg=.01;
-                S.dotDiamDeg=1;
+                S.dotDiamDeg=2;
                 S.nSteps=Inf; % unlimited lifetime
                 % calculate the luminance based on the grayFrac and the contrast values
                 brite=grayFrac+grayFrac*contrast;
