@@ -10,6 +10,7 @@ classdef dpxStimRdk < dpxAbstractStim
         nSteps;
         cohereFrac; % negative coherence flips directions
         apert;
+        motType; % placeholder, use for phi and reversephi etc.
     end
     properties (Access=protected)
         nDots;
@@ -36,6 +37,7 @@ classdef dpxStimRdk < dpxAbstractStim
             S.apert='circle';
             S.wDeg=10;
             S.hDeg=10;
+            S.motType='phi';
         end
     end
     methods (Access=protected)

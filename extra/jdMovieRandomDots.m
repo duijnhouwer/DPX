@@ -16,21 +16,21 @@ function jdMovieRandomDots(varargin)
     p.addOptional('filename','',@(x)ischar(x) || isempty(x));
     p.addOptional('pxHor',200,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % width of movie
     p.addOptional('pxVer',200,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % height of movie
-    p.addOptional('rPx',100,@(x)isnumeric(x)); % radius of the stimulus aperture
-    p.addOptional('frN',90,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % number of frames
-    p.addOptional('frHz',30,@(x)isnumeric(x) && x>0 && numel(x)==1); % frame rate
-    p.addOptional('nDots',500,@(x)isnumeric(x) && ~rem(x,1) && numel(x)==1); % number of dots
+    p.addOptional('fadePx',64,@isnumeric); % number of pixels to fade to mean lum, -1 no mask, 0, circular mask, 50 circular with 50 pixels linear RGB fade
+    p.addOptional('frN',30,@(x)isnumeric(x) && ~rem(x,1) && x>0 && numel(x)==1); % number of frames
+    p.addOptional('frHz',25,@(x)isnumeric(x) && x>0 && numel(x)==1); % frame rate
+    p.addOptional('nDots',12,@(x)isnumeric(x) && ~rem(x,1) && numel(x)==1); % number of dots
     p.addOptional('dX',3,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
     p.addOptional('dY',0,@(x)isnumeric(x) && numel(x)==1); % pixels displacement per frame
-    p.addOptional('dotRadiusPx',6,@(x)isnumeric(x) && x>0 && numel(x)==1 && ~mod(x,2)); % dot radius in pixels, must be even!
+    p.addOptional('dotRadiusPx',20,@(x)isnumeric(x) && x>0 && numel(x)==1 && ~mod(x,2)); % dot radius in pixels, must be even!
     p.addOptional('stepFr',Inf,@(x)isnumeric(x) && x>0 && numel(x)==1); % number of steps a dot takes befores being refreshed
     p.addOptional('coherence',1,@(x)isnumeric(x) && x>=0 && x<=1 && numel(x)==1); % coherent motion fraction
     p.addOptional('revphi',false,@(x)islogical(x) || x==1 || x==0);
     p.addOptional('deltaDeg',[0 90],@isnumeric); % angular deviations of transparent motion components from dx dy values, e.g. [0 180] two opposite motions
     p.addOptional('RGB0',[.5 .5 .5],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb background
-    p.addOptional('RGB1',[0 0 0],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 1
-    p.addOptional('RGB2',[1 1 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
-    p.addOptional('aaPx',8,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by oversampling the frames followed by linear downscaling. 0 means no anti-aliasing, 8 is a sensible value
+    p.addOptional('RGB1',[1 0 0],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 1
+    p.addOptional('RGB2',[0 0 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
+    p.addOptional('aaPx',8,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by supersampling the frames followed by bicubic downscaling. 0 means no anti-aliasing, 8 is a sensible value
     p.addOptional('verbosity_',1,@(x)any(x==[0 1 2]) && numel(x)==1); % verbosity level (disp), _ denotes don't include in auto-filename
     p.addOptional('play',true,@islogical);
     p.parse(varargin{:});
@@ -38,13 +38,15 @@ function jdMovieRandomDots(varargin)
     
     if p.nDots>0
         [recom,nCombis]=recommendDotNr(p);
-        while p.nDots~=recom
+        while p.nDots~=recom && p.nDots~=1
             disp(['The requested number of dots (' num2str(p.nDots) ' is not a multiple of ' num2str(nCombis) ' i.e, Nr(stepFr)*Nr(deltaDeg)*(noise+signal)*Nr(dotcolors)']);
             disp('If it was all properties such as lifetime, transparancy group, and color would be equally distributed among the dots');
             disp('[Note, You can override this check by providing a negative nDots, the absolute will be used without complaint.]');
             s=input(['The recommended nDots is ' num2str(recom) '. Would you like to use this recommendation? [Y/n] > '],'s');
             if ~strcmpi(strtrim(s),'n')
                 p.nDots=recom;
+            else
+                break;
             end
         end
     else
@@ -183,16 +185,8 @@ function [M,rdk]=drawFrame(f,p,rdk)
     % Create the matrix in which the dots are drawn
     M=zeros(h,w);
     % Create the dot patch (offset of pixels around center)
-    dPatchX=[];
-    dPatchY=[];
-    for di=-dotr:dotr
-        for dj=-dotr:dotr
-            if hypot(di,dj)<sqrt(dotr)
-                dPatchX=[dPatchX di]; %#ok<AGROW>
-                dPatchY=[dPatchY dj]; %#ok<AGROW>
-            end
-        end
-    end
+    [dPatchX,dPatchY]=meshgrid(-dotr:dotr);
+    [dPatchX,dPatchY]=find(hypot(dPatchX,dPatchY)<dotr);
     % Insert each dot in M, fill out the color-group number
     for i=1:p.nDots
         x=rdk.x(i);
@@ -200,26 +194,15 @@ function [M,rdk]=drawFrame(f,p,rdk)
         for j=1:numel(dPatchX)
             yy=round(y+dPatchY(j));
             xx=round(x+dPatchX(j));
+            
+            %  ok=xx>=1 & xx<w & yy>=1 & yy<h;
+            
             if xx>=1 && xx<w && yy>=1 && yy<h
                 M(yy,xx)=rdk.colorGroup(i);
             end
         end
     end
-    % Blank out everything outside the stimulus radius
-    [maskxx,maskyy]=meshgrid(fix(-size(M,2)/2):fix(size(M,2)/2),fix(-size(M,1)/2):fix(size(M,1)/2));
-    widmask=size(maskxx,2);
-    heimask=size(maskxx,1);
-    if size(M,1)==heimask-1
-        zerocol=maskxx(1,:)==0;
-        maskxx(:,zerocol)=[]; % remove the central zero column;
-        maskyy(:,zerocol)=[]; % remove the central zero column;
-    end
-    if size(M,2)==widmask-1
-        zerorow=maskyy(:,1)==0;
-        maskxx(zerorow,:)=[]; % remove the central zero row;
-        maskyy(zerorow,:)=[]; % remove the central zero row;
-    end
-    M(hypot(maskxx,maskyy)>p.rPx*p.aaPx)=0;    
+    
     % Cut the edges of M that were added to fit the entire dot pathces
     hIdx=p.dotRadiusPx*p.aaPx+1:p.dotRadiusPx*p.aaPx+p.pxVer*p.aaPx;
     wIdx=p.dotRadiusPx*p.aaPx+1:p.dotRadiusPx*p.aaPx+p.pxHor*p.aaPx;
@@ -273,8 +256,12 @@ function [M,rdk]=drawFrame(f,p,rdk)
         end
     end
     if isGrayscale
+        R=jdFadeFrame(R,p.fadePx*p.aaPx,p.RGB0(1));
         M=cat(3,R,R,R)*255;
     else
+        R=jdFadeFrame(R,p.fadePx*p.aaPx,p.RGB0(1));
+        G=jdFadeFrame(G,p.fadePx*p.aaPx,p.RGB0(2));
+        B=jdFadeFrame(B,p.fadePx*p.aaPx,p.RGB0(3));
         M=cat(3,R,G,B)*255;
     end
     M=imresize(M,1/p.aaPx,'bicubic');

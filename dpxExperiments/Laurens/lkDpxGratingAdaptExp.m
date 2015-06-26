@@ -2,17 +2,16 @@ function lkDpxGratingAdaptExp
     E=dpxCoreExperiment;
     E.expName='lkDpxGratingAdaptExp';
     % Screen settings:
-    set(E.scr,'winRectPx',[0 0 1920 1080],'widHeiMm',[531 298] ...
-        ,'distMm',290,'interEyeMm',10,'gamma',.69,'backRGBA',[0.1 0.1 0.1 1] ...
-        ,'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',1);
-    % 2014-4-24: Measured luminance BENQ XL2420Z screen Two-Photon room
-    % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
-    % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz VGA connected.  With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
-    % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
+    
+    E.expName='lkDpxGratingExp';
+    E.scr.distMm=lkSettings('VIEWDISTMM');
+    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.scr.gamma=lkSettings('GAMMA');
+    E.scr.backRGBA=lkSettings('BACKRGBA');
+    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
+    E.scr.winRectPx=lkSettings('WINPIX');
+    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
     %
-    % Set these strings to 'DAQ-pulse' to start the experiment when a the
-    % Leica microscope gives a pulse.
     E.txtStart='DAQ-pulse';
     E.txtEnd='';
     E.txtPauseNrTrials=0;
@@ -23,20 +22,19 @@ function lkDpxGratingAdaptExp
     adapCyclesPerDeg=.05;
     adapCyclesPerSecond=1;
     % Test
-    testDirDegs=[0:22.5:337.5];
+    testDirDegs=lkSettings('TESTDIRS');
     testContrastFracs=1.0;%[.25 .5 1];
     testCyclesPerDeg=.05;%[.05 .1 .2];
     testCyclesPerSecond=1;%[.5 1 2];
     % Shared
-    diamDeg=45;
+    diamDeg=65;
     contrastFadeAtEdgeRampLengthDeg=1;
-    grayLevelFractionOfMaxRange=0.25;
     % Timing
-    initialAdapSec=40;
-    itiaSec=2;
-    topupSec=6;
-    blankSec=2;
-    testSec=4;
+    testSec=lkSettings('stimSec');
+    initialAdapSec=testSec*10;
+    itiaSec=testSec/2;
+    topupSec=testSec*1.5;
+    blankSec=testSec/2;
     itibSec=0;
     %
     E.nRepeats=1;
@@ -51,15 +49,14 @@ function lkDpxGratingAdaptExp
     % Add the adaptation stimulus
     A=dpxStimGrating;
     A.name='adap';
-    A.wDeg=diamDeg;
+    A.wDeg=65;
+    A.hDeg=A.wDeg;
     A.dirDeg=adapDirDeg;
     A.cyclesPerSecond=adapCyclesPerSecond;
     A.cyclesPerDeg=adapCyclesPerDeg;
     A.contrastFrac=adapContrastFracs;
-    A.grayFrac=grayLevelFractionOfMaxRange;
+    A.grayFrac=E.scr.backRGBA(1);
     A.squareWave=true;
-    %S.maskStr='circle';
-    %S.maskPars=contrastFadeAtEdgeRampLengthDeg;
     A.onSec=itiaSec;
     A.durSec=initialAdapSec;
     gratingDefaults=get(A);% copy all properties of adap stim
@@ -70,7 +67,7 @@ function lkDpxGratingAdaptExp
     M.hDeg=A.wDeg*sqrt(2)+1;
     M.outerDiamDeg=A.wDeg;
     M.innerDiamDeg=A.wDeg-5;
-    M.RGBAfrac=[.1 .1 .1 1];
+    M.RGBAfrac=E.scr.backRGBA;
     maskDefaults=get(M);
     %
     V=dpxStimMccAnalogOut;
@@ -80,7 +77,7 @@ function lkDpxGratingAdaptExp
     V.initVolt=0;
     V.stepSec=[A.onSec A.onSec+A.durSec];
     V.stepVolt=[3 0];
-    V.pinNr=13;
+    V.pinNr=lkSettings('MCCPIN');
     %
     C.addStim(V);
     C.addStim(M);                
@@ -136,7 +133,7 @@ function lkDpxGratingAdaptExp
                     V.initVolt=0;
                     V.stepSec=[A.onSec A.onSec+A.durSec  T.onSec T.onSec+T.durSec];
                     V.stepVolt=[3 0 4 0];
-                    V.pinNr=13;
+                    V.pinNr=lkSettings('MCCPIN');
                     %
                     C.addStim(V)
                     C.addStim(M);
@@ -163,7 +160,7 @@ function lkDpxGratingAdaptExp
     for i=1:numel(seq)
         expDur=expDur+E.conditions{seq(i)}.durSec;
     end
-    keyboard
-    dpxDispFancy(['Please set-up a ' num2str(expDur+20) ' s recording pattern in LasAF.']);
+    xtr=lkSettings('2PHOTONEXTRASECS');
+    dpxDispFancy(['Please set-up a ' num2str(expDur+xtr) ' s recording pattern in LasAF.']);
     E.run;
 end

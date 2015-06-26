@@ -12,10 +12,14 @@ function lkDpxRdkExp
     % FullWhite=42 cd/m2; FullBlack=0.12;
     % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
     %
-    E.scr.gamma=1.0;
-    E.scr.backRGBA=[.25 .25 .25 1];
-    E.scr.verbosity0min5max=3;
-    E.scr.winRectPx=[0 0 1920 1080];
+    E.expName='lkDpxGratingExp';
+    E.scr.distMm=lkSettings('VIEWDISTMM');
+    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.scr.gamma=lkSettings('GAMMA');
+    E.scr.backRGBA=lkSettings('BACKRGBA');
+    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
+    E.scr.winRectPx=lkSettings('WINPIX');
+    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
         E.txtStart='DAQ-pulse';
     else
@@ -26,13 +30,14 @@ function lkDpxRdkExp
     %
     % Settings
     %
-    dirDegs=[0:22.5:360-22.5];
-    contrastFracs=[1.0];
+    stepDeg=360/lkSettings('NRDIRECS');
+    dirDegs=[0:stepDeg:360-stepDeg];
+    contrastFracs=[.1 .2 .5 1];
     grayFrac=E.scr.backRGBA(1); % mid level gray of the grating. background has same graylevel. (assume R=G=B!)
     speeds=20; % based on a cyc/sec & cyc/deg settings in lkDpxGratingExp (1/0.05)
     E.nRepeats=6;
-    stimSec=4;
-    isiSec=4;
+    stimSec=lkSettings('stimSec');
+    isiSec=lkSettings('isiSec');
     
     for d=1:numel(dirDegs)
         direc=dirDegs(d);
@@ -46,18 +51,18 @@ function lkDpxRdkExp
                 %
                 S=dpxStimRdk;
                 S.name='test';
-                S.wDeg=65;
-                S.hDeg=65;
+                S.wDeg=lkSettings('STIMDIAM');
+                S.hDeg=S.wDeg;
                 S.dirDeg=direc;
                 S.speedDps=speed;
                 S.dotsPerSqrDeg=.01;
                 S.dotDiamDeg=2;
                 S.nSteps=Inf; % unlimited lifetime
                 % calculate the luminance based on the grayFrac and the contrast values
-                brite=grayFrac+grayFrac*contrast;
+                bright=grayFrac+grayFrac*contrast;
                 dark=grayFrac-grayFrac*contrast;
-                S.dotRBGAfrac1=[brite brite brite 1];
-                S.dotRBGAfrac2=[dark dark dark 1];
+                S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
+                S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
                 S.onSec=isiSec/2;
                 S.durSec=stimSec;
                 %
@@ -76,7 +81,7 @@ function lkDpxRdkExp
                 V.initVolt=0;
                 V.stepSec=[S.onSec S.onSec+S.durSec];
                 V.stepVolt=[4 0];
-                V.pinNr=13;
+                V.pinNr=lkSettings('MCCPIN');
                 %
                 MCC=dpxRespMccCounter;
                 MCC.name='mcc';
@@ -94,6 +99,7 @@ function lkDpxRdkExp
         end
     end
     nrTrials=numel(E.conditions) * E.nRepeats;
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+120)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + 120 s)']);
+    xtr=lkSettings('2PHOTONEXTRASECS');
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
     E.run;
 end

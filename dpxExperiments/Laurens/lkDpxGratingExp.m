@@ -1,23 +1,21 @@
-function lkDpxGratingExp
+function lkDpxTuningExp(varargin)
+    
+    p=inputParser;
+    p.addParamValue('mode','dir',@(x)any(strcmpi(x,{'dir','speed'})));
+    p.addParamValue('stim','grat',@(x)any(strcmpi(x,{'grat','rdk'})));
+    p.addParamValue('dirdeg',0,@(x)isnumeric(x)&&numel(x)==1);
+    p.parse(varargin{:});
+
+    
     E=dpxCoreExperiment;
-    E.expName='lkDpxGratingExp';
-    E.scr.distMm=290;
-    % 2014-10-28: Measured luminance BENQ screen Two-Photon room Brightness
-    % 0; contrast 50; black eq 15; color temp [R G B] correction = [0 100
-    % 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
-    % Hz; Reset Color no; AMA high, Instant OFF, Sharpness 1; Dynamic
-    % Contrast 0; Display mode Full; Color format RGB; Smartfocus OFF;
-    % connected with a VGA cable (so that we can split to Beetronixs
-    % Screen) With these settings. 
-    
-    
-    % FullWhite=42 cd/m2; FullBlack=0.12;
-    % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
-    %
-    E.scr.gamma=1.0;
-    E.scr.backRGBA=[.25 .25 .25 1];
-    E.scr.verbosity0min5max=2;
-    E.scr.winRectPx=[0 0 1920 1080] ;
+    E.expName=['lkDpxTuning' mode];
+    E.scr.distMm=lkSettings('VIEWDISTMM');
+    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.scr.gamma=lkSettings('GAMMA');
+    E.scr.backRGBA=lkSettings('BACKRGBA');
+    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
+    E.scr.winRectPx=lkSettings('WINPIX');
+    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
         E.txtStart='DAQ-pulse';
     else
@@ -28,13 +26,21 @@ function lkDpxGratingExp
     %
     % Settings
     %
-    dirDegs=[0:22.5:360-22.5]; %[90]
-    contrastFracs=[1.0];
-    cyclesPerDeg=[0.05];
-    cyclesPerSecond=[1];
-    E.nRepeats=6;
-    stimSec=4;
-    isiSec=4;
+    if strcmpi(mode,'DirTune')
+        dirDegs=lkSettings('TESTDIRS');
+        cyclesPerDeg=lkSettings('SFFIX');
+        cyclesPerSecond=lkSettings('TFFIX');
+        contrastFracs=lkSettings('CONTRASTFIX');
+        E.nRepeats=12;
+    elseif strcmpi(mode,'SpeedTune')
+        dirDegs=[dirDeg dirDeg+180];
+        cyclesPerDeg=lkSettings('SFFIX');
+        cyclesPerSecond=lkSettings('TFRANGE');
+        contrastFracs=lkSettings('CONTRASTRANGE');
+        E.nRepeats=6;
+    end
+    stimSec=lkSettings('STIMSEC');
+    isiSec=lkSettings('ISISEC');
     %
     for direc=dirDegs(:)'
         for cont=contrastFracs(:)'
@@ -55,6 +61,24 @@ function lkDpxGratingExp
                     G.squareWave=true;
                     G.onSec=isiSec/2;
                     G.durSec=stimSec;
+                    
+                                    S=dpxStimRdk;
+                S.name='test';
+                S.wDeg=lkSettings('STIMDIAM');
+                S.hDeg=S.wDeg;
+                S.dirDeg=direc;
+                S.speedDps=speed;
+                S.dotsPerSqrDeg=.01;
+                S.dotDiamDeg=2;
+                S.nSteps=Inf; % unlimited lifetime
+                % calculate the luminance based on the grayFrac and the contrast values
+                bright=grayFrac+grayFrac*contrast;
+                dark=grayFrac-grayFrac*contrast;
+                S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
+                S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
+                S.onSec=isiSec/2;
+                S.durSec=stimSec;
+                
                     %
                     M=dpxStimMaskCircle;
                     M.name='mask';
@@ -90,7 +114,7 @@ function lkDpxGratingExp
         end    
     end
     nrTrials=numel(E.conditions) * E.nRepeats;
-    voordezekerheid=120; % extra tijd ivm te vroeg stoppen Leica
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+voordezekerheid)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(voordezekerheid) ' s)']);
+    xtr=lkSettings('2PHOTONEXTRASECS');
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
     E.run;
 end

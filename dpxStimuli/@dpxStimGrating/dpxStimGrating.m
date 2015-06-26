@@ -50,8 +50,10 @@ classdef dpxStimGrating < dpxAbstractStim
             end
             
             S.gratingTexture=Screen('MakeTexture', S.scrGets.windowPtr, grating, -S.dirDeg);
-            S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.wPx/2+S.winCntrXYpx(2)];
-            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.wPx];
+            % calculate the rectangle into which the texture will be shown on the
+            % screen "destination rectangle"
+            S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.hPx/2+S.winCntrXYpx(2)]; % lower left
+            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx]; % add top right 
         end
         function myDraw(S)
             Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
