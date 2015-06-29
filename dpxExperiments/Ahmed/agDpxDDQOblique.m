@@ -43,7 +43,7 @@ function agDpxDDQOblique
                     C.addResp(R);
                     %
                     S=dpxStimDot;
-                    set(S,'name','respfeedback','wDeg',.5*sqrt(2),'visible',0);
+                    set(S,'name','respfeedback','wDeg',.5*sqrt(2),'enabled',0);
                     C.addStim(S);
                     %
                     E.addCondition(C);

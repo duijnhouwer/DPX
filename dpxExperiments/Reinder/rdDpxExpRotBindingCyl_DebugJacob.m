@@ -84,7 +84,7 @@ for m=1:numel(modes)
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',Inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'enabled',false,'durSec',Inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             % JACOB_DEBUG_NOTE de feedback stimulus' durSec was voorheen
             % .5, ik heb dit naar Inf gezet. De stimulus verdwijnt als de

@@ -28,7 +28,7 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
             % Only called when S.visible is true (unlike myStep)
             fprintf(S.ser,'%c',S.onChar); % Turn on the stimulus
             if S.flipCounter==S.offFlip
-                % Turn off on the last flip of myDraw is reached, see
+                % Turn off when the last flip of myDraw is reached, see
                 % dpxAbstractStim.draw for the logical underpinning of this.
                 fprintf(S.ser,'%c',S.offChar);
             end
@@ -43,7 +43,7 @@ classdef dpxStimArduinoPulse < dpxAbstractStim
                 error('dpxStimArduinoPulse output should be on pin 10, 11, 12, or 13');
             end
             S.pinNr=value;
-            S.onChar=char(64+value); % J K L or M 
+            S.onChar=char(64+value); % J K L or M (for 10 11 12 13 respectively)
             S.offChar=char(64+32+value); % j k l or m
         end
     end

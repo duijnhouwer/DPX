@@ -35,7 +35,7 @@ for ePic=1:length(stimList)
             
             %feedback stim
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'onSec',2.1,'durSec',1.5,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'enabled',false,'onSec',2.1,'durSec',1.5,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             
             %first pictures, encoding

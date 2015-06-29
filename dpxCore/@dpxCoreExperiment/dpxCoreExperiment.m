@@ -383,6 +383,7 @@ classdef dpxCoreExperiment < hgsetget
                     dummy=eval(theClassName);
                     dummy.name=stimnamesMissing{j};
                     dummy.durSec=0;
+                    dummy.enabled=false;
                     dummy.visible=false;
                     E.conditions{i}.addStim(dummy);
                 end

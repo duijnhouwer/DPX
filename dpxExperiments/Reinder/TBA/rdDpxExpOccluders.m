@@ -33,7 +33,7 @@ for B=1:numel(barConfigs)
         
         %feedback stim
         S=dpxStimDot;
-        set(S,'wDeg',.3,'visible',false,'durSec',0.20,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+        set(S,'wDeg',.3,'enabled',false,'durSec',0.20,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
         C.addStim(S);
         
         %first pictures, encoding

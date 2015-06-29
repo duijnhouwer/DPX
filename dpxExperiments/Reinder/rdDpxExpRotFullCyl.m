@@ -76,11 +76,11 @@ for m=1:numel(modes)
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'enabled',false,'durSec',inf,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
             C.addStim(S);
             % The feedback stimulus for wrong responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
+            set(S,'wDeg',.3,'enabled',false,'durSec',inf,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
             C.addStim(S);
             
             % The half cylinder stimulus
@@ -88,7 +88,7 @@ for m=1:numel(modes)
             set(S,'dotsPerSqrDeg',12,'xDeg',flippos*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
-                ,'name','halveCyl','visible',0);
+                ,'name','halveCyl','enabled',0);
             C.addStim(S);
             % The full cylinder stimulus
             if strcmpi(modes{m},'mono')

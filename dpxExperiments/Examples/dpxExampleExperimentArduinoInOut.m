@@ -50,21 +50,21 @@ function dpxExampleExperimentArduinoInOut(testscr)
         RDK.durSec=2;
         RDK.name='motionStim';
         %
-        % Create the Arduino output pulse stimulus
-        % This Stimulus modules sends the letters 'R' and 'r' over the
-        % serial link to the Arduino. The "dpxArduino24in13out.ino" sketch
-        % listens for these and turns pin 13 on or off, respectively.
-        % This stimulus starts as "invisible" which means it's "myDraw"
-        % funtion won't be reached until the response-module turns it on.
-        % See below, where we give the response stimulus the name of this
-        % stimulus "pin13". Note that this name could be anything, e.g.,
-        % "liquidReward". It's just a tag for the response-module to know
-        % which stimulus to turn on when the correct answer is given. It
-        % does in no way instruct the Arduino to use pin13 for the output.
+        % Create the Arduino output pulse stimulus This Stimulus modules sends the
+        % letters 'R' and 'r' over the serial link to the Arduino. The
+        % "dpxArduino24in13out.ino" sketch listens for these and turns pin 13 on or
+        % off, respectively. This stimulus starts as "enabled" which means it's
+        % step-and-draw funtion won't be reached, and it's local flipCounter not
+        % incremented, until the response-module turns it on. See below, where we
+        % give the response stimulus the name of this stimulus "pin13". Note that
+        % this name could be anything, e.g., "liquidReward". It's just a tag for
+        % the response-module to know which stimulus to turn on when the correct
+        % answer is given. It does in no way instruct the Arduino to use pin13 for
+        % the output.
         REW=dpxStimArduinoPulse;
         REW.pinNr=13;
         REW.name='pin13';
-        REW.visible=false; % dpxRespArduinoPulse can turn this on
+        REW.enabled=false; % dpxRespArduinoPulse can turn this on
         %
         % Make a punishment (main aspect of this that adds a delay between this
         % trial and the next by means of the 'wrongEndsTrialAfterSec' property of
@@ -79,7 +79,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
         PUN.wDeg=100; % entire ...
         PUN.hDeg=100;  ... screen
         PUN.name='punishment';
-        PUN.visible=false; % dpxRespArduinoPulse can turn this on
+        PUN.enabled=false; % dpxRespArduinoPulse can turn this on
         %
         % Add the stimuli to the condition
         C.addStim(PUN); % reward, must be top of the list because it should block out the rest

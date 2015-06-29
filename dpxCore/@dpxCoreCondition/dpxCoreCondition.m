@@ -185,14 +185,11 @@ classdef dpxCoreCondition < hgsetget
                             % effect and the trial lasts the set initially amount.
                             if C.resps{r}.endsTrialAfterFlips<Inf % endsTrialAfterFlips is Inf by default
                                 stopTrialEarlyFlip=f+C.resps{r}.endsTrialAfterFlips;
-                                stimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
-                                if ~isempty(stimHandle)
-                                    % Initialize the feedback stimulus so it will be visible from now until
-                                    % now+durSec. Because of this only simple stimuli that do not require a lot
-                                    % of time for initialization can be used. If this is a problem a slight
-                                    % redesign of the feedback system will be required.
-                                    stimHandle.init(C.scrGets);
-                                    stimHandle.visible=true;
+                                fbStimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim);
+                                if ~isempty(fbStimHandle)
+                                    % Enable the feedback stimulus, i.e., the stimulus that is triggered by the
+                                    % response. It's timing (onSec) will be relative to this flip
+                                    fbStimHandle.enabled=true;
                                 end
                             end
                             % Check if this response has been set up to necessitate a redo of the

@@ -1,6 +1,7 @@
 classdef (Abstract) dpxAbstractStim < hgsetget
     
     properties (Access=public)
+        enabled;
         visible;
         onSec;
         durSec;
@@ -27,7 +28,8 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         hPx;
         winCntrXYpx=[];
         scrGets=[];
-        flipCounter;
+        flipCounter; % flips since this stimulus was enabled
+        flipsPriorEnable; % global flips preceding start of stimulus's flipCounter
         stepCounter;
         fixWithinPx=[];
         eyeUsed=-1;
@@ -45,6 +47,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % See also: dpxAbstractResp, dpxStimRdk
             %
             % Jacob Duijnhouwer, 2014-09-05
+            S.enabled=true; % Toggle stimulus enabled true|false. Internal flipcounter counts from the moment stimulus was enabled. 2015-06-29
             S.visible=true; % Toggle visibility of the stimulus, true|false
             S.onSec=0; % Time since trial start that stimulus comes on
             S.durSec=Inf; % Duration of stim (relative to start)
@@ -66,7 +69,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % Before a repeat of the condition is presented, this struct is used to
             % restore this stimulus to its starting state. So when, for example, the
             % property 'visible' was toggled it will be reset prior to the next trial
-            % of this condition.
+            % that repeats this condition.
             if ~isempty(S.initialPublicState)
                 error('lockInitialPublicState should be called only once on a stimulus, during addStim');
             end
@@ -90,6 +93,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             end
             S.restoreInitialPublicState; % keep at top of init
             S.flipCounter=0;
+            S.flipsPriorEnable=0;
             S.stepCounter=0;
             S.onFlip = round(S.onSec * scrGets.measuredFrameRate);
             S.offFlip = round((max(S.onSec,0) + S.durSec) * scrGets.measuredFrameRate);
@@ -106,15 +110,20 @@ classdef (Abstract) dpxAbstractStim < hgsetget
                 S.eyeUsed=-1;
             end
         end
-        function stepAndDraw(S,flipCounter)
-            S.flipCounter=flipCounter;
-            if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
-                % flipCounter is updated before step and draw are called, so a one-based
-                % counter (starts at 1);
-                S.stepCounter=S.stepCounter+1;
-                S.myStep;
-                if S.visible
-                    S.myDraw;
+        function stepAndDraw(S,globalFlipCounter)
+            if S.enabled && S.flipsPriorEnable==0
+                S.flipsPriorEnable=globalFlipCounter-1;
+            end
+            if S.enabled
+                S.flipCounter=globalFlipCounter-S.flipsPriorEnable;
+                if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
+                    % flipCounter is updated before step and draw are called. Therefore, it's a
+                    % one-based counter (starts at 1);
+                    S.stepCounter=S.stepCounter+1;
+                    S.myStep;
+                    if S.visible
+                        S.myDraw;
+                    end
                 end
             end
         end
@@ -123,7 +132,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         end
         function [ok,str]=fixationStatus(S)
             ok=true;
-            str='thisShouldNotBePossibleLookIntoIt';
+            str='thisShouldNotBePossibleLookIntoIt'; %#ok<NASGU>
             if S.fixWithinDeg<=0
                 str='NotRequired';
             else
@@ -181,13 +190,23 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         end
     end
     methods
+        function set.enabled(S,value)
+            if value=='?'
+                disp('enabled (logical): Only enabled stimuli (default) accumulate flip counts.');
+                return;
+            end
+            if ~islogical(value) && ~isnumeric(value)
+                error('enabled should be numeric or (preferably) logical');
+            end
+            S.enabled=logical(value);
+        end
         function set.visible(S,value)
             if value=='?'
                 disp('visible (logical): Toggle visibility of the stimulus.');
                 return;
             end
             if ~islogical(value) && ~isnumeric(value)
-                error('Enable should be numeric or (preferably) logical');
+                error('visible should be numeric or (preferably) logical');
             end
             S.visible=logical(value);
         end

@@ -70,7 +70,7 @@ for rotSpeed=[120 -120] % >0 -> up
         
         % The feedback stimulus for correct responses
         S=dpxStimDot;
-        set(S,'wDeg',.3,'visible',false,'durSec',1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+        set(S,'wDeg',.3,'enabled',false,'durSec',1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
         C.addStim(S);
         
         % The half cylinder stimulus

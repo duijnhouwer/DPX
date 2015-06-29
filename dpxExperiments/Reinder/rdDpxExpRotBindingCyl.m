@@ -77,7 +77,7 @@ for m=1:numel(modes)
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',.3,'enabled',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             
             % The full cylinder stimulus

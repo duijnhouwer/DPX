@@ -46,7 +46,7 @@ ddqWid=4;
     %
     FB=dpxStimDot;
     set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
-    set(FB,'name','respfeedback','wDeg',1,'visible',0);
+    set(FB,'name','respfeedback','wDeg',1,'enabled',0);
     C.addStim(FB);
     %
     % 
