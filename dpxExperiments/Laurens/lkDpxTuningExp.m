@@ -81,8 +81,8 @@ function lkDpxTuningExp(varargin)
                         S.dotDiamDeg=1/sf/4;
                         S.nSteps=Inf; % unlimited lifetime
                         % calculate the luminance based on the grayFrac and the contrast values
-                        bright=grayFrac+grayFrac*contrast;
-                        dark=grayFrac-grayFrac*contrast;
+                        bright=E.scr.backRGBA(1)+E.scr.backRGBA(1)*cont; % single value between [0..1]
+                        dark=E.scr.backRGBA(1)-E.scr.backRGBA(1)*cont; % single value between [0..1]
                         S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
                         S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
                         S.onSec=isiSec/2;
