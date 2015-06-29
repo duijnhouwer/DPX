@@ -18,7 +18,7 @@ function jdMovieGrating(varargin)
     p.addOptional('pxHei',640,@(x)isnumeric(x) && ~rem(x,1) && x>0); % height of movie
     p.addOptional('fadePx',64,@isnumeric); % number of pixels to fade to mean lum, -1 no mask, 0, circular mask, 50 circular with 50 pixels linear RGB fade
     p.addOptional('cycPx',128,@(x)isnumeric(x) && x>0); % bar width
-    p.addOptional('frN',26,@(x)isnumeric(x) && ~rem(x,1) && x>0); % number of frames
+    p.addOptional('frN',25,@(x)isnumeric(x) && ~rem(x,1) && x>0); % number of frames
     p.addOptional('frHz',25,@(x)isnumeric(x) && x>0); % frame rate
     p.addOptional('aDeg',0,@isnumeric); % 
     p.addOptional('pxPerFr',5.12,@isnumeric); % pixels displacement per frame
