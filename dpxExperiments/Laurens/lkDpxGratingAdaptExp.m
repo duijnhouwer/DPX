@@ -22,7 +22,7 @@ function lkDpxGratingAdaptExp
     adapCyclesPerDeg=lkSettings('SFFIX');
     adapCyclesPerSecond=lkSettings('TFFIX');
     % Test
-    testDirDegs=lkSettings('TESTDIRS');
+    testDirDegs=[0 10 20 30 40 50 60 70 80 90];
     testContrastFracs=lkSettings('CONTRASTFIX');
     testCyclesPerDeg=lkSettings('SFFIX');
     testCyclesPerSecond=lkSettings('TFFIX');
@@ -30,11 +30,11 @@ function lkDpxGratingAdaptExp
     diamDeg=lkSettings('STIMDIAM');
     contrastFadeAtEdgeRampLengthDeg=1;
     % Timing
-    testSec=lkSettings('stimSec');
-    initialAdapSec=testSec*10;
-    itiaSec=testSec/2;
-    topupSec=testSec*1.5;
-    blankSec=testSec/2;
+    testSec=lkSettings('stimSec'); %4s
+    initialAdapSec=testSec*180; %12 min=720s
+    itiaSec=testSec/2; %2s
+    topupSec=testSec*1.5; %6s
+    blankSec=testSec/2; %2s
     itibSec=0;
     %
     E.nRepeats=1;
