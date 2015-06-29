@@ -58,7 +58,7 @@ function lkDpxTuningExp(varargin)
                     G.cyclesPerDeg=sf;
                     G.contrastFrac=cont;
                     G.grayFrac=E.scr.backRGBA(1);
-                    G.squareWave=true;
+                    G.squareWave=false;
                     G.onSec=isiSec/2;
                     G.durSec=stimSec;
                     

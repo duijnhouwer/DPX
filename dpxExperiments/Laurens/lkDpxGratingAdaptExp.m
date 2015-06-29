@@ -18,16 +18,16 @@ function lkDpxGratingAdaptExp
     %
     % Adap
     adapDirDeg=45;
-    adapContrastFracs=1.0;
-    adapCyclesPerDeg=.05;
-    adapCyclesPerSecond=1;
+    adapContrastFracs=lkSettings('CONTRASTFIX');
+    adapCyclesPerDeg=lkSettings('SFFIX');
+    adapCyclesPerSecond=lkSettings('TFFIX');
     % Test
     testDirDegs=lkSettings('TESTDIRS');
-    testContrastFracs=1.0;%[.25 .5 1];
-    testCyclesPerDeg=.05;%[.05 .1 .2];
-    testCyclesPerSecond=1;%[.5 1 2];
+    testContrastFracs=lkSettings('CONTRASTFIX');
+    testCyclesPerDeg=lkSettings('SFFIX');
+    testCyclesPerSecond=lkSettings('TFFIX');
     % Shared
-    diamDeg=65;
+    diamDeg=lkSettings('STIMDIAM');
     contrastFadeAtEdgeRampLengthDeg=1;
     % Timing
     testSec=lkSettings('stimSec');
@@ -49,14 +49,14 @@ function lkDpxGratingAdaptExp
     % Add the adaptation stimulus
     A=dpxStimGrating;
     A.name='adap';
-    A.wDeg=65;
+    A.wDeg=lkSettings('STIMDIAM');
     A.hDeg=A.wDeg;
     A.dirDeg=adapDirDeg;
     A.cyclesPerSecond=adapCyclesPerSecond;
     A.cyclesPerDeg=adapCyclesPerDeg;
     A.contrastFrac=adapContrastFracs;
     A.grayFrac=E.scr.backRGBA(1);
-    A.squareWave=true;
+    A.squareWave=false;
     A.onSec=itiaSec;
     A.durSec=initialAdapSec;
     gratingDefaults=get(A);% copy all properties of adap stim
@@ -123,7 +123,7 @@ function lkDpxGratingAdaptExp
                     M.hDeg=A.wDeg*sqrt(2)+1;
                     M.outerDiamDeg=A.wDeg;
                     M.innerDiamDeg=A.wDeg-5;
-                    M.RGBAfrac=[.1 .1 .1 1];
+                    M.RGBAfrac=E.scr.backRGBA;
                     %
                     % Add the MCC stim
                     V=dpxStimMccAnalogOut;

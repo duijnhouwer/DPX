@@ -23,7 +23,7 @@ classdef dpxStimGrating < dpxAbstractStim
             S.dirDeg=45;
             S.cyclesPerSecond=10;
             S.cyclesPerDeg=.5;
-            S.squareWave=true;
+            S.squareWave=false;
             S.grayFrac=.5;
             S.contrastFrac=1;
             S.wDeg=10;
