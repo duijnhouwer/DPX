@@ -3,10 +3,10 @@ classdef (Abstract) dpxAbstractResp < hgsetget
     properties (Access=public)
         % The names of the stimuli that will be displayed as positive or negative
         % feedback. The stimulus in the dpxCoreCondition class or derived class
-        % will use this string to look up the feedback stimulus by its 'name'
-        % field. Set to '' when no feedback is desired.
-        correctStimName='';
-        wrongStimName='';
+        % will use this cell-array of string to look up the feedback stimulus by
+        % its 'name' field. Set to {''} when no feedback is desired.
+        correctStimName={''};
+        wrongStimName={''};
         % Time that the trial continues after the answer has been given. Can be
         % different for correct and incorrect trials.
         correctEndsTrialAfterSec=0.05;
@@ -105,6 +105,36 @@ classdef (Abstract) dpxAbstractResp < hgsetget
                 error('redoTrial should be ''never'', ''immediately'', or ''sometime''');
             end
             S.redoTrial=value;
+        end
+        function set.correctStimName(S,value)
+            if ischar(value)
+                value={value};
+            end
+            if ~dpxIsCellArrayOfStrings(value);
+                error('''correctStimName'' must be a string or a cell array of strings');
+            end
+            S.correctStimName=value;
+        end
+        function set.wrongStimName(S,value)
+            if ischar(value)
+                value={value};
+            end
+            if ~dpxIsCellArrayOfStrings(value);
+                error('''wrongStimName'' must be a string or a cell array of strings');
+            end
+            S.wrongStimName=value;
+        end
+        function set.correctEndsTrialAfterSec(S,value)
+            if ~isnumeric(value) || value<0
+                error('correctEndsTrialAfterSec must be a positive number or Inf');
+            end
+            S.correctEndsTrialAfterSec=value;
+        end
+        function set.wrongEndsTrialAfterSec(S,value)
+            if ~isnumeric(value) || value<0
+                error('wrongEndsTrialAfterSec must be a positive number or Inf');
+            end
+            S.wrongEndsTrialAfterSec=value;
         end
     end
 end

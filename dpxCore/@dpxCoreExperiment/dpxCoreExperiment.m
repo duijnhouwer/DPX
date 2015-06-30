@@ -84,12 +84,14 @@ classdef dpxCoreExperiment < hgsetget
                         E.showIntermissionScreen;
                     end
                     % Initialize this condition, this needs information about the screen. We
-                    % pass it the values using get, not the object itself.
+                    % pass it the values using get, not the object itself because we don't want
+                    % the condition to be able to (inadvertently) make changes to the screen
+                    % object.
                     CC.init(get(E.scr));
                     % Technically backRGBA is a condition property, but to save the need to
                     % define it for all conditions I keep it in the window class, with an
-                    % optional override in the condition class. Here we deal with that
-                    % override:
+                    % optional override in the condition class in case a different background
+                    % color is needed. Here we deal with that override:
                     if numel(CC.overrideBackRGBA)==4
                         defaultBackRGBA=E.scr.backRGBA;
                         E.scr.backRGBA=CC.overrideBackRGBA;
