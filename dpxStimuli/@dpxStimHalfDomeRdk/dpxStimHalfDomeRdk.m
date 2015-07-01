@@ -1,4 +1,4 @@
-classdef dpxStimHalfDomeRdk < dpxAbstractStim
+classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
     
     properties (Access=public)
         nClusters;
@@ -78,6 +78,9 @@ classdef dpxStimHalfDomeRdk < dpxAbstractStim
             S.dAdEdeg=S.dAdEdeg*S.clusterRadiusDeg;  
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             cols=S.palette(:,S.visDotCol);
             Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
         end

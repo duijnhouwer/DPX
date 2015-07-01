@@ -1,4 +1,4 @@
-classdef dpxStimCross < dpxAbstractStim
+classdef dpxStimCross < dpxAbstractVisualStim
     
     properties (Access=public)
         shape;
@@ -24,15 +24,16 @@ classdef dpxStimCross < dpxAbstractStim
             S.lineWidDeg = S.lineWidDeg * S.scrGets.deg2px;
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             wPtr=S.scrGets.windowPtr;
             h=S.hPx/2;
             w=S.wPx/2;
             x=S.xPx;
             y=S.yPx;
-
             if strcmpi(S.scrGets.stereoMode,'mono')
                 Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);
-
             elseif strcmpi(S.scrGets.stereoMode,'mirror')
                 for buffer=0:1
                     Screen('SelectStereoDrawBuffer', wPtr, buffer);
@@ -40,7 +41,8 @@ classdef dpxStimCross < dpxAbstractStim
                 end
             elseif strcmpi(S.scrGets.stereoMode,'anaglyph')
                 Screen('DrawLines',wPtr,[0 0 x-w y+h; x-w y+h 0 0],S.lineWidDeg,S.RGBA(:),S.winCntrXYpx);
-%                 error(['Unknown stereoMode ''' S.stereoMode '''.']);
+            else
+                error(['Unknown stereoMode ''' S.stereoMode '''.']);
             end
         end
     end

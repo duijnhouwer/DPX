@@ -1,4 +1,4 @@
-classdef dpxStimDot < dpxAbstractStim
+classdef dpxStimDot < dpxAbstractVisualStim
     
     properties (Access=public)
         shape;
@@ -20,6 +20,9 @@ classdef dpxStimDot < dpxAbstractStim
             S.RGBA = S.RGBAfrac * S.scrGets.whiteIdx;
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             diam=max(1,S.wPx);
             if strcmpi(S.scrGets.stereoMode,'mono')
                 Screen('DrawDots',S.scrGets.windowPtr,[S.xPx;S.yPx],diam,S.RGBA(:),S.winCntrXYpx,2);

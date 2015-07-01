@@ -1,4 +1,4 @@
-classdef dpxStimText < dpxAbstractStim   
+classdef dpxStimText < dpxAbstractVisualStim   
     properties (Access=public)    
         str; 
         RGBAfrac; % A four element vector of values between [0..1] representing red-green-blue-opacity of the letters
@@ -63,7 +63,9 @@ classdef dpxStimText < dpxAbstractStim
             S.oldTextSize=Screen('TextSize',S.scrGets.windowPtr,S.fontsize);
         end
         function myDraw(S)
-            DrawFormattedText(S.scrGets.windowPtr,S.str,S.hAlign,S.vAlign,S.RGBA,S.wrapat,S.flipHorizontal,S.flipVertical,S.vSpacing,S.righttoleft,S.winRect);      
+            if S.visible
+                DrawFormattedText(S.scrGets.windowPtr,S.str,S.hAlign,S.vAlign,S.RGBA,S.wrapat,S.flipHorizontal,S.flipVertical,S.vSpacing,S.righttoleft,S.winRect);      
+            end
         end
         function myClear(S)
             % This doesn't really work when multiple text stimuli with

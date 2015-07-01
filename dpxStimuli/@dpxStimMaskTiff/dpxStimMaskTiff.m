@@ -1,4 +1,4 @@
-classdef dpxStimMaskTiff < dpxAbstractStim
+classdef dpxStimMaskTiff < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBAfrac;
@@ -47,7 +47,9 @@ classdef dpxStimMaskTiff < dpxAbstractStim
             end
         end
         function myDraw(S)
-            Screen('DrawTexture',S.scrGets.windowPtr,S.maskTexture,S.srcRectPx,S.dstRectPx,0);
+            if S.visible
+                Screen('DrawTexture',S.scrGets.windowPtr,S.maskTexture,S.srcRectPx,S.dstRectPx,0);
+            end
         end
         function myClear(S)
             Screen('Close',S.maskTexture)

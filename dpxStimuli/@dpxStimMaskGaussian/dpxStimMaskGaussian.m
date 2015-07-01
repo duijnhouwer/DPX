@@ -1,4 +1,4 @@
-classdef dpxStimMaskGaussian < dpxAbstractStim
+classdef dpxStimMaskGaussian < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBAfrac;
@@ -37,7 +37,9 @@ classdef dpxStimMaskGaussian < dpxAbstractStim
             S.maskTexture=Screen('MakeTexture', S.scrGets.windowPtr, M, 0);
         end
         function myDraw(S)
-            Screen('DrawTexture', S.scrGets.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, 0);
+            if S.visible
+                Screen('DrawTexture', S.scrGets.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, 0);
+            end
         end
         function myClear(S)
             Screen('Close',S.maskTexture)

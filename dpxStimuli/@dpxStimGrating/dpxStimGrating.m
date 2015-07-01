@@ -1,4 +1,4 @@
-classdef dpxStimGrating < dpxAbstractStim
+classdef dpxStimGrating < dpxAbstractVisualStim
     
     properties (Access=public)
         dirDeg;
@@ -56,6 +56,9 @@ classdef dpxStimGrating < dpxAbstractStim
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx]; % add top right 
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
         end
         function myStep(S)

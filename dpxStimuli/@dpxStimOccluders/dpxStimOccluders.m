@@ -1,4 +1,4 @@
-classdef dpxStimOccluders < dpxAbstractStim
+classdef dpxStimOccluders < dpxAbstractVisualStim
     %DPXOCCLUDERS Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -53,11 +53,6 @@ classdef dpxStimOccluders < dpxAbstractStim
         function myDraw(S)
             
             DisplayEncodePics(S.Block(Tr).StimEncode,StimWindow,E.Input,E.PhysScr); 
-
-            
-          
-            
-            
         end
     end
 end

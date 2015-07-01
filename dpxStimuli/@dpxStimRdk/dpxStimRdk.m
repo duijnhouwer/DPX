@@ -1,4 +1,4 @@
-classdef dpxStimRdk < dpxAbstractStim
+classdef dpxStimRdk < dpxAbstractVisualStim
     
     properties (Access=public)
         dirDeg;
@@ -68,10 +68,12 @@ classdef dpxStimRdk < dpxAbstractStim
             S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
         end
         function myDraw(S)
-            ok=applyTheAperture(S);
-            if ~any(ok), return; end
-            xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-            Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+            if S.visible
+                ok=applyTheAperture(S);
+                if ~any(ok), return; end
+                xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
+                Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+            end
         end
         function myStep(S)
             % Reposition the dots, use shorthands for clarity

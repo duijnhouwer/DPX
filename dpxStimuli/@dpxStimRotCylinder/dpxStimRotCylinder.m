@@ -1,4 +1,4 @@
-classdef dpxStimRotCylinder < dpxAbstractStim
+classdef dpxStimRotCylinder < dpxAbstractVisualStim
     
     properties (Access=public)
         dotsPerSqrDeg=10;
@@ -98,6 +98,9 @@ classdef dpxStimRotCylinder < dpxAbstractStim
             S.dAz=S.rotSpeedDeg/180*pi/S.scrGets.measuredFrameRate;
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             wPtr=S.scrGets.windowPtr;
             for buffer=0:1
                 if buffer==0 % left eye

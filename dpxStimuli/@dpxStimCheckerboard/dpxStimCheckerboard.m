@@ -1,4 +1,4 @@
-classdef dpxStimCheckerboard < dpxAbstractStim
+classdef dpxStimCheckerboard < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBAfrac;
@@ -56,6 +56,9 @@ classdef dpxStimCheckerboard < dpxAbstractStim
             S.checkerboardTexture=Screen('MakeTexture', S.scrGets.windowPtr, M, 0);
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             filtermode=0; % 0 = nearest neighbor
             Screen('DrawTexture', S.scrGets.windowPtr, S.checkerboardTexture, [0 0 S.nHori S.nVert], S.dstRect, 0, filtermode);
         end

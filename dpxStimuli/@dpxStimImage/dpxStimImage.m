@@ -1,4 +1,4 @@
-classdef dpxStimImage < dpxAbstractStim
+classdef dpxStimImage < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBA=[0 0 255 255];
@@ -30,13 +30,15 @@ classdef dpxStimImage < dpxAbstractStim
             end
         end
         function myDraw(S)
+            if ~S.visible
+                return;
+            end
             Texture=CalcTexture(S.NrBars,S.HorDisp,S.BarConfig,S.scrGets,S.stimArray);
             texIdx=Screen('MakeTexture',S.scrGets.windowPtr,S.stimArray);
             wCnt=S.winCntrXYpx;
-            [Z X ~]=size(S.stimArray);
+            [Z,X,~]=size(S.stimArray);
             X=X*S.scale;
-            Z=Z*S.scale;
-            
+            Z=Z*S.scale; 
             if strcmpi(S.mode,'Encode')
                 for sL=1:length(S.stimLoc)
                     name=['pos',num2str(sL)];

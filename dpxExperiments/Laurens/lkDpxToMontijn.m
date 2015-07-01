@@ -14,13 +14,25 @@ function structMP=lkDpxToMontijn(filename)
     end
     for i=1:numel(files2convert)
         dpxData=dpxdLoad(files2convert{i});
-        switch dpxData.exp_expName{1}
-            case 'lkDpxGratingExp'
-                structMP(i)=convertLkDpxGratingExp(dpxData); %#ok<AGROW>
-            case 'lkDpxGratingAdaptExp'
+        expName=upper(dpxData.exp_expName{1});
+        unresolved=false;
+        if ~isempty(strfind(expName,'Adap'))
+            if strcmpi(expName,'lkDpxGratingAdaptExp')
                 structMP(i)=convertLkDpxGratingAdaptExp(dpxData); %#ok<AGROW>
-            otherwise
-                error(['Conversion of ' dpxData.exp_expName{1} ' not implemented']);
+            else
+                unresolved=true;
+            end
+        else
+            if strcmpi(expName,'lkDpxGratingExp')
+                structMP(i)=convertLkDpxGratingExp(dpxData); %#ok<AGROW>
+            elseif ~isempty(strfind(expName,'Tuning'))
+                structMP(i)=convertLkDpxGratingExp(dpxData); %#ok<AGROW>
+            else
+                unresolved=true;
+            end
+        end
+        if unresolved
+            error(['don''t know what to do with ' expName ' experiments...']);
         end
         outfile=createOutputFilename(files2convert{i});
         save(outfile,'structMP');

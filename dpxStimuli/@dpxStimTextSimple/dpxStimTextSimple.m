@@ -1,4 +1,4 @@
-classdef dpxStimTextSimple < dpxAbstractStim   
+classdef dpxStimTextSimple < dpxAbstractVisualStim   
     properties (Access=public)    
         str; 
         RGBAfrac; 
@@ -42,7 +42,9 @@ classdef dpxStimTextSimple < dpxAbstractStim
             S.oldTextSize=Screen('TextSize',S.scrGets.windowPtr,S.fontsize);
         end
         function myDraw(S)
-            DrawFormattedText(S.scrGets.windowPtr,S.str,'center','center',S.RGBA,[],0,0,1.5,0,[]);      
+            if S.visible
+                DrawFormattedText(S.scrGets.windowPtr,S.str,'center','center',S.RGBA,[],0,0,1.5,0,[]);
+            end
         end
         function myClear(S)
             % This doesn't really work when multiple text stimuli with

@@ -24,6 +24,8 @@ classdef dpxCoreCondition < hgsetget
         % Counter for breakfixation grace period
         flipsSinceBreakFix;
         breakFixGraceFlips;
+        % indices of visual stim
+        visualStimIndices;
     end
     methods (Access=public)
         function C=dpxCoreCondition
@@ -37,6 +39,7 @@ classdef dpxCoreCondition < hgsetget
             % conditions
             C.overrideBackRGBA=false;
             C.breakFixGraceSec=.2; % how long does a blink last??
+            C.visualStimIndices=[];
         end
         function init(C,scrGets)
             % Initialize the dpxCoreCondition object Store a copy of the values in scr,
@@ -82,9 +85,9 @@ classdef dpxCoreCondition < hgsetget
                     respStruct.(C.resps{r}.name)=C.resps{r}.resp;
                 end
             end
-            % Figure out which stimulus needs to be fixated, if any
+            % Figure out which stimulus (visual only) needs to be fixated, if any
             stimNumberToFixate=[];
-            for s=1:numel(C.stims)
+            for s=C.visualStimIndices(:)'
                 if C.stims{s}.fixWithinDeg>0
                     if ~isempty(stimNumberToFixate)
                         error('Only one stimulus can have fixWithinDeg>0!');
@@ -110,12 +113,13 @@ classdef dpxCoreCondition < hgsetget
                     f=f+1; % increment flip counter since lock release
                 else
                     % Check all triggers, if all go, lift the trigger lock
+                    waitingForTriggers=false;
                     for g=1:numel(C.trigs)
                         if ~C.trigs{g}.go
+                            waitingForTriggers=true; % at least one is not ready
                             break
                         end
                     end
-                    waitingForTriggers=g<numel(C.trigs);
                 end
                 % Check the break keys
                 keyIdx=dpxGetKey(breakKeys);
@@ -254,12 +258,18 @@ classdef dpxCoreCondition < hgsetget
             % conditon is shown;
             S.lockInitialPublicState;
             C.stims{end+1}=S;
-            % Check that all responses have unique names, this is important for the
+            % Check that all stimuli have unique names, this is important for the
             % output format (DPXD)
             nameList=cellfun(@(x)get(x,'name'),C.stims,'UniformOutput',false);
             if numel(nameList)~=numel(unique(nameList))
                 disp(nameList);
                 error('All stimuli in a condition need unique names');
+            end
+            % Keep a index-list of all stimulu in the stim array that are visual
+            % stimuli. This will be used to iterate over stimuli to call methods or
+            % check properties that only visual stimuli have
+            if isprop(S,'visible')
+                C.visualStimIndices(end+1)=numel(C.stims);
             end
         end
         function addResp(C,R)

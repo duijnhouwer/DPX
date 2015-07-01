@@ -1,4 +1,4 @@
-classdef dpxStimMaskCircle < dpxAbstractStim
+classdef dpxStimMaskCircle < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBAfrac;
@@ -44,8 +44,10 @@ classdef dpxStimMaskCircle < dpxAbstractStim
             S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx];
         end
         function myDraw(S)
-            srcRect=[0 0 S.visibleSizePx S.visibleSizePx];
-            Screen('DrawTexture',S.scrGets.windowPtr,S.maskTexture,srcRect,S.dstRect,0);
+            if S.visible
+                srcRect=[0 0 S.visibleSizePx S.visibleSizePx];
+                Screen('DrawTexture',S.scrGets.windowPtr,S.maskTexture,srcRect,S.dstRect,0);
+            end
         end
         function myClear(S)
             Screen('Close',S.maskTexture)

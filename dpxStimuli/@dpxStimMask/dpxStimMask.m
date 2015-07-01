@@ -1,4 +1,4 @@
-classdef dpxStimMask < dpxAbstractStim
+classdef dpxStimMask < dpxAbstractVisualStim
     
     properties (Access=public)
         typeStr; % 'none', 'gaussian', 'circle'
@@ -95,7 +95,9 @@ classdef dpxStimMask < dpxAbstractStim
             end
         end
         function myDraw(S)
-            Screen('DrawTexture', S.scrGets.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, 0);
+            if S.visible
+                Screen('DrawTexture', S.scrGets.windowPtr, S.maskTexture, [0 0 S.visibleSizePx S.visibleSizePx], S.dstRect, 0);
+            end
         end
         function myClear(S)
             Screen('Close',S.maskTexture)

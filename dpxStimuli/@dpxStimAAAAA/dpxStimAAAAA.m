@@ -30,6 +30,9 @@ classdef dpxStimAAAAA < dpxAbstractStim
         function myDraw(S)
             % Called every flip, after myStep. All drawing is done here,
             % the video-flip is triggered right after this.
+            if ~S.visible
+                return;
+            end
             xyTopLeft=S.winCntrXYpx+[S.xPx-S.wPx/2 S.yPx-S.hPx/2];
             xyBotRite=S.winCntrXYpx+[S.xPx+S.wPx/2 S.yPx+S.hPx/2];
             rect=[xyTopLeft xyBotRite];

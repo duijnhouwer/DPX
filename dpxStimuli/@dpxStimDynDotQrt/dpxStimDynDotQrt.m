@@ -1,4 +1,4 @@
-classdef dpxStimDynDotQrt < dpxAbstractStim
+classdef dpxStimDynDotQrt < dpxAbstractVisualStim
     
     properties (Access=public)
         flashSec;
@@ -80,8 +80,9 @@ classdef dpxStimDynDotQrt < dpxAbstractStim
             S.showOddPair=true;
         end
         function myDraw(S)
-            %  Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{1}, [10 400 100 500])
-            %  return
+            if ~S.visible
+                return;
+            end
             if S.showOddPair
                 Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{1}, S.rectsPx{1}, S.diamPx(1));
                 Screen('FillOval', S.scrGets.windowPtr, S.RGBAs{3}, S.rectsPx{3}, S.diamPx(3));

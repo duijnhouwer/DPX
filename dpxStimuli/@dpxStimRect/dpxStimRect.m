@@ -1,4 +1,4 @@
-classdef dpxStimRect < dpxAbstractStim
+classdef dpxStimRect < dpxAbstractVisualStim
     
     properties (Access=public)
         RGBAfrac;
@@ -20,7 +20,9 @@ classdef dpxStimRect < dpxAbstractStim
             S.rect=[xyTopLeft xyBotRite];
         end
         function myDraw(S)
-            Screen('FillRect',S.scrGets.windowPtr,S.RGBA,S.rect);
+            if S.visible
+                Screen('FillRect',S.scrGets.windowPtr,S.RGBA,S.rect);
+            end
         end
     end
     methods
