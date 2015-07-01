@@ -14,7 +14,7 @@ function structMP=lkDpxToMontijn(filename)
     end
     for i=1:numel(files2convert)
         dpxData=dpxdLoad(files2convert{i});
-        expName=upper(dpxData.exp_expName{1});
+        expName=dpxData.exp_expName{1};
         unresolved=false;
         if ~isempty(strfind(expName,'Adap'))
             if strcmpi(expName,'lkDpxGratingAdaptExp')
