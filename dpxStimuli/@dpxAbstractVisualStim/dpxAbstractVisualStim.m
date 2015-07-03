@@ -11,7 +11,6 @@ classdef (Abstract) dpxAbstractVisualStim < dpxAbstractStim
         fixWithinDeg;
     end
     properties (Access=protected)
-        scrGets=[];
         xPx;
         yPx;
         zPx;
@@ -20,17 +19,14 @@ classdef (Abstract) dpxAbstractVisualStim < dpxAbstractStim
         winCntrXYpx=[];
         fixWithinPx=[];
         eyeUsed=-1;
-        el;
+        eyeLink;
     end
     methods (Access=public)
         function S=dpxAbstractVisualStim
             % dpxAbstractVisualStim - Abstract class for dpxStim classes that produce
             % visual stimuli. This class inherits from dpxAbstractStim and adds visual
-            % properties such as size and position of the stimuli on screen 
-            %
-            % Abstract means no objects can be created from this class, it only serves
-            % to be inherited. The names of all derived classes should be of the format
-            % dpxStimXXX where XXX is a placeholder for the name of your stimulus.
+            % properties such as size and position of the stimuli on screen. It also
+            % provides functionality for gaze monitoring using the Eyelink.
             %
             % See also: dpxAbstractStim, dpxAbstractResp, dpxStimRdk
             %
@@ -70,7 +66,7 @@ classdef (Abstract) dpxAbstractVisualStim < dpxAbstractStim
             S.myInit; % stimulus class specific init
             if S.fixWithinDeg>0 && S.checkEyelinkIsConnected
                 S.fixWithinPx=S.fixWithinDeg * scrGets.deg2px;
-                S.el=EyelinkInitDefaults(scrGets.windowPtr);
+                S.eyeLink=EyelinkInitDefaults(scrGets.windowPtr);
                 S.eyeUsed=-1;
             end
         end
@@ -85,14 +81,14 @@ classdef (Abstract) dpxAbstractVisualStim < dpxAbstractStim
                     evt = Eyelink('NewestFloatSample');
                     if S.eyeUsed==-1
                         S.eyeUsed = Eyelink('EyeAvailable'); % get eye that's tracked
-                        if S.eyeUsed == S.el.BINOCULAR; % if both eyes are tracked
-                            S.eyeUsed = S.el.LEFT_EYE; % use left eye
+                        if S.eyeUsed == S.eyeLink.BINOCULAR; % if both eyes are tracked
+                            S.eyeUsed = S.eyeLink.LEFT_EYE; % use left eye
                         end
                     end
                     x = evt.gx(S.eyeUsed+1); % +1 as we're accessing MATLAB array
                     y = evt.gy(S.eyeUsed+1);
                     % do we have valid data and is the pupil visible?
-                    if x~=S.el.MISSING_DATA && y~=S.el.MISSING_DATA && evt.pa(S.eyeUsed+1)>0
+                    if x~=S.eyeLink.MISSING_DATA && y~=S.eyeLink.MISSING_DATA && evt.pa(S.eyeUsed+1)>0
                         % The data is valid. Now check if it's within the maximum distance from the
                         % stimulus x,y;
                         x=x-S.winCntrXYpx(1);

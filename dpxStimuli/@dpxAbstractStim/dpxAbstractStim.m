@@ -15,7 +15,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         offFlip;
         flipCounter; % flips since this stimulus was enabled
         flipsPriorEnable; % global flips preceding start of stimulus's flipCounter
-      %  scrGets=[]; % needed even though non-visual, because FRAMERATE is the global zeitgeber
+      	scrGets=[]; % needed even though non-visual, because measuredFramerate is in here and is the global zeitgeber for all stimuli, visual or non
         stepCounter;
         RND; % RandStream
     end
@@ -74,15 +74,20 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.stepCounter=0;
             S.onFlip = round(S.onSec * scrGets.measuredFrameRate);
             S.offFlip = round((max(S.onSec,0) + S.durSec) * scrGets.measuredFrameRate);
-            %S.scrGets=scrGets;
+            S.scrGets=scrGets;
             S.myInit; % stimulus class specific init
         end
         function stepAndDraw(S,globalFlipCounter)
             if S.enabled && S.flipsPriorEnable==0
+                % Store the number of flips that this trial was already running before this
+                % stimulus was enabled. This will usually be zero, as most stimuli are
+                % always enabled. The main purpose of this extra counter is that stimuli
+                % that are enabled after a response can count their onSec and durSec
+                % relative that moment instead of from the beginning of the trial.
                 S.flipsPriorEnable=globalFlipCounter-1;
             end
             if S.enabled
-                S.flipCounter=globalFlipCounter-S.flipsPriorEnable;
+                S.flipCounter=globalFlipCounter-S.flipsPriorEnable; % stimulus's flipcounter is relative to first enable
                 if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
                     % flipCounter is updated before step and draw are called. Therefore, it's a
                     % one-based counter (starts at 1);
