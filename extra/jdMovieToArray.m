@@ -6,6 +6,7 @@ function A=jdMovieToArray(filename)
     %
     % Use A=squeeze(mean(A,3)) to convert a RGB movie to a grayscale movie-array
     %
+    % See also: jdMovieRandomDots, jdMovieGrating, jdMovieArrayToSpaceTime
     
     if nargin==0
         [filename,pathname] = uigetfile( ...
@@ -14,7 +15,7 @@ function A=jdMovieToArray(filename)
             'Pick a Video file');
         filename=fullfile(pathname,filename);
     end
-        
+            
     obj=VideoReader(filename);
     obj.CurrentTime=0;
     if strcmpi(obj.VideoFormat,'RGB24')

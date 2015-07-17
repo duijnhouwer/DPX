@@ -20,9 +20,13 @@ function M=jdFadeFrame(M,fadePx,meanLum)
     wRange=-w/2:-floor(w/2)+w-1;
     hRange=-h/2:-floor(h/2)+h-1;
     [x,y]=meshgrid(wRange,hRange);
-    ir=min([w h])/2-fadePx;
     or=min([w h])/2;
-    I=(hypot(x,y)-ir)/(or-ir);
+    if fadePx>0
+        ir=min([w h])/2-fadePx;
+        I=(hypot(x,y)-ir)/(or-ir);
+    else
+        I=hypot(x,y)>=or;
+    end
     O=dpxClip(I,[0 1]); % opacity level field (0..1)
     F=ones(size(M))*meanLum; % fade color field
     M=O.*F+(1-O).*M; % blend M and F according to O

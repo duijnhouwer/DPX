@@ -32,7 +32,7 @@ function jdMovieRandomDots(varargin)
     p.addOptional('RGB2',[0 0 1],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 2
     p.addOptional('aaPx',8,@(x)isnumeric(x) && ~rem(x,1) && x>=0 && numel(x)==1); % Prevent jagged, pixelated images by supersampling the frames followed by bicubic downscaling. 0 means no anti-aliasing, 8 is a sensible value
     p.addOptional('verbosity_',1,@(x)any(x==[0 1 2]) && numel(x)==1); % verbosity level (disp), _ denotes don't include in auto-filename
-    p.addOptional('play',true,@islogical);
+    p.addOptional('play_',true,@islogical);
     p.parse(varargin{:});
     p=p.Results;
     
@@ -90,7 +90,7 @@ function jdMovieRandomDots(varargin)
         fprintf(repmat('\b',1,numel(str)));
         fprintf('%s\n','Done.');
     end
-    if p.play
+    if p.play_
         implay(fullfile(wObj.Path,wObj.Filename));
     end
 end
@@ -256,16 +256,19 @@ function [M,rdk]=drawFrame(f,p,rdk)
         end
     end
     if isGrayscale
-        R=jdFadeFrame(R,p.fadePx*p.aaPx,p.RGB0(1));
-        M=cat(3,R,R,R)*255;
+        M=cat(3,R,R,R);
     else
-        R=jdFadeFrame(R,p.fadePx*p.aaPx,p.RGB0(1));
-        G=jdFadeFrame(G,p.fadePx*p.aaPx,p.RGB0(2));
-        B=jdFadeFrame(B,p.fadePx*p.aaPx,p.RGB0(3));
-        M=cat(3,R,G,B)*255;
+        M=cat(3,R,G,B);
     end
     M=imresize(M,1/p.aaPx,'bicubic');
-    M=uint8(M);
+    if p.fadePx>=0
+         M(:,:,1)=jdFadeFrame(M(:,:,1),p.fadePx,p.RGB0(1));
+         if ~isGrayscale
+            M(:,:,2)=jdFadeFrame(M(:,:,2),p.fadePx,p.RGB0(2));
+            M(:,:,3)=jdFadeFrame(M(:,:,3),p.fadePx,p.RGB0(3));
+         end
+    end
+    M=uint8(M*255);
 end
 
 
