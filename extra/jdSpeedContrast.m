@@ -1,7 +1,6 @@
 
-function jdSpeedContrast2D
-    plotExample;
-    return
+function jdSpeedContrast
+%    plotExample;
     global fitopts
     models={'EoffIsMinusIoff'};%,'EoffZero'}%,''};EoffZero EoffIsMinusIoff OneOffOneSig
     for i=1:numel(models)
@@ -25,22 +24,18 @@ function plotExample
     pars.Isig=30;
     pars.Ro=5;
     pars=jdStructToArray(pars);
-    
     findfig('Example')
-    
-    
-   
-    for i=1:2
+    for i=1:1
         if i==1
-            h(1)=subplot(2,2,1)
+            h(1)=subplot(1,2,1,'align');
             stl='-';
         else
-            h(2)=subplot(2,2,3)
+            h(2)=subplot(2,2,3,'align');
             stl='--';
         end
         maxV=12;
-        [R,v,~,E,I,~,peaks]=speedContrastResponseCurve(...
-            'dpsDom',[-(2.^(maxV:-.1:0)) 0 2.^(0:.1:maxV)] ...
+        [R,v,~,E,I]=speedContrastResponseCurve(...
+            'dpsDom',[-(2.^(maxV:-.25:0)) 0 2.^(0:.25:maxV)] ...
             ,'contDom', xSecCont(i)...
             ,'parList', pars ...
             ,'mods','EoffIsMinusIoff' ... EoffIsMinusIoff EoffZero
@@ -51,43 +46,50 @@ function plotExample
         plot(v,R,stl,'LineWidth',2,'Color',[0 0 0 1]);
         plot(v(R==max(R)),max(R),'om','MarkerFaceColor','m','MarkerSize',5);
         if i==1
-            
             vMaxE=v(E==max(E));
             plot([vMaxE vMaxE],[0 max(E)],'LineWidth',1,'Color',[1 0 0 1]);
             vMaxI=v(I==max(I));
             plot([vMaxI vMaxI],[0 max(I)],'LineWidth',1,'Color',[0 0 1 1]);
-            % jdPlotHori(5,'r-');
         end
         jdXaxis(-maxV-1,maxV+1);
         set(gca, 'Layer', 'top');
         box off;
+        jdPlotVert(0,'k--');
+        if i==1, jdText(['C = ' num2str(xSecCont(i),'%.1f') ],'FontSize',12); end
     end
-    
     jdGraphShareAxes(h);
+    jdText(['C = ' num2str(xSecCont(i),'%.1f')],'FontSize',12);
+    xlabel('Speed (Log2 deg/s)','FontSize',12);
+    ylabel('Spikes/s','FontSize',12);
     
-    
-    subplot(2,2,[2 4])
+    subplot(2,2,[2 4],'align')
     vDom=[-256:.1:-1 0 1:.1:256];
-    
     [R,vMesh,cMesh,E,I,~,peaks]=speedContrastResponseCurve(...
         'dpsDom',[-256:.1:-1 0 1:.1:256] ...
         ,'contDom',.1:.01:1 ...
         ,'parList',pars ...
         ,'mods','EoffIsMinusIoff' ... EoffIsMinusIoff EoffZero
-        ,'logDps',true);   
-    surf(vMesh,cMesh,R,'EdgeColor','none');
-    colorbar
-    view(2);
+        ,'logDps',true);
+    %   surf(vMesh,cMesh,R,'EdgeColor','none');
+    
+    
+    [I,vAx,cAx]=jdSurfToImage(vMesh,cMesh,R,256,256);
+    imagesc(vAx,cAx,I);
+    set(gca,'YDir','normal');
     axis tight;
-    shading interp
+    % shading interp
     hold on;
+    colorbar
     Z=ones(peaks.N,1)*max(R(:))*2;
     plot3(peaks.V,peaks.C,peaks.R+sqrt(eps),'m-','LineWidth',4);
     plot3([-log2(abs(min(vDom))) log2(max(vDom))],[xSecCont(1) xSecCont(1)],[max(R(:)) max(R(:))]+eps,'k-','LineWidth',2);
-    plot3([-log2(abs(min(vDom))) log2(max(vDom))],[xSecCont(2) xSecCont(2)],[max(R(:)) max(R(:))]+eps,'k--','LineWidth',2);
+   % plot3([-log2(abs(min(vDom))) log2(max(vDom))],[xSecCont(2) xSecCont(2)],[max(R(:)) max(R(:))]+eps,'k--','LineWidth',2);
     set(gca, 'Layer', 'top');
+    plot3([0 0],[.1 1],[max(R(:)) max(R(:))]+eps,'k--');
     grid off;
     box on;
+    xlabel('Speed (Log2 deg/s)','FontSize',12);
+    ylabel('Contrast','FontSize',12);
 end
 
 function out=KrekelbergVanWezelAlbright2006
@@ -148,16 +150,16 @@ function out=fitSimple(speeds,conts,targetResp)
     maxR=max(targetResp(:));
     %
     EoffEst=[speeds(find(targetResp==maxR,1)) 0 maxS*2];
-    EsigEst=[maxS/3 15 maxS*3];
+    EsigEst=[maxS/3 10 1000];
     IoffEst=EoffEst;
     IsigEst=EsigEst;
-    IgainEst=[1 eps 10];
     RoEst=[minR -maxR maxR];
-    AEst=[maxR/2 eps 500];
-    contPowEst=[0.25 0 1];
-    STR=[ AEst(1) contPowEst(1) EoffEst(1) EsigEst(1) IgainEst(1) IoffEst(1) IsigEst(1) RoEst(1)];
-    LOB=[ AEst(2) contPowEst(2) EoffEst(2) EsigEst(2) IgainEst(2) IoffEst(2) IsigEst(2) RoEst(2)];
-    UPB=[ AEst(3) contPowEst(3) EoffEst(3) EsigEst(3) IgainEst(3) IoffEst(3) IsigEst(3) RoEst(3)];
+    AeEst=[maxR/2 eps 500];
+    AiEst=[maxR/2 eps 500];
+    contPowEst=[.25 0.05 1];
+    STR=[ AeEst(1) AiEst(1) contPowEst(1) EoffEst(1) EsigEst(1)  IoffEst(1) IsigEst(1) RoEst(1)];
+    LOB=[ AeEst(2) AiEst(2) contPowEst(2) EoffEst(2) EsigEst(2)  IoffEst(2) IsigEst(2) RoEst(2)];
+    UPB=[ AeEst(3) AiEst(3) contPowEst(3) EoffEst(3) EsigEst(3)  IoffEst(3) IsigEst(3) RoEst(3)];
     %
     % Run the fit in a loop with different starting values, choose the best R2
     uSpeeds=unique(speeds);
@@ -177,9 +179,9 @@ function out=fitSimple(speeds,conts,targetResp)
             out.rss=sum(residual(:).^2);
             out.r2=jdR2(targetResp(:),residual(:));
             bestR2=thisR2;
-            out.lobStr=sprintf('A=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIgain=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',LOB);
-            out.estStr=sprintf('A=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIgain=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',EST);
-            out.upbStr=sprintf('A=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIgain=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',UPB);
+            out.lobStr=sprintf('Ae=%.2f\t\tIgain=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',LOB);
+            out.estStr=sprintf('Ae=%.2f\t\tIgain=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',EST);
+            out.upbStr=sprintf('Ae=%.2f\t\tIgain=%.2f\t\tcontPow=%.2f\t\tEoff=%.2f\t\tEsig=%.2f\t\tIoff=%.2f\t\tIsig=%.2f\t\tRo=%.2f',UPB);
             fprintf('\nLOB : %s',out.lobStr);
             fprintf('\nEST : %s',out.estStr);
             fprintf('\nUPB : %s',out.upbStr);
@@ -413,7 +415,7 @@ function plotDataAndFit(fit,spn)
     %
     axis tight;
     if ~isPrediction
-        jdText(['R2 = ' num2str(fit.r2,'%.2f')]);
+        jdText(['R2 = ' num2str(fit.r2,'%.2f')],'FontSize',12);
         %
         if spn(3)==1
             xlabel('Speed (deg/s)');

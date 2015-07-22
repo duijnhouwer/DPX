@@ -65,12 +65,13 @@ function dpxToolCommentEditor_OpeningFcn(hObject, eventdata, handles, varargin)
     guidata(hObject, handles);
     %
     showComment(hObject, handles);
+    % UIWAIT makes dpxToolCommentEditor wait for user response (see UIRESUME)
+    %uiwait(handles.figure1);
 end
 
 
 
-% UIWAIT makes dpxToolCommentEditor wait for user response (see UIRESUME)
-%uiwait(handles.figure1);
+
 
 
 % --- Outputs from this function are returned to the command line.

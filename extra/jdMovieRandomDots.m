@@ -25,7 +25,7 @@ function jdMovieRandomDots(varargin)
     p.addOptional('dotRadiusPx',20,@(x)isnumeric(x) && x>0 && numel(x)==1 && ~mod(x,2)); % dot radius in pixels, must be even!
     p.addOptional('stepFr',Inf,@(x)isnumeric(x) && x>0 && numel(x)==1); % number of steps a dot takes befores being refreshed
     p.addOptional('coherence',1,@(x)isnumeric(x) && x>=0 && x<=1 && numel(x)==1); % coherent motion fraction
-    p.addOptional('revphi',false,@(x)islogical(x) || x==1 || x==0);
+    p.addOptional('rgbFlipFr',false,@dpxIsWholeNumber); % switch RGB1 and RGB2 every Nth frame (0=phi, >0 is reverse phi)
     p.addOptional('deltaDeg',[0 90],@isnumeric); % angular deviations of transparent motion components from dx dy values, e.g. [0 180] two opposite motions
     p.addOptional('RGB0',[.5 .5 .5],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb background
     p.addOptional('RGB1',[1 0 0],@(x)isnumeric(x) && all(x>=0) && all(x<=1) && numel(x)==3); % rgb dots 1
@@ -224,7 +224,7 @@ function [M,rdk]=drawFrame(f,p,rdk)
             G(idx)=p.RGB1(2);
             B(idx)=p.RGB1(3);
         end
-    elseif ~p.revphi % Two colors used, regular phi
+    elseif p.rgbFlipFr==0 % Two colors used, regular phi
         % draw M==1 dots in RGB1
         % draw M==2 dots in RGB1
         idx=M==1;
@@ -240,15 +240,21 @@ function [M,rdk]=drawFrame(f,p,rdk)
             B(idx)=p.RGB2(3);
         end
     else % two color used, reverse phi
-        % draw rdk.colorGroup==1 dots in RGB1 on odd frames and RGB2 of even frames
-        % draw rdk.colorGroup==2 dots in RGB2 on odd frames and RGB1 of even frames
-        idx=M==mod(f,2)+1;
+        % assign RGB1 and RGB2 to index color 1 or 2 and flip assignment every rgbFlipFr-th frame
+        if mod(floor((f-1)/p.rgbFlipFr),2)
+            RGB1to=1;
+            RGB2to=2;
+        else
+            RGB1to=2;
+            RGB2to=1;
+        end
+        idx=M==RGB1to;
         R(idx)=p.RGB1(1);
         if ~isGrayscale
             G(idx)=p.RGB1(2);
             B(idx)=p.RGB1(3);
         end
-        idx=M~=mod(f,2)+1;
+        idx=M==RGB2to;
         R(idx)=p.RGB2(2);
         if ~isGrayscale
             G(idx)=p.RGB2(2);
