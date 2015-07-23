@@ -1,6 +1,6 @@
 function files=jdDpxExpHalfDomeRdkAnalysis(files)
     if nargin==0
-        files=dpxUIgetfiles;
+        files=dpxUIgetFiles;
         if isempty(files)
             return;
         end
@@ -10,6 +10,10 @@ function files=jdDpxExpHalfDomeRdkAnalysis(files)
         D=dpxdLoad(files{i});
         [D,str,suspect,maxCorr]=clarifyAndCheck(D);
         if ~suspect
+            % Only include data files that are completely fine and have no suspicious
+            % things happening, like poor correlations between the yaw measurements of
+            % both computer mice on the ball (both measure yaw, should be about the
+            % same)
             E{end+1}=D;
         else
             disp(['clarifyAndCheck said ' str ' but correlation (' num2str(maxCorr) ') is below threshold...']);
@@ -17,40 +21,61 @@ function files=jdDpxExpHalfDomeRdkAnalysis(files)
         end
         clear D;
     end
-    E=dpxdMerge(E);
-    E=dpxdSplit(E,'exp_subjectId'); % split per mouse
-    C={};
-    for i=1:numel(E) % for each mouse, get the curves
-        C{end+1}=getSpeedCurves(E{i}); %#ok<AGROW>
+    % Merge all datafiles that we collected in cell array 
+    E=dpxdMerge(E); % E is now a DPXD
+    % Add a mean background luminance field to E based on the RGBAfrac values
+    % by calculates the mean of the first 3 elements of each 4-element array in
+    % cell array E.mask_RGBAfrac
+    E.mask_grayFrac=cellfun(@(x)mean(x(1:3)),E.mask_RGBAfrac);
+    E.mask_grayFrac=round(E.mask_grayFrac*1000)/1000; % round to remove precission errors
+    lumsUsed=unique(E.mask_grayFrac);
+    lumsUsed=[lumsUsed -1]; % add -1 to analyze the pooled data also
+    for i=1:numel(lumsUsed)
+        if lumsUsed(i)==-1
+            analyze(E,'; Lum=ALL');
+        else
+            analyze(dpxdSubset(E,E.mask_grayFrac==lumsUsed(i)),['; Lum=' num2str(lumsUsed(i))]);
+        end
     end
-    plotAllYawToCheckClipping(C);
+end
+
+
+function analyze(E,titleString)
+    % split E per mouse, E
+    E=dpxdSplit(E,'exp_subjectId'); % E is now a cell-array of DPXDs
+    % for each mouse, get the curves, and store in cell array C
+    C=cell(size(E));
+    for i=1:numel(E)
+        C{i}=getSpeedCurves(E{i});
+    end
+    % Make a plot of the raw yaw traces, to visual inspect for clipping
+    plotAllYawToCheckClipping(C,titleString);
     % calculate mean traces per mouse (pooled over sessions)
     C=getMeanYawTracesPerMouse(C);
-    % add a virtual mouse that is the mean of all others
+    % add a virtual mouse that is the mean of all mean-others
     C=addMeanMouse(C);
     %
     C=getOffsetPerSecond(C);
     % plot the curves, panel per mouse
-    plotTraces(C);
+    plotTraces(C,titleString);
     % plot the drifts relative to stat
-    plotDriftScatter(C);
+    plotDriftScatter(C,titleString);
 end
 
-
 function C=getSpeedCurves(D)
-    if false
-        S{1}=dpxdSubset(D,D.rdk_aziDps<0);
-        S{2}=dpxdSubset(D,D.rdk_aziDps==0);
-        S{3}=dpxdSubset(D,D.rdk_aziDps>0);
-    elseif true
-        S{1}=dpxdSubset(D,D.rdk_aziDps==-10|D.rdk_aziDps==-40);
-        S{2}=dpxdSubset(D,D.rdk_aziDps==0);
-        S{3}=dpxdSubset(D,D.rdk_aziDps==10|D.rdk_aziDps==40);
-    end
+    % Split the data in left, static, and rightward stimulation
+    S{1}=dpxdSubset(D,D.rdk_aziDps<0);
+    S{2}=dpxdSubset(D,D.rdk_aziDps==0);
+    S{3}=dpxdSubset(D,D.rdk_aziDps>0);
+    % Make
     C.speed=[];
     for i=1:numel(S)
         C.speed(i)=S{i}.rdk_aziDps(1);
         C.mus{i}=S{i}.exp_subjectId{1};
+        % Get the yaw that happened from half a second before the start of the
+        % stimulus until the start of the stimulus. This mean of this will be the
+        % baseline speed that we subtract from the whole yaw-trace a first step of
+        % normalization, i.e., this removes the baseline
         preStimYaw=getYawTrace(S{i},[-.5 0]);
         [C.yawRaw{i},C.time{i}]=getYawTrace(S{i},[-.5 2]);
         % subtract the baseline speed
@@ -58,12 +83,15 @@ function C=getSpeedCurves(D)
             C.yaw{i}{t}=C.yawRaw{i}{t}-nanmean(preStimYaw{t});
         end
     end
+    % Add the number of speeds. A field called N that contains the numbers of
+    % elemenents per row of DPXD struct is required for any valid DPXD struct.
     C.N=numel(C.speed);
     if ~dpxdIs(C)
         error('not a valid DPXD!');
     end
-    %- sub function
+    % ---- Sub function
     function [yaw,time]=getYawTrace(S,interval)
+        % calculate the mean yaw for all trials in S over the specified interval 
         yaw=cell(1,S.N);
         for tt=1:S.N
             from=interval(1)+S.rdk_motStartSec(tt);
@@ -150,7 +178,7 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
     end
     if maxCorr<0.8
         suspect=true;
-        keyboard
+     %   keyboard
     end
 end
 
@@ -189,6 +217,8 @@ function C=getMeanYawTracesPerMouse(C)
 end
 
 function C=addMeanMouse(C)
+    % Calculate a mean of all mice and add it as an additional mouse called
+    % 'MEAN'
     nMice=numel(C);
     C{nMice+1}=C{1};
     for i=1:C{end}.N
@@ -204,8 +234,10 @@ function C=addMeanMouse(C)
     end
 end
 
-function plotTraces(C)
-    findfig('TheWayOfTheMouse');
+function plotTraces(C,str)
+    % Plot the traces per speed, with colored areas to highlight the difference
+    % between left, static, and rightward stimulation
+    findfig(['TheWayOfTheMouse ' str]);
     nMice=numel(C);
     for i=1:nMice
         [~,order]=sort(abs(C{i}.speed));
@@ -234,11 +266,14 @@ function plotTraces(C)
         statY=statY(1:minN);
         riteX=riteX(1:minN);
         riteY=riteY(1:minN);
-        plot(leftX,leftY,'LineStyle','-','LineWidth',2,'Color','r');        hold on
+        % PLot the areas
+        patch([leftX leftX(end:-1:1)],[statY leftY(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');  hold on
+        patch([riteX riteX(end:-1:1)],[statY riteY(end:-1:1)],'b','FaceAlpha',.1,'LineStyle','none');
+        % Plot the lines
+        plot(leftX,leftY,'LineStyle','-','LineWidth',2,'Color','r'); 
         plot(statX,statY,'LineStyle','-','LineWidth',2,'Color','k');
         plot(riteX,riteY,'LineStyle','-','LineWidth',2,'Color','b');
-        patch([leftX leftX(end:-1:1)],[statY leftY(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');
-        patch([riteX riteX(end:-1:1)],[statY riteY(end:-1:1)],'b','FaceAlpha',.1,'LineStyle','none');
+        %
         axis tight
         dpxText(C{i}.mus{1});
         dpxPlotHori;
@@ -284,8 +319,8 @@ function C=getOffsetPerSecond(C)
 end
 
 
-function plotDriftScatter(C)
-    dpxFindFig('DriftScatter');
+function plotDriftScatter(C,titleString)
+    dpxFindFig(['DriftScatter' titleString]);
     x=[];
     y=[];
     for i=1:numel(C)-1 % don't include the pooled mouse
@@ -298,8 +333,8 @@ function plotDriftScatter(C)
 end
 
 
-function plotAllYawToCheckClipping(C)
-    findfig('YawBreaker');
+function plotAllYawToCheckClipping(C,titleString)
+    findfig(['YawBreaker' titleString]);
     for i=1:numel(C)
         subplot(ceil(numel(C)/5),5,i);
         for s=1:numel(C{i}.yawRaw)
