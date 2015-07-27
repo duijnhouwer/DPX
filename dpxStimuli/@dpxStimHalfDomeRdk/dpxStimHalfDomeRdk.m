@@ -9,11 +9,12 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
         lutFileName;
         RGBAfrac1;
         RGBAfrac2;
-        motType;
         aziDps;
         eleDps;
         motStartSec; % relative to stim on
         motDurSec;
+        freezeFlip; % keep the stimulus frozen for N flips
+        invertSteps; % flip RGBAfrac1 and 2 every N dot-steps
     end
     properties (Access=protected)
         LUT;
@@ -30,6 +31,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
         eleDegPerFlip;
         motStartFlip;
         motStopFlip;
+        dotStepsToInversion;
     end
     methods (Access=public)
         function S=dpxStimHalfDomeRdk
@@ -49,11 +51,12 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.dAdEdeg=[0 sind(45:45:360)*.5 sind(30:30:360) ; 0 cosd(45:45:360)*.5 cosd(30:30:360)];
             S.RGBAfrac1=[0 0 0 1];
             S.RGBAfrac2=[1 1 1 1];
-            S.motType='phi';
             S.aziDps=60;
             S.eleDps=0; % currently only a placeholder!
             S.motStartSec=2; % relative to stimOnSec
             S.motDurSec=4;
+            S.freezeFlip=1; % keep the stimulus frozen for N flips, decrease effective framerate
+            S.invertSteps=Inf; % flip RGBAfrac1 and 2 every N flips
         end
     end
     methods (Access=protected)
@@ -73,9 +76,10 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             % Calculate the rotation rates
             S.aziDegPerFlip=S.aziDps/S.scrGets.measuredFrameRate;
             S.eleDegPerFlip=S.eleDps/S.scrGets.measuredFrameRate;
-            S.motStartFlip=S.motStartSec*S.scrGets.measuredFrameRate;
+            S.motStartFlip=round(S.motStartSec*S.scrGets.measuredFrameRate);
             S.motStopFlip=S.motStartFlip+S.motDurSec*S.scrGets.measuredFrameRate;
-            S.dAdEdeg=S.dAdEdeg*S.clusterRadiusDeg;  
+            S.dAdEdeg=S.dAdEdeg*S.clusterRadiusDeg;
+            S.dotStepsToInversion=S.invertSteps;
         end
         function myDraw(S)
             if ~S.visible
@@ -85,18 +89,30 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
         end
         function myStep(S)
+            % 0: is this a frozen frame (framerate reduction)
+            frozen=mod(S.stepCounter-S.motStartFlip,S.freezeFlip)>0;
             % 1: if in motion interval update the positions            
             if S.stepCounter>S.motStartFlip && S.stepCounter<=S.motStopFlip
-                S.aziDeg=S.aziDeg+S.aziDegPerFlip;
+                if ~frozen
+                    S.aziDeg=S.aziDeg+S.aziDegPerFlip*S.freezeFlip;
+                end
             end
             % 2: update lifetime, replace expired points
-            if S.nSteps<Inf
+            if S.nSteps<Inf && ~frozen
                 S.dotAge=S.dotAge+1;
                 expired=S.dotAge>S.nSteps;
                 [S.aziDeg(expired), S.eleDeg(expired)]=S.getFreshClusters(sum(expired),S.nSteps);
                 S.dotAge(expired)=0;
             end
-            % 3: convert azi-ele deg to x-y pix
+            % 3: invert the contrast
+            if S.invertSteps<Inf && ~frozen
+                S.dotStepsToInversion=S.dotStepsToInversion-1;
+                if S.dotStepsToInversion==0
+                    S.palette=[S.palette(:,2) S.palette(:,1)];
+                    S.dotStepsToInversion=S.invertSteps;
+                end
+            end     
+            % 4: convert azi-ele deg to x-y pix
             % format the ele and azi coordinates lists of all clusters
             centerAzi=mod(S.aziDeg(:)',360)-180;
             centerEle=S.eleDeg(:)';

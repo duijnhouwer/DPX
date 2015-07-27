@@ -6,8 +6,13 @@ function jdDpxExpHalfDomeRdk
     E.scr.verbosity0min5max=1;
     E.scr.backRGBA=[.5 .5 .5 1];
     E.scr.distMm=600;
-    E.scr.winRectPx=[1920 0 1920+1920 1080];
-    E.scr.gamma=0.25;
+    if IsLinux
+        E.scr.winRectPx=[1920 0 1920+1920 1080];
+        E.scr.gamma=0.25;
+    else
+        E.scr.winRectPx=[20 20 800 600];
+        E.scr.gamma=1;
+    end
     E.nRepeats=15;
     
     motSec=2;
@@ -48,23 +53,25 @@ function jdDpxExpHalfDomeRdk
             C.addStim(S);
             %C.addStim(F);
             %
-            R1=dpxRespContiMouse;
-            R1.name='mouseBack';
-            R1.doReset=false;
-            R1.mouseId=9;
-            R1.defaultX=1920;
-            R1.defaultY=1080/2;
-            R1.allowUntilSec=C.durSec;
-            C.addResp(R1);
-            %
-            R2=dpxRespContiMouse;
-            R2.name='mouseSide';
-            R2.doReset=true;
-            R2.mouseId=12;
-            R2.defaultX=1920;
-            R2.defaultY=1080/2;
-            R2.allowUntilSec=C.durSec;
-            C.addResp(R2);
+            if IsLinux
+                R1=dpxRespContiMouse;
+                R1.name='mouseBack';
+                R1.doReset=false;
+                R1.mouseId=9;
+                R1.defaultX=1920;
+                R1.defaultY=1080/2;
+                R1.allowUntilSec=C.durSec;
+                C.addResp(R1);
+                %
+                R2=dpxRespContiMouse;
+                R2.name='mouseSide';
+                R2.doReset=true;
+                R2.mouseId=12;
+                R2.defaultX=1920;
+                R2.defaultY=1080/2;
+                R2.allowUntilSec=C.durSec;
+                C.addResp(R2);
+            end
             %
             E.addCondition(C);
         end
