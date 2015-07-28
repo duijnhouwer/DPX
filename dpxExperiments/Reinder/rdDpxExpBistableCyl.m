@@ -16,7 +16,7 @@ elseif strcmpi(dpxGetUserName,'Eyelink-admin')
     E.outputFolder='C:\Users\Eyelink-admin\DropBox\DPX\Data\ExpBistableCylinder\';
 end
 
-E.scr.set('winRectPx',[100 100 900 650],'widHeiMm',[394 295],'distMm',1000,'scrNr',1);
+E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',1);
 E.scr.set('interEyeMm',65,'gamma',0.49','backRGBA',[0.5 0.5 0.5 1]);
 E.scr.set('stereoMode','mirror','skipSyncTests',1);
 
