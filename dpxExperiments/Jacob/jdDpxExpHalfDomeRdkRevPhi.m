@@ -32,7 +32,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
             for invertSteps=[Inf 1] % phi, reverse phi
                 
                 C=dpxCoreCondition;
-                C.durSec=startSec+motSec+1;
+                C.durSec=startSec+motSec+2;
                 C.overrideBackRGBA=[lum lum lum 1];
                 %
                 % mask
