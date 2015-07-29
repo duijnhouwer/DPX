@@ -185,8 +185,10 @@ classdef dpxCoreCondition < hgsetget
                         % store when answer is given
                         if C.resps{r}.given
                             respStruct.(C.resps{r}.name)=C.resps{r}.resp;
-                            % Set the new end time of the trial. This is useful for example to make a response way stop
-                            % the trial. Or add a time-out period after an incorrect answer for example.
+                            % Set the new end time of the trial. This is useful for example to make a
+                            % response way stop the trial. Or add a time-out period after an incorrect
+                            % answer for example. If the value of endsTrialAfterFlips is Inf then the
+                            % regular trial end time will be observed.
                             if C.resps{r}.endsTrialAfterFlips<Inf % endsTrialAfterFlips is Inf by default
                                 C.nFlips=f+C.resps{r}.endsTrialAfterFlips;
                                 for fbs=1:numel(C.resps{r}.nameOfFeedBackStim)

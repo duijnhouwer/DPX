@@ -26,12 +26,19 @@ classdef (Abstract) dpxAbstractResp < hgsetget
         % key-names or mouse-click positions. The fields of resp will automatically
         % be output in the DPXD output file.
         resp;
+        % The name of a stimulus that will be enabled after a response is given,
+        % this may receive different names depending on whether the response was
+        % correct or incorrect.
         nameOfFeedBackStim='';
+        % The window in which the response can be given in flips since the start of
+        % the trial.
         allowAfterNrFlips=[];
         allowUntilNrFlips=[];
+        % The time that will be added after a response. If Inf, the regular trial
+        % end time will be observed (dpxCoreCondition.durSec)
         endsTrialAfterFlips=Inf;
         % Option to make a trial with a wrong answer (typically an animal that
-        % answered to early) be repeated at some later point in the experiment. The
+        % answered too early) be repeated at some later point in the experiment. The
         % response class should be programmed to set this depending on the logic of
         % the experiment. dpxCoreCondition checks this and signals
         % dpxCoreExperiment to redo the trial if necessary.
@@ -125,14 +132,14 @@ classdef (Abstract) dpxAbstractResp < hgsetget
             S.wrongStimName=value;
         end
         function set.correctEndsTrialAfterSec(S,value)
-            if ~isnumeric(value) || value<0
-                error('correctEndsTrialAfterSec must be a positive number or Inf');
+            if ~isnumeric(value) 
+                error('correctEndsTrialAfterSec must be a positive number or Inf. Inf means observe regular trial end (durSec).');
             end
             S.correctEndsTrialAfterSec=value;
         end
         function set.wrongEndsTrialAfterSec(S,value)
             if ~isnumeric(value) || value<0
-                error('wrongEndsTrialAfterSec must be a positive number or Inf');
+                error('wrongEndsTrialAfterSec must be a positive number or Inf. Inf means observe regular trial end (durSec).');
             end
             S.wrongEndsTrialAfterSec=value;
         end
