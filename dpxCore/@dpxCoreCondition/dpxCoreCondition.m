@@ -1,11 +1,13 @@
 classdef dpxCoreCondition < hgsetget
     
     properties (Access=public)
+        % Explanation of these public properties can be found in the constructor method
+        % (i.e., function C=dpxCoreCondition, below)
         durSec;
         overrideBackRGBA;
         breakFixGraceSec;
     end
-    properties (GetAccess=public,SetAccess=protected)%,Hidden=true)
+    properties (GetAccess=public,SetAccess=protected)
         % Cell array of stimulus objects (e.g. dpxStimDot) to be added using
         % addStim
         stims={};
@@ -24,21 +26,25 @@ classdef dpxCoreCondition < hgsetget
         % Counter for breakfixation grace period
         flipsSinceBreakFix;
         breakFixGraceFlips;
-        % indices of visual stim
+        % indices of visual stimuli, some things need to be done for visual stimuli only
         visualStimIndices;
     end
     methods (Access=public)
         function C=dpxCoreCondition
-            % The duration of this condition (unless prematurely ended by a response,
-            % see below)
+            % The duration of the condition in seconds. (Can be overridden using the
+            % correctEndsTrialAfterSec and wrongEndsTrialAfterSec properties of the
+            % dpxAbstractResp class)
             C.durSec=2;
-            % Leave this 'false' to use the backRGBA defined in the dpxCoreWindow
-            % class, or set it to a 4-element RGBA vector. The advantage of this design
-            % is that the RGBA for the background doesn't have to be defined for each
-            % condition as most of the time the background will be the same for all
-            % conditions
+            % The color of the background in DPX is defined in the dpxCoreExperiment class
+            % so that it doesn't need to be defined for each condition. But if your
+            % experiment required different background you can define overrideBackRGBA to
+            % a 4-element RGBA vector (values between 0 and 1). Otherwise leave it false
+            % (default).
             C.overrideBackRGBA=false;
-            C.breakFixGraceSec=.2; % how long does a blink last??
+            % A value that can be set to allow momentary break-fixations, e.g. to allow
+            % for blinks during protracted adaptation intervals
+            C.breakFixGraceSec=0.200; % how long does a blink last??
+            %
             C.visualStimIndices=[];
         end
         function init(C,scrGets)
@@ -95,7 +101,7 @@ classdef dpxCoreCondition < hgsetget
                     stimNumberToFixate=s;
                 end
             end
-            % Initialize the video-blank timeer
+            % Initialize the video-blank timer
             vbl=Screen('Flip',C.scrGets.windowPtr,0);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Loop over all video-flips (frames) of the trial
@@ -125,7 +131,7 @@ classdef dpxCoreCondition < hgsetget
                 keyIdx=dpxGetKey(breakKeys);
                 if keyIdx>0
                     completionStatus=breakKeys{keyIdx};
-                    break; % while f<=C.nFlips
+                    break; % exit while f<=C.nFlips loop
                 end
                 % Step and draw the stimuli. The same terminology is used for visual and
                 % non-visual stimuli.
@@ -223,10 +229,14 @@ classdef dpxCoreCondition < hgsetget
                         end
                     end
                 end
-                % Wait until it's time, then flip the video buffer
+                % Wait until it's time, then flip the video buffer. The 0.85 value means
+                % that we assume that 15% of the frameduration should be enoughg to flip
+                % the frame, which is a conservative estimate (probable much faster). If
+                % we start running into trouble with not making the flip deadline, we
+                % could consider upping it to .9 or .95 for example, see what that does.
                 [vbl,~,~,dDeadlineSecs]=Screen('Flip',C.scrGets.windowPtr,vbl+0.85/C.scrGets.measuredFrameRate);
-                % Collect start or stop time of the trial in seconds, right after the flip
-                % for accuracy.
+                % Collect start or stop time of the trial in seconds. (Right after the flip
+                % for accuracy)
                 if f==1 % begin of condition
                     timingStruct.startSec=GetSecs;
                 elseif f==C.nFlips
