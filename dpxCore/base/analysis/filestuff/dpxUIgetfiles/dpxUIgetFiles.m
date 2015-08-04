@@ -53,14 +53,14 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.extensionPopupmenu,'String',p.Results.extensions);
     set(handles.figure1,'Name',p.Results.title);
     set(handles.folderEditText,'String',p.Results.folder);
-    setCurrentSelectionList(hObject, handles);
+    setInputList(hObject, handles);
     % Update handles structure
     guidata(hObject, handles);
     % Make the figure wait until resume() is called somewhere. At the time of writing this
     % is done in where the cancel button and the ok button are pressed. After resume the
     % program jumps to 'dpxUIgetFiles_OutputFcn'. This function is also reached upon
     % closing the window with the X in the top-right corner (identical to Cancel)
-     uiwait(handles.figure1);
+    uiwait(handles.figure1);
 end
 
 function dpxUIgetFiles_CloseRequestFcn(hObject, eventdata, handles) %#ok<*INUSD>
@@ -87,7 +87,7 @@ function folderEditText_Callback(hObject, eventdata, handles)
     if ~exist(folder,'file')
         errordlg(['Folder ' folder ' does not exist']);
     else
-        setCurrentSelectionList(hObject, handles);
+        setInputList(hObject, handles);
     end
 end
 
@@ -106,16 +106,16 @@ function browseFolderButton_Callback(hObject, eventdata, handles)
     folder=uigetdir(folder, 'Select a folder');
     if folder~=0
         set(handles.folderEditText,'String',folder);
-        setCurrentSelectionList(hObject, handles);
+        setInputList(hObject, handles);
     end
 end
 
-function currentSelectionListBox_Callback(hObject, eventdata, handles)
-    % Hints: contents = cellstr(get(hObject,'String')) returns currentSelectionListBox contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from currentSelectionListBox
+function inputListBox_Callback(hObject, eventdata, handles)
+    % Hints: contents = cellstr(get(hObject,'String')) returns inputListBox contents as cell array
+    %        contents{get(hObject,'Value')} returns selected item from inputListBox
 end
 
-function currentSelectionListBox_CreateFcn(hObject, eventdata, handles)
+function inputListBox_CreateFcn(hObject, eventdata, handles)
     % Hint: listbox controls usually have a white background on Windows.
     %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -126,7 +126,7 @@ end
 function extensionPopupmenu_Callback(hObject, eventdata, handles)
     % Hints: contents = cellstr(get(hObject,'String')) returns extensionPopupmenu contents as cell array
     %        contents{get(hObject,'Value')} returns selected item from extensionPopupmenu
-    setCurrentSelectionList(hObject, handles);
+    setInputList(hObject, handles);
 end
 
 function extensionPopupmenu_CreateFcn(hObject, eventdata, handles)
@@ -141,14 +141,14 @@ function extensionPopupmenu_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on selection change in totalSelectionListBox.
-function totalSelectionListBox_Callback(hObject, eventdata, handles)
+% --- Executes on selection change in outputListBox.
+function outputListBox_Callback(hObject, eventdata, handles)
     
-    % Hints: contents = cellstr(get(hObject,'String')) returns totalSelectionListBox contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from totalSelectionListBox
+    % Hints: contents = cellstr(get(hObject,'String')) returns outputListBox contents as cell array
+    %        contents{get(hObject,'Value')} returns selected item from outputListBox
 end
 
-function totalSelectionListBox_CreateFcn(hObject, eventdata, handles)
+function outputListBox_CreateFcn(hObject, eventdata, handles)
     % Hint: listbox controls usually have a white background on Windows.
     %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -156,26 +156,28 @@ function totalSelectionListBox_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-function addSelectionToTotalButton_Callback(hObject, eventdata, handles)
-    additional=cellstr(get(handles.currentSelectionListBox,'String')); % returns complete list in currentSelectionListBox
-    selection=get(handles.currentSelectionListBox,'Value');
-    additional={additional{selection}}; % limit to selection
-    outputList=cellstr(get(handles.totalSelectionListBox,'String'));
+function addToOutputButton_Callback(hObject, eventdata, handles) % >>
+    additional=cellstr(get(handles.inputListBox,'String')); % returns complete list in currentSelectionListBox
+    hilited=get(handles.inputListBox,'Value');
+    additional={additional{hilited}}; % limit to selection
+    outputList=cellstr(get(handles.outputListBox,'String'));
     outputList=[additional(:); outputList(:)];
     outputList=unique(outputList); % remove duplicates
     outputList=outputList(~cellfun(@isempty,outputList)); % remove empty strings
-    set(handles.totalSelectionListBox,'String',outputList);
-    set(handles.totalSelectionListBox,'Value',1:numel(outputList));
+    set(handles.outputListBox,'String',outputList);
+    set(handles.outputListBox,'Value',1:numel(outputList));
+    updateOutputInfoText(hObject, eventdata, handles);
 end
 
 
 function removeFromOutput_Callback(hObject, eventdata, handles) % []<
-    outputList=cellstr(get(handles.totalSelectionListBox,'String'));
+    outputList=cellstr(get(handles.outputListBox,'String'));
     if numel(outputList)>0
-        selection=get(handles.totalSelectionListBox,'Value');
-        outputList(selection)=[];
-        set(handles.totalSelectionListBox,'String',outputList);
-        set(handles.totalSelectionListBox,'Value',1:max(1,numel(outputList)))
+        hilited=get(handles.outputListBox,'Value');
+        outputList(hilited)=[];
+        set(handles.outputListBox,'String',outputList);
+        set(handles.outputListBox,'Value',1:max(1,numel(outputList)));
+        updateOutputInfoText(hObject, eventdata, handles);
     end
 end
 
@@ -191,7 +193,7 @@ end
 % --- Executes on button press in traverseSubfolderCheckBox.
 function traverseSubfolderCheckBox_Callback(hObject, eventdata, handles)
     % Hint: get(hObject,'Value') returns toggle state of traverseSubfolderCheckBox
-    setCurrentSelectionList(hObject, handles);
+    setInputList(hObject, handles);
 end
 
 % --- Executes on button press in Cancel.
@@ -201,15 +203,31 @@ end
 
 % --- Executes on button press in okButton.
 function okButton_Callback(hObject, eventdata, handles)
-    handles.output=cellstr(get(handles.totalSelectionListBox,'String'));
+    handles.output=cellstr(get(handles.outputListBox,'String'));
     guidata(hObject, handles)
     uiresume();
+end
+
+function updateOutputInfoText(hObject, eventdata, handles)
+    outputList=cellstr(get(handles.outputListBox,'String'));
+    [folderStrs]=cellfun(@fileparts,outputList,'UniformOutput',false);
+    nFiles=numel(folderStrs);
+    nFolders=numel(unique(folderStrs));
+    info=['Press OK to select ' num2str(nFiles) ' file' popS(nFiles) ' from ' num2str(nFolders) ' folder' popS(nFolders)];
+    set(handles.outputInfoText,'String',info);
+    function s=popS(n)
+        if n==1
+            s='';
+        else
+            s='s';
+        end
+    end
 end
 
 
 
 %--- This function populates the current selection listbox
-function setCurrentSelectionList(hObject, handles)
+function setInputList(hObject, handles)
     startfolder=get(handles.folderEditText,'String');
     oldPointer=get(gcf,'Pointer');
     set(gcf,'Pointer','watch'); drawnow;
@@ -249,10 +267,9 @@ function setCurrentSelectionList(hObject, handles)
                 end
             end
         end
-        if get(handles.currentSelectionListBox,'Value')>numel(fileNames)
-            set(handles.currentSelectionListBox,'Value',max(1,numel(fileNames)))
-        end
-        set(handles.currentSelectionListBox,'String',fileNames);
+        % change high-lighted selection to prevent Warning: Multiple-selection 'listbox' control requires that 'Value' be an integer within String range
+        set(handles.inputListBox,'Value',max(1,numel(fileNames)))
+        set(handles.inputListBox,'String',fileNames);
     end
     set(gcf,'Pointer',oldPointer);
 end
@@ -264,7 +281,7 @@ end
 function includeStringEdit_Callback(hObject, eventdata, handles)
     % Hints: get(hObject,'String') returns contents of includeStringEdit as text
     %        str2double(get(hObject,'String')) returns contents of includeStringEdit as a double
-    setCurrentSelectionList(hObject, handles);
+    setInputList(hObject, handles);
 end
 
 function includeStringEdit_CreateFcn(hObject, eventdata, handles)
@@ -276,10 +293,10 @@ function includeStringEdit_CreateFcn(hObject, eventdata, handles)
 end
 
 
-function excludeStringEdit_Callback(hObject, eventdata, handles) 
+function excludeStringEdit_Callback(hObject, eventdata, handles)
     % Hints: get(hObject,'String') returns contents of excludeStringEdit as text
     %        str2double(get(hObject,'String')) returns contents of excludeStringEdit as a double
-    setCurrentSelectionList(hObject, handles);
+    setInputList(hObject, handles);
 end
 
 function excludeStringEdit_CreateFcn(hObject, eventdata, handles)
@@ -290,3 +307,6 @@ function excludeStringEdit_CreateFcn(hObject, eventdata, handles)
         set(hObject,'BackgroundColor','white');
     end
 end
+
+
+
