@@ -60,13 +60,6 @@ for t=2:numel(T)
         thisname=F{f};
         if strcmp(thisname,'N')
             M.N=M.N+thistab.N;
-        elseif strcmp(thisname,'Cyclopean')
-            % not sure this works anymore .... jd 2014-06-13
-            nCyclopeansCurrent=numel(M.Cyclopean.data);
-            M.Cyclopean.pointers=[ M.Cyclopean.pointers(:)' T{t}.Cyclopean.pointers(:)'+nCyclopeansCurrent ];
-            for ci=1:numel(T{t}.Cyclopean.data)
-                M.Cyclopean.data{end+1}=T{t}.Cyclopean.data{ci};
-            end
         else
             if iscell(thistab.(thisname))
                 try

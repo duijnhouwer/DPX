@@ -39,15 +39,7 @@ r=rmfield(r,'N');
 fn=fieldnames(r);
 for i=1:length(fn)
 	thisname=fn{i};
-    if strcmp(thisname,'Cyclopean')
-        vals=r.Cyclopean.pointers(indices);
-        [uVals,~,IC]=klabLegacy('unique',vals); % klabLegacy 2013-09-27, jacob    
-        uValsOrdinal=1:numel(uVals);
-        for uu=1:numel(uVals)
-            f.Cyclopean.data{uu}=r.Cyclopean.data{uVals(uu)};
-        end
-        f.Cyclopean.pointers=uValsOrdinal(IC);
-    elseif iscell(r.(thisname))
+    if iscell(r.(thisname))
         vals=cell(1,newn);
         for j=1:newn
             thisindex=indices(j);
