@@ -1,7 +1,7 @@
-function files=jdDpxExpHalfDomeRdkAnalysis(files)
+function files=jdDpxExpHalfDomeRdkRevPhiAnalysis(files)
     if nargin==0
         files=dpxUIgetFiles;
-        if isempty(files)
+        if isempty(files) || isempty(files{1})
             return;
         end
     end
@@ -21,8 +21,20 @@ function files=jdDpxExpHalfDomeRdkAnalysis(files)
         end
         clear D;
     end
-    % Merge all datafiles that we collected in cell array 
+    % Merge all datafiles that we collected in cell array
     E=dpxdMerge(E); % E is now a DPXD
+    % infinite lifetime control
+    analyze(dpxdSubset(E,E.rdk_nSteps==Inf),'; Unlimited lifetime');
+    % PHI and IHP
+    PHI=dpxdSubset(E,E.rdk_nSteps==1 & E.rdk_invertSteps==Inf);
+    analyze(PHI,'; Phi (all delays)');
+    IHP=dpxdSubset(E,E.rdk_nSteps==1 & E.rdk_invertSteps==1);
+    analyze(IHP,'; Reverse-phi (all delays)');
+    tilefigs;
+    
+    keyboard
+    return;
+    
     % Add a mean background luminance field to E based on the RGBAfrac values
     % by calculates the mean of the first 3 elements of each 4-element array in
     % cell array E.mask_RGBAfrac
@@ -66,8 +78,11 @@ function C=getSpeedCurves(D)
     % Split the data in left, static, and rightward stimulation
     S{1}=dpxdSubset(D,D.rdk_aziDps<0);
     S{2}=dpxdSubset(D,D.rdk_aziDps==0);
-    S{3}=dpxdSubset(D,D.rdk_aziDps>0);
-    % Make
+    if S{2}.N==0
+        S{2}=dpxdSubset(D,D.rdk_aziDps>0);
+    else
+        S{3}=dpxdSubset(D,D.rdk_aziDps>0);
+    end
     C.speed=[];
     for i=1:numel(S)
         C.speed(i)=S{i}.rdk_aziDps(1);
@@ -91,7 +106,7 @@ function C=getSpeedCurves(D)
     end
     % ---- Sub function
     function [yaw,time]=getYawTrace(S,interval)
-        % calculate the mean yaw for all trials in S over the specified interval 
+        % calculate the mean yaw for all trials in S over the specified interval
         yaw=cell(1,S.N);
         for tt=1:S.N
             from=interval(1)+S.rdk_motStartSec(tt);
@@ -109,6 +124,8 @@ end
 
 function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
     suspect=false;
+    str='';
+    maxCorr=-Inf;
     % Make some changes to the DPXD that make the analysis easier to read;
     % Step 1, align time of traces to the start of trial
     for t=1:D.N
@@ -151,7 +168,16 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
         SdX=[SdX D.resp_mouseSide_dxPx{t}(idx)]; %#ok<AGROW>
         SdY=[SdY D.resp_mouseSide_dyPx{t}(idx)]; %#ok<AGROW>
     end
-    maxCorr=-Inf;
+    if numel(unique(BdX))==1 || numel(unique(BdY))==1
+        str='BackMouseDidNotWork';
+        suspect=true;
+        return;
+    end
+    if numel(unique(SdX))==1 || numel(unique(SdY))==1
+        str='SideMouseDidNotWork';
+        suspect=true;
+        return;
+    end
     if corr(BdX(:),SdX(:))>maxCorr;
         D.resp_mouseBackYaw=D.resp_mouseBack_dxPx;
         D.resp_mouseSideYaw=D.resp_mouseSide_dxPx;
@@ -178,7 +204,10 @@ function [D,str,suspect,maxCorr]=clarifyAndCheck(D)
     end
     if maxCorr<0.8
         suspect=true;
-     %   keyboard
+        %   keyboard
+    end
+    if isempty(str)
+        keyboard;
     end
 end
 
@@ -247,41 +276,55 @@ function plotTraces(C,str)
             tel=tel+1;
             if C{i}.speed(v)<0
                 Nleft=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                leftX=C{i}.time{v}(1:Nleft);
-                leftY=C{i}.yawMean{v}(1:Nleft);
+                leftT=C{i}.time{v}(1:Nleft);
+                leftDrift=C{i}.yawMean{v}(1:Nleft);
             elseif C{i}.speed(v)==0
                 Nstat=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                statX=C{i}.time{v}(1:Nstat);
-                statY=C{i}.yawMean{v}(1:Nstat);
+                statT=C{i}.time{v}(1:Nstat);
+                statDrift=C{i}.yawMean{v}(1:Nstat);
             elseif C{i}.speed(v)>0
                 Nright=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                riteX=C{i}.time{v}(1:Nright);
-                riteY=C{i}.yawMean{v}(1:Nright);
+                riteT=C{i}.time{v}(1:Nright);
+                riteDrift=C{i}.yawMean{v}(1:Nright);
             end
         end
-        minN=min([Nleft Nstat Nright]);
-        leftX=leftX(1:minN);
-        leftY=leftY(1:minN);
-        statX=statX(1:minN);
-        statY=statY(1:minN);
-        riteX=riteX(1:minN);
-        riteY=riteY(1:minN);
-        % PLot the areas
-        patch([leftX leftX(end:-1:1)],[statY leftY(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');  hold on
-        patch([riteX riteX(end:-1:1)],[statY riteY(end:-1:1)],'b','FaceAlpha',.1,'LineStyle','none');
-        % Plot the lines
-        plot(leftX,leftY,'LineStyle','-','LineWidth',2,'Color','r'); 
-        plot(statX,statY,'LineStyle','-','LineWidth',2,'Color','k');
-        plot(riteX,riteY,'LineStyle','-','LineWidth',2,'Color','b');
+        if exist('statT','var')
+            minN=min([Nleft Nstat Nright]);
+            leftT=leftT(1:minN);
+            leftDrift=leftDrift(1:minN);
+            statT=statT(1:minN);
+            statDrift=statDrift(1:minN);
+            riteT=riteT(1:minN);
+            riteDrift=riteDrift(1:minN);
+            % PLot the areas
+            patch([leftT leftT(end:-1:1)],[statDrift leftDrift(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');  hold on
+            patch([riteT riteT(end:-1:1)],[statDrift riteDrift(end:-1:1)],'b','FaceAlpha',.1,'LineStyle','none');
+            % Plot the lines
+            plot(leftT,leftDrift,'LineStyle','-','LineWidth',2,'Color','r');
+            plot(statT,statDrift,'LineStyle','-','LineWidth',2,'Color','k');
+            plot(riteT,riteDrift,'LineStyle','-','LineWidth',2,'Color','b');
+        else
+            minN=min([Nleft Nright]);
+            leftT=leftT(1:minN);
+            leftDrift=leftDrift(1:minN);
+            riteT=riteT(1:minN);
+            riteDrift=riteDrift(1:minN);
+            % PLot the areas
+            %   patch([leftT leftT(end:-1:1)],[riteDrift(end:-1:1) leftDrift(end:-1:1)],'r','FaceAlpha',.1,'LineStyle','none');  hold on
+            % Plot the lines
+            plot(leftT,leftDrift,'LineStyle','-','LineWidth',2,'Color','r'); hold on
+            plot(riteT,riteDrift,'LineStyle','-','LineWidth',2,'Color','b');
+        end
         %
         axis tight
         dpxText(C{i}.mus{1});
-        dpxPlotHori;
-        dpxPlotVert;
+        dpxPlotHori(0,'k--');
+        dpxPlotVert(0,'k--');
         xlabel('Time since motion onset (s)');
         ylabel('Yaw (a.u.)');
+        %
+        clear statX
     end
-    
 end
 
 
@@ -294,30 +337,39 @@ function C=getOffsetPerSecond(C)
             tel=tel+1;
             if C{i}.speed(v)<0
                 Nleft=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                leftX=C{i}.time{v}(1:Nleft);
-                leftY=C{i}.yawMean{v}(1:Nleft);
+                leftT=C{i}.time{v}(1:Nleft);
+                leftDrift=C{i}.yawMean{v}(1:Nleft);
             elseif C{i}.speed(v)==0
                 Nstat=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                statX=C{i}.time{v}(1:Nstat);
-                statY=C{i}.yawMean{v}(1:Nstat);
+                statT=C{i}.time{v}(1:Nstat);
+                statDrift=C{i}.yawMean{v}(1:Nstat);
             elseif C{i}.speed(v)>0
                 Nright=min(numel(C{i}.time{v}),numel(C{i}.yawMean{v}));
-                riteX=C{i}.time{v}(1:Nright);
-                riteY=C{i}.yawMean{v}(1:Nright);
+                riteT=C{i}.time{v}(1:Nright);
+                riteDrift=C{i}.yawMean{v}(1:Nright);
             end
         end
-        minN=min([Nleft Nstat Nright]);
-        leftX=leftX(1:minN);
-        leftY=leftY(1:minN);
-        statX=statX(1:minN);
-        statY=statY(1:minN);
-        riteX=riteX(1:minN);
-        riteY=riteY(1:minN);
-        C{i}.leftDriftPerSecond=sum(leftY-statY)/(statX(end)-statX(1));
-        C{i}.rightDriftPerSecond=sum(riteY-statY)/(statX(end)-statX(1));
+        if exist('statT','var')
+            minN=min([Nleft Nstat Nright]);
+            leftT=leftT(1:minN);
+            leftDrift=leftDrift(1:minN);
+            statT=statT(1:minN);
+            statDrift=statDrift(1:minN);
+            riteT=riteT(1:minN);
+            riteDrift=riteDrift(1:minN);
+            C{i}.leftDriftPerSecond=sum(leftDrift-statDrift)/(leftT(end)-leftT(1));
+            C{i}.rightDriftPerSecond=sum(riteDrift-statDrift)/(leftT(end)-leftT(1));
+        else
+            minN=min([Nleft Nright]);
+            leftT=leftT(1:minN);
+            leftDrift=leftDrift(1:minN);
+            riteT=riteT(1:minN);
+            riteDrift=riteDrift(1:minN);
+            C{i}.leftDriftPerSecond=sum(leftDrift)/(leftT(end)-leftT(1));
+            C{i}.rightDriftPerSecond=sum(riteDrift)/(riteT(end)-riteT(1));
+        end
     end
 end
-
 
 function plotDriftScatter(C,titleString)
     dpxFindFig(['DriftScatter' titleString]);

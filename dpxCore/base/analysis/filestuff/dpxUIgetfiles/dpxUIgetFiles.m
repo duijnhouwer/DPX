@@ -33,7 +33,7 @@ end
 
 
 % --- Executes just before dpxUIgetFiles is made visible.
-function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin)
+function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin) %#ok<*INUSL>
     % This function has no output args, see OutputFcn.
     % hObject    handle to figure
     % eventdata  reserved - to be defined in a future version of MATLAB
@@ -45,10 +45,12 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin)
     %
     % Handle the vargin input
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addParamValue('folder',pwd,@ischar) % the start folder to look in
+    p.addParamValue('folder',dpxCache('get',[mfilename '_workdir'],pwd),@ischar) % the start folder to look in
     p.addParamValue('title',mfilename,@ischar);
     p.addParamValue('extensions',{'*.*','*.mat','*.m'},@(x)iscell(x)||ischar(x));
     p.parse(varargin{:});
+    %
+    set(handles.traverseSubfolderCheckBox,'Value',dpxCache('get',[mfilename '_traverseSubfolderCheckBox'],false));
     %
     set(handles.extensionPopupmenu,'String',p.Results.extensions);
     set(handles.figure1,'Name',p.Results.title);
@@ -71,8 +73,8 @@ end
 function varargout = dpxUIgetFiles_OutputFcn(hObject, eventdata, handles)
     if isstruct(handles) && isfield(handles,'output')
         varargout{1}=handles.output;
-        delete(handles.figure1);
         delete(hObject);
+        drawnow;
     else
         % close-X in top-left corner must have been pressed
         varargout{1}={};
@@ -94,8 +96,6 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function folderEditText_CreateFcn(hObject, eventdata, handles)
-    % Hint: edit controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
@@ -203,6 +203,9 @@ end
 
 % --- Executes on button press in okButton.
 function okButton_Callback(hObject, eventdata, handles)
+    % Store the selected folder as the starting folder for next time
+    dpxCache('set',[mfilename '_workdir'],get(handles.folderEditText,'String'));
+    dpxCache('set',[mfilename '_traverseSubfolderCheckBox'],get(handles.traverseSubfolderCheckBox,'Value'));
     handles.output=cellstr(get(handles.outputListBox,'String'));
     guidata(hObject, handles)
     uiresume();

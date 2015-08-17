@@ -1,6 +1,6 @@
 function dirstr=dpxGetLastDirStr
     
-        % see also: jdSetLastDirStr, jdUIgetfiles
+    % see also: dpxSetLastDirStr
     try
         load(fullfile(tempdir,'matlabDpxLastdirstr.mat'));
     catch
