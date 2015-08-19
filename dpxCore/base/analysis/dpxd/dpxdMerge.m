@@ -63,7 +63,7 @@ for t=2:numel(T)
         else
             if iscell(thistab.(thisname))
                 try
-                    M.(thisname)={ M.(thisname){:} thistab.(thisname){:} }; %#ok<CCAT> tested this CCAT warning and current method is actually faster!
+                    M.(thisname)=[M.(thisname) thistab.(thisname)];
                 catch me
                     sca;
                     disp('An error occured in dpxdMerge, please contact Jacob with the following information:');
