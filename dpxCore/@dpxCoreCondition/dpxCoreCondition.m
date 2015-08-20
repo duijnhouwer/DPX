@@ -52,24 +52,18 @@ classdef dpxCoreCondition < hgsetget
             % do not change any of these values (I would make them read only if Matlab
             % allowed for that). Changing scrGets won't change the scr object from
             % which they were derived. Doing so would mess up any calculations that
-            % depend on them.
+            % depend on them. 
             C.scrGets=scrGets;
             % Calculate the duration of the trial in flips
             C.nFlips=round(C.durSec*C.scrGets.measuredFrameRate);
-            % Initialize all stimulus objects that have been added using calls to
-            % addStim in the experiment script.
-            for s=1:numel(C.stims)
-                C.stims{s}.init(scrGets);
-            end
-            % Initialize all response objects that have been added using calls to
-            % addStim in the experiment script.
-            for r=1:numel(C.resps)
-                C.resps{r}.init(scrGets);
-            end
-            % Initialize all trialtriggers (set the trigger state to false)
-            for t=1:numel(C.trigs)
-                C.trigs{t}.init();
-            end
+            % Initialize all stimulus, response, and trigger objects that have been
+            % added with their respecitve "add" functions (e.g. addStim)
+            cellfun(@(x)init(x,scrGets),C.stims);
+            cellfun(@(x)init(x,scrGets),C.resps);
+            cellfun(@(x)init(x),C.trigs);
+            % Initiatilize counters related to breakfixation (see eyelink plugin). This
+            % should perhaps be moved to the eye link plugin somehow, not all
+            % experiments require fixation, or even involve eyes...
             C.flipsSinceBreakFix=[];
             C.breakFixGraceFlips=round(C.breakFixGraceSec*C.scrGets.measuredFrameRate);
         end
@@ -249,12 +243,8 @@ classdef dpxCoreCondition < hgsetget
                 end
             end % while f<=C.nFlips
             % The trial is now complete, clear all stim and resp objects
-            for s=1:numel(C.stims)
-                C.stims{s}.clear;
-            end
-            for r=1:numel(C.resps)
-                C.resps{r}.clear;
-            end
+            cellfun(@(x)clear(x),C.stims);
+            cellfun(@(x)clear(x),C.resps);
         end
         function addStim(C,S)
             % Add a stimulus object to the condition
