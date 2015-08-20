@@ -80,7 +80,7 @@ for m=1:numel(modes)
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',0.3,'enabled',false,'durSec',1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',0.3,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             
             % The full cylinder stimulus
@@ -133,8 +133,8 @@ for m=1:numel(modes)
             R.correctStimName='fbCorrect';
             R.name='rightHand';
             R.correctKbNames='1';
-            R.correctEndsTrialAfterSec=.1;
-            R.wrongEndsTrialAfterSec=.1;
+            R.correctEndsTrialAfterSec=1/3;
+            R.wrongEndsTrialAfterSec=1/3;
             C.addResp(R);
             
             E.addCondition(C);
