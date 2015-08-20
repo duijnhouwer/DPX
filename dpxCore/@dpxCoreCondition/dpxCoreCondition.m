@@ -43,7 +43,7 @@ classdef dpxCoreCondition < hgsetget
             C.overrideBackRGBA=false;
             % A value that can be set to allow momentary break-fixations, e.g. to allow
             % for blinks during protracted adaptation intervals
-            C.breakFixGraceSec=0.200; % how long does a blink last??
+            C.breakFixGraceSec=0.200; % how many seconds does a blink last??
             %
             C.visualStimIndices=[];
         end
@@ -189,13 +189,15 @@ classdef dpxCoreCondition < hgsetget
                             % the trial. Or add a time-out period after an incorrect answer for example.
                             if C.resps{r}.endsTrialAfterFlips<Inf % endsTrialAfterFlips is Inf by default
                                 C.nFlips=f+C.resps{r}.endsTrialAfterFlips;
-                                for fbs=1:numel(C.resps{r}.nameOfFeedBackStim)
-                                    fbStimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim{fbs});
-                                    if ~isempty(fbStimHandle)
-                                        % Enable the feedback stimulus, i.e., the stimulus that is triggered by the
-                                        % response. It's timing (onSec) will be relative to this flip
-                                        fbStimHandle.enabled=true;
-                                    end
+                            end
+                            % Check if we need to enable any feedback stimuli
+                            for fbs=1:numel(C.resps{r}.nameOfFeedBackStim)
+                                fbStimHandle=C.getStimNamed(C.resps{r}.nameOfFeedBackStim{fbs});
+                                if ~isempty(fbStimHandle)
+                                    % Enable this feedback stimulus, i.e., the stimulus
+                                    % that is triggered by the response. It's timing
+                                    % (onSec) will be relative to the current flip
+                                    fbStimHandle.enabled=true;
                                 end
                             end
                             % Check if this response has been set up to necessitate a redo of the
