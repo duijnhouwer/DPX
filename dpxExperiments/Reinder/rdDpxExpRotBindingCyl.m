@@ -131,8 +131,8 @@ for m=1:numel(modes)
             R.correctStimName='fbCorrect';
             R.name='rightHand';
             R.correctKbNames='1';
-            R.correctEndsTrialAfterSec=1/3;
-            R.wrongEndsTrialAfterSec=1/3;
+            R.correctEndsTrialAfterSec=Inf;
+            R.wrongEndsTrialAfterSec=Inf;
             C.addResp(R);
             
             E.addCondition(C);
