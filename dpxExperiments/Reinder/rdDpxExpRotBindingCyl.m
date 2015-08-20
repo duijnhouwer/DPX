@@ -59,7 +59,9 @@ end
 % Set the stimulus window option
 % [1440 0 1600+1440 1200]
 E.scr.set('winRectPx',[100 100 900 600],'widHeiMm',[394 295],'distMm',1000,'scrNr',0); % Eyelink PC, Nr=1 : crt
-E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
+%E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
+E.scr.set('interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1]);
+
 E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
 
 % Add stimuli and responses to the conditions, add the conditions to
@@ -78,7 +80,7 @@ for m=1:numel(modes)
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
-            set(S,'wDeg',.3,'visible',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+            set(S,'wDeg',0.3,'enabled',false,'durSec',1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
             C.addStim(S);
             
             % The full cylinder stimulus
@@ -127,12 +129,12 @@ for m=1:numel(modes)
             % The response object
             R=dpxRespKeyboard;
             R.allowAfterSec=S.onSec+S.durSec;
-            set(R,'kbNames','UpArrow,DownArrow');
-            set(R,'correctStimName','fbCorrect');
-            set(R,'name','rightHand');
+            R.kbNames='UpArrow,DownArrow';
+            R.correctStimName='fbCorrect';
+            R.name='rightHand';
             R.correctKbNames='1';
-            R.correctEndsTrialAfterSec=inf;
-            R.wrongEndsTrialAfterSec=inf;
+            R.correctEndsTrialAfterSec=.1;
+            R.wrongEndsTrialAfterSec=.1;
             C.addResp(R);
             
             E.addCondition(C);
