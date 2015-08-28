@@ -5,7 +5,7 @@ function structMP=lkDpxToMontijn(filename)
     % output so that it can be used with Jorrit's analysis suite
     
     if nargin==0
-        files2convert=dpxUIgetfiles('dialogtitle','Select lkDpxGratingExp output file(s)','filterspec','*.mat');
+        files2convert=dpxUIgetFiles('title','Select lkDpxGratingExp output file(s)','extensions','*.mat');
     else
         if ~ischar(filename)
             error('Either give a single filename, or no argument to bring up a multiple file selection tool');

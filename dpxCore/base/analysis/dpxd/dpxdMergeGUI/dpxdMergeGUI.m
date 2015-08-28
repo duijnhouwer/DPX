@@ -60,7 +60,7 @@ function fileToMergeList_CreateFcn(hObject, eventdata, handles)
     % --- Executes on button press in butAddFiles.
 function butAddFiles_Callback(hObject, eventdata, handles)
     list=cellstr(get(handles.fileToMergeList,'String'));
-    fullnames=dpxUIgetfiles('filterspec','*.mat', 'dialogtitle','Select DPXD files ...','multifolder',get(handles.chkMultiFolder,'Value'));
+    fullnames=dpxUIgetFiles('extensions','*.mat', 'title','Select DPXD files ...');
     list=[list(:);fullnames(:)];
     list=list(~cellfun(@isempty,list)); % remove empty strings
     list=unique(list); % remove duplicates
@@ -77,10 +77,7 @@ function butRemove_Callback(hObject, eventdata, handles)
     set(handles.fileToMergeList,'String',list,'Value',[]);%,'Min',1,'Max',numel(list));
     
     
-    % --- Executes on button press in chkMultiFolder.
-function chkMultiFolder_Callback(hObject, eventdata, handles)
-    % Hint: get(hObject,'Value') returns toggle state of chkMultiFolder
-    
+
     
     % --- Executes when figure1 is resized.
 function figure1_SizeChangedFcn(hObject, eventdata, handles)
@@ -180,7 +177,7 @@ function handles=loadTheFiles(hObject,handles)
     handles.dpxdCell=cell(numel(list),1);
     for i=1:numel(list)
         set(handles.fileToMergeList,'Value',1:i); % hilite files that are loaded
-        pause(0.05);
+        drawnow;
         K=load(list{i});
         flds=fieldnames(K);
         foundData=false;
