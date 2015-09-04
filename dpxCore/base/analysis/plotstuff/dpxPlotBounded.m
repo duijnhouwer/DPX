@@ -1,10 +1,10 @@
 function [hl,hb]=dpxPlotBounded(varargin)
     
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addParamValue('x',[],@(x)jdIsVector(x));
-    p.addParamValue('y',[],@(x)jdIsVector(x));
-    p.addParamValue('eu',[],@(x)jdIsVector(x));
-    p.addParamValue('ed',[],@(x)jdIsVector(x));
+    p.addParamValue('x',[],@(x)dpxIsVector(x));
+    p.addParamValue('y',[],@(x)dpxIsVector(x));
+    p.addParamValue('eu',[],@(x)dpxIsVector(x));
+    p.addParamValue('ed',[],@(x)dpxIsVector(x));
     p.addParamValue('Color','',@(x)isempty(x)||ischar(x)||(isnumeric(x)&&numel(x)==3));
     p.addParamValue('FaceColor','k',@(x)isempty(x)||ischar(x)||(isnumeric(x)&&numel(x)==3));
     p.addParamValue('LineColor','k',@(x)isempty(x)||ischar(x)||(isnumeric(x)&&numel(x)==3));

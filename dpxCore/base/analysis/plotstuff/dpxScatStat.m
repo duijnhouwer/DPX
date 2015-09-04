@@ -12,7 +12,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
     % EXAMPLE 1:
     %   x=rand(1,20);
     %   y=rand(1,20)+1/3;
-    %   jdScatStat(x,y);
+    %   dpxScatStat(x,y);
     %
     % EXAMPLE 2:
     %   xMo=randn(1,60);
@@ -20,7 +20,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
     %   xYo=randn(1,40);
     %   yYo=randn(1,40)+1/3;
     %   monkey=[ones(size(xMo)) ones(size(xYo))*2]; 
-    %   jdScatStat([xMo xYo],[yMo yYo],'test','ttest','class',monkey,'classLabels',{'mo','yo'});
+    %   dpxScatStat([xMo xYo],[yMo yYo],'test','ttest','class',monkey,'classLabels',{'mo','yo'});
     %  
     
     p=inputParser;
@@ -57,7 +57,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
         if ~isempty(p.Results.axis)
             axis(p.Results.axis);
         end
-        jdPlotUnityLine;
+        dpxPlotUnityLine;
     else
         uClass=unique(p.Results.class);
         h=zeros(size(uClass));
@@ -128,7 +128,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
         if ~isempty(p.Results.axis)
             axis(p.Results.axis);
         end
-        jdPlotUnityLine;
+        dpxPlotUnityLine;
         if p.Results.annotate
             legend(h,annot,'Location','Best');
         end
@@ -141,9 +141,9 @@ function [out,h]=dpxScatStat(x,y,varargin)
             all.n=numel(x);
             if p.Results.annotate
                 if ~isfield(all.stats,'zval') % only returned for large n
-                    jdText(sprintf('n=%d; sign=%d; p=%.4f',all.n,all.stats.sign,all.pval));
+                    dpxText(sprintf('n=%d; sign=%d; p=%.4f',all.n,all.stats.sign,all.pval));
                 else
-                    jdText(sprintf('n=%d; sign=%d; z=%.4f; p=%.4f',all.n,all.stats.sign,all.stats.zval,all.pval));
+                    dpxText(sprintf('n=%d; sign=%d; z=%.4f; p=%.4f',all.n,all.stats.sign,all.stats.zval,all.pval));
                 end
             end
             out.all=all;
@@ -152,9 +152,9 @@ function [out,h]=dpxScatStat(x,y,varargin)
             all.n=numel(x);
             if p.Results.annotate
                 if ~isfield(all.stats,'zval') % only returned for large n
-                    jdText(sprintf('n=%d; signrank=%d; p=%.4f',all.n,all.stats.signedrank,all.pval));
+                    dpxText(sprintf('n=%d; signrank=%d; p=%.4f',all.n,all.stats.signedrank,all.pval));
                 else
-                    jdText(sprintf('n=%d; signrank=%d; z=%.4f; p=%.4f',all.n,all.stats.signedrank,all.stats.zval,all.pval));
+                    dpxText(sprintf('n=%d; signrank=%d; z=%.4f; p=%.4f',all.n,all.stats.signedrank,all.stats.zval,all.pval));
                 end
             end
             out.all=all;
@@ -166,7 +166,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
                 mny=nanmean(y);
                 sdx=nanstd(x);
                 sdy=nanstd(y);
-                jdText(sprintf('n=%d; mns=[%.3f %.3f]; sds=[%.3f %.3f];tstat=%.3f; df=%d, p=%.4f',all.n,mnx,mny,sdx,sdy,all.stats.tstat,all.stats.df,all.pval));
+                dpxText(sprintf('n=%d; mns=[%.3f %.3f]; sds=[%.3f %.3f];tstat=%.3f; df=%d, p=%.4f',all.n,mnx,mny,sdx,sdy,all.stats.tstat,all.stats.df,all.pval));
             end
         otherwise
             error(['['  mfilename '] Unknown test: ' p.Results.test]);
@@ -187,8 +187,8 @@ function [out,h]=dpxScatStat(x,y,varargin)
         subplot 121
         ranks=sort(x-y-median(x-y));
         plot(abs(ranks));
-        jdXaxis(1,numel(x));
-        jdPlotVert((numel(x)+1)/2,'r');
+        dpxXaxis(1,numel(x));
+        dpxPlotVert((numel(x)+1)/2,'r');
         %
         %[pVal,H]=signtest(sort(abs(ranks(ranks<0))),sort(ranks(ranks>0)));
         means=nans(1,1000);
@@ -200,9 +200,9 @@ function [out,h]=dpxScatStat(x,y,varargin)
         end
         [pVal,H]=signtest(means,medians);
         if H==0
-            jdText(['H=0, p=' num2str(pVal) ': Symmetric']);
+            dpxText(['H=0, p=' num2str(pVal) ': Symmetric']);
         else
-            jdText(['H=1, p=' num2str(pVal) ': NOT Symmetric']);
+            dpxText(['H=1, p=' num2str(pVal) ': NOT Symmetric']);
         end
         title('signrank requires symmetry around median');
         %
@@ -212,15 +212,15 @@ function [out,h]=dpxScatStat(x,y,varargin)
         [H,pVal]=kstest(x-y-nanmean(x-y)); % jacob: kstest ignores nan values
         % [H,pVal]=vartest2(x,y);
         % if H==0
-        %     jdText(['Variances are equal. p=' num2str(pVal)]);
+        %     dpxText(['Variances are equal. p=' num2str(pVal)]);
         % else
-        %     jdText(['Variances are NOT equal. p=' num2str(pVal)]);[
+        %     dpxText(['Variances are NOT equal. p=' num2str(pVal)]);[
         % end
         
         if H==0
-            jdText(['KS test  p=' num2str(pVal) '--> NORMAL.']);
+            dpxText(['KS test  p=' num2str(pVal) '--> NORMAL.']);
         else
-            jdText(['KS test  p=' num2str(pVal) '--> NOT-NORMAL.' ]);
+            dpxText(['KS test  p=' num2str(pVal) '--> NOT-NORMAL.' ]);
         end
         
         title('paired t-test requires normality, and equal variance');

@@ -428,7 +428,7 @@ function compareModels(M,modStrCell)
         return;
     end
     findfig('compareModels');
-    jdScatStat([M.(modStrCell{1}).r2],[M.(modStrCell{2}).r2],'test','signtest');
+    dpxScatStat([M.(modStrCell{1}).r2],[M.(modStrCell{2}).r2],'test','signtest');
     xlabel([modStrCell{1} ' R^2']);
     ylabel([modStrCell{2} ' R^2']);
     axis square

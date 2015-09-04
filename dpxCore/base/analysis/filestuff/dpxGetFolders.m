@@ -1,6 +1,6 @@
 function foldernames=dpxGetFolders(folder,walktree)
     
-    % jdGetFolders(folder), returns all folders present in folder 'folder', excluding the
+    % dpxGetFolders(folder), returns all folders present in folder 'folder', excluding the
     % folders named . and ..
     % If no folder is provided, the current folder is used (pwd)
     % Jacob 20060929

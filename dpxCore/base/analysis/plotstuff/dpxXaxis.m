@@ -17,7 +17,7 @@ function current=dpxXaxis(mn,mx,tickstep,tickbase)
         mx=current(2);
     end
     if mn==mx
-        warning('[jdXaxis] minimum equals maximum, returning without doing anything');
+        warning('[dpxXaxis] minimum equals maximum, returning without doing anything');
         return;
     end
     % set the new values

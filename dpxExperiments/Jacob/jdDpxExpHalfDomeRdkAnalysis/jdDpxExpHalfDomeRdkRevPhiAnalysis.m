@@ -395,9 +395,9 @@ function plotAllYawToCheckClipping(C,titleString)
                 hold on;
             end
         end
-        jdYaxis(-1080/2,1080/2);
-        jdPlotHori(500,'r-');
-        jdPlotHori(-500,'r-');
+        dpxYaxis(-1080/2,1080/2);
+        dpxPlotHori(500,'r-');
+        dpxPlotHori(-500,'r-');
     end
 end
 
