@@ -24,7 +24,7 @@ if nargin>1
         % argument was a position vector. I've changed that to a varargin for
         % input parsing. Jacob, 2012-10-12
         varargin={'position',tmp};
-        warning('findfig(tag,position) is deprecated. Type ''edit findfig'' for info.');
+        warning('dpxFindFig(tag,position) is deprecated. Type ''edit dpxFindFig'' for info.');
     end
     clear tmp;
 end

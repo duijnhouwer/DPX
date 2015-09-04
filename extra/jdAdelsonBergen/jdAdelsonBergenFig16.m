@@ -2,16 +2,16 @@ function jdAdelsonBergenFig16
     
     
     load('\\vision\dfs\home\jacob\My Documents\MATLAB\DPX\extra\jdAdelsonBergen\@jdAdelsonBergen\private\AB16.mat');
-    findfig('Phi');
+    dpxFindFig('Phi');
     XT=stim;
     plotStage4(XT);
-    findfig('Static')
+    dpxFindFig('Static')
     XT=stim;
     for t=1:4:size(XT,1)-3
         XT(t:t+3,:)=circshift(XT(t:t+3,:),-(t-1),2);
     end
     plotStage4(XT);
-    findfig('Reverse-Phi')
+    dpxFindFig('Reverse-Phi')
     XT=stim;
     for t=1:8:size(XT,1)-3
         XT(t:t+3,:)=mod(XT(t:t+3,:)+1,2);

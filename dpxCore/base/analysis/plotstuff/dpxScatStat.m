@@ -182,7 +182,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
         % make a separate figure to help decide which test is most suitable
         currentfigwintit=get(gcf,'Name');
         % switch to diagnostics window
-        findfig(p.Results.plotdiagnostics)
+        dpxFindFig(p.Results.plotdiagnostics)
         %
         subplot 121
         ranks=sort(x-y-median(x-y));
@@ -225,7 +225,7 @@ function [out,h]=dpxScatStat(x,y,varargin)
         
         title('paired t-test requires normality, and equal variance');
         % switch back to main window
-        findfig(currentfigwintit);
+        dpxFindFig(currentfigwintit);
     end
     
 end

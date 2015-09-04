@@ -23,8 +23,8 @@ function plotExample
     pars.Ioff=5;
     pars.Isig=30;
     pars.Ro=5;
-    pars=jdStructToArray(pars);
-    findfig('Example')
+    pars=jdStructToArray(pars); % AVAILABLE ON KLAB SYSTEM, COPY FROM THERE IF NEEDED 2015-09-04 jacob
+    dpxFindFig('Example')
     for i=1:1
         if i==1
             h(1)=subplot(1,2,1,'align');
@@ -51,14 +51,14 @@ function plotExample
             vMaxI=v(I==max(I));
             plot([vMaxI vMaxI],[0 max(I)],'LineWidth',1,'Color',[0 0 1 1]);
         end
-        jdXaxis(-maxV-1,maxV+1);
+        dpxXaxis(-maxV-1,maxV+1);
         set(gca, 'Layer', 'top');
         box off;
-        jdPlotVert(0,'k--');
-        if i==1, jdText(['C = ' num2str(xSecCont(i),'%.1f') ],'FontSize',12); end
+        dpxPlotVert(0,'k--');
+        if i==1, dpxText(['C = ' num2str(xSecCont(i),'%.1f') ],'FontSize',12); end
     end
-    jdGraphShareAxes(h);
-    jdText(['C = ' num2str(xSecCont(i),'%.1f')],'FontSize',12);
+    dpxShareAxes(h);
+    dpxText(['C = ' num2str(xSecCont(i),'%.1f')],'FontSize',12);
     xlabel('Speed (Log2 deg/s)','FontSize',12);
     ylabel('Spikes/s','FontSize',12);
     
@@ -96,7 +96,7 @@ function out=KrekelbergVanWezelAlbright2006
     global rodAlb
     global fitopts
     rodAlb=false;
-    findfig(['KrekelbergVanWezelAlbright2006 - ' fitopts]);
+    dpxFindFig(['KrekelbergVanWezelAlbright2006 - ' fitopts]);
     clf;
     figures={'6a','6b','3a','3b','3c','3d'};
     for i=1:numel(figures)
@@ -111,7 +111,7 @@ function out=rodmanAlbright1987
     global rodAlb
     global fitopts
     rodAlb=true;
-    findfig(['rodmanAlbright1987 - ' fitopts]);
+    dpxFindFig(['rodmanAlbright1987 - ' fitopts]);
     clf;
     figures={'6a','6b','7a','7b'};
     for i=1:numel(figures)
@@ -127,7 +127,7 @@ function out=packHunterBorn2005
     global rodAlb
     global fitopts
     rodAlb=false;
-    findfig(['packHunterBorn2005 - ' fitopts]);
+    dpxFindFig(['packHunterBorn2005 - ' fitopts]);
     clf;
     figures={'1C','3CD'};
     for i=1:numel(figures)
@@ -415,7 +415,7 @@ function plotDataAndFit(fit,spn)
     %
     axis tight;
     if ~isPrediction
-        jdText(['R2 = ' num2str(fit.r2,'%.2f')],'FontSize',12);
+        dpxText(['R2 = ' num2str(fit.r2,'%.2f')],'FontSize',12);
         %
         if spn(3)==1
             xlabel('Speed (deg/s)');

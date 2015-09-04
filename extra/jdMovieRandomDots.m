@@ -168,7 +168,7 @@ function [M,rdk]=drawFrame(f,p,rdk)
         signal(1:round(p.coherence*p.nDots))=true;
         for tr=1:numel(p.deltaDeg)
             thisSheet=rdk.dirGroup==tr & signal;
-            thisDxDy=[p.dX p.dY]*jdRotationMatrix(p.deltaDeg(tr));
+            thisDxDy=[p.dX p.dY]*dpxRotationMatrix(p.deltaDeg(tr));
             rdk.x(thisSheet)=rdk.x(thisSheet)+thisDxDy(1)*p.aaPx;
             rdk.y(thisSheet)=rdk.y(thisSheet)+thisDxDy(2)*p.aaPx;
         end

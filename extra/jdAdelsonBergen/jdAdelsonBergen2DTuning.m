@@ -35,7 +35,7 @@ function jdAdelsonBergen2DTuning
                 
             end
             
-            findfig(['XT - theta ' num2str(theta(i))]);
+            dpxFindFig(['XT - theta ' num2str(theta(i))]);
             imagesc(XT);
             colormap gray
             tilefigs;
@@ -48,10 +48,10 @@ function jdAdelsonBergen2DTuning
     
             resp(i)=L1+L2;%M.dirNrg.rightTotal;
         end
-        findfig(mfilename);
+        dpxFindFig(mfilename);
         polar(theta/180*pi,resp,style);
         hold on
-        jdPlotHori;
+        dpxPlotHori;
     end
 end
 

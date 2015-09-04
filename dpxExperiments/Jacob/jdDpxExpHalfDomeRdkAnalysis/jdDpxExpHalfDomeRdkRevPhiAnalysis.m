@@ -386,7 +386,7 @@ end
 
 
 function plotAllYawToCheckClipping(C,titleString)
-    findfig(['YawBreaker' titleString]);
+    dpxFindFig(['YawBreaker' titleString]);
     for i=1:numel(C)
         subplot(ceil(numel(C)/5),5,i);
         for s=1:numel(C{i}.yawRaw)

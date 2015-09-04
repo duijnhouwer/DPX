@@ -37,7 +37,7 @@ function out=rodmanAlbright1987
     global rodAlb
     global fitopts
     rodAlb=true;
-    findfig(['rodmanAlbright1987 - ' fitopts]);
+    dpxFindFig(['rodmanAlbright1987 - ' fitopts]);
     clf;
     figures={'6a','6b','7a','7b'};
     for i=1:numel(figures)
@@ -52,7 +52,7 @@ function out=KrekelbergVanWezelAlbright2006
     global rodAlb 
     global fitopts
     rodAlb=false;
-    findfig(['KrekelbergVanWezelAlbright2006 - ' fitopts]);
+    dpxFindFig(['KrekelbergVanWezelAlbright2006 - ' fitopts]);
     clf;
     figures={'6a','6b','3a','3b','3c','3d'};
     for i=1:numel(figures)
@@ -223,7 +223,7 @@ function out=fitSimple(speeds,conts,targetResp)
         if i>1
             EST=LOB+rand(size(LOB)).*(UPB-LOB);
         end
-      %  findfig('fitprog'); clf
+      %  dpxFindFig('fitprog'); clf
         [FIT,~,residual] = lsqcurvefit(@fitFunc, EST, {speeds,uniqConts,targetResp}, targetResp, LOB, UPB, options);
         thisR2=jdR2(targetResp(:),residual(:));
         if thisR2>bestR2
@@ -309,7 +309,7 @@ function out=fitSimple(speeds,conts,targetResp)
             end
         end
         if mod(fitcounter,plotfitcounter)==0
-            jdText(num2str(fitcounter));
+            dpxText(num2str(fitcounter));
             drawnow;
         end
     end
@@ -357,7 +357,7 @@ function plotDataAndFit(fit,spn)
     plotFnc(peakx,peaky,'xb-','LineWidth',1.5);
     %
     axis tight;
-    jdText(['R2 = ' num2str(fit.r2,'%.2f')]);
+    dpxText(['R2 = ' num2str(fit.r2,'%.2f')]);
     %
     if spn(3)==1
         xlabel('Speed (deg/s)');
@@ -427,7 +427,7 @@ function compareModels(M,modStrCell)
     if numel(modStrCell)<2
         return;
     end
-    findfig('compareModels');
+    dpxFindFig('compareModels');
     dpxScatStat([M.(modStrCell{1}).r2],[M.(modStrCell{2}).r2],'test','signtest');
     xlabel([modStrCell{1} ' R^2']);
     ylabel([modStrCell{2} ' R^2']);
