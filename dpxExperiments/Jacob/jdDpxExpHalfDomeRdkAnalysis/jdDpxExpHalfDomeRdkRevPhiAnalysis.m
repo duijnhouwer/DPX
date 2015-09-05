@@ -30,7 +30,7 @@ function files=jdDpxExpHalfDomeRdkRevPhiAnalysis(files)
     analyze(PHI,'; Phi (all delays)');
     IHP=dpxdSubset(E,E.rdk_nSteps==1 & E.rdk_invertSteps==1);
     analyze(IHP,'; Reverse-phi (all delays)');
-    tilefigs;
+    dpxTileFigs;
     
     keyboard
     return;
