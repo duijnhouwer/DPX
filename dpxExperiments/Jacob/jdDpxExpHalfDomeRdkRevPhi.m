@@ -89,7 +89,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
                     R2.name='mouseSide';
                     R2.doReset=true;
                     R2.mouseId=12;
-                    R2.defaultX=1920;
+                    R2.defaultX=1920/2;
                     R2.defaultY=1080/2;
                     R2.allowUntilSec=C.durSec;
                     C.addResp(R2);
