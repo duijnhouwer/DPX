@@ -1,4 +1,4 @@
-function b=dpxIsWholeNumber(A)
+function [b,str]=dpxIsWholeNumber(A)
 
 % Return true if A contains all whole numbers. 
 % Return false if not numbers, not integer, or not positive.
@@ -6,7 +6,7 @@ function b=dpxIsWholeNumber(A)
 % Jacob Duijnhouwer
 
 b=isnumeric(A) & A>=0 & mod(A,1)==0;
-
+str='an integer greater than zero)';
 
 %if any(~isnumeric(A))
 %    b=false;

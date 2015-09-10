@@ -10,7 +10,8 @@ classdef dpxStimRdk < dpxAbstractVisualStim
         nSteps;
         cohereFrac; % negative coherence flips directions
         apert;
-        motType; % placeholder, use for phi and reversephi etc.
+        motType; % use for phi and reversephi
+        freezeFlip;
     end
     properties (Access=protected)
         nDots;
@@ -22,6 +23,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
         pxPerFlip; % the speed in pixels per flip
         dotsRGBA;
         noiseDots;
+        dotPolarity;
     end
     methods (Access=public)
         function S=dpxStimRdk
@@ -38,12 +40,11 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             S.wDeg=10;
             S.hDeg=10;
             S.motType='phi';
+            S.freezeFlip=1;
         end
     end
     methods (Access=protected)
         function myInit(S)
-            D2P=S.scrGets.deg2px; % xDeg * D2P = xPix
-            F2I=S.scrGets.whiteIdx; % fraction to index (for colors)
             % Convert settings to stimulus properties
             S.nDots=max(0,round(S.dotsPerSqrDeg * S.wDeg * S.hDeg));
             N=S.nDots;
@@ -62,10 +63,10 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
             end
             S.dotAge = floor(S.RND.rand(1,N) * (S.nSteps + 1));
-            S.pxPerFlip = S.speedDps * D2P / S.scrGets.measuredFrameRate;
-            idx = S.RND.rand(1,N)<.5;
-            S.dotsRGBA(:,idx) = repmat(S.dotRBGAfrac1(:)*F2I,1,sum(idx));
-            S.dotsRGBA(:,~idx) = repmat(S.dotRBGAfrac2(:)*F2I,1,sum(~idx));
+            S.pxPerFlip = S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
+            S.dotPolarity = S.RND.rand(1,N)<.5;
+            S.dotsRGBA(:,S.dotPolarity) = repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
+            S.dotsRGBA(:,~S.dotPolarity) = repmat(S.dotRBGAfrac2(:)*S.scrGets.whiteIdx,1,sum(~S.dotPolarity));
         end
         function myDraw(S)
             if S.visible
@@ -76,41 +77,85 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             end
         end
         function myStep(S)
-            % Reposition the dots, use shorthands for clarity
-            x=S.dotXPx;
-            y=S.dotYPx;
-            w=S.wPx;
-            h=S.hPx;
-            dx=cosd(S.dotDirDeg)*S.pxPerFlip;
-            dy=sind(S.dotDirDeg)*S.pxPerFlip;
-            % Update dot lifetime
-            S.dotAge=S.dotAge+1;
-            expired=S.dotAge>S.nSteps;
-            % give new position if expired
-            x(expired)=S.RND.rand(1,sum(expired))*w-w/2-dx(expired);
-            y(expired)=S.RND.rand(1,sum(expired))*h-h/2-dy(expired);
-            % give new random direction if expired and dot is noise
-            rndDirs=S.RND.rand(size(x))*360;
-            S.dotDirDeg(expired&S.noiseDots)=rndDirs(expired&S.noiseDots);
-            S.dotAge(expired)=0;
-            % Move the dots
-            x=x+dx;
-            y=y+dy;
-            if dx>0
-                x(x>=w/2)=x(x>=w/2)-w;
-            elseif dx<0
-                x(x<-w/2)=x(x<-w/2)+w;
+            if S.nDots==0
+                return;
             end
-            if dy>0
-                y(y>=h/2)=y(y>=h/2)-h;
-            elseif dy<0
-                y(y<-h/2)=y(y<-h/2)+h;
+            frozen=mod(S.stepCounter,S.freezeFlip)>0; % way of reducing framerate
+            if ~frozen
+                % Reposition the dots, use shorthands for clarity
+                x=S.dotXPx;
+                y=S.dotYPx;
+                w=S.wPx;
+                h=S.hPx;
+                dx=cosd(S.dotDirDeg)*S.pxPerFlip*S.freezeFlip;
+                dy=sind(S.dotDirDeg)*S.pxPerFlip*S.freezeFlip;
+                % Update dot lifetime
+                S.dotAge=S.dotAge+1;
+                expired=S.dotAge>S.nSteps;
+                % give new position if expired
+                x(expired)=S.RND.rand(1,sum(expired))*w-w/2-dx(expired);
+                y(expired)=S.RND.rand(1,sum(expired))*h-h/2-dy(expired);
+                % give new random direction if expired and dot is noise
+                rndDirs=S.RND.rand(size(x))*360;
+                S.dotDirDeg(expired&S.noiseDots)=rndDirs(expired&S.noiseDots);
+                S.dotAge(expired)=0;
+                % Move the dots
+                x=x+dx;
+                y=y+dy;
+                if dx>0
+                    x(x>=w/2)=x(x>=w/2)-w;
+                elseif dx<0
+                    x(x<-w/2)=x(x<-w/2)+w;
+                end
+                if dy>0
+                    y(y>=h/2)=y(y>=h/2)-h;
+                elseif dy<0
+                    y(y<-h/2)=y(y<-h/2)+h;
+                end
+                S.dotXPx=x;
+                S.dotYPx=y;
+                if strcmpi(S.motType,'IHP')
+                    % Flip rgba1 and rgba2
+                    rgba1=S.dotRBGAfrac1(:)*S.scrGets.whiteIdx;
+                    rgba2=S.dotRBGAfrac2(:)*S.scrGets.whiteIdx;
+                    firstTrue=find(S.dotPolarity==true,1);
+                    if isempty(firstTrue)
+                        % rare case if all dots are the same off-color
+                        if all(S.dotsRGBA(:,1)-rgba1<eps)
+                            S.dotsRGBA=repmat(rgba2,1,S.nDots);
+                        else
+                            S.dotsRGBA=repmat(rgba1,1,S.nDots);
+                        end
+                    end
+                    if all(S.dotsRGBA(:,firstTrue)-rgba1==0)
+                        S.dotsRGBA(:,S.dotPolarity) = repmat(rgba2,1,sum(S.dotPolarity));
+                        S.dotsRGBA(:,~S.dotPolarity) = repmat(rgba1,1,sum(~S.dotPolarity));
+                    else
+                        S.dotsRGBA(:,S.dotPolarity) = repmat(rgba1,1,sum(S.dotPolarity));
+                        S.dotsRGBA(:,~S.dotPolarity) = repmat(rgba2,1,sum(~S.dotPolarity));
+                    end
+                end
             end
-            S.dotXPx=x;
-            S.dotYPx=y;
+        end
+    end
+    methods
+        function set.motType(S,value)
+            if ~any(strcmpi(value,{'phi','ihp'}))
+                error('motType should be PHI or IHP (case IN-sensitive)');
+            else
+                S.motType=value;
+            end
+        end
+        function set.freezeFlip(S,value)
+            [b,str]=dpxIsWholeNumber(value);
+            if ~b
+                error(['freezeFlip should be ' str ]);
+            end
+            S.freezeFlip=value;
         end
     end
 end
+
 
 % --- HELP FUNCTION ------------------------------------------------------
 
@@ -124,3 +169,4 @@ function ok=applyTheAperture(S)
         error(['Unknown apert option: ' S.apert ]);
     end
 end
+

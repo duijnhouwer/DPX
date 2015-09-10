@@ -90,8 +90,8 @@ classdef (Abstract) dpxAbstractStim < hgsetget
                 S.flipCounter=globalFlipCounter-S.flipsPriorEnable; % stimulus's flipcounter is relative to first enable
                 if S.flipCounter>S.onFlip && S.flipCounter<=S.offFlip
                     % flipCounter is updated before step and draw are called. Therefore, it's a
-                    % one-based counter (starts at 1);
-                    S.stepCounter=S.stepCounter+1;
+                    % one-based counter (starts at 0, so 1 during the first step);
+                    S.stepCounter=S.stepCounter+1; % stepcounter is also effectively one-based
                     S.myStep;
                     S.myDraw;
                 end

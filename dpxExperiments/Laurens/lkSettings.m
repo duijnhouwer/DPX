@@ -42,6 +42,8 @@ function val=lkSettings(str)
             val=2; % tussen 0 en 5
         case 'WINPIX'
             val=[0 0 1920 1080];
+        case 'WINPIXDEBUG'
+            val=[10 10 640 360];
         case 'SKIPSYNCTEST'
             val=1;
         case 'TESTDIRS'
