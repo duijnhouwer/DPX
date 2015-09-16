@@ -160,6 +160,8 @@ end
 % --- HELP FUNCTION ------------------------------------------------------
 
 function ok=applyTheAperture(S)
+    % Note (20150909) This is outdated use. In future stimili rather use a separate
+    % aperture object such as dpxStimMask
     if strcmpi(S.apert,'CIRCLE')
         r=min(S.wPx,S.hPx)/2;
         ok=hypot(S.dotXPx,S.dotYPx)<r;

@@ -100,8 +100,20 @@ function M=convertLkDpxGratingExp(K)
     % diameter aperture
     M.dblStimSizeRetinalDegrees=K.test_wDeg(1);
     
-    % Spatiele frequentie (ik gok in cycles/degree)
-    M.dblSpatialFrequency=K.test_cyclesPerDeg; % lijst van lengte nTrials
+    if isfield(K,'test_cyclesPerDeg')
+        % Spatiele frequentie (ik gok in cycles/degree)
+        M.dblSpatialFrequency=K.test_cyclesPerDeg; % lijst van lengte nTrials
+    else
+        warning('No test_cyclesPerDeg field found. Probably an RDK experiment?');
+        % This is a hack to be able to use the convertLkDpxGratingExp function also for
+        % the RDK experiments. Those RDK exps miss some fields (and have some that the
+        % grating missed, like dot-diam. I checked MountainPro and DPX and luckily the
+        % properties (in this case dblSpatialFrequency) that get filled by the missing
+        % paramters (in this case test_cyclesPerDeg) are never used. Therefore it is
+        % possible to just ignore them. If in the future we do need them, I suggest we
+        % make special funtion for RDK experiment conversion
+        % 2015-09-16
+    end
     
     % Ik weet niet zeker wat dit voorsteld, mogelijk aantal keer dat
     % periode in de grating past. Ik zet het zolang maar op -1, dan zien we
@@ -110,11 +122,19 @@ function M=convertLkDpxGratingExp(K)
     
     % dit wordt een lijst met contrast waarden per trial, weet niet of de
     % montijn analyse daarmee om kan gaan, was daar een scalar.
-    M.amplitude = K.test_contrastFrac;
+    if isfield(K,'test_contrastFrac')
+        M.amplitude = K.test_contrastFrac;
+    else
+        warning('No test_contrastFrac field found. Probably an RDK experiment?');
+    end
     
     % Ik denk dat dit voorsteld welke waarde in dKe stimulus codering het
     % achtergrondsgrijs voorsteld. Ik hardcode dit maar even op 0.5;
-    M.bgIntStim = K.test_grayFrac;
+    if isfield(K,'test_grayFrac')
+        M.bgIntStim = K.test_grayFrac;
+    else
+        warning('No test_grayFrac field found. Probably an RDK experiment?');
+    end
     M.bgInt = 'who cares'; % 128
     
     % Een beschrijving van welke richitng wat is
@@ -249,11 +269,15 @@ function M=convertLkDpxGratingExp(K)
     % Orientaties per presentatie
     M.Orientation = K.test_dirDeg;
     % Richtingen (hardcoded 0) per presentatie
-    M.Direction = 1.0*K.test_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
-    % Speeds (ik gok in cycles/second) per presentatie
-    M.Speed = K.test_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
-    % Spatfreq per presentatie
-    M.SpatialFrequency = K.test_cyclesPerDeg; % [1x80 double]
+    if isfield(K,'test_cyclesPerSecond')
+        M.Direction = 1.0*K.test_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
+        % Speeds (ik gok in cycles/second) per presentatie
+        M.Speed = K.test_cyclesPerSecond; %  [1 1 1 1 1  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+        % Spatfreq per presentatie
+        M.SpatialFrequency = K.test_cyclesPerDeg; % [1x80 double]
+    else
+        warning('No test_cyclesPerDeg field found. Probably an RDK experiment?');
+    end
 end
 
 
@@ -264,7 +288,7 @@ function M=convertLkDpxGratingAdaptExp(K)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    % First, remove the long initial adaptation trial, it seem to mess up the montijn
+    % First, remove the long initial adaptation trial, it seems to mess up the montijn
     % analysis. Jacob, 2015-04-20
     K=dpxdSubset(K,K.adap_durSec<max(K.adap_durSec));
     % For clarity, I removed the comments from this function as far as they
