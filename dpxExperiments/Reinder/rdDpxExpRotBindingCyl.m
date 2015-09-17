@@ -31,10 +31,10 @@ if strcmpi(pos,'left')
 elseif strcmpi(pos,'right')
     flippos=-1;
     if strcmpi(BB,'base')
-        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de RECHTER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag\n\nDruk op spatie om te beginnen';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de RECHTER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
         E.expName='rdDpxExpBaseLineCylRight';
     elseif strcmpi(BB,'bind')
-        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de LINKER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag\n\nDruk op spatie om te beginnen';
+        E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de LINKER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
         E.expName='rdDpxExpBindingCylRight';
     else
         error(['unknown type of experiment ' BB]);
@@ -43,7 +43,7 @@ else
     error(['unknown pos mode ' pos]);
 end
 
-E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.'];
+E.txtStart=[ E.txtStart '\nFeedback Flits:\nGrijs: Antwoord ontvangen.\n\nDruk op spatie om te beginnen'];
 
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(dpxGetUserName,'Reinder')
@@ -58,15 +58,15 @@ end
 
 % Set the stimulus window option
 % [1440 0 1600+1440 1200]
-E.scr.set('winRectPx',[100 100 900 600],'widHeiMm',[394 295],'distMm',1000,'scrNr',0); % Eyelink PC, Nr=1 : crt
+E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',0); % Eyelink PC, Nr=1 : crt
 E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
 E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run
-modes={'stereo','anti-stereo','mono'}; %stereo, anti-stereo, mono
+modes={'stereo','anti-stereo','mono'}; % {'stereo','anti-stereo','mono'}
 for m=1:numel(modes)
-    for dsp=[-.8 -.4 -.2 0 .2 .4 .8]
+    for dsp=[-.8 -.4 0 .4 .8]
         for rotSpeed=[120 -120] % >0 --> up
             C=dpxCoreCondition;
             set(C,'durSec',2.5);
@@ -131,8 +131,8 @@ for m=1:numel(modes)
             R.correctStimName='fbCorrect';
             R.name='rightHand';
             R.correctKbNames='1';
-            R.correctEndsTrialAfterSec=Inf;
-            R.wrongEndsTrialAfterSec=Inf;
+            R.correctEndsTrialAfterSec=inf;
+            R.wrongEndsTrialAfterSec=inf;
             C.addResp(R);
             
             E.addCondition(C);
