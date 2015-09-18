@@ -1,55 +1,61 @@
-function [outstructs,N]=dpxdSplit(dpxd,params)
+function [C,N]=dpxdSplit(DPXD,params)
     
-    % outstructs=dpxdSplit(r,params)
-    % Split the dpxd according to the list of fieldnames in cell array
-    % params. Params can be a cell of multiple fieldnames, or a string
-    % containing one fieldname. The sub-dpxds are returned in a cell array.
-    % Optional second output argument N is an array of number of elemements
-    % in the corresponding output cell-array of sub-DPXD's 
-    % Jacob 2014-06-02
+    % [C,N]=dpxdSplit(DXPD,params)
+    %
+    % Split a DXPD according to the list of fieldnames in 'params'. Params can
+    % be a string containing one fieldname, or a cell of multiple fieldnames.
+    % The sub-dpxds are returned in cell array C.
+    %
+    % Optional second output argument N is an array of number of elemements in
+    % the corresponding output cell-array of sub-DPXD's
+    %
+    % Jacob 2014-06-02; major update 2015-09-17
     
     if nargin~=2
         error('Needs two inputs: a dpxd-struct and a fieldname (string) accross which to split the struct. Fieldname can also be a cell array of fieldname-strings.');
     end
-    outstructs=cell(0);
+    C=cell(0);
     N=[];
     if iscell(params) && numel(params)==1
         params=params{1};
     end
     if ischar(params)
         % params is a single fieldname string
-        for i=1:dpxdLevels(dpxd,params);
-            outstructs{i}=dpxdSelect(dpxd,params,'increasing',i);
-            N(i)=outstructs{i}.N;
+        U=unique(DPXD.(params));
+        for i=1:numel(U)
+            C{i}=dpxdSubset(DPXD,subFuncEquals(DPXD.(params),U(i)));
+            N(i)=C{i}.N;
         end
     elseif iscell(params)
         % params is a cell array of one or more fieldname strings
-        nParams=length(params);
-        n=zeros(nParams-1,1);
-        level=1;
-        rsub{level}=dpxd;
-        while 1
-            n(level)=n(level)+1;
-            rsub{level+1}=dpxdSelect(rsub{level},params{level},'increasing',n(level));
-            if ~rsub{level+1}.N==0
-                level=level+1;
-                if level==nParams % highest level reached, split on final param (fieldname) and store results for output
-                    for i=1:dpxdLevels(rsub{level},params{level});
-                        thisout=dpxdSelect(rsub{level},params{level},'increasing',i);
-                        outstructs{end+1}=thisout; %#ok<AGROW>
-                        N(end+1)=thisout.N;
-                    end
-                    level=level-1;
-                end
-            else
-                n(level)=0;
-                level=level-1;
-                if level<=0
-                    break % the while loop
-                end
+        C{1}=DPXD;
+        for i=1:numel(params)
+            TMP={};
+            for ci=1:numel(C)
+                TMP{end+1}=dpxdSplit(C{ci},params{i}); %#ok<AGROW>
+            end
+            C=[TMP{:}];
+        end
+        if nargout==2
+            N=nans(size(C));
+            for i=1:numel(C)
+                N(i)=C{i}.N;
             end
         end
     else
         error('Params should be a fieldname (string), or a one-dimensional cell array of fieldnames (strings).');
+    end
+    
+    function I=subFuncEquals(arr,thisval)
+        
+        if isnumeric(thisval) || islogical(thisval)
+            I=arr==thisval; % e.g. [123 123]==123;
+        elseif ischar(thisval) && ischar(arr)
+            I=arr==thisval; % e.g. 'abcabc'=='a'
+        elseif iscell(arr) && all(cellfun(@ischar,arr))
+            I=strcmp(arr,thisval); % e.g. {'abd','abc','abc'}=='abc'
+        else
+            error('dpxdSplit can only split by numerical, logical, and char arrays, or by cell-arrays of strings');
+        end
     end
 end
