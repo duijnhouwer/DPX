@@ -27,7 +27,7 @@ classdef dpxStimTextSimple < dpxAbstractVisualStim
             % Todo: make winRect adapt to the standard xDeg and yDeg coordinates
             % that any stimulus has. Add more set function with error
             % checking.
-            S.str='Welcome to DPX!\n*^_^*';
+            S.str='Welcome to DPX!\n^_^';
             S.RGBAfrac=[1 1 1 1];
             S.fontname='DefaultFontName';
             S.fontsize=25;
