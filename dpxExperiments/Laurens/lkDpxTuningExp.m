@@ -11,6 +11,8 @@ function lkDpxTuningExp(varargin)
     %        lkDpxTuningExp('stim','Rdk', 'mode','Speed')
     %   Random dots direction tuning curve with phi and reverse-phi dots
     %       lkDpxTuningExp('stim','rdkRevPhi', 'mode','dir');
+    %   Random dots with 0, 90, 180 deg transparency (and 1 component control)
+    %       lkDpxTuningExp('stim','rdkTrans')
     
     p=inputParser;
     p.addParamValue('mode','dir',@(x)any(strcmpi(x,{'dir','speed'})));
