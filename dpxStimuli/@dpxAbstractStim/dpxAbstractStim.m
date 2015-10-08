@@ -84,7 +84,12 @@ classdef (Abstract) dpxAbstractStim < hgsetget
                 % always enabled. The main purpose of this extra counter is that stimuli
                 % that are enabled after a response can count their onSec and durSec
                 % relative that moment instead of from the beginning of the trial.
-                S.flipsPriorEnable=globalFlipCounter-1;
+                S.flipsPriorEnable=globalFlipCounter; 
+                % Prior to 2015-10-07 this was S.flipsPriorEnable=globalFlipCounter-1
+                % but i discovered that broke stimulus drawing during
+                % flip-0 (e.g. text in dpxExampleExperimentWithText). I
+                % removed the -1, but I can't really test now how this
+                % might effect other experiments. 666
             end
             if S.enabled
                 S.flipCounter=globalFlipCounter-S.flipsPriorEnable; % stimulus's flipcounter is relative to first enable

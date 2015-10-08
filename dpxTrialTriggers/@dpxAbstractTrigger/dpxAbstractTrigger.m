@@ -18,7 +18,7 @@ classdef (Abstract) dpxAbstractTrigger < hgsetget
             T.triggered=false;
             T.rndSeed=rand*(2^32); % the seed of the stim's internal randstream, setting this will automatically instantiate the RandStream
         end
-        function T=init(T)
+        function init(T)
             T.triggered=false;
             T.myInit; % stimulus class specific init
             T.flipZeroCounter=0; % how many frames have we been in flipZero by now

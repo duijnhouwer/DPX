@@ -8,9 +8,6 @@ function dpxExampleExperimentWithText(testscr)
     % discrimination with different levels of coherence (fraction of
     % motion-signal embedded in motion-noise).
     %
-    % Sections between [] explain some of the ideas and intended advantages
-    % of the object oriented design of DPX.
-    %
     % See also: dpxStimText, dpxStimTextSimple
     %
     % Jacob Duijnhouwer, 2015-04-25
@@ -50,7 +47,7 @@ function dpxExampleExperimentWithText(testscr)
     % this experiment here:
     E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
+        'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
@@ -107,7 +104,7 @@ function dpxExampleExperimentWithText(testscr)
         TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
         TEXT.durSec=0; % stimulus disappears when flip-1 is reached
         
-        
+         
         % Add the stimuli to the condition
         C.addStim(FIX); % first added will be on top
         C.addStim(TEXT);
@@ -117,7 +114,7 @@ function dpxExampleExperimentWithText(testscr)
         % the trigger is received ('left' for left arrow). All stimuli with
         % a negative start time (such as the dxpStimText in this example
         % experiment will be drawn during flip-0. Trial starting at onSec=0
-        % will be drawn on flip-1 and further.
+        % will be drawn from flip-1 onward.
         % Type help dpxTriggerKey for help on finding the name of the key
         % you wish to use.
         TRIG=dpxTriggerKey;
@@ -148,6 +145,4 @@ function dpxExampleExperimentWithText(testscr)
     % and the window remains visible (obscuring the matlab environment),
     % type the shorthand 'cf' and press Enter.
     E.run;
-    %
-    dpxDispFancy('TIP: use dpxExampleExperimentAnalysis to analyse this data');
 end

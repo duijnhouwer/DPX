@@ -267,9 +267,9 @@ classdef dpxCoreCondition < hgsetget
                 disp(nameList);
                 error('All stimuli in a condition need unique names');
             end
-            % Keep a index-list of all stimulu in the stim array that are visual
+            % Keep a index-list of all stimuli in the stim array that are visual
             % stimuli. This will be used to iterate over stimuli to call methods or
-            % check properties that only visual stimuli have
+            % check properties that only visual have
             if isprop(S,'visible')
                 C.visualStimIndices(end+1)=numel(C.stims);
             end

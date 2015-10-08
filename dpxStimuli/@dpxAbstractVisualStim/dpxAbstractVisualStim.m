@@ -114,7 +114,6 @@ classdef (Abstract) dpxAbstractVisualStim < dpxAbstractStim
         end
     end
     methods (Access=protected)
-        %
         function ok=checkEyelinkIsConnected(S)
             try
                 Eyelink('EyeAvailable');
