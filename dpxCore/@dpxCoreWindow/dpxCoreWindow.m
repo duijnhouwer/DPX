@@ -43,7 +43,7 @@ classdef dpxCoreWindow < hgsetget
         function W=dpxCoreWindow
             % dpxCoreWindow
             % Part of DPX suite
-            % https://code.google.com/p/duijnhouwer-psychtoolbox-experiments/
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
             AssertOpenGL;
             W=initValues(W);

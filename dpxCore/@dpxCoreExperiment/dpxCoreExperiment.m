@@ -31,8 +31,10 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods (Access=public)
         function E=dpxCoreExperiment
-            % dpxCoreExperiment Part of DPX: An experiment preparation system
-            % http://duijnhouwer.github.io/DPX/ Jacob Duijnhouwer, 2014
+            % dpxCoreExperiment 
+            % Part of DPX: An experiment preparation system
+            % http://duijnhouwer.github.io/DPX/ 
+            % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};

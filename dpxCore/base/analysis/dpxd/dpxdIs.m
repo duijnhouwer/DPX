@@ -21,7 +21,7 @@ function b=dpxdIs(T,varargin)
     % Check that it is a struct
     if ~isstruct(T)
         b=false;
-        if p.Results.verbosity==1
+        if p.Results.verbosity>=1
             warning('Not a DPXD because not a struct.');
             if p.Results.verbosity>=2
                 keyboard;
@@ -32,7 +32,7 @@ function b=dpxdIs(T,varargin)
     % Check that it has the required N field
     if ~isfield(T,'N')
         b=false;
-        if p.Results.verbosity==1
+        if p.Results.verbosity>=1
             warning('Not a DPXD because N field is missing.');
             if p.Results.verbosity>=2
                 keyboard;
