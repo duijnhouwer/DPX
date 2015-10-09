@@ -17,12 +17,14 @@ function lkDpxGratingAdaptExp
     E.txtPauseNrTrials=0;
     %
     % Adap
-    adapDirDeg=45;
+    adapDirDeg=dpxInputNumber('Enter adapDirDeg',45);
+    disp(['adapDirDeg: ' num2str(adapDirDeg)]);
     adapContrastFracs=lkSettings('CONTRASTFIX');
     adapCyclesPerDeg=lkSettings('SFFIX');
     adapCyclesPerSecond=lkSettings('TFFIX');
     % Test
-    testDirDegs=[0 10 20 30 40 50 60 70 80 90];
+    testDirDegs=dpxInputNumber('Enter testDirDegs',[-45:10:45]+adapDirDeg);
+    disp(['testDirDegs: ' num2str(testDirDegs)]);
     testContrastFracs=lkSettings('CONTRASTFIX');
     testCyclesPerDeg=lkSettings('SFFIX');
     testCyclesPerSecond=lkSettings('TFFIX');

@@ -338,8 +338,8 @@ classdef dpxCoreExperiment < hgsetget
                 catch me, error([me.message ' mkdir ' E.outputFolder]);
                 end
             end
-            E.subjectId=dpxGetValidId('Subject ID > ');
-            E.experimenterId=dpxGetValidId('Experimenter ID > ');
+            E.subjectId=dpxInputValidId('Subject ID > ');
+            E.experimenterId=dpxInputValidId('Experimenter ID > ');
             E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
             testfile=fullfile(E.outputFolder,E.outputFileName);
             if exist(testfile,'file')
