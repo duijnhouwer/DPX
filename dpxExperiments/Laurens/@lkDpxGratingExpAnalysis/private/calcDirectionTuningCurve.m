@@ -21,7 +21,7 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     end
 end
 
-function tc=getCurve(dpxd,cellNr,varargin)
+function tc=getCurve(DPXD,cellNr,varargin)
     % Parse 'options' input
     p=inputParser;
     p.addParamValue('bayesfit',true,@islogical); % *
@@ -33,7 +33,12 @@ function tc=getCurve(dpxd,cellNr,varargin)
     % Split the data by motion type, make a tuning curve per motion type (e.g. 'phi' or
     % 'ihp'). These will get different levels in the tc output struct (e.g. tc.dirDeg{1}
     % is for the first motion type, tc.dirDeg{2} for the second, etc.)
-    MT=dpxdSplit(dpxd,'test_motType');
+    % 2015-10-09: There might not be a motType, e.g. if this is a grating
+    % class stimulus. Add a motType field, assume it's PHI
+    if ~isfield(DPXD,'test_motType')
+        DPXD.test_motType=repmat({'phi'},1,DPXD.N);
+    end
+    MT=dpxdSplit(DPXD,'test_motType');
     for mti=1:numel(MT)
         % Split the data according to the direction of the grating.
         % Ds is the DPXD called 'dpxd' split up in a DPXD per direction (so
