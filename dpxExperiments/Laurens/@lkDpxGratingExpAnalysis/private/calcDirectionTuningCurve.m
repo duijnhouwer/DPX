@@ -1,6 +1,6 @@
-function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
+function tc=calcDirectionTuningCurve(DPXD,cellNr,varargin)
     
-    if nargin==1 && strcmp(dpxd,'info')
+    if nargin==1 && strcmp(DPXD,'info')
         tc.per='cell';
         return;
     end
@@ -8,13 +8,16 @@ function tc=calcDirectionTuningCurve(dpxd,cellNr,varargin)
     % lkDpxExpGrating-DPXD struct, its output can be plot with the
     % complementary plotDirectionTuningCurve
     
+    % Remove trials in which the test was not enabled. Typically, this means that that
+    % trial was initial, long adaptation trial which has a dummy test-stimulus.
+    DPXD=dpxdSubset(DPXD,DPXD.test_enabled);
     % See how many sessions went into this dataset, could be merged data.
     % If so, plot the individual session curves as well as the merged curve
     % (merged on top and clearer line and markers)
-    tc{1}=getCurve(dpxd,cellNr,varargin{:}); % 1 is always all data
-    thisIsMergeData=numel(unique(dpxd.exp_startTime))>1;
+    tc{1}=getCurve(DPXD,cellNr,varargin{:}); % 1 is always all data
+    thisIsMergeData=numel(unique(DPXD.exp_startTime))>1;
     if thisIsMergeData
-        D=dpxdSplit(dpxd,'exp_startTime');
+        D=dpxdSplit(DPXD,'exp_startTime');
         for i=1:numel(D)
             tc{end+1}=getCurve(D{i},cellNr,varargin{:}); %#ok<AGROW>
         end
