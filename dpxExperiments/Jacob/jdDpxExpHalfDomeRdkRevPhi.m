@@ -26,7 +26,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
     
     motSec=2;
     lum=.15;
-    degPerSec=36;
+    degPerSec=18;
     for startSec=[1 2]
         for freezeFlip=[-7:7 -0.1 0.1];
             for invertSteps=[Inf 1] % phi, reverse phi
