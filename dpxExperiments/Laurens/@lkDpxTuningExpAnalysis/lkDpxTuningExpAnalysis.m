@@ -1,4 +1,4 @@
-classdef lkDpxGratingExpAnalysis < hgsetget
+classdef lkDpxTuningExpAnalysis < hgsetget
     properties (Access=public)
         % name of todoListFile,
         % organized.
@@ -13,23 +13,23 @@ classdef lkDpxGratingExpAnalysis < hgsetget
         neuronsToDo;
     end
     methods (Access=public)
-        function A=lkDpxGratingExpAnalysis(neurotodoFile)
-            % lkDpxGratingExpAnalysis
-            % Analysis class for lkDpxGratingExp
+        function A=lkDpxTuningExpAnalysis(neurotodoFile)
+            % lkDpxTuningExpAnalysis
+            % Analysis class for lkDpxTuningExp
             %
             % PROPERTIES:
             %  todoListFileName = the absolute path to a NeuroTodoFile.
             %    A NeuroTodoFile is a text-file that ends in
             %    "todo.txt" that should contain the filenames including
             %    absolute paths to the the merged LasAF and DPX datafiles
-            %    as created using lkDpxGratingExpAddResponse. You can
+            %    as created using lkDpxTuningExpAddResponse. You can
             %    create a NeuroTodoFile using 'createNeuroTodoFile' (see
             %    METHODS).
             %  anaFunc = name of analysis. All analysis are programmed to
             %    run on a cell to cell basis. This class is basically a
             %    wrapper to call them on the set of cells selected in the
             %    NeuroTodoFile. The analysis function can be found in the
-            %    private folder within the "@lkDpxGratingExpAnalysis" class
+            %    private folder within the "@lkDpxTuningExpAnalysis" class
             %    folder. They come in two separate functions, for an anaFunc
             %    named XXX these would be calcXXX.m and plotXXX.m (the names
             %    should be self-explanatory). It's always a good idea to keep
@@ -47,7 +47,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             %  run =
             %    Once you have set the properties to your liking, run the
             %    analysis by excecuting
-            %       A=lkDpxGratingExpAnalysis('X:\YourNeuroTodo.txt');
+            %       A=lkDpxTuningExpAnalysis('X:\YourNeuroTodo.txt');
             %       A.run
             %    Tip: you can at any time interupt the analysis with CTRL-C,
             %    followed optionally by 'cf' to close the figures.
@@ -89,7 +89,7 @@ classdef lkDpxGratingExpAnalysis < hgsetget
             if fid==-1
                 error(['Could not open ''' outputFileName ''' for saving.']);
             end
-            fprintf(fid,'%s\n','% Neuro-selection list example file, to be used with lkDpxGratingExpAnalysis');
+            fprintf(fid,'%s\n','% Neuro-selection list example file, to be used with lkDpxTuningExpAnalysis');
             fprintf(fid,'%s\n','%');
             fprintf(fid,'%s\n','% Selection of files to analyze followed by a line with cell numbers to analyze.');
             fprintf(fid,'%s\n','% The list of numbers should be either a single zero, or all negative numbers, or all positive');
