@@ -216,6 +216,13 @@ classdef dpxCoreWindow < hgsetget
             W.interEyeMm=value;
             initValues(W);
         end
+        function set.skipSyncTests(W,value)
+            if ~dpxIsBoolean(value) || numel(value)~=1
+                [~,def]=dpxIsBoolean(value);
+                error(['skipSyncTests should be a single dpxBooleans. ' def '.']);
+            end
+            W.skipSyncTests=double(value); % double turns true into 1.0
+        end     
     end
     methods (Access=private)
         function W=initValues(W)

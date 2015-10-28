@@ -11,6 +11,8 @@ classdef dpxStimRdk < dpxAbstractVisualStim
         cohereFrac; % negative coherence flips directions
         apert;
         motType; % use for phi and reversephi
+        motStartSec; % relative to stim on 2015-10-28
+        motDurSec; % 2015-10-28
         freezeFlip;
     end
     properties (Access=protected)
@@ -24,6 +26,8 @@ classdef dpxStimRdk < dpxAbstractVisualStim
         dotsRGBA;
         noiseDots;
         dotPolarity;
+        motStartFlip;
+        motStopFlip;
     end
     methods (Access=public)
         function S=dpxStimRdk
@@ -40,6 +44,8 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             S.wDeg=10;
             S.hDeg=10;
             S.motType='phi';
+            S.motStartSec=0; % relative to stimOnSec
+            S.motDurSec=Inf;
             S.freezeFlip=1;
         end
     end
@@ -75,6 +81,8 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             S.dotPolarity=S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,S.dotPolarity)=repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
             S.dotsRGBA(:,~S.dotPolarity)=repmat(S.dotRBGAfrac2(:)*S.scrGets.whiteIdx,1,sum(~S.dotPolarity));
+            S.motStartFlip=round(S.motStartSec*S.scrGets.measuredFrameRate);
+            S.motStopFlip=S.motStartFlip+S.motDurSec*S.scrGets.measuredFrameRate;
         end
         function myDraw(S)
             if S.visible
@@ -88,7 +96,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             if S.nDots==0
                 return;
             end
-            frozen=mod(S.stepCounter,S.freezeFlip)>0; % way of reducing framerate
+            frozen=mod(S.stepCounter-S.motStartFlip,S.freezeFlip)>0; % way of reducing framerate
             if ~frozen
                 % Reposition the dots, use shorthands for clarity
                 x=S.dotXPx;
@@ -105,16 +113,19 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 S.dotDirRads(expired&S.noiseDots)=S.RND.rand(1,sum(expired&S.noiseDots))*2*pi;
                 S.dotAge(expired)=0;
                 % Move the dots, note, dots that have just been replaced within the
-                % aperture because of life-time expirations should not step
-                dx=cos(S.dotDirRads(~expired))*S.pxPerFlip*S.freezeFlip;
-                dy=sin(S.dotDirRads(~expired))*S.pxPerFlip*S.freezeFlip;
-                x(~expired)=x(~expired)+dx;
-                y(~expired)=y(~expired)+dy;
-                % Wrap the dots around if they cross the stimulus edge
-                x(x>=w/2)=x(x>=w/2)-w;
-                x(x<-w/2)=x(x<-w/2)+w;
-                y(y>=h/2)=y(y>=h/2)-h;
-                y(y<-h/2)=y(y<-h/2)+h;
+                % aperture because of life-time expirations should not step. Unless the
+                % outside the motion interval [motStart--motStop>, of course.
+                if S.stepCounter>=S.motStartFlip && S.stepCounter<S.motStopFlip
+                    dx=cos(S.dotDirRads(~expired))*S.pxPerFlip*S.freezeFlip;
+                    dy=sin(S.dotDirRads(~expired))*S.pxPerFlip*S.freezeFlip;
+                    x(~expired)=x(~expired)+dx;
+                    y(~expired)=y(~expired)+dy;
+                    % Wrap the dots around if they cross the stimulus edge
+                    x(x>=w/2)=x(x>=w/2)-w;
+                    x(x<-w/2)=x(x<-w/2)+w;
+                    y(y>=h/2)=y(y>=h/2)-h;
+                    y(y<-h/2)=y(y<-h/2)+h;
+                end
                 % Copy shorthand into member variables
                 S.dotXPx=x;
                 S.dotYPx=y;

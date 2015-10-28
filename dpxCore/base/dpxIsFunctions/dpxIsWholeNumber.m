@@ -1,8 +1,7 @@
 function [b,str]=dpxIsWholeNumber(A)
 
 % Return true if A contains all whole numbers. 
-% Return false if not numbers, not integer, or not positive.
-% Note: this function returns a single locigal, not a logical per element!
+% Return false for elements that are not numbers, not integer, or not positive.
 % Jacob Duijnhouwer
 
 b=isnumeric(A) & A>=0 & mod(A,1)==0;

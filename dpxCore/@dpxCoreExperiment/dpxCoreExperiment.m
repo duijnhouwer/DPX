@@ -397,7 +397,7 @@ classdef dpxCoreExperiment < hgsetget
             % If the user defined E.conditionSequence as a list of numbers, use this as
             % the condition sequence. Otherwise, if E.conditionSequence is an
             % option-string, create a list on the option provided.
-            if isnumeric(E.conditionSequence)
+            if all(dpxIsWholeNumber(E.conditionSequence))
                 % a predefined order list is given
                 E.internalCondSeq=E.conditionSequence(:)';
             elseif strcmpi(E.conditionSequence,'shufflePerBlock')
@@ -406,8 +406,10 @@ classdef dpxCoreExperiment < hgsetget
                     seq=[seq randperm(numel(E.conditions))]; %#ok<AGROW>
                 end
                 E.internalCondSeq=seq;
+            elseif strcmpi(E.conditionSequence,'notShuffled')
+                E.internalCondSeq=repmat(1:numel(E.conditions),1,E.nRepeats);
             else
-                error(['Unknown conditionSequence option: ' E.conditionSequence ]);
+                error('Illegal conditionSequence option');
             end
             % Check the validity of the condition numbers in the list
             if any([E.internalCondSeq<1 E.internalCondSeq>numel(E.conditions)])
@@ -450,10 +452,16 @@ classdef dpxCoreExperiment < hgsetget
             E.outputFolder=value;
         end
         function set.conditionSequence(E,value)
-            E.conditionSequence=value;
-            % call the creation function to test the validity of value, the creation
-            % function will be called for real in the E.run method
-            createConditionSequence(E);
+            strOpts={'shufflePerBlock','notShuffled'};
+            if any(strcmpi(value,strOpts)) || all(dpxIsWholeNumber(value))
+                E.conditionSequence=value;
+                % call the creation function to further test the validity of value, the
+                % creation function will be called for real in the E.run method
+                createConditionSequence(E);
+            else
+                str=sprintf(' ''%s''',strOpts{:});
+                error(['conditionSequence should be list of whole numbers, or any of:' str '.']);
+            end
         end
         function set.startKey(E,value)
             [ok,str]=dpxIsKbName(value);
@@ -462,6 +470,6 @@ classdef dpxCoreExperiment < hgsetget
             else
                 error(['dpxCoreExperiment.startKey should be ' str]);
             end
-        end
+        end    
     end
 end

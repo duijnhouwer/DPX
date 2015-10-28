@@ -83,12 +83,16 @@ function lkDpxTuningExp(varargin)
                                 S.grayFrac=E.scr.backRGBA(1);
                                 S.squareWave=false;
                                 S.dirDeg=direc;
+                                S.onSec=isiSec/2;
+                                S.durSec=stimSec;
                             else % rdk or rdkRevPhi
                                 S=dpxStimRdk;
                                 S.speedDps=tf/sf;
                                 S.dotsPerSqrDeg=.09;
                                 S.dotDiamDeg=1/sf/6;
                                 S.dirDeg=direc;
+                                S.motStartSec=isiSec/2; % 2015-10-28
+                                S.motDurSec=stimSec; % 2015-10-28
                                 % calculate the luminance based on the backRGBA and the contrast values
                                 bright=E.scr.backRGBA(1)+E.scr.backRGBA(1)*cont; % single value between [0..1]
                                 dark=E.scr.backRGBA(1)-E.scr.backRGBA(1)*cont; % single value between [0..1]
@@ -114,8 +118,7 @@ function lkDpxTuningExp(varargin)
                             S.name='test';
                             S.wDeg=lkSettings('STIMDIAM');
                             S.hDeg=S.wDeg;
-                            S.onSec=isiSec/2;
-                            S.durSec=stimSec;
+   
                             %
                             M=dpxStimMaskCircle;
                             M.name='mask';
