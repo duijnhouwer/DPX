@@ -333,9 +333,21 @@ function M=convertLkDpxGratingAdaptExp(K)
     M.TrialNumber = 1:K.N; % [1x80 double]
     startpulseSecs=str2double(K.exp_txtStart{1}(find(K.exp_txtStart{1}=='@')+1:end));
     endpulseSecs=str2double(K.exp_txtEnd{1}(find(K.exp_txtEnd{1}=='@')+1:end));
-    stimOnRelativeToStartPulseSeconds = K.test_onSec + K.startSec - startpulseSecs;
+    if isfield(data,'test_motStartSec') && all(K.test_onSec==0) && all(K.test_durSec==Inf)
+        stimOnSec=K.test_motStartSec;
+        stimDurSec=K.test_motDurSec;
+    else
+        % prior to 2015-10-28 there was no separate motStart and motDur field, the
+        % appearance of the dots and the motion always coincided
+        stimOnSec=K.test_onSec;
+        stimDurSec=K.test_durSec;
+        if isfield(data,'test_motStartSec') 
+            warning('weird, dpxStimRdk.motStartSec was defined but onSec~=0 and/or durSec~=Inf... at the time of writing this analysis that was unexpected, figure out what''s going on');
+        end
+    end
+    stimOnRelativeToStartPulseSeconds = stimOnSec + K.startSec - startpulseSecs;
     M.ActOnPulses = stimOnRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
-    stimOffRelativeToStartPulseSeconds = K.test_onSec + K.test_durSec + K.startSec - startpulseSecs;
+    stimOffRelativeToStartPulseSeconds = stimOnRelativeToStartPulseSeconds + stimDurSec;
     M.ActOffPulses = stimOffRelativeToStartPulseSeconds/M.dblSecsForSingleFrame;
     M.Orientation = K.test_dirDeg;
     M.Direction = 1.0*K.test_cyclesPerSecond>0;  % [0 1 0 1 0 1 0 0 1 0 1 0 1 1 1 0 1 1 0 0 0 0 0 1 1 1 0 0 1 1 1 0 0 0 1 0 1 0 1 1 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 0 0 1 0 1 0 0 1 1 1 1 0 1 0 1]
