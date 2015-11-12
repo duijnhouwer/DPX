@@ -6,7 +6,7 @@ classdef dpxCoreExperiment < hgsetget
         nRepeats;
         conditionSequence;
         conditions;
-        conduits; 
+        conduits;
         txtStart;
         txtPause;
         txtPauseNrTrials;
@@ -14,6 +14,8 @@ classdef dpxCoreExperiment < hgsetget
         txtRBGAfrac;
         breakFixTimeOutSec;
         outputFolder;
+        backupFolder; % 2015-11-12
+        backupStaleDays; % 2015-11-12
         plugins;
         startKey;
     end
@@ -31,9 +33,9 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods (Access=public)
         function E=dpxCoreExperiment
-            % dpxCoreExperiment 
+            % dpxCoreExperiment
             % Part of DPX: An experiment preparation system
-            % http://duijnhouwer.github.io/DPX/ 
+            % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
             E.scr=dpxCoreWindow;
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
@@ -50,6 +52,8 @@ classdef dpxCoreExperiment < hgsetget
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtRBGAfrac=[1 1 1 1];
             E.outputFolder='';
+            E.backupFolder=fullfile(tempdir,'dpxBackups',datestr(now,'yyyy-mm-dd'));
+            E.backupStaleDays=28;
             E.breakFixTimeOutSec=0.5; % blank interval after fixation interruption
         end
         function run(E)
@@ -66,6 +70,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.createConditionSequence;
                 E.sysInfo=dpxSystemInfo;
                 E.createFileName; % this function also asks for subject and experimenter IDs
+                E.cleanOldBackups; % this function asks for user interaction too
                 E.scr.open;
                 for i=1:numel(E.plugins)
                     E.plugins{i}.start(get(E));
@@ -82,7 +87,7 @@ classdef dpxCoreExperiment < hgsetget
                     % backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
                         E.showSaveScreen;
-                        E.save;
+                        E.saveDpxd;
                         E.showIntermissionScreen;
                     end
                     % Initialize this condition, this needs information about the screen. We
@@ -104,7 +109,7 @@ classdef dpxCoreExperiment < hgsetget
                     % and on information store at the end of the previous trial (see below). If
                     % this is the first trial the conduit will know about that and either do
                     % nothing or initialize itself, depending on how it is defined. See
-                    % dpxConduitTest and dpxConduitQuest for examples. 
+                    % dpxConduitTest and dpxConduitQuest for examples.
                     for i=1:numel(E.conduits)
                         CC=E.conduits{i}.fromPreviousTrial(CC);
                     end
@@ -120,7 +125,7 @@ classdef dpxCoreExperiment < hgsetget
                         % recognized in the data file by stopSec==-1
                         newTr=tr+ceil(rand*(numel(E.internalCondSeq)-tr)); % pick a new trial number for this condition to be tried again
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
-                        E.showPauseScreen; % Show the pause screen (with plugin UIs)               
+                        E.showPauseScreen; % Show the pause screen (with plugin UIs)
                     elseif strcmpi(completionStr,'BreakFixation')
                         % Fixation ouside required area.The current trials is lost, it can be
                         % recognized in the data file by stopSec==-1
@@ -134,7 +139,7 @@ classdef dpxCoreExperiment < hgsetget
                         newTr=tr+1;
                         E.internalCondSeq=[E.internalCondSeq(1:newTr-1) cNr E.internalCondSeq(newTr:end)];
                     elseif ~strcmpi(completionStr,'OK')
-                        error(['Unknown completion status: ''' completionStr '''.']); 
+                        error(['Unknown completion status: ''' completionStr '''.']);
                     end
                     % Store the condition number, the start and stop time, and the response
                     % output (which may be empty if no response is required).
@@ -148,7 +153,7 @@ classdef dpxCoreExperiment < hgsetget
                     % and get the information it is allowed to have to change settings of a
                     % future (typically next) condition (see above)
                     for i=1:numel(E.conduits)
-                         E.conduits{i}.toNextTrail(CC.stims,E.trials(tr));       
+                        E.conduits{i}.toNextTrail(CC.stims,E.trials(tr));
                     end
                     % If an overriding RGBA has been defined in this condition, reset the
                     % window object's backRGBA to its default,
@@ -161,7 +166,7 @@ classdef dpxCoreExperiment < hgsetget
                     E.plugins{i}.stop;
                 end
                 E.showFinalSaveScreen;
-                E.save;
+                E.saveDpxd;
                 E.showEndScreen;
                 E.scr.close;
                 r=input('Run dpxToolCommentEditor? [y|N] > ','s');
@@ -178,7 +183,7 @@ classdef dpxCoreExperiment < hgsetget
         function addCondition(E,C)
             if ~isobject(C) || isempty(strfind(class(C),'Condition')) || strncmp(class(C),'dpx',numel('dpx'))==0
                 error('Argument should be an object whose class-name contains ''Condition'', typically ''dpxCoreCondition''.');
-            end 
+            end
             E.conditions{end+1}=C;
         end
         function addConduit(E,U)
@@ -196,10 +201,10 @@ classdef dpxCoreExperiment < hgsetget
         end
     end
     methods (Access=protected)
-        function save(E)
+        function saveDpxd(E)
             % Convert the data
             D.exp=get(E);
-            D.exp=rmfield(D.exp,{'scr','conditions','plugins','outputFileName','outputFolder','trials'});
+            D.exp=rmfield(D.exp,{'scr','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
             D.scr=dpxGetSetables(E.scr);
             D.scr.measuredFrameRate=E.scr.measuredFrameRate;
             D=dpxFlattenStruct(D);
@@ -267,6 +272,9 @@ classdef dpxCoreExperiment < hgsetget
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
             save(absFileName,'data','-v7.3');
+            if ~isempty(E.backupFolder)
+                save(fullfile(E.backupFolder,E.outputFileName),'data','-v7.3');
+            end
             dpxDispFancy(['Data has been saved to: ''' absFileName '''']);
         end
         function showStartScreen(E)
@@ -329,7 +337,7 @@ classdef dpxCoreExperiment < hgsetget
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
-            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\n' E.outputFileName '\n\n(Press $STARTKEY to continue)'];
+            str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\\n' E.outputFileName '\n\n(Press $STARTKEY to continue)'];
             dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1,'commandWindowToo',false,'key',E.startKey);
         end
         function createFileName(E)
@@ -341,16 +349,63 @@ classdef dpxCoreExperiment < hgsetget
             E.subjectId=dpxInputValidId('Subject ID > ');
             E.experimenterId=dpxInputValidId('Experimenter ID > ');
             E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
+            % Test if this filename can be saved.
             testfile=fullfile(E.outputFolder,E.outputFileName);
+            
+            dummydata=666; %#ok<NASGU>
             if exist(testfile,'file')
                 % Extremely rare/impossible because of date+time in name
                 error(['A file with name ' testfile ' already exists.']);
             end
             try % test saving to the file before running the experiment
-                save(testfile);
+                save(testfile,'dummydata','-v7.3');
                 delete(testfile);
             catch me
                 error([me.message ' : ' testfile]);
+            end
+            if ~isempty(E.backupFolder)
+                testbackupfile=fullfile(E.backupFolder,E.outputFileName);
+                try
+                    if ~exist(E.backupFolder,'dir')
+                        mkdir(E.backupFolder);
+                    end
+                    save(testbackupfile,'dummydata','-v7.3');
+                    delete(testbackupfile);
+                catch me
+                    error([me.message ' : ' testbackupfile]);
+                end
+            end
+        end
+        function cleanOldBackups(E)
+            % Check if there are backups in the currently defined backup location
+            % (E.backupFolder) that are older than E.backupStaleDays. If so, offer to
+            % delete them. 2015-11-12
+            if isempty(E.backupFolder)
+                return;
+            end
+            folderparts=regexp(E.backupFolder,filesep,'split');
+            allbackupfolders=dpxGetFolders(fullfile(folderparts{1:end-1}));
+            tooOld=false(size(allbackupfolders));
+            for i=1:numel(allbackupfolders)
+                folderparts=regexp(allbackupfolders{i},filesep,'split');
+                tooOld(i)=now-datenum(folderparts{end},'yyyy-mm-dd')>abs(E.backupStaleDays);
+            end
+            if any(tooOld)
+                if E.backupStaleDays>0
+                    disp(['There are stale backups (>' num2str(E.backupStaleDays) ' days) in your tempdir (''' fullfile(folderparts{1:end-1}) ''').']);
+                    doDelete=~strcmpi(strtrim(input('Delete stale backups? [y|N] >> ','s')),'n');
+                else
+                    doDelete=true; % delete stale backups without prompting
+                end
+                if doDelete
+                    for i=find(tooOld(:)')
+                        try
+                            rmdir(allbackupfolders{i},'s');
+                        catch me
+                            warning([me.message ' : ' allbackupfolders{i}]);
+                        end
+                    end
+                end
             end
         end
         function unifyConditions(E)
@@ -443,9 +498,13 @@ classdef dpxCoreExperiment < hgsetget
         end
         function set.outputFolder(E,value)
             if isempty(value)
-                if IsWin, value='C:\temp\dpxData';
-                elseif IsOSX || IsLinux, value='~/dpxData';
-                else error('Unsupported OS!');
+                if IsWin
+                    userhomedir=[getenv('HOMEDRIVE') getenv('HOMEPATH')];
+                    value=fullfile(userhomedir,'dpxData');
+                elseif IsOSX || IsLinux
+                    value='~/dpxData';
+                else
+                    error('Unsupported OS!');
                 end
             end
             error(dpxTestFolderNameValidity(value));
@@ -470,6 +529,13 @@ classdef dpxCoreExperiment < hgsetget
             else
                 error(['dpxCoreExperiment.startKey should be ' str]);
             end
-        end    
+        end
+        function set.backupStaleDays(E,value)
+            if isnumeric(value) && round(value)-value==0
+                E.backupStaleDays=value;
+            else
+                error('backupStaleDays must be an integer. Negative values denote delete backups older than (abs(backupStaleDays)) without prompting');
+            end
+        end
     end
 end

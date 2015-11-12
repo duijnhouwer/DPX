@@ -5,7 +5,7 @@ function [b,str]=dpxIsWholeNumber(A)
 % Jacob Duijnhouwer
 
 b=isnumeric(A) & A>=0 & mod(A,1)==0;
-str='an integer greater than zero)';
+str='a positive integer or zero';
 
 %if any(~isnumeric(A))
 %    b=false;
