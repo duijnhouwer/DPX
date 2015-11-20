@@ -1,26 +1,26 @@
 function [dpxd,theRest]=dpxdLoad(filename)
-    %
+
     % [dpxd,theRest]=dpxdLoad(filename) 
-    % Controllably load a DPX data file.
+    % Load a DPX-data file.
     %
     % DPXD files are simply MAT files, so they can be loaded with
     %
     % load(filename)
     %
     % But that would instantiate the DPXD struct with whatever name it was
-    % saved (typically 'data' but it could also be 'dpxd', or however you
-    % might have renamed it at some point). Standard matlab
+    % saved (typically 'data' but it could also be 'dpxd', or however you might
+    % have renamed it at some point). Standard matlab
     %
     % D=load(filename)
     %
-    % Would load the variable in the file as fields to structure D.
-    % dpxdLoad function does that internally and output the recognized DPXD
-    % structs into the first output argument which is a struct if only DPXD
-    % is present (which is the intended design at the time of coding this
-    % in Nov 2014) but will be a cell if multiple DPXDs are present.
-    % The neatest part of this, I think, is that you can chose the variable
-    % name in your analysis, and your not tied to the name given during
-    % save (Which may have changed, as explained).
+    % Would load the variable in the file as fields to structure D. dpxdLoad
+    % function does that internally and output the recognized DPXD structs into
+    % the first output argument which is a struct if only DPXD is present
+    % (which is the intended design at the time of coding this in Nov 2014) but
+    % will be a cell if multiple DPXDs are present. The neatest part of this, I
+    % think, is that you can choose the variable name in your analysis, and
+    % your not tied to the name given during save (Which may have changed, as
+    % explained).
     %
     % All other variable are stowed in a struct which is output as the second
     % argument. I'm not using this currently, but this could be a means of

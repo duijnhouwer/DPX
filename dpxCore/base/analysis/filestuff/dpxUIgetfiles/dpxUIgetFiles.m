@@ -207,6 +207,11 @@ function okButton_Callback(hObject, eventdata, handles)
     dpxCache('set',[mfilename '_workdir'],get(handles.folderEditText,'String'));
     dpxCache('set',[mfilename '_traverseSubfolderCheckBox'],get(handles.traverseSubfolderCheckBox,'Value'));
     handles.output=cellstr(get(handles.outputListBox,'String'));
+    if numel(handles.output)==1 && strcmp(handles.output,'')
+        % OK must have been pressed on an empty selection. Make output identical to
+        % output obtained with cancel or "close-window cross".
+        handles.output={}; % instead of {''}
+    end
     guidata(hObject, handles)
     uiresume();
 end
