@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>DPX by duijnhouwer</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>DPX</h1>
+          <h2>An Experiment Preparation System</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/duijnhouwer/DPX/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/duijnhouwer/DPX/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/duijnhouwer/DPX" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h3>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h3>
+
+<p>Duijnhouwer-Psychtoolbox-Experiments (DPX) is a Matlab toolbox for creating and analyzing psychophysical experiments for vision research. It is a fully object-oriented extension of <a href="http://psychtoolbox.org/">Psychtoolbox</a> (PTB) which needs to be installed on your system for DPX to function. DPX is designed to create and manage experiments in a way that promotes simplicity and code reuse. Stimuli and response measures are designed as modules that are plugged into the tried and tested core of DPX. A wide range of these modules currently exists, and creating new ones is straightforward. The core takes care of all the bookkeeping that is common to any experiment, including data output. DPX automatically saves all aspects of the experiments as an easy to work-with format called DPXD. Functions to create analyses based on DPXD-structs are included.</p>
+
+<p>I like to think that DPX relates to PTB as <a href="http://www.haverford.edu/mathematics/resources/LaTeX_vs_TeX.php">LaTeX to TeX</a>. All the hard work (low-level graphics processing, keeping track of timing, etc.) is done by PTB while DPX provides an easy, structured, yet flexible environment to prepare, run, and analyse experiments.</p>
+
+<p>If you publish work for which DPX was used you should <a href="http://psychtoolbox.org/credits">cite</a> PTB.</p>
+
+<h3>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h3>
+
+<p>To use DPX you need the following:</p>
+
+<ul>
+<li>A Windows, Mac OS X, or Linux computer. I've tested DPX on Windows 7 SP1, Ubuntu 12.04 and 14.04, and Mac OS X 10.6.8 and 10.9.5.</li>
+<li>Matlab. DPX was tested with 2012b, 2014a and 2014b. I expect that any version since the introduction object-oriented syntax (in 2008b) will work.</li>
+<li>Psychtoolbox-3 (<a href="http://psychtoolbox.org/PsychtoolboxDownload">Installation instructions</a>). Try and test PTB before installing installing DPX, have a look at <code>help Psychdemos</code>. If this is the first time you run PTB, there will likely be some steps to take, most notably restarting Matlab. Carefully read the instructions PTB spews onto the command window.</li>
+</ul>
+
+<h3>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h3>
+
+<p>To obtain the DPX files and give Matlab access to them:</p>
+
+<ul>
+<li>Change the current working directory of Matlab to the location where you wish to install the DPX toolbox. For example, to move to the default location for Matlab toolboxes on Windows you could type:
+<code>cd('C:\Users\YOURUSERNAME\Documents\MATLAB')</code>
+</li>
+<li>Download DPX from GitHub to your system by copying the following to the Matlab command window:
+<code>!svn checkout https://github.com/duijnhouwer/dpx/trunk DPX</code>
+</li>
+<li>Add the newly created folder “DPX” and its subfolders to the path by right-clicking on the “DPX” folder in the “Current Folder” panel of the Matlab GUI and selecting “Add to Path&gt;Selected Folder and Subfolders”. You could use the <code>pathtool</code>  instead but you'd have to manually delete all the “.svn” from the path.</li>
+</ul>
+
+<h3>
+<a id="test" class="anchor" href="#test" aria-hidden="true"><span class="octicon octicon-link"></span></a>Test</h3>
+
+<p>If everything is installed properly, the command <a href="https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperiment.m"><code>dpxExampleExperiment</code></a> will run a basic 2AFC left-right random-dot motion discrimination experiment. Use <a href="https://github.com/duijnhouwer/dpx/blob/master/dpxExperiments/Examples/dpxExampleExperimentAnalysis.m"><code>dpxExampleExperimentAnalysis</code></a> to plot a psychometric curve of the data. I have heavily commented these examples so that they can serve as DPX tutorials.</p>
+
+<h3>
+<a id="troubleshooting" class="anchor" href="#troubleshooting" aria-hidden="true"><span class="octicon octicon-link"></span></a>Troubleshooting</h3>
+
+<p>If you encounter any problems please look in the <a href="https://github.com/duijnhouwer/DPX/issues">issues section</a> on GitHub whether your problem has been encountered and (hopefully) solved before. If the problem persists, please raise a new issue.</p>
+        </section>
+
+        <footer>
+          DPX is maintained by <a href="https://github.com/duijnhouwer">duijnhouwer</a><br>
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
