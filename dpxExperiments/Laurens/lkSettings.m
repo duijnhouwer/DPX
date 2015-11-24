@@ -1,4 +1,4 @@
-function val=lkSettings(str)
+function val=lkSettings(str,when)
    
     % 2014-10-28: Measured luminance BENQ XL2420Z screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction =
@@ -8,10 +8,28 @@ function val=lkSettings(str)
     % connected with a VGA cable (so that we can split to Beetronixs Screen)
     % With these settings. FullWhite=42 cd/m2; FullBlack=0.12; and with gamma
     % 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
+    %
+    % EXAMPLE
+    %   lkSetting('STIMDIAM') % Get the current STIMDIAM value
+    %   lkSettings('CONTRASTRANGE',datenum(1-Oct-2010)) 
+    %   lkSettings('CONTRASTRANGE',datenum('1-Jan-2012'))
+    %
+    % Jacob Duijnhouwer
+    % 2015-11-24: added the when option
+    
+    if ~exist('when','var') || isempty(when)
+        when=now;
+    end
     
     switch(upper(str))
         case 'CONTRASTRANGE'
-            val=[0.0625 0.125 0.25 .5 1];
+            if when<datenum('24-Nov-2011 11:49:39')
+                val='Just and example to illustrate lkSetting''s ''when'' option.';
+            elseif when>=datenum('24-Nov-2011 11:49:39') && when<datenum('31-Jan-2012')
+                val='Another example to illustrate lkSetting''s ''when'' option.';
+            else
+                val=[0.0625 0.125 0.25 .5 1];
+            end
         case 'CONTRASTFIX'
             val=1;
         case 'SFRANGE'

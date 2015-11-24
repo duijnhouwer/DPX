@@ -1,4 +1,4 @@
-function F=dpxdSubset(DXPD,indices)
+function F=dpxdSubset(DPXD,indices)
     
     % F=dpxdSubset(D,IDXS
     %
@@ -16,7 +16,7 @@ function F=dpxdSubset(DXPD,indices)
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('R', @dpxdIs);
     p.addRequired('indices',@(x)isnumeric(x) | islogical(x));
-    p.parse(DXPD,indices);
+    p.parse(DPXD,indices);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if all(islogical(indices))
@@ -25,7 +25,7 @@ function F=dpxdSubset(DXPD,indices)
         % indexing is faster...
         indices=find(indices);
     end
-    oldn=DXPD.N;
+    oldn=DPXD.N;
     if all(islogical(indices))
         newn=sum(indices);
     elseif all(dpxIsWholeNumber(indices))
@@ -38,11 +38,11 @@ function F=dpxdSubset(DXPD,indices)
     end
     % Remove the special N field. Will be put back (with an updated value) at the end of this
     % function
-    DXPD=rmfield(DXPD,'N');
-    % Select the subset of DXPD, store in F
-    fn=fieldnames(DXPD);
+    DPXD=rmfield(DPXD,'N');
+    % Select the subset of DPXD, store in F
+    fn=fieldnames(DPXD);
     for i=1:length(fn)
-        F.(fn{i})=DXPD.(fn{i})(indices);
+        F.(fn{i})=DPXD.(fn{i})(indices);
     end
     % Put the special N field back in place
     F.N=newn;
