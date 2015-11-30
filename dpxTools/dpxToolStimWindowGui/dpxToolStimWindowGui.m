@@ -87,7 +87,7 @@ function dispButton_Callback(hObject, eventdata, handles)
     parms=dpxGetSetables(handles.stimWin);
     fields=fieldnames(parms);
     vals=struct2cell(parms);
-    str='E.scr.set(';
+    str='E.window.set(';
     for i=1:numel(fields)
         v=vals{i};
         if isnumeric(v)
@@ -132,7 +132,7 @@ function helpButton_Callback(hObject, eventdata, handles)
         ,['This editor can be opened from the command line by typing "dpxToolStimWindowGui" or by calling the "gui" method of existing ' handles.stimWin.type ' objects.'] ...
         ,' ','TIPS:'...
         ,'On Windows, make sure your stimulus screen is the "primary display" using the "This is my main monitor" check box in the Displays Control Panel.' ...
-        ,'Settings "winRectPx" and/or "widHeiMm" can be left empty to let ' handles.stimWin.type ' attempt to determine those automatically.'};
+        ,'Settings "rectPx" and/or "widHeiMm" can be left empty to let ' handles.stimWin.type ' attempt to determine those automatically.'};
     uiwait(msgbox(info,'Help','modal'));
 end
 

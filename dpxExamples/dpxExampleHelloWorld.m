@@ -9,8 +9,8 @@ function dpxExampleHelloWorld
     % Define the paradigm property, this is typically the filename
     E.paradigm='dpxExampleHelloWorld'; % alternative E.paradigm=mfilename;
     % Set a few display properties of the dpxCoreWindow object within E.
-    E.scr.winRectPx=[20 20 640 480]; % Set the display area.
-    E.scr.skipSyncTests=true; % For this example, skip Psychtoolbox testing
+    E.window.rectPx=[20 20 640 480]; % Set the display area.
+    E.window.skipSyncTests=true; % For this example, skip Psychtoolbox testing
     %
     % Make two conditions, one to say 'Hello,' the other to say 'World!'
     for conditionNumber=1:2

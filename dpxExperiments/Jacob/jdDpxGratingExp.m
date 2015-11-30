@@ -1,7 +1,7 @@
 function jdDpxGratingExp
     E=dpxCoreExperiment;
     E.paradigm='jdDpxGratingExp';
-    E.scr.distMm=290;
+    E.window.distMm=290;
     % 2014-4-24: Measured luminance BENQ screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0
     % 100 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
@@ -9,8 +9,8 @@ function jdDpxGratingExp
     % With these settings. FullWhite=33.6 cd/m2; FullBlack=0.053; and with
     % gamma 0.69, medium gray (index 127) = 16.96 cd/m2
     %
-    E.scr.gamma=0.69;
-    E.scr.backRGBA=[.25 .25 .25 1];
+    E.window.gamma=0.69;
+    E.window.backRGBA=[.25 .25 .25 1];
     E.txtStart='asd DAQ-pulse';
     E.txtEnd='asd DAQ-pulse';
     E.txtPauseNrTrials=0;

@@ -57,9 +57,9 @@ end
     
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
-E.scr.set('interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','skipSyncTests',  0  );%'mono, mirror, anaglyph
+E.window.set('rectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.window.set('interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1]);
+E.window.set('stereoMode','mirror','skipSyncTests',  0  );%'mono, mirror, anaglyph
 % JACOB_DEBUG_NOTE de windowed option heb ik verwijderd, verwarrend omdat
 % het anders werkte op verschillende systemen. 
 

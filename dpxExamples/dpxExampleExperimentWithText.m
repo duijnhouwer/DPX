@@ -30,26 +30,26 @@ function dpxExampleExperimentWithText(testscr)
     % default, or provide a valid path for your system.
     % E.outputFolder='C:\dpxData\';
     
-    % 'scr' is a property of the dpxExperiment class that contains a
+    % 'window' is a property of the dpxExperiment class that contains a
     % dpxCoreWindow object. This object gets instantiated automatically
-    % when dpxCoreExperiment object is made. The settings of scr can be
-    % viewed by typing get(E.scr) and set by typing, for example,
-    % set(E.scr,'distMm',1000) or E.scr.distMm=1000 to set the viewing
-    % distance to a meter. Note that not all properties of E.scr that are
-    % displayed when calling get(E.scr) can also be set using set, some
-    % properties are read-only. A convenient way to set your scr
+    % when dpxCoreExperiment object is made. The settings of window can be
+    % viewed by typing get(E.window) and set by typing, for example,
+    % set(E.window,'distMm',1000) or E.window.distMm=1000 to set the viewing
+    % distance to a meter. Note that not all properties of E.window that are
+    % displayed when calling get(E.window) can also be set using set, some
+    % properties are read-only. A convenient way to set your window
     % properties, visualize, and test them is through the amazing GUI I
     % created. Evoke
     % this by typing:
-    %   E.scr.gui
+    %   E.window.gui
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
-    E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
+    E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     % Note (1) that i've manually cut the line using elipses (...) for
-    % legibility; and (2) that an empty 'winRectPx' (i.e., []), triggers
+    % legibility; and (2) that an empty 'rectPx' (i.e., []), triggers
     % full screen display, regardless what resolution the screen is set to.
     
     % Add a plugin to use the eyelink, the eyelink software needs to be

@@ -21,8 +21,8 @@ classdef dpxCoreCondition < hgsetget
     properties (Access=protected)
         % The duration of the trial in flips, calculated in init
         nFlips;
-        % Structure that will hold copies of the getable values in scr
-        scrGets=struct;
+        % Structure that will hold copies of the getable values in window
+        winGets=struct;
         % Counter for breakfixation grace period
         flipsSinceBreakFix;
         breakFixGraceFlips;
@@ -47,30 +47,30 @@ classdef dpxCoreCondition < hgsetget
             %
             C.visualStimIndices=[];
         end
-        function init(C,scrGets)
-            % Initialize the dpxCoreCondition object Store a copy of the values in scr,
+        function init(C,winGets)
+            % Initialize the dpxCoreCondition object Store a copy of the values in window,
             % do not change any of these values (I would make them read only if Matlab
-            % allowed for that). Changing scrGets won't change the scr object from
+            % allowed for that). Changing winGets won't change the window object from
             % which they were derived. Doing so would mess up any calculations that
             % depend on them. 
-            C.scrGets=scrGets;
+            C.winGets=winGets;
             % Calculate the duration of the trial in flips
-            C.nFlips=round(C.durSec*C.scrGets.measuredFrameRate);
+            C.nFlips=round(C.durSec*C.winGets.measuredFrameRate);
             % Initialize all stimulus, response, and trigger objects that have been
             % added with their respecitve "add" functions (e.g. addStim)
-            cellfun(@(x)init(x,scrGets),C.stims);
-            cellfun(@(x)init(x,scrGets),C.resps);
+            cellfun(@(x)init(x,winGets),C.stims);
+            cellfun(@(x)init(x,winGets),C.resps);
             cellfun(@(x)init(x),C.trigs);
             % Initiatilize counters related to breakfixation (see eyelink plugin). This
             % should perhaps be moved to the eye link plugin somehow, not all
             % experiments require fixation, or even involve eyes...
             C.flipsSinceBreakFix=[];
-            C.breakFixGraceFlips=round(C.breakFixGraceSec*C.scrGets.measuredFrameRate);
+            C.breakFixGraceFlips=round(C.breakFixGraceSec*C.winGets.measuredFrameRate);
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
             % This is the function called from dpxCoreExperiment as it works itself
             % through the list of trials...
-            if isempty(C.scrGets)
+            if isempty(C.winGets)
                 error('dpxCoreCondition has not been initialized');
             end
             completionStatus='OK';
@@ -96,7 +96,7 @@ classdef dpxCoreCondition < hgsetget
                 end
             end
             % Initialize the video-blank timer
-            vbl=Screen('Flip',C.scrGets.windowPtr,0);
+            vbl=Screen('Flip',C.winGets.windowPtr,0);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Loop over all video-flips (frames) of the trial
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,7 +132,7 @@ classdef dpxCoreCondition < hgsetget
                 for s=numel(C.stims):-1:1
                     C.stims{s}.stepAndDraw(f);
                 end
-                Screen('DrawingFinished',C.scrGets.windowPtr);
+                Screen('DrawingFinished',C.winGets.windowPtr);
                 % Check the gaze-fixation status
                 if isempty(stimNumberToFixate)
                     % No fixation is required in this condition, so simply release the fixation
@@ -228,7 +228,7 @@ classdef dpxCoreCondition < hgsetget
                 % the frame, which is a conservative estimate (probable much faster). If
                 % we start running into trouble with not making the flip deadline, we
                 % could consider upping it to .9 or .95 for example, see what that does.
-                [vbl,~,~,dDeadlineSecs]=Screen('Flip',C.scrGets.windowPtr,vbl+0.85/C.scrGets.measuredFrameRate);
+                [vbl,~,~,dDeadlineSecs]=Screen('Flip',C.winGets.windowPtr,vbl+0.85/C.winGets.measuredFrameRate);
                 % Collect start or stop time of the trial in seconds. (Right after the flip
                 % for accuracy)
                 if f==1 % begin of condition

@@ -35,19 +35,19 @@ classdef dpxPluginEyelink < hgsetget
             P.backGrayFrac=[]; % empty means copy from experiment
             P.foreGrayFrac=1;
         end
-        function ok=start(P,getExp)
+        function ok=start(P,expGets)
             Eyelink('Shutdown');
             ok=true;
             disp('Starting dpxPluginEyelink');
             %
-            P.el=EyelinkInitDefaults(getExp.scr.windowPtr);
+            P.el=EyelinkInitDefaults(expGets.window.windowPtr);
             if isempty(P.backGrayFrac)
-                meanRGB=mean(getExp.scr.backRGBA(1:3));
-                P.el.backgroundcolour=meanRGB*getExp.scr.whiteIdx;
+                meanRGB=mean(expGets.window.backRGBA(1:3));
+                P.el.backgroundcolour=meanRGB*expGets.window.whiteIdx;
             else
-                P.el.backgroundcolour=P.backGrayFrac*getExp.scr.whiteIdx;
+                P.el.backgroundcolour=P.backGrayFrac*expGets.window.whiteIdx;
             end
-            P.el.foregroundcolour=P.foreGrayFrac*getExp.scr.whiteIdx; % this doesn't seem to change the marker color, TODO 666
+            P.el.foregroundcolour=P.foreGrayFrac*expGets.window.whiteIdx; % this doesn't seem to change the marker color, TODO 666
             if abs(P.el.backgroundcolour-P.el.foregroundcolour)<1
                 warning('fore and back colors of eyelink very similar!!');
             end
@@ -73,7 +73,7 @@ classdef dpxPluginEyelink < hgsetget
             Eyelink('StartRecording');
             % record a few samples before we actually start displaying
             WaitSecs(0.1);
-            P.edfFile=fullfile(getExp.outputFolder,getExp.outputFileName);
+            P.edfFile=fullfile(expGets.outputFolder,expGets.outputFileName);
             P.edfFile=dpxStrReplaceExtension(P.edfFile,'edf');
         end
         function stop(P)

@@ -12,7 +12,7 @@ E.txtPauseNrTrials=5;
 E.nRepeats=1;
 E.outputFolder='';
 
-E.physScr.set('winRectPx',[0 0 800 600],'widHeiMm',[394 295],'distMm',1000);
+E.physScr.set('rectPx',[0 0 800 600],'widHeiMm',[394 295],'distMm',1000);
 E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
 E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
 E.windowed(false);

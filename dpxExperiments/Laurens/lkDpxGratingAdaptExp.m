@@ -4,13 +4,13 @@ function lkDpxGratingAdaptExp
     % Screen settings:
     
     E.paradigm='lkDpxGratingExp';
-    E.scr.distMm=lkSettings('VIEWDISTMM');
-    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
-    E.scr.gamma=lkSettings('GAMMA');
-    E.scr.backRGBA=lkSettings('BACKRGBA');
-    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
-    E.scr.winRectPx=lkSettings('WINPIX');
-    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
+    E.window.distMm=lkSettings('VIEWDISTMM');
+    E.window.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.window.gamma=lkSettings('GAMMA');
+    E.window.backRGBA=lkSettings('BACKRGBA');
+    E.window.verbosity0min5max=lkSettings('VERBOSITY');
+    E.window.rectPx=lkSettings('WINPIX');
+    E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     %
     E.txtStart='DAQ-pulse';
     E.txtEnd='';
@@ -57,7 +57,7 @@ function lkDpxGratingAdaptExp
     A.cyclesPerSecond=adapCyclesPerSecond;
     A.cyclesPerDeg=adapCyclesPerDeg;
     A.contrastFrac=adapContrastFracs;
-    A.grayFrac=E.scr.backRGBA(1);
+    A.grayFrac=E.window.backRGBA(1);
     A.squareWave=false;
     A.onSec=itiaSec;
     A.durSec=initialAdapSec;
@@ -69,7 +69,7 @@ function lkDpxGratingAdaptExp
     M.hDeg=A.wDeg*sqrt(2)+1;
     M.outerDiamDeg=A.wDeg;
     M.innerDiamDeg=A.wDeg-5;
-    M.RGBAfrac=E.scr.backRGBA;
+    M.RGBAfrac=E.window.backRGBA;
     maskDefaults=get(M);
     %
     V=dpxStimMccAnalogOut;
@@ -125,7 +125,7 @@ function lkDpxGratingAdaptExp
                     M.hDeg=A.wDeg*sqrt(2)+1;
                     M.outerDiamDeg=A.wDeg;
                     M.innerDiamDeg=A.wDeg-5;
-                    M.RGBAfrac=E.scr.backRGBA;
+                    M.RGBAfrac=E.window.backRGBA;
                     %
                     % Add the MCC stim
                     V=dpxStimMccAnalogOut;

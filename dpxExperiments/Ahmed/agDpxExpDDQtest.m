@@ -8,8 +8,8 @@ function agDpxExpDDQtest
     E.paradigm='agDpxExpDDQaspectRatio';
     E.startKey='UpArrow';
     
-    % Use E.scr.gui to bring up the gui to set the screen properties
-    E.scr.set('winRectPx',[],'widHeiMm',[400 300], ... [20 20 400 300]
+    % Use E.window.gui to bring up the gui to set the screen properties
+    E.window.set('rectPx',[],'widHeiMm',[400 300], ... [20 20 400 300]
         'distMm',600,'interEyeMm',65,'gamma',.8,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3); % Generated using dpxToolStimWindowGui on 2014-09-29
     

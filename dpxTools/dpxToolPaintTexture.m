@@ -3,7 +3,7 @@ function dpxToolPaintTexture
     wid=1920/2;
     hei=1080/2;
     W=dpxCoreWindow;
-    W.winRectPx=[0 0 wid hei];
+    W.rectPx=[0 0 wid hei];
     W.skipSyncTests=1;
     W.open;
     ShowCursor;

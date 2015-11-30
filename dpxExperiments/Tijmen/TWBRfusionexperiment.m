@@ -25,11 +25,11 @@ E.outputFolder='C:\dpxData';
 
 set=0;                                                                      % screen settings for philips screen
 if set == 0
-E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
+E.window.set('rectPx',[],'widHeiMm',[390 295],'distMm',1000, ...
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
         'stereoMode','mirror','skipSyncTests',0,'scrNr',0); 
 else 
-E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % screen settings for eyelink
+E.window.set('rectPx',[1440 0 1600+1440 1200],'widHeiMm',[390 295], ...     % screen settings for eyelink
         'distMm',1000, 'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...
         'stereoMode','mirror','skipSyncTests',0,'scrNr',1);
 end

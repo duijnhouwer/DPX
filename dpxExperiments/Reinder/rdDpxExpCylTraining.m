@@ -49,9 +49,9 @@ elseif strcmpi(dpxGetUserName,'EyeLink-admin')
 end
 
 % Set the stimulus window option
-E.scr.set('winRectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',1); % Eyelink PC, Nr=1 : crt
-E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
-E.scr.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
+E.window.set('rectPx',[1440 0 1600+1440 1200],'widHeiMm',[394 295],'distMm',1000,'scrNr',1); % Eyelink PC, Nr=1 : crt
+E.window.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
+E.window.set('stereoMode','mirror','skipSyncTests',1); %  stereoModes: mono, mirror, anaglyph
 
 % Add stimuli and responses to the conditions, add the conditions to
 % the experiement, and run

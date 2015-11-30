@@ -1,7 +1,7 @@
 function eaDpxExpTest
     E=dpxCoreExperiment;
     E.paradigm='eaDpxExpTest';
-    E.scr.set('winRectPx',[],'widHeiMm',[390 295],'distMm',1000, ...10 10 800 600
+    E.window.set('rectPx',[],'widHeiMm',[390 295],'distMm',1000, ...10 10 800 600
         'interEyeMm',65,'gamma',1,'backRGBA',[.5 .5 .5 1], ...% 0.49
         'stereoMode','mono','skipSyncTests',0,'scrNr',0);
     

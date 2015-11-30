@@ -33,7 +33,7 @@ elseif strcmpi(BB,'bind')
 end
 
 % Set the stimulus window option
-E.physScr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000);
+E.physScr.set('rectPx',[],'widHeiMm',[394 295],'distMm',1000);
 E.physScr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0.5 0.5 0.5 1]);
 E.physScr.set('stereoMode','mirror','SkipSyncTests',1);
 E.windowed(false); % true, false, e.g. [10 10 410 310], for debugging

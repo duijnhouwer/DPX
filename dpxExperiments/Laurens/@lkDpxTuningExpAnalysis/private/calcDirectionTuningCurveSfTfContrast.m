@@ -22,8 +22,8 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
     if ~isfield(dpxd,'test_contrastFrac')
         % This is probably a RDK stimulus, this is how contrast is defined in the
         % experiment function:
-        %   bright=E.scr.backRGBA(1)+E.scr.backRGBA(1)*cont; % single value between [0..1]
-        %   dark=E.scr.backRGBA(1)-E.scr.backRGBA(1)*cont; % single value between [0..1]
+        %   bright=E.window.backRGBA(1)+E.window.backRGBA(1)*cont; % single value between [0..1]
+        %   dark=E.window.backRGBA(1)-E.window.backRGBA(1)*cont; % single value between [0..1]
         %   S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
         %   S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
         % As a check, calculate cont both from dotRBGAfrac1 and dotRBGAfrac2 and

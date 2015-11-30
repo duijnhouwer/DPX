@@ -1,6 +1,6 @@
 function jdDpxRdkExp
     E=dpxCoreExperiment;
-    E.scr.stereoMode='mono';
+    E.window.stereoMode='mono';
     for x=[-12 12]
         C=dpxCoreCondition;
         S=dpxStimDot;

@@ -2,7 +2,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
     
     properties (Access='public')
         filename;
-        winRectPx=[0 0 600 400];
+        rectPx=[0 0 600 400];
         xListPix=[];
         yListPix=[];
         stepsPerDeg;
@@ -34,9 +34,9 @@ classdef dpxToolsHalfDomeWarp < hgsetget
             %
             % See also: jdDpxExpHalfDomeRdk
             W.filename=fullfile(pwd,'dpxToolsHalfDomeWarp.mat');
-            W.winRectPx=[30 30 600 400];
-            W.xListPix=0:W.winRectPx(3)/10:W.winRectPx(3);
-            W.yListPix=0:W.winRectPx(4)/8:W.winRectPx(4);
+            W.rectPx=[30 30 600 400];
+            W.xListPix=0:W.rectPx(3)/10:W.rectPx(3);
+            W.yListPix=0:W.rectPx(4)/8:W.rectPx(4);
             W.LUT=struct('minA',[],'minE',[],'table',[]);
             W.stepsPerDeg=10;
             W.pixelStep=0.2;
@@ -47,7 +47,7 @@ classdef dpxToolsHalfDomeWarp < hgsetget
                 error('No X and/or Y screen coordinates provided (set xListPix and yListPix)');
             end
             S=dpxCoreWindow;
-            set(S,'winRectPx',W.winRectPx);
+            set(S,'rectPx',W.rectPx);
             S.open;
             nTogo=numel(W.xListPix)*numel(W.yListPix);
             if W.nDone==0
@@ -191,8 +191,8 @@ classdef dpxToolsHalfDomeWarp < hgsetget
         end
         function createMaskTiff(W,filename)
             if nargin==1, filename=''; end
-            wid=W.winRectPx(3)-W.winRectPx(1);
-            hei=W.winRectPx(4)-W.winRectPx(2);
+            wid=W.rectPx(3)-W.rectPx(1);
+            hei=W.rectPx(4)-W.rectPx(2);
             M=zeros(wid,hei);
             tel=0;
             for i=1:numel(W.xListPix)

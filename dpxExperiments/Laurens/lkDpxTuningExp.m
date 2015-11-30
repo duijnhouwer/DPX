@@ -22,13 +22,13 @@ function lkDpxTuningExp(varargin)
     
     E=dpxCoreExperiment;
     E.paradigm=dpxCamelCase('lkDpxTuning',p.Results.mode,p.Results.stim,num2str(p.Results.dirDeg));
-    E.scr.distMm=lkSettings('VIEWDISTMM');
-    E.scr.winRectPx=lkSettings('WINPIX'); % WINPIX WINPIXDEBUG
-    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
-    E.scr.gamma=lkSettings('GAMMA');
-    E.scr.backRGBA=lkSettings('BACKRGBA');
-    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
-    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
+    E.window.distMm=lkSettings('VIEWDISTMM');
+    E.window.rectPx=lkSettings('WINPIX'); % WINPIX WINPIXDEBUG
+    E.window.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.window.gamma=lkSettings('GAMMA');
+    E.window.backRGBA=lkSettings('BACKRGBA');
+    E.window.verbosity0min5max=lkSettings('VERBOSITY');
+    E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
         E.txtStart='DAQ-pulse';
     else
@@ -80,7 +80,7 @@ function lkDpxTuningExp(varargin)
                                 S.cyclesPerSecond=tf;
                                 S.cyclesPerDeg=sf;
                                 S.contrastFrac=cont;
-                                S.grayFrac=E.scr.backRGBA(1);
+                                S.grayFrac=E.window.backRGBA(1);
                                 S.squareWave=false;
                                 S.dirDeg=direc;
                                 S.onSec=isiSec/2;
@@ -94,8 +94,8 @@ function lkDpxTuningExp(varargin)
                                 S.motStartSec=isiSec/2; % 2015-10-28
                                 S.motDurSec=stimSec; % 2015-10-28
                                 % calculate the luminance based on the backRGBA and the contrast values
-                                bright=E.scr.backRGBA(1)+E.scr.backRGBA(1)*cont; % single value between [0..1]
-                                dark=E.scr.backRGBA(1)-E.scr.backRGBA(1)*cont; % single value between [0..1]
+                                bright=E.window.backRGBA(1)+E.window.backRGBA(1)*cont; % single value between [0..1]
+                                dark=E.window.backRGBA(1)-E.window.backRGBA(1)*cont; % single value between [0..1]
                                 S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
                                 S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
                                 S.motType=motTypes{mt};
@@ -126,7 +126,7 @@ function lkDpxTuningExp(varargin)
                             M.hDeg=S.wDeg*sqrt(2)+1;
                             M.outerDiamDeg=S.wDeg;
                             M.innerDiamDeg=S.wDeg-5;
-                            M.RGBAfrac=E.scr.backRGBA;
+                            M.RGBAfrac=E.window.backRGBA;
                             %
                             V=dpxStimMccAnalogOut;
                             V.name='mcc';

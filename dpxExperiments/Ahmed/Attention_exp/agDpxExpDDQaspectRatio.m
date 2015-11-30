@@ -10,8 +10,8 @@ function agDpxExpDDQaspectRatio
     
     E.outputFolder='/Users/iMac_2Photon/Desktop/AhmedData';
     testscr=[20 20 800 600];
-    % Use E.scr.gui to bring up the gui to set the screen properties
-    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
+    % Use E.window.gui to bring up the gui to set the screen properties
+    E.window.set('rectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',4); % Generated using dpxToolStimWindowGui on 2014-09-29
     %[0+1680 0 1280+1680 960]

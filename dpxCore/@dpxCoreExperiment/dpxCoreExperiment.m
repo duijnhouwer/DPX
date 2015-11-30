@@ -2,8 +2,9 @@ classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
         paradigm; % a string, changed from expName on 2015-11-29
-        expName; % kept for backward compatibility, will be removed 2016-11-29
-        scr;
+        expName; % kept for backward compatibility, will be removed 2016-Feb-29
+        window; % a dpxCoreWindow (or derived) object, changed from 'scr' on 2015-11-30
+        scr; % kept for backward compatibility, will be removed 2016-Feb-29
         nRepeats;
         conditionSequence;
         conditions;
@@ -38,7 +39,7 @@ classdef dpxCoreExperiment < hgsetget
             % Part of DPX: An experiment preparation system
             % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
-            E.scr=dpxCoreWindow;
+            E.window=dpxCoreWindow;
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
             E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
@@ -62,7 +63,7 @@ classdef dpxCoreExperiment < hgsetget
                 % This is the last function to call in your experiment script, it starts
                 % the experiment and saves it when finished.
                 if numel(E.conditions)==0
-                    disp('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).');
+                    dpxDispFancy('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).',[],[],[],'Error');
                     return;
                 end
                 commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen mode
@@ -72,7 +73,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.sysInfo=dpxSystemInfo;
                 E.createFileName; % this function also asks for subject and experimenter IDs
                 E.cleanOldBackups; % this function asks for user interaction too
-                E.scr.open;
+                E.window.open;
                 for i=1:numel(E.plugins)
                     E.plugins{i}.start(get(E));
                 end
@@ -95,15 +96,15 @@ classdef dpxCoreExperiment < hgsetget
                     % pass it the values using get, not the object itself because we don't want
                     % the condition to be able to (inadvertently) make changes to the screen
                     % object.
-                    CC.init(get(E.scr));
+                    CC.init(get(E.window));
                     % Technically backRGBA is a condition property, but to save the need to
                     % define it for all conditions I keep it in the window class, with an
                     % optional override in the condition class in case a different background
                     % color is needed. Here we deal with that override:
                     if numel(CC.overrideBackRGBA)==4
-                        defaultBackRGBA=E.scr.backRGBA;
-                        E.scr.backRGBA=CC.overrideBackRGBA;
-                        E.scr.clear;
+                        defaultBackRGBA=E.window.backRGBA;
+                        E.window.backRGBA=CC.overrideBackRGBA;
+                        E.window.clear;
                     end
                     % If there are any conduits added to the experiment, iterate over them now
                     % and update the condition settings according to how the conduit is defined
@@ -159,7 +160,7 @@ classdef dpxCoreExperiment < hgsetget
                     % If an overriding RGBA has been defined in this condition, reset the
                     % window object's backRGBA to its default,
                     if numel(CC.overrideBackRGBA)==4
-                        E.scr.backRGBA=defaultBackRGBA;
+                        E.window.backRGBA=defaultBackRGBA;
                     end
                 end
                 E.stopTime=now;
@@ -169,7 +170,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.showFinalSaveScreen;
                 E.saveDpxd;
                 E.showEndScreen;
-                E.scr.close;
+                E.window.close;
                 r=input('Run dpxToolCommentEditor? [y|N] > ','s');
                 if strcmpi(strtrim(r),'y')
                     absFileName=fullfile(E.outputFolder,E.outputFileName);
@@ -205,15 +206,23 @@ classdef dpxCoreExperiment < hgsetget
         function saveDpxd(E)
             % Convert the data
             D.exp=get(E);
-            D.exp=rmfield(D.exp,{'scr','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
-            if isfield(D.exp,'expName')
-                if now>datenum('29-Nov-2016') && strcmpi(dpxGetUserName,'jacob')
-                    warning('Property expName should be removed from dpxCoreExperiment class');
+            D.exp=rmfield(D.exp,{'window','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
+            if strcmpi(dpxGetUserName,'jacob')
+                if isfield(D.exp,'expName')
+                    if now>datenum('29-Feb-2016')
+                        warning('Property ''expName'' should be removed from dpxCoreExperiment class');
+                    end
+                    D.exp=rmfield(D.exp,'expName');
                 end
-                D.exp=rmfield(D.exp,'expName');
+                if isfield(D.exp,'scr')
+                    if now>datenum('29-Feb-2016')
+                        warning('Property ''scr'' should be removed from dpxCoreExperiment class');
+                    end
+                    D.exp=rmfield(D.exp,'scr');
+                end
             end
-            D.scr=dpxGetSetables(E.scr);
-            D.scr.measuredFrameRate=E.scr.measuredFrameRate;
+            D.window=dpxGetSetables(E.window);
+            D.window.measuredFrameRate=E.window.measuredFrameRate;
             D=dpxFlattenStruct(D);
             % Format the conditions
             for c=1:numel(E.conditions)
@@ -290,20 +299,20 @@ classdef dpxCoreExperiment < hgsetget
                 % magic value for E.txtStart, wait for pulse on DAQ device
                 str=['Waiting for ' E.txtStart ' ... '];
                 dpxDispFancy(str);
-                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
             else
-                dpxDisplayText(E.scr.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'key',E.startKey);
+                dpxDisplayText(E.window.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'key',E.startKey);
             end
         end
         function showSaveScreen(E)
             str=[E.txtPause '\n\nSaving data ...'];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showIntermissionScreen(E)
             str=[E.txtPause '\n\nPress and release $STARTKEY to continue'];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1);
+            dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'fadeInSec',-1);
         end
         function showPauseScreen(E)
             if numel(E.plugins)>0
@@ -313,7 +322,7 @@ classdef dpxCoreExperiment < hgsetget
                         str=[str '\n' E.plugins{i}.pauseMenuKeyStrCell{o} ' - ' E.plugins{i}.pauseMenuInfoStrCell{o}]; %#ok<AGROW>
                     end
                 end
-                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'forceAfterSec',0,'fadeOutSec',-1);
+                dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'fadeInSec',0,'forceAfterSec',0,'fadeOutSec',-1);
                 choiceIsMade=false;
                 while ~choiceIsMade
                     for i=1:numel(E.plugins)
@@ -325,11 +334,11 @@ classdef dpxCoreExperiment < hgsetget
                 end
             end
             str=['P A U S E D\n\nPress and release $STARTKEY to continue'];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeInSec',-1,'key',E.startKey);
+            dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'fadeInSec',-1,'key',E.startKey);
         end
         function showBreakFixScreen(E)
             disp('Gaze fixation lost ... ');
-            dpxDisplayText(E.scr.windowPtr,'','rgba',E.scr.backRGBA,'rgbaback',E.scr.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',E.breakFixTimeOutSec,'commandWindowToo',true);
+            dpxDisplayText(E.window.windowPtr,'','rgba',E.window.backRGBA,'rgbaback',E.window.backRGBA,'fadeInSec',0,'fadeOutSec',0,'forceAfterSec',E.breakFixTimeOutSec,'commandWindowToo',true);
         end
         function showFinalSaveScreen(E)
             if strcmpi(E.txtEnd,'DAQ-pulse')
@@ -337,16 +346,16 @@ classdef dpxCoreExperiment < hgsetget
                 maxWaitSec=60;
                 str=['Waiting for ' E.txtEnd ' (max ' num2str(maxWaitSec) ' seconds) ... '];
                 dpxDispFancy(str);
-                dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',0,'resetCounter',false,'maxWaitSeconds',maxWaitSec);
                 E.txtEnd=[E.txtEnd ' @ ' num2str(seconds,'%.12f')];
             end
             str=[E.txtEnd '\n\nSaving data ...\n\n\n\n'];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+            dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
         end
         function showEndScreen(E)
             str=[E.txtEnd '\n\nData has been saved to:\n' E.outputFolder '\\n' E.outputFileName '\n\n(Press $STARTKEY to continue)'];
-            dpxDisplayText(E.scr.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.scr.backRGBA,'fadeOutSec',-1,'commandWindowToo',false,'key',E.startKey);
+            dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'fadeOutSec',-1,'commandWindowToo',false,'key',E.startKey);
         end
         function createFileName(E)
             if ~exist(E.outputFolder,'file')
@@ -496,13 +505,16 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods
         function set.expName(E,value)
-            daysleft=floor(datenum('29-Nov-2016')-now)-10;
+            daysleft=floor(datenum('29-Feb-2016')-now)-10;
             if daysleft>=0
                 warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nYou should update your script within ' num2str(daysleft) ' days or this warning will turn into an error']);
             else
                 warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nPlease update your script.']);
             end
             E.paradigm=value; %#ok<MCSUP>
+        end
+        function set.scr(E,value) %#ok<INUSD>
+            error('a:b','The property ''scr'' has been renamed to ''window'' since 2015-11-30.\nPlease update your script.');
         end
         function set.paradigm(E,value)
             if ~ischar(value) || isempty(value)

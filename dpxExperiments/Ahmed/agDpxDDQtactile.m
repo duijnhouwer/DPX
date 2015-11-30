@@ -5,7 +5,7 @@ function agDpxDDQtactile
     E=dpxCoreExperiment;
     E.paradigm='dpxDDQtest';
     % E.outputFolder='C:\dpxData\';
-    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
+    E.window.set('rectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
     %
     
     javaaddpath(which('BrainMidi.jar'));

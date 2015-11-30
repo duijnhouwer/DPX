@@ -12,9 +12,9 @@ E.txtPauseNrTrials=5;
 E.nRepeats=1;
 E.outputFolder='';
 
-E.scr.set('winRectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',1);
-E.scr.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
-E.scr.set('stereoMode','mirror','skipSyncTests',1);
+E.window.set('rectPx',[],'widHeiMm',[394 295],'distMm',1000,'scrNr',1);
+E.window.set('interEyeMm',65,'gamma',0.49,'backRGBA',[0 0 0 1]);
+E.window.set('stereoMode','mirror','skipSyncTests',1);
 
 nRecallPics=5;
 barConfigs={'even','uneven'};

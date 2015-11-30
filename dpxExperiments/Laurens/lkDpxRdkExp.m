@@ -1,7 +1,7 @@
 function lkDpxRdkExp
     E=dpxCoreExperiment;
     E.paradigm='lkDpxRdkExp';
-    E.scr.distMm=290;
+    E.window.distMm=290;
     % 2014-10-28: Measured luminance BENQ screen Two-Photon room Brightness
     % 0; contrast 50; black eq 15; color temp [R G B] correction = [0 100
     % 100] blur reduction OFF; dynamic contrast 0 Resolution 1920x1080 60
@@ -13,13 +13,13 @@ function lkDpxRdkExp
     % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
     %
     E.paradigm='lkDpxGratingExp';
-    E.scr.distMm=lkSettings('VIEWDISTMM');
-    E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
-    E.scr.gamma=lkSettings('GAMMA');
-    E.scr.backRGBA=lkSettings('BACKRGBA');
-    E.scr.verbosity0min5max=lkSettings('VERBOSITY');
-    E.scr.winRectPx=lkSettings('WINPIX');
-    E.scr.skipSyncTests=lkSettings('SKIPSYNCTEST');
+    E.window.distMm=lkSettings('VIEWDISTMM');
+    E.window.widHeiMm=lkSettings('SCRWIDHEIMM');
+    E.window.gamma=lkSettings('GAMMA');
+    E.window.backRGBA=lkSettings('BACKRGBA');
+    E.window.verbosity0min5max=lkSettings('VERBOSITY');
+    E.window.rectPx=lkSettings('WINPIX');
+    E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
         E.txtStart='DAQ-pulse';
     else
@@ -33,7 +33,7 @@ function lkDpxRdkExp
     stepDeg=360/lkSettings('NRDIRECS');
     dirDegs=[0:stepDeg:360-stepDeg];
     contrastFracs=[.1 .2 .5 1];
-    grayFrac=E.scr.backRGBA(1); % mid level gray of the grating. background has same graylevel. (assume R=G=B!)
+    grayFrac=E.window.backRGBA(1); % mid level gray of the grating. background has same graylevel. (assume R=G=B!)
     speeds=20; % based on a cyc/sec & cyc/deg settings in lkDpxGratingExp (1/0.05)
     E.nRepeats=6;
     stimSec=lkSettings('stimSec');
@@ -72,7 +72,7 @@ function lkDpxRdkExp
                 M.hDeg=S.hDeg*sqrt(2)+1;
                 M.outerDiamDeg=S.wDeg;
                 M.innerDiamDeg=S.wDeg-15;
-                M.RGBAfrac=E.scr.backRGBA;
+                M.RGBAfrac=E.window.backRGBA;
                 %
                 V=dpxStimMccAnalogOut;
                 V.name='mcc';

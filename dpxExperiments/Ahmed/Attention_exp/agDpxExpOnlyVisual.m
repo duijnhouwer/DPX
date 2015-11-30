@@ -16,8 +16,8 @@ function agDpxExpOnlyVisual
     %     E.txtPause='Press and release $STARTKEY to start';
     %    E.txtPauseNrTrials=1;
     
-    % Use E.scr.gui to bring up the gui to set the screen properties
-    E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[480 300], ...
+    % Use E.window.gui to bring up the gui to set the screen properties
+    E.window.set('rectPx',[0+1680 0 1280+1680 960],'widHeiMm',[480 300], ...
         'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',0,'verbosity0min5max',1);
     

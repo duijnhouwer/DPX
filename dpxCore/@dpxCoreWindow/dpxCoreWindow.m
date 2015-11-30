@@ -6,7 +6,7 @@ classdef dpxCoreWindow < hgsetget
         % which dependencies are calculated. TODO: look into matlab
         % "dependent" attribute to see if this can be done in a more
         % elegant way
-        winRectPx=[0 0 640 480]+20;
+        rectPx=[0 0 640 480]+20;
         widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
         pixelBits=32;
         distMm=600;
@@ -59,9 +59,9 @@ classdef dpxCoreWindow < hgsetget
             W.oldPrefs.VisualDebuglevel=Screen('Preference','VisualDebuglevel',1);
             W.oldPrefs.SkipSyncTests=Screen('Preference','SkipSyncTests',W.skipSyncTests);
             W.oldPrefs.Verbosity=Screen('Preference', 'Verbosity', W.verbosity0min5max);
-            [W.windowPtr,W.winRectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.winRectPx,W.pixelBits,2,W.stereoCode);
+            [W.windowPtr,W.rectPx] = Screen('OpenWindow',W.scrNr,[0.5 0.5 0.5 1],W.rectPx,W.pixelBits,2,W.stereoCode);
             r=Screen('Resolution',W.scrNr);
-            if W.winRectPx(3)-W.winRectPx(1)==r.width && W.winRectPx(4)-W.winRectPx(2)==r.height
+            if W.rectPx(3)-W.rectPx(1)==r.width && W.rectPx(4)-W.rectPx(2)==r.height
                 disp('% we are fullscreen');
                 HideCursor;
                 PsychGPUControl('FullScreenWindowDisablesCompositor', 1);
@@ -133,16 +133,16 @@ classdef dpxCoreWindow < hgsetget
         end
     end
     methods
-        function set.winRectPx(W,value)
+        function set.rectPx(W,value)
             if ~isempty(value) && ~(isnumeric(value) && numel(value)==4)
-                error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
+                error('rectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
             end
             if ~isempty(value)
                 if value(1)>=value(3) || value(2)>=value(4)
-                    error('winRectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
+                    error('rectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');
                 end
             end
-            W.winRectPx=value;
+            W.rectPx=value;
             initValues(W);
         end
         function set.scrNr(W,value)
@@ -229,12 +229,12 @@ classdef dpxCoreWindow < hgsetget
             if isempty(W.scrNr)
                 W.scrNr=max(Screen('screens'));
             end
-            if isempty(W.winRectPx)
+            if isempty(W.rectPx)
                 [W.widPx, W.heiPx]=Screen('WindowSize',W.scrNr);
-                W.winRectPx=[0 0 W.widPx W.heiPx];
+                W.rectPx=[0 0 W.widPx W.heiPx];
             else
-                W.widPx = W.winRectPx(3)-W.winRectPx(1);
-                W.heiPx = W.winRectPx(4)-W.winRectPx(2);
+                W.widPx = W.rectPx(3)-W.rectPx(1);
+                W.heiPx = W.rectPx(4)-W.rectPx(2);
             end
             if isempty(W.widHeiMm)
                 [w,h]=Screen('DisplaySize',W.scrNr);

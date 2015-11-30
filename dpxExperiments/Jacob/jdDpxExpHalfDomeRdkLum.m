@@ -2,16 +2,16 @@ function jdDpxExpHalfDomeRdkLum
     E=dpxCoreExperiment;
     E.paradigm='jdDpxExpHalfDomeRdkLum';
     E.outputFolder='/data/vanwezeldata/dpxData';
-    E.scr.skipSyncTests=0;
-    E.scr.verbosity0min5max=1;
-    E.scr.backRGBA=[.25 0 0 1];
-    E.scr.distMm=600;
+    E.window.skipSyncTests=0;
+    E.window.verbosity0min5max=1;
+    E.window.backRGBA=[.25 0 0 1];
+    E.window.distMm=600;
     if IsLinux
-        E.scr.winRectPx=[1920 0 1920+1920 1080];
+        E.window.rectPx=[1920 0 1920+1920 1080];
     else
-        E.scr.winRectPx=[0 0 1920 1080];%400 300];%
+        E.window.rectPx=[0 0 1920 1080];%400 300];%
     end
-    E.scr.gamma=0.25;
+    E.window.gamma=0.25;
     E.nRepeats=15;
     
     motSec=2;
