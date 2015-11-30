@@ -5,7 +5,7 @@ function agDpxExpDDQswitches
     E=dpxCoreExperiment;
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
-    E.expName='agDpxExpDDQswitches';
+    E.paradigm='agDpxExpDDQswitches';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     E.startKey='UpArrow'
 %     E.txtPause='Press and release $STARTKEY to start';

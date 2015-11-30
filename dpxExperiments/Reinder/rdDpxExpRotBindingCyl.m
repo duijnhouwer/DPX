@@ -21,10 +21,10 @@ if strcmpi(pos,'left')
     flippos=1;
     if strcmpi(BB,'base')
         E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de LINKER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag\n\nDruk op spatie om te beginnen';
-        E.expName='rdDpxExpBaseLineCylLeft';
+        E.paradigm='rdDpxExpBaseLineCylLeft';
     elseif strcmpi(BB,'bind')
         E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de RECHTER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag\n\nDruk op spatie om te beginnen';
-        E.expName='rdDpxExpBindingCylLeft';
+        E.paradigm='rdDpxExpBindingCylLeft';
     else
         error(['unknown type of experiment ' BB]);
     end
@@ -32,10 +32,10 @@ elseif strcmpi(pos,'right')
     flippos=-1;
     if strcmpi(BB,'base')
         E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nIs de RECHTER halve cylinder HOL of BOL?\nHol = Pijltje omhoog\nBol = Pijltje omlaag';
-        E.expName='rdDpxExpBaseLineCylRight';
+        E.paradigm='rdDpxExpBaseLineCylRight';
     elseif strcmpi(BB,'bind')
         E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nHoe beweegt het voorvlak van de LINKER volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
-        E.expName='rdDpxExpBindingCylRight';
+        E.paradigm='rdDpxExpBindingCylRight';
     else
         error(['unknown type of experiment ' BB]);
     end

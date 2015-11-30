@@ -5,7 +5,7 @@ function agDpxExpDDQtest
     E=dpxCoreExperiment;
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
-    E.expName='agDpxExpDDQaspectRatio';
+    E.paradigm='agDpxExpDDQaspectRatio';
     E.startKey='UpArrow';
     
     % Use E.scr.gui to bring up the gui to set the screen properties

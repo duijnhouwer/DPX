@@ -25,11 +25,11 @@ E.nRepeats=5;
 if strcmpi(pos,'left')
     flippos=1;
     E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
-    E.expName='rdDpxExpRotFullCylLeft';
+    E.paradigm='rdDpxExpRotFullCylLeft';
 elseif strcmpi(pos,'right')
     flippos=-1;
     E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nWelke richting draait het VOORVLAK van de volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
-    E.expName='rdDpxExpRotFullCylRight';
+    E.paradigm='rdDpxExpRotFullCylRight';
 else
     error(['unknown pos mode ' pos]);
 end
@@ -37,12 +37,12 @@ end
 
 % Then the feedback option, make expname (used in output filename)
 if strcmpi(fb,'feedback')
-    E.expName=[E.expName 'Feedback'];
+    E.paradigm=[E.paradigm 'Feedback'];
     E.txtStart=[ E.txtStart '\n\nFeedback Flits:\nGroen GOED, Rood FOUT'];
     fbCorrectStr='fbCorrect';
     fbWrongStr='fbWrong';
 else
-    E.expName=['rdDpxExpRotCyl' upper(pos(1)) lower(pos(2:end))];
+    E.paradigm=['rdDpxExpRotCyl' upper(pos(1)) lower(pos(2:end))];
     E.txtStart=[ E.txtStart '\nFeedback Flits:\nAltijd groen: Antwoord ontvangen.'];
     fbCorrectStr='fbCorrect';
     fbWrongStr='fbCorrect';

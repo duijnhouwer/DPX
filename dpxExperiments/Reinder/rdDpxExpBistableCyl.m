@@ -8,7 +8,7 @@ end
 E=dpxCoreExperiment;
 E.nRepeats=1;
 E.txtStart='Straks ziet u een volle cylinder.\nWelke kant draait het voorvlak van de cylinder?\n\nOmhoog = Pijltje omhoog\n Omlaag = Pijltje omlaag\n\n\nDruk op spatie om te beginnen';
-E.expName='rdDpxBistableCyl';
+E.paradigm='rdDpxBistableCyl';
 
 if strcmpi(dpxGetUserName,'Reinder')
     E.outputFolder='C:\tempdata_PleaseDeleteMeSenpai';

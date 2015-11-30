@@ -21,7 +21,7 @@ function lkDpxTuningExp(varargin)
     p.parse(varargin{:});
     
     E=dpxCoreExperiment;
-    E.expName=dpxCamelCase('lkDpxTuning',p.Results.mode,p.Results.stim,num2str(p.Results.dirDeg));
+    E.paradigm=dpxCamelCase('lkDpxTuning',p.Results.mode,p.Results.stim,num2str(p.Results.dirDeg));
     E.scr.distMm=lkSettings('VIEWDISTMM');
     E.scr.winRectPx=lkSettings('WINPIX'); % WINPIX WINPIXDEBUG
     E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');

@@ -6,7 +6,7 @@ end
 E=dpxCoreExperiment;
 
 E.txtStart='textstart';
-E.expName='rdDpxExpOccluders';
+E.paradigm='rdDpxExpOccluders';
 E.nRepeats=10;
 E.txtPauseNrTrials=5;
 E.nRepeats=1;

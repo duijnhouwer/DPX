@@ -1,9 +1,9 @@
 function lkDpxGratingAdaptExp
     E=dpxCoreExperiment;
-    E.expName='lkDpxGratingAdaptExp';
+    E.paradigm='lkDpxGratingAdaptExp';
     % Screen settings:
     
-    E.expName='lkDpxGratingExp';
+    E.paradigm='lkDpxGratingExp';
     E.scr.distMm=lkSettings('VIEWDISTMM');
     E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
     E.scr.gamma=lkSettings('GAMMA');

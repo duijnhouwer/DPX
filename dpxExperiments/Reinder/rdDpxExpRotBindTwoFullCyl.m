@@ -12,8 +12,8 @@ E.txtPauseNrTrials=151;
 E.nRepeats=5;
 
 E.txtStart='Kijk naar het rode kruisje.\n\nWelke richting draaien de voorvlakken van beide cylinders\nRechter Omhoog = Pijltje omhoog\n Rechter Omlaag = Pijltje omlaag \n\n Linker Omhoog = Linker shift\nLinker Omlaag = Linker ctrl';
-E.expName='rdDpxExpBindTwoFull';
-E.expName=['rdDpxExpRotCyl' upper(pos(1)) lower(pos(2:end))];
+E.paradigm='rdDpxExpBindTwoFull';
+E.paradigm=['rdDpxExpRotCyl' upper(pos(1)) lower(pos(2:end))];
 E.txtStart=[ E.txtStart '\nFeedback Flits:\nAltijd grijs: Antwoord ontvangen.'];
 
 % Folder options

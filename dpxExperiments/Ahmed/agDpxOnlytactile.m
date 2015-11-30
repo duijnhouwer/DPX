@@ -3,7 +3,7 @@ function agDpxOnlyTactile
     % agDpxOnlytactile
     
     E=dpxCoreExperiment;
-    E.expName='agDpxOnlyTactile';
+    E.paradigm='agDpxOnlyTactile';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     E.scr.set('winRectPx',[],'widHeiMm',[400 300],'distMm',600,'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1],'stereoMode','mono','skipSyncTests',1); % Generated using dpxToolStimWindowGui on 2014-09-22
     %

@@ -4,7 +4,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
         debug=false;
     end
     E=dpxCoreExperiment;
-    E.expName=mfilename;
+    E.paradigm=mfilename;
     E.scr.verbosity0min5max=1;
     E.scr.backRGBA=[.25 0 0 1];
     E.scr.distMm=600;

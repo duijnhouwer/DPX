@@ -33,7 +33,7 @@ function dpxExampleExperiment(testscr)
     % Set the name, this will be used as the stem of the output filename. If no
     % name is provided, the experiment will take the name of the experiment
     % class (in this case 'dpxCoreExperiment').
-    E.expName='dpxExampleExperiment';
+    E.paradigm=mfilename;
     
     % Define the folder to which to save the output. This defaults to
     % '~/Documents/dpxData' on Unix systems, and 'C:\temp\dpxData\' on windows,

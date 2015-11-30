@@ -3,7 +3,7 @@ function agDpxDDQOblique
     % agDpxDDQOblique
     
     E=dpxCoreExperiment;
-    E.expName='agDpxDDQOblique';
+    E.paradigm='agDpxDDQOblique';
     E.outputFolder='/Users/iMac_2Photon/Dropbox/dpxData';
     % Use E.scr.gui to bring up the gui to set the screen properties
     E.scr.set('winRectPx',[0+1680 0 1280+1680 960],'widHeiMm',[400 300], ...

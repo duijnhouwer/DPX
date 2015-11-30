@@ -10,7 +10,7 @@ function dpxExampleExperimentIncorrectResponseRepeats(testscr)
         testscr=[20 20 800 600];
     end
     E=dpxCoreExperiment;
-    E.expName='dpxExampleExperimentIncorrectResponseRepeats';
+    E.paradigm='dpxExampleExperimentIncorrectResponseRepeats';
     E.scr.set('winRectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);

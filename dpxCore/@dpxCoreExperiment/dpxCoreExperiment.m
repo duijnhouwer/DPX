@@ -1,7 +1,8 @@
 classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
-        expName;
+        paradigm; % a string, changed from expName on 2015-11-29
+        expName; % kept for backward compatibility, will be removed 2016-11-29
         scr;
         nRepeats;
         conditionSequence;
@@ -43,7 +44,7 @@ classdef dpxCoreExperiment < hgsetget
             E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
             E.nRepeats=2;
             E.conditionSequence='shufflePerBlock';
-            E.expName='dpxCoreExperiment';
+            E.paradigm='dpxCoreExperiment';
             E.subjectId='0';
             E.startKey='space';
             E.txtStart='Press and release $STARTKEY to start'; % if txtStart is 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
@@ -205,6 +206,12 @@ classdef dpxCoreExperiment < hgsetget
             % Convert the data
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'scr','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
+            if isfield(D.exp,'expName')
+                if now>datenum('29-Nov-2016') && strcmpi(dpxGetUserName,'jacob')
+                    warning('Property expName should be removed from dpxCoreExperiment class');
+                end
+                D.exp=rmfield(D.exp,'expName');
+            end
             D.scr=dpxGetSetables(E.scr);
             D.scr.measuredFrameRate=E.scr.measuredFrameRate;
             D=dpxFlattenStruct(D);
@@ -349,7 +356,7 @@ classdef dpxCoreExperiment < hgsetget
             end
             E.subjectId=dpxInputValidId('Subject ID > ');
             E.experimenterId=dpxInputValidId('Experimenter ID > ');
-            E.outputFileName=[E.expName '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
+            E.outputFileName=[E.paradigm '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
             % Test if this filename can be saved.
             testfile=fullfile(E.outputFolder,E.outputFileName);
             
@@ -489,13 +496,23 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods
         function set.expName(E,value)
-            if ~ischar(value) || isempty(value)
-                error('expName must be a string');
-            elseif any(E.expName=='-')
-                error('expName can''t contain ''-''');
-                % DPX uses - to split filesnames into expName, subject, and start-time.
+            daysleft=floor(datenum('29-Nov-2016')-now)-10;
+            if daysleft>=0
+                warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nYou should update your script within ' num2str(daysleft) ' days or this warning will turn into an error']);
             else
-                E.expName=value;
+                warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nPlease update your script.']);
+            end
+            E.paradigm=value; %#ok<MCSUP>
+        end
+        function set.paradigm(E,value)
+            if ~ischar(value) || isempty(value)
+                error('The property ''paradigm'' must be a (non-empty) string');
+            elseif any(E.paradigm=='-')
+                error('The ''paradigm'' string can''t contain ''-''');
+                % DPX uses - to split filesnames into paradigm, subject, and start-time.
+            elseif ~all(isstrprop(E.paradigm,'alphanum'))
+            else
+                E.paradigm=value;
             end
         end
         function set.outputFolder(E,value)

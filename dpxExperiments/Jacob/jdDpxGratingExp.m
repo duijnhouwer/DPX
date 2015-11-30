@@ -1,6 +1,6 @@
 function jdDpxGratingExp
     E=dpxCoreExperiment;
-    E.expName='jdDpxGratingExp';
+    E.paradigm='jdDpxGratingExp';
     E.scr.distMm=290;
     % 2014-4-24: Measured luminance BENQ screen Two-Photon room
     % Brightness 0; contrast 50; black eq 15; color temp [R G B] correction = [0

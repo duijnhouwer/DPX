@@ -39,7 +39,7 @@ E.txtPauseNrTrials=(numel(dsp)*4-2)*Block;
 % handle the position option
 
 E.txtStart='Straks verschijnt een rood kruis.\nFixeer hierop.\n\nDan verschijnt een halve Cylinder\ndie van bol naar hol gaat.\n\nGeef door middel van de pijltjes aan welke vorm het heeft\n\nPijlteje omhoog = Hol\nPijltje omlaag = Bol';
-E.expName='rdDpxExpTraining';
+E.paradigm='rdDpxExpTraining';
 
 % Then the experiment option, make expname (used in output filename)
 if strcmpi(dpxGetUserName,'Reinder')

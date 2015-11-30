@@ -1,6 +1,6 @@
 function jdDpxExpHalfDomeRdk
     E=dpxCoreExperiment;
-    E.expName='jdDpxExpHalfDomeRdk';
+    E.paradigm='jdDpxExpHalfDomeRdk';
     E.outputFolder='/data/vanwezeldata/dpxData';
     E.scr.skipSyncTests=0;
     E.scr.verbosity0min5max=1;

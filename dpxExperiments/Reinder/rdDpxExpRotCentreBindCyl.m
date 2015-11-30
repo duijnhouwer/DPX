@@ -14,7 +14,7 @@ fb='';
 
 % handle the position option
 E.txtStart='Kijk naar het rode kruis.\n\nHoe beweegt het voorvlak van de middelste volle cylinder?\nOmhoog = Pijltje omhoog\nOmlaag = Pijltje omlaag';
-E.expName='rdDpxExpBindingCylLeft';
+E.paradigm='rdDpxExpBindingCylLeft';
 
 
 

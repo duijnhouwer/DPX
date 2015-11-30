@@ -5,9 +5,9 @@ function agDpxExpOnlyVisual
     E=dpxCoreExperiment;
     % Use dpxGetSetables(E) for a list of all properties that you can set
     % for the dpxCoreExperiment object
-    E.expName='agDpxExpOnlyVisual';
+    E.paradigm=mfilename;
     E.outputFolder='/Users/iMac_2Photon/Desktop/AhmedData';
-    E.startKey='UpArrow'
+    E.startKey='UpArrow';
     
     testscr=[20 20 800 600];
     

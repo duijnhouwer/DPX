@@ -1,6 +1,6 @@
 function lkDpxRdkExp
     E=dpxCoreExperiment;
-    E.expName='lkDpxRdkExp';
+    E.paradigm='lkDpxRdkExp';
     E.scr.distMm=290;
     % 2014-10-28: Measured luminance BENQ screen Two-Photon room Brightness
     % 0; contrast 50; black eq 15; color temp [R G B] correction = [0 100
@@ -12,7 +12,7 @@ function lkDpxRdkExp
     % FullWhite=42 cd/m2; FullBlack=0.12;
     % and with gamma 1, medium gray (RGB .5 .5 .5) = 21 cd/m2
     %
-    E.expName='lkDpxGratingExp';
+    E.paradigm='lkDpxGratingExp';
     E.scr.distMm=lkSettings('VIEWDISTMM');
     E.scr.widHeiMm=lkSettings('SCRWIDHEIMM');
     E.scr.gamma=lkSettings('GAMMA');

@@ -3,7 +3,7 @@ function agDpxMultisensoryHorizontal
     % agDpxMultisensoryHorizontal
     KbName('UnifyKeyNames');
     E=dpxCoreExperiment;
-    E.expName='agDpxMultisensoryHorizontal';
+    E.paradigm='agDpxMultisensoryHorizontal';
     E.outputFolder='/Users/iMac_2Photon/Desktop/AhmedData';
     testscr=[20 20 800 600];
     E.startKey='UpArrow';
