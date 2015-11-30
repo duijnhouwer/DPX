@@ -16,7 +16,7 @@ function dpxExampleHelloWorld
     for conditionNumber=1:2
         % Instantiate a condition object
         C=dpxCoreCondition;
-        C.durSec=2; % Make the condition last for two seconds
+        C.durSec=1; % Make the condition last for this many seconds
         % Instantiate a text stimulus object
         T=dpxStimTextSimple;
         if conditionNumber==1

@@ -250,11 +250,6 @@ classdef dpxCoreCondition < hgsetget
         end
         function addStim(C,S)
             % Add a stimulus object to the condition
-            if isempty(S.name)
-                % If no name is provided (not recommended) use the class name of the object
-                % as the stimulus name that will show up in the output DPXD struct
-                S.name=class(S);
-            end
             % Store all values of the public (interface) variables of the stimulus so
             % the condition can be reset during init before a repeat of the same
             % conditon is shown;

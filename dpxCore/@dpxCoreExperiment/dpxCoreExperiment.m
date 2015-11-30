@@ -214,6 +214,7 @@ classdef dpxCoreExperiment < hgsetget
                     stimname=E.conditions{c}.stims{s}.name;
                     % this is why unique stimulus names are required
                     TMP.(stimname)=dpxGetSetables(E.conditions{c}.stims{s});
+                    TMP.(stimname)=rmfield(TMP.(stimname),'name');
                 end
                 for s=1:numel(E.conditions{c}.trigs)
                     trigname=E.conditions{c}.trigs{s}.name;
@@ -478,10 +479,11 @@ classdef dpxCoreExperiment < hgsetget
                 return;
             end
             N=numel(E.internalCondSeq);
-            maxDigits=ceil(log10(N));
+            maxDigits=floor(log10(N))+1;
             numformat=['%.' num2str(maxDigits) 'd'];
-            tstr=datestr(now-E.startTime,'HH:MM:SS');
-            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s in.\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tstr);
+            tStr=datestr(now,'HH:MM:SS');
+            relTStr=datestr(now-E.startTime,'HH:MM:SS');
+            str=sprintf(['Trial: ' numformat '/' numformat ' (%.3d %%); Condition: ' numformat '; Start: %s (%s).\n'], tr,N,fix(tr/N*100),E.internalCondSeq(tr),tStr,relTStr);
             fprintf('%s',str);
         end
     end

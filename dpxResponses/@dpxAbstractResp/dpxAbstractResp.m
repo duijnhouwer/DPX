@@ -1,6 +1,8 @@
 classdef (Abstract) dpxAbstractResp < hgsetget
     
     properties (Access=public)
+        className;
+        name; % The object name.
         % The names of the stimuli that will be displayed as positive or negative
         % feedback. The stimulus in the dpxCoreCondition class or derived class
         % will use this cell-array of string to look up the feedback stimulus by
@@ -14,9 +16,7 @@ classdef (Abstract) dpxAbstractResp < hgsetget
         % Time window in which the response can be given relative to trial onset.
         allowAfterSec=0;
         allowUntilSec=3600;
-        % The object name.  Left empty, this will default to the class-name when
-        % added to condition
-        name='';
+
     end
     properties (GetAccess=public,SetAccess=protected,Hidden=true)
         % A logical (true/false) indicating that a valid response has been received
@@ -67,8 +67,11 @@ classdef (Abstract) dpxAbstractResp < hgsetget
             % See also: dpxAbstractStim, dpxRespKeyboard
             %
             % Jacob Duijnhouwer, 20140905
+            R.className=class(R); % class(R) returns name of derived class, not 'dpxAbstractResp'
+            R.name=class(R); % can be overwritten (always recommended, and necessary when multiple objects of same class are added to condition)
         end
         function init(R,scrGets)
+            % This is called before every trial
             R.given=false;
             R.allowAfterNrFlips=round(R.allowAfterSec*scrGets.measuredFrameRate);
             R.allowUntilNrFlips=round(R.allowUntilSec*scrGets.measuredFrameRate);

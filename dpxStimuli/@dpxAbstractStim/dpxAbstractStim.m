@@ -1,6 +1,7 @@
 classdef (Abstract) dpxAbstractStim < hgsetget
     
     properties (Access=public)
+        className;
         enabled;
         onSec;
         durSec;
@@ -32,10 +33,12 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % See also: dpxAbstractVisualStim, StimdpxAbstractResp, dpxStimRdk
             %
             % Jacob Duijnhouwer, 2014-09-05
+            %
+            S.className=class(S); % assumes name of derived class, not 'dpxAbstractStim'
             S.enabled=true; % Toggle stimulus enabled true|false. Internal flipcounter counts from the moment stimulus was enabled. 2015-06-29
             S.onSec=0; % Time since trial start that stimulus comes on
             S.durSec=Inf; % Duration of stim (relative to start)
-            S.name=''; % defaults to class-name when added to condition
+            S.name=class(S); % can be overriden when added to condition
             S.rndSeed=rand*(2^32); % the seed of the stim's internal randstream, the set function of rndSeed instantiate the RandStream
             S.flipCounter=0;
             S.stepCounter=0;
@@ -163,9 +166,17 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             if ~ischar(value)
                 error('stimulus name must be a string');
             end
-            % check first char not digit
+            if isempty(value)
+                error('stimulus name must be a non-empty string');
+            end
+            if isempty(regexp(value(1),'[a-z-A-Z]','ONCE'))
+                error(['Stimulus name ''' value ''' does not start with a letter']);
+            end
+            if numel(regexp(value,'[a-z-A-Z-0-9]'))~=numel(value)
+                error(['The stimulus name should consist exclusively of alphanumeric characters, but ''' value ''' was provided.']);
+            end
             if any(isspace(value))
-                error(['stimulus name ''' value ''' contains whitespace characters']);
+                error(['Stimulus name ''' value ''' contains whitespace characters']);
             end
             S.name=value;
         end

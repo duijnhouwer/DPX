@@ -15,7 +15,7 @@ function dpxdToolRenameFields(old,new)
     % Jacob, 2015-05-31
     
     [old,new]=checkInput(old,new);
-    files=dpxUIgetfiles('filterspec','*.mat','dialogtitle','Select DPXD files to rename fields in');
+    files=dpxUIgetFiles('extensions',{'*.mat','*.dpxd','*.*'},'title','Select DPXD files to rename fields in');
     if numel(files)==0
         return;
     elseif ischar(files)
