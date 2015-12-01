@@ -88,7 +88,7 @@ bar(x,y)
 
 iY=[ZAna{2}.ZMean ZAna{1}.ZMean];
 ylim([0 1]);
-% name=[data.exp_expName{1} ' ' data.exp_subjectId{1} ' proportion Z tested'];
+% name=[data.exp_paradigm{1} ' ' data.exp_subjectId{1} ' proportion Z tested'];
 % title(name);
 nB=['P = ' num2str(Y)];
 text(ZAna{1}.Disp-0.5,0.9,nB)
@@ -106,7 +106,7 @@ end
 end
 
 function exp=whichExp(data)
-if strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylFeedback') || strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylLeftFeedback') || strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylRightFeedback');
+if strcmpi(data.exp_paradigm(1),'rdDpxExpRotFullCylFeedback') || strcmpi(data.exp_paradigm(1),'rdDpxExpRotFullCylLeftFeedback') || strcmpi(data.exp_paradigm(1),'rdDpxExpRotFullCylRightFeedback');
     exp.Id='fullFb';
     exp.name=['subject ' data.exp_subjectId{1} ': one full cylinder w/ feedback'];
     exp.monoCueFog='fullCyl_fogFrac';
@@ -116,7 +116,7 @@ if strcmpi(data.exp_expName(1),'rdDpxExpRotFullCylFeedback') || strcmpi(data.exp
     exp.speed='fullCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='reported correct percept of front plane';
-elseif strcmpi(data.exp_expName(1),'rdDpxExpRotHalfCylLeftFeedback')  || strcmpi(data.exp_expName(1),'rdDpxExpRotHalfCylRightFeedback');
+elseif strcmpi(data.exp_paradigm(1),'rdDpxExpRotHalfCylLeftFeedback')  || strcmpi(data.exp_paradigm(1),'rdDpxExpRotHalfCylRightFeedback');
     exp.Id='halfFb';
     exp.name=['subject ' data.exp_subjectId{1} ': half cylinder w/ feedback'];
     exp.monoCueFog='halfCyl_fogFrac';
@@ -126,7 +126,7 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpRotHalfCylLeftFeedback')  || strcmpi
     exp.speed='halfCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='reported convex';
-elseif strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylRight');
+elseif strcmpi(data.exp_paradigm(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.exp_paradigm(1),'rdDpxExpBaseLineCylRight');
     exp.Id='base';
     exp.name=['subject ' data.exp_subjectId{1} ': shape of half cylinder w/o feedback'];
     exp.monoCueFog='halfInducerCyl_fogFrac';
@@ -136,8 +136,8 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBaseLineCylLeft') || strcmpi(data.ex
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='reported percept, % convex';
-elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft')...
-        || strcmpi(data.exp_expName(1),'rdDpxExpBindingCylRight')
+elseif strcmpi(data.exp_paradigm(1),'rdDpxExpBindingCylLeft')...
+        || strcmpi(data.exp_paradigm(1),'rdDpxExpBindingCylRight')
     exp.Id='bind';
     exp.name=['subject ' data.exp_subjectId{1} ': percept of full cyl (context-driven)'];
     exp.monoCueFog='halfInducerCyl_fogFrac';
@@ -147,7 +147,7 @@ elseif strcmpi(data.exp_expName(1),'rdDpxExpBindingCylLeft')...
     exp.speed='halfInducerCyl_rotSpeedDeg';
     exp.resp='DownArrow';
     exp.corPerc='correct perception of target base on phys of inducer';
-elseif strcmpi(data.exp_expName(1),'rdDpxExpCentreBindCyl')
+elseif strcmpi(data.exp_paradigm(1),'rdDpxExpCentreBindCyl')
     exp.Id='bind';
     exp.name=['subject ' data.exp_subjectId{1} ': percept of full cyl (context-driven)'];
     exp.monoCueFog='leftHalfInducerCyl_fogFrac';

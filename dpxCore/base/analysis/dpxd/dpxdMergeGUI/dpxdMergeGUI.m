@@ -143,7 +143,7 @@ function butMergeAndSave_Callback(hObject, eventdata, handles)
 function [outfile,outpath]=composeFilename(D)
     outpath=dpxGetLastDirStr;
     try
-        paradigms=unique(D.exp_expName);
+        paradigms=unique(D.exp_paradigm);
         if numel(paradigms)==1
             P=paradigms{1};
         elseif numel(paradigms)==2

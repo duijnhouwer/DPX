@@ -69,7 +69,7 @@ legend(h,labels);
 end
 
 function exp=whichExp(data)
-if strcmpi(data.exp_expName(1),'rdDpxExpRotCylShuffled') ||strcmpi(data.exp_expName(1),'rdDpxExpRotCylRight'); 
+if strcmpi(data.exp_paradigm(1),'rdDpxExpRotCylShuffled') ||strcmpi(data.exp_paradigm(1),'rdDpxExpRotCylRight'); 
     exp.Id='twoFull';
     exp.name=['subject ' data.exp_subjectId{1} ': Direction of full cyl (context-driven)'];
     exp.monoCueFog='fullInducerCyl_fogFrac';

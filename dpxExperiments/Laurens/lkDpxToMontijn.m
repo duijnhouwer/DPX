@@ -14,7 +14,7 @@ function structMP=lkDpxToMontijn(filename)
     end
     for i=1:numel(files2convert)
         dpxData=dpxdLoad(files2convert{i});
-        paradigm=dpxData.exp_expName{1};
+        paradigm=dpxData.exp_paradigm{1};
         unresolved=false;
         if ~isempty(strfind(paradigm,'Adap'))
             if strcmpi(paradigm,'lkDpxGratingAdaptExp')
@@ -59,7 +59,7 @@ function M=convertLkDpxGratingExp(K)
     % Klink datafile.
     
     % naam van experiment
-    M.strFile=K.exp_expName{1};%'MP_OrientationTuning8BiDirections'
+    M.strFile=K.exp_paradigm{1};%'MP_OrientationTuning8BiDirections'
     
     % Weet niet precies wat dit voorstelt. Ik gok de rate waarmee de camera
     % (eye en lick) werden gecheckt. We hebben niet van die camera's dus
@@ -293,7 +293,7 @@ function M=convertLkDpxGratingAdaptExp(K)
     K=dpxdSubset(K,K.adap_durSec<max(K.adap_durSec));
     % For clarity, I removed the comments from this function as far as they
     % are identical to the convertLkDpxGratingExp.
-    M.strFile=K.exp_expName{1};
+    M.strFile=K.exp_paradigm{1};
     M.dblCheckInterval=1.0000e-03;
     M.intPortCam1=0;% 7
     M.intPortCam2=0;% 8
