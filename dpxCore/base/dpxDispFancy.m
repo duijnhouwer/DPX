@@ -21,7 +21,7 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
     % Jacob Duijnhouwer, major update 2015-11-29
     %
     % See also: http://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf
-   
+    
     if nargin==0
         dpxDispFancy('Instructions options for textStyle and borderStyle (uses cprintf)');
         cprintf;
@@ -49,28 +49,40 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
         end
         
         % silenty force nv and nh to be integers
-        nv=max(1,round(nv));
-        nh=max(1,round(nh));
+        nv=max(0,round(nv));
+        nh=max(0,round(nh));
         %
         sideBorder=repmat(symbol,1,nh);
-        msgLine=[sideBorder ' ' msg ' ' sideBorder];
-        topBorder=repmat(symbol,1,floor((numel(msgLine)-1)/numel(symbol))+1);
-        nPadSpaces=(numel(topBorder)-numel(msgLine))/2; % pad msg with spaces to keep outer border rectangular
-        for i=1:nv
-            cprintf(borderStyle,'%s\n',topBorder);
+        if nh==0
+            msgLine=msg;
+        else
+            msgLine=[sideBorder ' ' msg ' ' sideBorder];
         end
-        cprintf(borderStyle,'%s ',sideBorder);
-        fprintf('%s',repmat(' ',1,floor(nPadSpaces)));  % pad 
-        cprintf(textStyle,'%s',msg);
-        fprintf('%s',repmat(' ',1,ceil(nPadSpaces))); % pad 
-        cprintf(borderStyle,' %s\n',sideBorder);
-        for i=1:nv
-            cprintf(borderStyle,'%s\n',topBorder);
+        topBorder=repmat(symbol,1,floor((numel(msgLine)-1)/numel(symbol))+1);
+        if nv==0 && nh==0
+            cprintf(textStyle,'%s\n',msgLine);
+        elseif nv==0
+            cprintf(borderStyle,'%s ',sideBorder);
+            cprintf(textStyle,'%s',msg);
+            cprintf(borderStyle,' %s\n',sideBorder);
+        else
+            nPadSpaces=(numel(topBorder)-numel(msgLine))/2; % pad msg with spaces to keep outer border rectangular
+            for i=1:nv
+                cprintf(borderStyle,'%s\n',topBorder);
+            end
+            cprintf(borderStyle,'%s ',sideBorder);
+            fprintf('%s',repmat(' ',1,floor(nPadSpaces)));  % pad
+            cprintf(textStyle,'%s',msg);
+            fprintf('%s',repmat(' ',1,ceil(nPadSpaces))); % pad
+            cprintf(borderStyle,' %s\n',sideBorder);
+            for i=1:nv
+                cprintf(borderStyle,'%s\n',topBorder);
+            end
         end
     catch me
         % Something went wrong, probably something with the cprintf commands (they
-        % are undocumented and easy to misspell an option. Try it again without the cprintf formatting. 
-        try 
+        % are undocumented and easy to misspell an option. Try it again without the cprintf formatting.
+        try
             disp(me.message);
             dpxDispFancy(msg,symbol,nh,nv)
         catch

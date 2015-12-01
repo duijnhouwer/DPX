@@ -207,21 +207,25 @@ classdef dpxCoreExperiment < hgsetget
             % Convert the data
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'window','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
-            if strcmpi(dpxGetUserName,'jacob')
-                if isfield(D.exp,'expName')
-                    if now>datenum('29-Feb-2016')
-                        warning('Property ''expName'' should be removed from dpxCoreExperiment class');
-                    end
-                    D.exp=rmfield(D.exp,'expName');
+            if isfield(D.exp,'expName')
+                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
+                    warning('Property ''expName'' should be removed from dpxCoreExperiment class');
                 end
-                if isfield(D.exp,'scr')
-                    if now>datenum('29-Feb-2016')
-                        warning('Property ''scr'' should be removed from dpxCoreExperiment class');
-                    end
-                    D.exp=rmfield(D.exp,'scr');
+                D.exp=rmfield(D.exp,'expName');
+            end
+            if isfield(D.exp,'scr')
+                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
+                    warning('Property ''scr'' should be removed from dpxCoreExperiment class');
                 end
+                D.exp=rmfield(D.exp,'scr');
             end
             D.window=dpxGetSetables(E.window);
+            if isfield(D.window,'winRectPx')
+                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
+                    warning('Property ''winRectPx'' should be removed from dpxCoreWindow class');
+                end
+                D.window=rmfield(D.window,'winRectPx');
+            end
             D.window.measuredFrameRate=E.window.measuredFrameRate;
             D=dpxFlattenStruct(D);
             % Format the conditions
@@ -505,7 +509,7 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods
         function set.expName(E,value)
-            daysleft=floor(datenum('29-Feb-2016')-now)-10;
+            daysleft=floor(dpxBridgeBurningDay-now)-10;
             if daysleft>=0
                 warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nYou should update your script within ' num2str(daysleft) ' days or this warning will turn into an error']);
             else
