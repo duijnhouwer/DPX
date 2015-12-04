@@ -281,22 +281,22 @@ classdef dpxCoreExperiment < hgsetget
                 clear TMP;
             end
             % Get the settings for all trials
-            data=cell(1,numel(E.trials));
+            DPXD=cell(1,numel(E.trials));
             for t=1:numel(E.trials)
                 TMP=dpxFlattenStruct(E.trials(t));
                 condNr=TMP.condition;
-                data{t}=dpxMergeStructs({D,P,CNDT,TMP,C(condNr)},'overwrite');
-                data{t}=dpxStructMakeSingleValued(data{t});
-                data{t}.N=1;
+                DPXD{t}=dpxMergeStructs({D,P,CNDT,TMP,C(condNr)},'overwrite');
+                DPXD{t}=dpxStructMakeSingleValued(DPXD{t});
+                DPXD{t}.N=1;
             end
-            data=dpxdMerge(data); %#ok<NASGU>
+            DPXD=dpxdMerge(DPXD); %#ok<NASGU>
             % Save the data
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            save(absFileName,'data','-v7.3');
+            save(absFileName,'DPXD','-v7.3');
             if ~isempty(E.backupFolder)
                 save(fullfile(E.backupFolder,E.outputFileName),'data','-v7.3');
             end
-            dpxDispFancy(['Data has been saved to: ''' absFileName '''']);
+            dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');
         end
         function showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')

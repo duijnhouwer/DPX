@@ -4,7 +4,7 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
     %
     % Display a string in a fancy color and with a fancy border.
     %
-    %
+    % INPUT:
     %   msg: String String to disply fancyly
     %   symbol: String repeated in border (Default: ':')
     %   nh: Horizontal thickness of border (n * numel(symbol))
@@ -12,9 +12,9 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
     %   textStyle: cprinft style string, e.g. '*blue' or '-cyan')
     %   borderStyle: cprinft style string, e.g. '*blue' or '-cyan')
     %
-    % EXAMPLES
+    % EXAMPLES:
     %   dpxDispFancy('WOW',' !!! ',3,1,'*red','blue')
-    %   dpxDispFancy % without arguments: show styles guide
+    %   dpxDispFancy % without arguments: show cprintf styles guide
     %
     % This function internally uses Yair M. Altman's ''cprintf''.
     %
@@ -23,7 +23,7 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
     % See also: http://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf
     
     if nargin==0
-        dpxDispFancy('Instructions options for textStyle and borderStyle (uses cprintf)');
+        dpxDispFancy('Demo for textStyle and borderStyle (uses cprintf)');
         cprintf;
         return;
     end
@@ -83,16 +83,17 @@ function dpxDispFancy(msg,symbol,nh,nv,textStyle,borderStyle)
         % Something went wrong, probably something with the cprintf commands (they
         % are undocumented and easy to misspell an option. Try it again without the cprintf formatting.
         try
-            disp(me.message);
+            warning(me.getReport);
             dpxDispFancy(msg,symbol,nh,nv)
         catch
             % still something wrong... Go for failsafe non-fancy disp
             disp(msg);
         end
     end
-    
-    
-    % --- HELP FUNCTIONS ------------------------------------------------------
+end
+
+
+% --- HELP FUNCTIONS ------------------------------------------------------
 function count = cprintf(style,format,varargin)
     % CPRINTF displays styled formatted text in the Command Window
     %
@@ -366,8 +367,9 @@ function count = cprintf(style,format,varargin)
         count = count1;
     end
     return;  % debug breakpoint
-    
-    % Process the requested style information
+end
+
+% Process the requested style information
 function [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)
     underlineFlag = 0;
     boldFlag = 0;
@@ -408,6 +410,7 @@ function [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)
             style = str2num(style); %#ok<ST2NM>
         end
     end
+    
     
     % Style = valid matlab RGB vector
     if isnumeric(style) && length(style)==3 && all(style<=1) && all(abs(style)>=0)
@@ -457,16 +460,18 @@ function [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)
             underlineFlag = 1;
         end
     end
-    
-    % Convert a Matlab RGB vector into a known style name (e.g., '[255,37,0]')
+end
+
+% Convert a Matlab RGB vector into a known style name (e.g., '[255,37,0]')
 function styleName = getColorStyle(rgb)
     intColor = int32(rgb*255);
     javaColor = java.awt.Color(intColor(1), intColor(2), intColor(3));
     styleName = sprintf('[%d,%d,%d]',intColor);
     com.mathworks.services.Prefs.setColorPref(styleName,javaColor);
-    
-    % Fix a bug in some Matlab versions, where the number of URL segments
-    % is larger than the number of style segments in a doc element
+end
+
+% Fix a bug in some Matlab versions, where the number of URL segments
+% is larger than the number of style segments in a doc element
 function delta = getUrlsFix(docElement)  %#ok currently unused
     tokens = docElement.getAttribute('SyntaxTokens');
     links  = docElement.getAttribute('LinkStartTokens');
@@ -475,8 +480,9 @@ function delta = getUrlsFix(docElement)  %#ok currently unused
     else
         delta = 0;
     end
-    
-    % fprintf(2,str) causes all previous '_'s in the line to become red - fix this
+end
+
+% fprintf(2,str) causes all previous '_'s in the line to become red - fix this
 function fixHyperlink(docElement)
     try
         tokens = docElement.getAttribute('SyntaxTokens');
@@ -503,8 +509,9 @@ function fixHyperlink(docElement)
     catch
         % never mind...
     end
-    
-    % Set an element to a particular style (color)
+end
+
+% Set an element to a particular style (color)
 function setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion)
     %global tokens links urls urlTargets  % for debug only
     global oldStyles
@@ -584,8 +591,9 @@ function setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion
     %}
     
     return;  % debug breakpoint
-    
-    % Display information about element(s)
+end
+
+% Display information about element(s)
 function dumpElement(docElements)
     %return;
     disp(' ');
@@ -641,13 +649,15 @@ function dumpElement(docElements)
         end
         disp(data)
     end
-    
-    % Utility function to convert matrix => cell
+end
+
+% Utility function to convert matrix => cell
 function cells = m2c(data)
     %datasize = size(data);  cells = mat2cell(data,ones(1,datasize(1)),ones(1,datasize(2)));
     cells = num2cell(data);
-    
-    % Display the help and demo
+end
+
+% Display the help and demo
 function showDemo(majorVersion,minorVersion)
     fprintf('cprintf displays formatted text in the Command Window.\n\n');
     fprintf('Syntax: count = cprintf(style,format,...);  click <a href="matlab:help cprintf">here</a> for details.\n\n');
@@ -675,11 +685,11 @@ function showDemo(majorVersion,minorVersion)
     end
     disp(s);
     eval(s);
-    
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%
-    % - Fix: Remove leading space char (hidden underline '_')
-    % - Fix: Find workaround for multi-line quirks/limitations
-    % - Fix: Non-\n-terminated segments are displayed as black
-    % - Fix: Check whether the hyperlink fix for 7.1 is also needed on 7.2 etc.
-    % - Enh: Add font support
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%
+% - Fix: Remove leading space char (hidden underline '_')
+% - Fix: Find workaround for multi-line quirks/limitations
+% - Fix: Non-\n-terminated segments are displayed as black
+% - Fix: Check whether the hyperlink fix for 7.1 is also needed on 7.2 etc.
+% - Enh: Add font support

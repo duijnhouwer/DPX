@@ -190,11 +190,10 @@ end
 
 function [stim,errstr]=loadStimFile(stimFullFile)
     errstr=[];
-    stim=load(stimFullFile);
-    if ~isfield(stim,'data')
-        errstr='Not a valid DPX stimulus file.';
-    end
-    if isfield(stim.data,'resp_nrUnits')
+    stim=dpxdLoad(stimFullFile);
+    if isempty(stim)
+        errstr='Not a valid DPXD stimulus file.';
+    elseif isfield(stim,'resp_nrUnits')
         errstr='This stimulus file already had responses added.';
     end
 end

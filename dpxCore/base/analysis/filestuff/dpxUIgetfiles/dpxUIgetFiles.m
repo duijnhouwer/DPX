@@ -315,6 +315,3 @@ function excludeStringEdit_CreateFcn(hObject, eventdata, handles)
         set(hObject,'BackgroundColor','white');
     end
 end
-
-
-
