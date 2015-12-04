@@ -4,10 +4,10 @@ function dpxdToolRenameFields(old,new)
     %
     % Rename structure fields in DPXDs. A file selector will open. old and new
     % are string or a cell array of strings corresponding to the old and the
-    % new fieldnames. old and new should be of equal length, it's a 1-to-1
-    % mapping. The field names can end with a wildcard ('*'), the matching part
-    % (only beginning at the time of writing) will be replaced with the
-    % corresponding parts in new.
+    % new fieldnames. If old and new are cell-arrays, they should be of equal
+    % length, it's a 1-to-1 mapping. The field names can end with a wildcard
+    % ('*'), the matching part (only beginning at the time of writing) will be
+    % replaced with the corresponding parts in new.
     %
     % EXAMPLE:
     %   dpxdToolRenameFields('grating_*','test_*');
