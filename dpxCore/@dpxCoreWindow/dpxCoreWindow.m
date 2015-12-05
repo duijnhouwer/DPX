@@ -102,6 +102,7 @@ classdef dpxCoreWindow < hgsetget
                     end
                 end
             end
+            W.clear;
         end
         function clear(W)
             % clear the window to background color, unless the background

@@ -248,7 +248,7 @@ classdef dpxCoreCondition < hgsetget
             cellfun(@(x)clear(x),C.stims);
             cellfun(@(x)clear(x),C.resps);
         end
-        function addStim(C,S)
+        function addStim(C,S,lock)
             % Add a stimulus object to the condition
             % Store all values of the public (interface) variables of the stimulus so
             % the condition can be reset during init before a repeat of the same

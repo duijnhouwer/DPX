@@ -50,9 +50,16 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % restore this stimulus to its starting state. So when, for example, the
             % property 'visible' was toggled it will be reset prior to the next trial
             % that repeats this condition.
-            if ~isempty(S.initialPublicState)
-                error('lockInitialPublicState should be called only once on a stimulus, during addStim');
-            end
+            
+            % I removed the following check on 2015-12-05; it doesn't seem really necessary
+            % because this happens behind the scenes. I remember putting this here as a
+            % reminder to myself to not mess up the design of the program, as a
+            % precaution. It caused problems though when i introduced the stim.demo
+            % feature, because then the same object get initialized multiple times (if
+            % you run the demo methods more than once on a stimulus object
+            % if ~isempty(S.initialPublicState)
+            %    error('lockInitialPublicState should be called only once on a stimulus, during addStim');
+            % end
             S.initialPublicState=dpxGetSetables(S);
         end
         function restoreInitialPublicState(S)
@@ -107,6 +114,21 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         end
         function clear(S)
             S.myClear;
+        end
+        function demo(S,W)
+            if ~exist('W','var') || isempty(W)
+                W=dpxCoreWindow;
+            end
+            if ~isa(W,'dpxCoreWindow')
+                error('W is not a dpxCoreWindow object');
+            end
+            W.open;
+            C=dpxCoreCondition;
+            C.addStim(S,false);
+            C.durSec=S.onSec+S.durSec;
+            C.init(get(W));
+            C.show; % until C.durSec or ESCAPE
+            W.close;
         end
     end
     methods (Access=protected)
