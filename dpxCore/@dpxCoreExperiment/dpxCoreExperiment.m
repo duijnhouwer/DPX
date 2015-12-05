@@ -72,7 +72,7 @@ classdef dpxCoreExperiment < hgsetget
                 E.createConditionSequence;
                 E.sysInfo=dpxSystemInfo;
                 E.createFileName; % this function also asks for subject and experimenter IDs
-                E.cleanOldBackups; % this function asks for user interaction too
+                E.cleanOldBackups; % this function may ask for user interaction too
                 E.window.open;
                 for i=1:numel(E.plugins)
                     E.plugins{i}.start(get(E));
@@ -294,9 +294,9 @@ classdef dpxCoreExperiment < hgsetget
             absFileName=fullfile(E.outputFolder,E.outputFileName);
             save(absFileName,'DPXD','-v7.3');
             if ~isempty(E.backupFolder)
-                save(fullfile(E.backupFolder,E.outputFileName),'data','-v7.3');
+                save(fullfile(E.backupFolder,E.outputFileName),'DPXD','-v7.3');
             end
-            dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');
+            dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');  
         end
         function showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')
