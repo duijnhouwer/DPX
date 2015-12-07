@@ -28,9 +28,9 @@ function tc=calcDirectionTuningCurveSfTfContrast(dpxd,cellNr,varargin)
         %   S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
         % As a check, calculate cont both from dotRBGAfrac1 and dotRBGAfrac2 and
         % see if they are the same, as they should be.
-        cont1=[dpxd.test_dotRBGAfrac1{:}]./[dpxd.scr_backRGBA{:}]-1;
+        cont1=[dpxd.test_dotRBGAfrac1{:}]./[dpxd.window_backRGBA{:}]-1;
         cont1=cont1(1:4:end);
-        cont2=-[dpxd.test_dotRBGAfrac2{:}]./[dpxd.scr_backRGBA{:}]+1;
+        cont2=-[dpxd.test_dotRBGAfrac2{:}]./[dpxd.window_backRGBA{:}]+1;
         cont2=cont2(1:4:end);
         if ~all(cont1-cont2==0)
             error('Contrast was not defined as expected.');

@@ -82,13 +82,13 @@ function M=convertLkDpxGratingExp(K)
     M.debug=0; % 0
     
     % De volgende scherm info staat ook in de klink-file
-    M.dblScreenDistance_cm=K.scr_distMm(1)/10;
-    M.dblScreenWidth_cm=K.scr_widHeiMm{1}(1)/10; % 34
-    M.dblScreenHeight_cm=K.scr_widHeiMm{1}(2)/10; % 27
+    M.dblScreenDistance_cm=K.window_distMm(1)/10;
+    M.dblScreenWidth_cm=K.window_widHeiMm{1}(1)/10; % 34
+    M.dblScreenHeight_cm=K.window_widHeiMm{1}(2)/10; % 27
     M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
     M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
-    M.intScreenWidth_pix=K.scr_winRectPx{1}(3); % 1280
-    M.intScreenHeight_pix=K.scr_winRectPx{1}(4); % 1024
+    M.intScreenWidth_pix=K.window_winRectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.window_winRectPx{1}(4); % 1024
     
     
     % Herbereken een paar conversie factoren, deze zijn ten minste nodig om
@@ -299,13 +299,13 @@ function M=convertLkDpxGratingAdaptExp(K)
     M.intPortCam2=0;% 8
     M.intUseScreen='who gives a crap';%  2
     M.debug=0; % 0
-    M.dblScreenDistance_cm=K.scr_distMm(1)/10;
-    M.dblScreenWidth_cm=K.scr_widHeiMm{1}(1)/10; % 34
-    M.dblScreenHeight_cm=K.scr_widHeiMm{1}(2)/10; % 27
+    M.dblScreenDistance_cm=K.window_distMm(1)/10;
+    M.dblScreenWidth_cm=K.window_widHeiMm{1}(1)/10; % 34
+    M.dblScreenHeight_cm=K.window_widHeiMm{1}(2)/10; % 27
     M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
     M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
-    M.intScreenWidth_pix=K.scr_winRectPx{1}(3); % 1280
-    M.intScreenHeight_pix=K.scr_winRectPx{1}(4); % 1024
+    M.intScreenWidth_pix=K.window_winRectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.window_winRectPx{1}(4); % 1024
     Mm2Pix = M.intScreenWidth_pix/(M.dblScreenWidth_cm*10);
     Deg2Pix = tand(1).*(M.dblScreenDistance_cm*10)*Mm2Pix;
     M.dblStimSizeRetinalDegrees=K.test_wDeg(1);
