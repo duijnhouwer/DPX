@@ -87,8 +87,8 @@ function M=convertLkDpxGratingExp(K)
     M.dblScreenHeight_cm=K.window_widHeiMm{1}(2)/10; % 27
     M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
     M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
-    M.intScreenWidth_pix=K.window_winRectPx{1}(3); % 1280
-    M.intScreenHeight_pix=K.window_winRectPx{1}(4); % 1024
+    M.intScreenWidth_pix=K.window_rectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.window_rectPx{1}(4); % 1024
     
     
     % Herbereken een paar conversie factoren, deze zijn ten minste nodig om
@@ -304,8 +304,8 @@ function M=convertLkDpxGratingAdaptExp(K)
     M.dblScreenHeight_cm=K.window_widHeiMm{1}(2)/10; % 27
     M.dblScreenWidth_deg=atan2d(M.dblScreenWidth_cm/2,M.dblScreenDistance_cm)*2; %93.4714
     M.dblScreenHeight_deg=atan2d(M.dblScreenHeight_cm/2,M.dblScreenDistance_cm)*2; % 80.3120
-    M.intScreenWidth_pix=K.window_winRectPx{1}(3); % 1280
-    M.intScreenHeight_pix=K.window_winRectPx{1}(4); % 1024
+    M.intScreenWidth_pix=K.window_rectPx{1}(3); % 1280
+    M.intScreenHeight_pix=K.window_rectPx{1}(4); % 1024
     Mm2Pix = M.intScreenWidth_pix/(M.dblScreenWidth_cm*10);
     Deg2Pix = tand(1).*(M.dblScreenDistance_cm*10)*Mm2Pix;
     M.dblStimSizeRetinalDegrees=K.test_wDeg(1);

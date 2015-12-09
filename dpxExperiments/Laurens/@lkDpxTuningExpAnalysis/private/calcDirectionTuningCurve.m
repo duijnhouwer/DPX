@@ -27,7 +27,7 @@ end
 function tc=getCurve(DPXD,cellNr,varargin)
     % Parse 'options' input
     p=inputParser;
-    p.addParamValue('bayesfit',true,@islogical); % *
+    p.addParamValue('bayesfit',false,@islogical); % *
     % * If true: use the bayesPhysV1 toolkit to fit tuningcurves to the data, and
     % test which is the best model. This will determine if the cell is
     % tuned at all, and if so, if it is direction or orientation selective.

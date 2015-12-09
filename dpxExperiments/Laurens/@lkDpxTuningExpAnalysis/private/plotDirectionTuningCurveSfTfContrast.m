@@ -49,7 +49,7 @@ end
 function plotOneCurve(TC,varargin)
     % Parse 'options' input
     p=inputParser;
-    p.addParamValue('bayesfit',true,@islogical);
+    p.addParamValue('bayesfit',false,@islogical);
     p.addParamValue('color',[0 0 0],@(x)isnumeric(x)&&numel(x)==3);
     p.parse(varargin{:});
     
