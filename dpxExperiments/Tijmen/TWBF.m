@@ -29,7 +29,7 @@ end
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = Inf; 
         LeftCheck.onSec = 0;
-        C.addStim(LeftCheck);
+        C.addStimulus(LeftCheck);
         
         for repeats = 1:(Ton/2)
         n=n*-1; 
@@ -44,7 +44,7 @@ end
         ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.durSec= 2; 
         ML.onSec = 2*(repeats-1) ;
-        C.addStim(ML);
+        C.addStimulus(ML);
     
         GL = dpxStimGrating;
         GL.name = sprintf('GratingLeft%d', repeats);
@@ -67,7 +67,7 @@ end
         GL.hDeg=(50)/W.deg2px;    
         GL.durSec=2; 
         GL.onSec = 2*(repeats-1) ;
-        C.addStim(GL);
+        C.addStimulus(GL);
         end
 
         Dot = dpxStimDot;
@@ -75,7 +75,7 @@ end
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
-        C.addStim(Dot);
+        C.addStimulus(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen (left side if mirror is active)
@@ -95,7 +95,7 @@ end
         RightCheck.durSec = Inf; 
         RightCheck.onSec = 0;
         RightCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RightCheck);
+        C.addStimulus(RightCheck);
         
         for repeats = 1:(Ton/2)
         n=n*-1; 
@@ -110,7 +110,7 @@ end
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec=2; 
         MR.onSec = 2*(repeats-1) ;
-        C.addStim(MR);
+        C.addStimulus(MR);
         
         GR = dpxStimGrating;
         GR.name = sprintf('GratingRight%d', repeats);
@@ -130,18 +130,18 @@ end
         GR.hDeg= (50)/W.deg2px;      
         GR.durSec=2;
         GR.onSec = 2*(repeats-1) ;
-        C.addStim(GR);
+        C.addStimulus(GR);
         end
 
         RL0 = dpxRespContiKeyboard;
         RL0.name='keyboardl';
         RL0.kbName='LeftControl';
-        C.addResp(RL0); 
+        C.addResponse(RL0); 
         
         RR0 = dpxRespContiKeyboard;
         RR0.name='keyboardr';
         RR0.kbName='RightControl';
-        C.addResp(RR0);  
+        C.addResponse(RR0);  
         
         E.addCondition(C);  
 

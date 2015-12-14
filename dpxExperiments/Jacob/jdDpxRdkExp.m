@@ -6,12 +6,12 @@ function jdDpxRdkExp
         S=dpxStimDot;
         S.wDeg=1;
         S.hDeg=1;
-        C.addStim(S);
-        C.addResp(dpxCoreResponse);
+        C.addStimulus(S);
+        C.addResponse(dpxCoreResponse);
         C.durSec=2;
         S=dpxStimRdk;
         set(S,'xDeg',x);
-        C.addStim(S);
+        C.addStimulus(S);
         E.addCondition(C);
     end
     E.run; 

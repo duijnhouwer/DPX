@@ -465,7 +465,7 @@ classdef dpxCoreExperiment < hgsetget
                     dummy.durSec=0;
                     dummy.enabled=false;
                     dummy.visible=false;
-                    E.conditions{i}.addStim(dummy);
+                    E.conditions{i}.addStimulus(dummy);
                 end
             end
         end

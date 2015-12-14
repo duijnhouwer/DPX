@@ -67,17 +67,17 @@ for m=1:numel(modes)
             % The fixation cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
             set(S,'wDeg',.3,'enabled',false,'durSec',inf,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The feedback stimulus for wrong responses
             S=dpxStimDot;
             set(S,'wDeg',.3,'enabled',false,'durSec',inf,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The full cylinder stimulus
             S=dpxStimRotCylinder;
@@ -85,7 +85,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                 ,'name','fullCyl');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The half cylinder stimulus
             if strcmpi(modes{m},'mono')
@@ -109,7 +109,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfCyl');
-            C.addStim(S);
+            C.addStimulus(S);
             E.addCondition(C);
             
             % The response object
@@ -126,7 +126,7 @@ for m=1:numel(modes)
                 R.correctKbNames='1';
             end
             set(R,'name','rightHand');
-            C.addResp(R);
+            C.addResponse(R);
         end
     end
 end

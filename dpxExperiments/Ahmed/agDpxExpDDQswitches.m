@@ -35,26 +35,26 @@ function agDpxExpDDQswitches
                 % type get(F) to see a list of parameters you can set
                 set(F,'xDeg',0); % set the fix dot 10 deg to the left
                 set(F,'name','fix','wDeg',0.5);
-                C.addStim(F);
+                C.addStimulus(F);
                 %
                 DDQ=dpxStimDynDotQrt;
                 set(DDQ,'name','ddq','wDeg',ddqWid,'hDeg',ddqWid*ar,'flashSec',fs);
                 set(DDQ,'oriDeg',0,'onSec',0.5,'durSec',fs*(nrSteps+1));
                 set(DDQ,'diamsDeg',[1 1 1 1]);
                 set(DDQ,'bottomLeftTopRightFirst',b);
-                C.addStim(DDQ);
+                C.addStimulus(DDQ);
                 %
                 R=dpxRespContiKeyboard;
                 R.name='LeftArrow';
                 R.kbName='LeftArrow';
                 R.allowAfterSec=0;
-                C.addResp(R);
+                C.addResponse(R);
                 %
                 R=dpxRespContiKeyboard;
                 R.name='DownArrow';
                 R.kbName='DownArrow';
                 R.allowAfterSec=0;
-                C.addResp(R);
+                C.addResponse(R);
                 %
                 E.addCondition(C);
                 

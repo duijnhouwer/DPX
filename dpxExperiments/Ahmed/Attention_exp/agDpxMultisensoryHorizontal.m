@@ -51,7 +51,7 @@ function agDpxMultisensoryHorizontal
                                 % type get(F) to see a list of parameters you can set
                                 set(F,'xDeg',0); % change the position of the Fixation dot
                                 set(F,'name','fix','wDeg',.5);
-                                C.addStim(F);
+                                C.addStimulus(F);
                                 %
                                 DDQ=dpxStimDynDotQrt;
                                 set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -59,7 +59,7 @@ function agDpxMultisensoryHorizontal
                                 set(DDQ,'diamsDeg',ones(4,1)*dotSize); % diamsDeg is diameter of disks in degrees
                                 set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                                 set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix);
-                                C.addStim(DDQ);
+                                C.addStimulus(DDQ);
                                 if conditionCounter==1
                                     % Add  a text stimulus
                                     TEXT=dpxStimTextSimple;
@@ -80,7 +80,7 @@ function agDpxMultisensoryHorizontal
                                     TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
                                     TEXT.durSec=0; % stimulus disappears when flip-1 is reached
                                 end
-                                C.addStim(TEXT);
+                                C.addStimulus(TEXT);
                                 
                                 % Add a trial trigger. The experiment will be stuck in flip-0 until
                                 % the trigger is received ('left' for left arrow). All stimuli with
@@ -98,18 +98,18 @@ function agDpxMultisensoryHorizontal
                                 R.name='LeftArrow';
                                 R.kbName='LeftArrow';
                                 R.allowAfterSec=0;
-                                C.addResp(R);
+                                C.addResponse(R);
                                 %                                 %
                                 R=dpxRespContiKeyboard;
                                 R.name='Down';
                                 R.kbName='DownArrow';
                                 R.allowAfterSec=0;
-                                C.addResp(R);
+                                C.addResponse(R);
                                 %                                 %
                                 FB=dpxStimDot;
                                 set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                                 set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                                C.addStim(FB);
+                                C.addStimulus(FB);
                                 %
                                 T=dpxStimTactileMIDI;
                                 T.onSec=DDQ.onSec;
@@ -134,7 +134,7 @@ function agDpxMultisensoryHorizontal
                                 end
                                 
                                 
-                                C.addStim(T);
+                                C.addStimulus(T);
                                 %
                                 E.addCondition(C);
                                 

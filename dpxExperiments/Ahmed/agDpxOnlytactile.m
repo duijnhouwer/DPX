@@ -25,8 +25,8 @@ function agDpxOnlyTactile
         R.correctEndsTrialAfterSec=0.05;
         %
         C.durSec=3600;
-        C.addStim(F);
-        C.addResp(R);
+        C.addStimulus(F);
+        C.addResponse(R);
         T=dpxStimTactileMIDI;
         T.tapOnSec=0.5 : 0.5 : 2; %[0.5 1 1.5 2 ];
         if i>4
@@ -55,7 +55,7 @@ function agDpxOnlyTactile
             error('Unknown condition number ....');
         end
         T.tapDurSec=0.020;
-        C.addStim(T);
+        C.addStimulus(T);
         E.addCondition(C);
         if i==5 || i==8
             E.addCondition(C);

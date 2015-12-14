@@ -33,7 +33,7 @@ function agPilotingPatients
                             % type get(F) to see a list of parameters you can set
                             set(F,'xDeg',0); % set the fix dot 10 deg to the left
                             set(F,'name','fix','wDeg',0.5);
-                            C.addStim(F);
+                            C.addStimulus(F);
                             %
                             DDQ=dpxStimDynDotQrt;
                             set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -53,18 +53,18 @@ function agPilotingPatients
 %                             else
 %                                 error('i>4???');
                            
-                            C.addStim(DDQ);
+                            C.addStimulus(DDQ);
                             T=dpxStimTactileMIDI;
                             T.onSec=DDQ.onSec;
                             T.durSec=Inf;
                             T.tapOnSec=kron(flashSec:flashSec:durS,[1 1])-flashSec;
                             T.tapDurSec=2/60;
                             T.tapNote=[0 8 1 9];
-                            C.addStim(T);
+                            C.addStimulus(T);
                             elseif i==2
                                 set(DDQ,'diamsDeg',[0 0 dotSize dotSize]);
                                 
-                            C.addStim(DDQ);
+                            C.addStimulus(DDQ);
                             end
                                 
                                 
@@ -74,12 +74,12 @@ function agPilotingPatients
                             R.kbNames='2,1';
                             R.allowAfterSec=DDQ.onSec+DDQ.durSec; % allow the response no sooner than the end of the DDQ stim
                             R.correctEndsTrialAfterSec=0;
-                            C.addResp(R);
+                            C.addResponse(R);
                             %
                             FB=dpxStimDot;
                             set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                             set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                            C.addStim(FB);
+                            C.addStimulus(FB);
                             %
                       
 %                             T=dpxStimTactileMIDI;
@@ -88,7 +88,7 @@ function agPilotingPatients
 %                             T.tapOnSec=kron(flashSec:flashSec:durS,[1 1])-flashSec;
 %                             T.tapDurSec=2/60;
 %                             T.tapNote=[0 8 1 9];
-%                             C.addStim(T);
+%                             C.addStimulus(T);
                             %
                             E.addCondition(C);
                         end

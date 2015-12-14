@@ -87,11 +87,11 @@ function lkDpxRdkExp
                 MCC.name='mcc';
                 MCC.allowUntilSec=C.durSec;
                 %
-                C.addStim(M);
-                C.addStim(S);
+                C.addStimulus(M);
+                C.addStimulus(S);
                 if IsLinux % lab computer is linux, only use MCC there
-                    C.addStim(V);
-                    C.addResp(MCC);
+                    C.addStimulus(V);
+                    C.addResponse(MCC);
                 end
                 %
                 E.addCondition(C);

@@ -74,12 +74,12 @@ for m=1:numel(modes)
             % The fixation cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
             set(S,'wDeg',0.3,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The full cylinder stimulus
             S=dpxStimRotCylinder;
@@ -90,7 +90,7 @@ for m=1:numel(modes)
             if fullWhite==true %make a full white
                 set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);  
             end
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The half cylinder stimulus
             if strcmpi(modes{m},'mono')
@@ -122,7 +122,7 @@ for m=1:numel(modes)
             if fullWhite==true; % make full white
                 set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
             end
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The response object
             R=dpxRespKeyboard;
@@ -133,7 +133,7 @@ for m=1:numel(modes)
             R.correctKbNames='1';
             R.correctEndsTrialAfterSec=inf;
             R.wrongEndsTrialAfterSec=inf;
-            C.addResp(R);
+            C.addResponse(R);
             
             E.addCondition(C);
         end

@@ -142,9 +142,9 @@ function dpxExampleExperiment(testscr)
         MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
         
         % Add the stimuli to the condition
-        C.addStim(FIX); % first added will be on top
-        C.addStim(MASK);
-        C.addStim(RDK);  
+        C.addStimulus(FIX); % first added will be on top
+        C.addStimulus(MASK);
+        C.addStimulus(RDK);  
         
         % Create and add a response object to record the keyboard presses.
         R=dpxRespKeyboard;
@@ -156,7 +156,7 @@ function dpxExampleExperiment(testscr)
         R.kbNames='LeftArrow,RightArrow';
         R.allowAfterSec=RDK.motStartSec+RDK.motDurSec; % allow the response no sooner than the end of the RDK motion pulse
         R.correctEndsTrialAfterSec=0;
-        C.addResp(R);
+        C.addResponse(R);
         
         % Add this condition to the experiment
         E.addCondition(C);

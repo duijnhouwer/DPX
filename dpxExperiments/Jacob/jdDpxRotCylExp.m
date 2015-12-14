@@ -14,15 +14,15 @@ function jdDpxRotCylExp
             % The fixation dot
             S=dpxStimFix;
             set(S,'wDeg',.15,'name','fix');
-            C.addStim(S);
+            C.addStimulus(S);
             % The feedback stimulus for correct responses
             S=dpxStimFix;
             set(S,'wDeg',.3,'enabled',false,'durSec',0.05,'RGBAfrac',[0 1 0 .75],'name','fbCorrect');
-            C.addStim(S);
+            C.addStimulus(S);
             % The feedback stimulus for wrong responses
             S=dpxStimFix;
             set(S,'wDeg',.3,'enabled',false,'durSec',0.15,'RGBAfrac',[1 0 0 .75],'name','fbWrong');
-            C.addStim(S);
+            C.addStimulus(S);
             % The response object
             R=dpxCoreResponse;
             set(R,'kbNames','UpArrow,DownArrow');
@@ -36,21 +36,21 @@ function jdDpxRotCylExp
             else
                 R.correctKbNames='1';
             end
-            C.addResp(R);
+            C.addResponse(R);
             % The distractor cylinder stimulus
             S=dpxStimRotCylinder;
             set(S,'dotsPerSqrDeg',12,'xDeg',1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                 ,'onSec',0,'durSec',1 ...
                 ,'name','distractor');
-            C.addStim(S);
+            C.addStimulus(S);
             % The target cylinder stimulus
             S=dpxStimRotCylinder;
             set(S,'dotsPerSqrDeg',12,'xDeg',-1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dsp,'sideToDraw','front' ...
                 ,'onSec',0,'durSec',1 ...
                 ,'name','target');
-            C.addStim(S);
+            C.addStimulus(S);
             %
             E.addCondition(C);
         end

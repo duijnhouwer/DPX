@@ -44,7 +44,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             S.stepCounter=0;
         end
         function lockInitialPublicState(S)
-            % addStim of the condition class will call this function to store a copy of
+            % addStimulus of the condition class will call this function to store a copy of
             % all publicly settable parameters of this stimulus in initialPublicState.
             % Before a repeat of the condition is presented, this struct is used to
             % restore this stimulus to its starting state. So when, for example, the
@@ -58,13 +58,13 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             % feature, because then the same object get initialized multiple times (if
             % you run the demo methods more than once on a stimulus object
             % if ~isempty(S.initialPublicState)
-            %    error('lockInitialPublicState should be called only once on a stimulus, during addStim');
+            %    error('lockInitialPublicState should be called only once on a stimulus, during addStimulus');
             % end
             S.initialPublicState=dpxGetSetables(S);
         end
         function restoreInitialPublicState(S)
             if isempty(S.initialPublicState)
-                error('lockInitialPublicState should have been called during addStim');
+                error('lockInitialPublicState should have been called during addStimulus');
             end
             fns=fieldnames(S.initialPublicState);
             for i=1:numel(fns)
@@ -124,7 +124,7 @@ classdef (Abstract) dpxAbstractStim < hgsetget
             end
             W.open;
             C=dpxCoreCondition;
-            C.addStim(S,false);
+            C.addStimulus(S,false);
             C.durSec=S.onSec+S.durSec;
             C.init(get(W));
             C.show; % until C.durSec or ESCAPE

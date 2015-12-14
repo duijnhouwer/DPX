@@ -101,8 +101,8 @@ function dpxExampleExperimentWithText(testscr)
         RDK.name='motionStim'; % no spaces allowed in name 
         
         % Add the stimuli to the condition
-        C.addStim(FIX); % first added will be on top
-        C.addStim(RDK);
+        C.addStimulus(FIX); % first added will be on top
+        C.addStimulus(RDK);
         
         % Add a trial trigger. The experiment will be stuck in flip-0 until
         % a random start delay between .5 and 5 seconds has passed.
@@ -123,7 +123,7 @@ function dpxExampleExperimentWithText(testscr)
         R.kbNames='LeftArrow,RightArrow';
         R.allowAfterSec=RDK.onSec+RDK.durSec; % allow the response no sooner than the end of the RDK stim
         R.correctEndsTrialAfterSec=0;
-        C.addResp(R);
+        C.addResponse(R);
         
         % Add this condition to the experiment
         E.addCondition(C);

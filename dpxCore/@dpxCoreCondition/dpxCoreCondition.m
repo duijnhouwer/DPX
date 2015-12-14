@@ -9,10 +9,10 @@ classdef dpxCoreCondition < hgsetget
     end
     properties (GetAccess=public,SetAccess=protected)
         % Cell array of stimulus objects (e.g. dpxStimDot) to be added using
-        % addStim
+        % addStimulus
         stims={};
         % Cell array of response objects (e.g. dpxRespKeyBoard) to be added using
-        % addStim
+        % addStimulus
         resps={};
         % Cell array of trial-trigger objects (e.g. dpxTriggerKey) to be added
         % using addTrialTrigger
@@ -57,7 +57,7 @@ classdef dpxCoreCondition < hgsetget
             % Calculate the duration of the trial in flips
             C.nFlips=round(C.durSec*C.winGets.measuredFrameRate);
             % Initialize all stimulus, response, and trigger objects that have been
-            % added with their respecitve "add" functions (e.g. addStim)
+            % added with their respecitve "add" functions (e.g. addStimulus)
             cellfun(@(x)init(x,winGets),C.stims);
             cellfun(@(x)init(x,winGets),C.resps);
             cellfun(@(x)init(x),C.trigs);
@@ -248,8 +248,21 @@ classdef dpxCoreCondition < hgsetget
             cellfun(@(x)clear(x),C.stims);
             cellfun(@(x)clear(x),C.resps);
         end
-        function addStim(C,S,lock)
+        function addStim(C,S)
+            [num,str]=dpxBridgeBurningDay;
+            if now>num
+                error('The dpxCoreCondition method ''addStim'' has been renamed to ''addStimulus'', update your experiment file.');
+            else
+                warning('a:b',['The dpxCoreCondition method ''addStim'' has been renamed to ''addStimulus'', update your experiment file.\nThis warning will turn into an error on ' str '.']);
+                C.addStimulus(S);
+            end
+        end    
+        function addStimulus(C,S)
             % Add a stimulus object to the condition
+            % Check that S is a response object
+            if ~strncmp(class(S),'dpxStim',7)
+                error('a:b','The object you are trying to add is not a valid stimulus object.\nIt''s classname does not start with ''dpxStim''.');
+            end
             % Store all values of the public (interface) variables of the stimulus so
             % the condition can be reset during init before a repeat of the same
             % conditon is shown;
@@ -270,9 +283,23 @@ classdef dpxCoreCondition < hgsetget
             end
         end
         function addResp(C,R)
+            [num,str]=dpxBridgeBurningDay;
+            if now>num
+                error('The dpxCoreCondition method ''addResp'' has been renamed to ''addResponse'', update your experiment file.');
+            else
+                warning('a:b',['The dpxCoreCondition method ''addResp'' has been renamed to ''addResponse'', update your experiment file.\nThis warning will turn into an error on ' str '.']);
+                C.addResponse(R);
+            end
+        end
+        function addResponse(C,R)
             % Add a response object to the condition
+            % Check that R is a response object
+            if ~strncmp(class(R),'dpxResp',7)
+                error('a:b','The object you are trying to add is not a valid response object.\nIt''s classname does not start with ''dpxResp''.');
+            end
+            % Generate a name if none is provided (default to classname)
             if isempty(R.name)
-                R.name=class(R); % no name provided default to classname
+                R.name=class(R); 
             end
             C.resps{end+1}=R;
             % Check that the name is not 'none', this is an reserved name

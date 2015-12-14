@@ -34,7 +34,7 @@ function agDpxDDQbiasTactile
                             % type get(F) to see a list of parameters you can set
                             set(F,'xDeg',0); % set the fix dot 10 deg to the left
                             set(F,'name','fix','wDeg',0.5);
-                            C.addStim(F);
+                            C.addStimulus(F);
                             %
                             DDQ=dpxStimDynDotQrt;
                             set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -54,19 +54,19 @@ function agDpxDDQbiasTactile
                             else
                                 error('i>4???');
                             end
-                            C.addStim(DDQ);
+                            C.addStimulus(DDQ);
                             
                             R=dpxRespKeyboard;
                             R.name='keyboard';
                             R.kbNames='LeftArrow,DownArrow';
                             R.allowAfterSec=DDQ.onSec+DDQ.durSec; % allow the response no sooner than the end of the DDQ stim
                             R.correctEndsTrialAfterSec=0;
-                            C.addResp(R);
+                            C.addResponse(R);
                             %
                             FB=dpxStimDot;
                             set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                             set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                            C.addStim(FB);
+                            C.addStimulus(FB);
                             %
                             T=dpxStimTactileMIDI;
                             T.onSec=DDQ.onSec;
@@ -74,7 +74,7 @@ function agDpxDDQbiasTactile
                             T.tapOnSec=kron(flashSec:flashSec:durS,[1 1])-flashSec;
                             T.tapDurSec=2/60;
                             T.tapNote=[0 1 8 9];
-                            C.addStim(T);
+                            C.addStimulus(T);
                             %
                             E.addCondition(C);
                         end

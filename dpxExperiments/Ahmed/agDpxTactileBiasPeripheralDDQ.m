@@ -36,7 +36,7 @@ function agDpxTactileBiasPeripheralDDQ
                                 % type get(F) to see a list of parameters you can set
                                 set(F,'xDeg',-15); % set the fix dot 10 deg to the left
                                 set(F,'name','fix','wDeg',0.5);
-                                C.addStim(F);
+                                C.addStimulus(F);
                                 %
                                 DDQ=dpxStimDynDotQrt;
                                 set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -44,19 +44,19 @@ function agDpxTactileBiasPeripheralDDQ
                                 set(DDQ,'diamsDeg',ones(4,1)*dotSize); % diamsDeg is diameter of disks in degrees
                                 set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                                 set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix);
-                                C.addStim(DDQ);
+                                C.addStimulus(DDQ);
                            
                                 R=dpxRespKeyboard;
                                 R.name='keyboard';
                                 R.kbNames='LeftArrow,DownArrow';
                                 R.allowAfterSec=DDQ.onSec+DDQ.durSec; % allow the response no sooner than the end of the DDQ stim
                                 R.correctEndsTrialAfterSec=0;
-                                C.addResp(R);
+                                C.addResponse(R);
                                 %
                                 FB=dpxStimDot;
                                 set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                                 set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                                C.addStim(FB);
+                                C.addStimulus(FB);
                                 %
                                 T=dpxStimTactileMIDI;
                                 T.onSec=DDQ.onSec;
@@ -76,7 +76,7 @@ function agDpxTactileBiasPeripheralDDQ
                                     error('Unknown condition number ....');
                                 end
                                 
-                                C.addStim(T);
+                                C.addStimulus(T);
                                 %
                                 E.addCondition(C);
                             end

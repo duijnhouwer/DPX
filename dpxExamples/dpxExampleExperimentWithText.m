@@ -106,9 +106,9 @@ function dpxExampleExperimentWithText(testscr)
         
          
         % Add the stimuli to the condition
-        C.addStim(FIX); % first added will be on top
-        C.addStim(TEXT);
-        C.addStim(RDK);
+        C.addStimulus(FIX); % first added will be on top
+        C.addStimulus(TEXT);
+        C.addStimulus(RDK);
         
         % Add a trial trigger. The experiment will be stuck in flip-0 until
         % the trigger is received ('left' for left arrow). All stimuli with
@@ -133,7 +133,7 @@ function dpxExampleExperimentWithText(testscr)
         R.kbNames='LeftArrow,RightArrow';
         R.allowAfterSec=RDK.onSec+RDK.durSec; % allow the response no sooner than the end of the RDK stim
         R.correctEndsTrialAfterSec=0;
-        C.addResp(R);
+        C.addResponse(R);
         
         % Add this condition to the experiment
         E.addCondition(C);

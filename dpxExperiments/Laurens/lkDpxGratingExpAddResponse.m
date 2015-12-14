@@ -156,7 +156,7 @@ function saveButton_Callback(hObject, eventdata, handles)
     end
     set(handles.statusBar,'String','Loading the input files ...'); drawnow
     try
-        [stim,errstr]=loadStimFile(get(handles.stimField,'String'));
+        [stimDpxd,errstr]=loadStimFile(get(handles.stimField,'String'));
         error(errstr);
     catch me
         set(handles.statusBar,'String',me.message);
@@ -178,9 +178,9 @@ function saveButton_Callback(hObject, eventdata, handles)
     end
     try
         set(handles.statusBar,'String','Merging the data ...'); drawnow
-        data=mergeStimResp(stim.data,resp.ses,tsList); %#ok<NASGU>
+        DPXD=mergeStimResp(stimDpxd,resp.ses,tsList); %#ok<NASGU>
         set(handles.statusBar,'String','Writing to disk ...'); drawnow
-        save(fullfile(targetfolder,filename),'data');
+        save(fullfile(targetfolder,filename),'DPXD');
         set(handles.statusBar,'String',['Saved ''' fullfile(targetfolder,filename) '''.']);
     catch me
         set(handles.statusBar,'String',me.message);
@@ -188,12 +188,12 @@ function saveButton_Callback(hObject, eventdata, handles)
     end
 end
 
-function [stim,errstr]=loadStimFile(stimFullFile)
+function [stimDpxd,errstr]=loadStimFile(stimFullFile)
     errstr=[];
-    stim=dpxdLoad(stimFullFile);
-    if isempty(stim)
+    stimDpxd=dpxdLoad(stimFullFile);
+    if isempty(stimDpxd)
         errstr='Not a valid DPXD stimulus file.';
-    elseif isfield(stim,'resp_nrUnits')
+    elseif isfield(stimDpxd,'resp_nrUnits')
         errstr='This stimulus file already had responses added.';
     end
 end
@@ -201,7 +201,7 @@ end
 function [resp,errstr]=loadRespFile(respFullFile)
     errstr=[];
     resp=load(respFullFile);
-    if ~isfield(resp,'ses');
+    if isempty(resp) || ~isstruct(resp) || ~isfield(resp,'ses')
         errstr='Not a valid MountainPro SES file';
     end
 end

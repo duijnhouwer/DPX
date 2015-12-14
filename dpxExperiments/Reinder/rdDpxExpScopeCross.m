@@ -8,7 +8,7 @@ C=dpxCoreCondition;
 set(C,'durSec',3600);
 S=dpxStimCross;
 set(S,'wDeg',5,'hDeg',5,'lineWidDeg',0.05,'name','giantfix');
-C.addStim(S);
+C.addStimulus(S);
 E.addCondition(C);
 E.run
 

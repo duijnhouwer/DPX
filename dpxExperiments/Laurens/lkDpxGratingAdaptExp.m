@@ -81,9 +81,9 @@ function lkDpxGratingAdaptExp
     V.stepVolt=[3 0];
     V.pinNr=lkSettings('MCCPIN');
     %
-    C.addStim(V);
-    C.addStim(M);                
-    C.addStim(A);
+    C.addStimulus(V);
+    C.addStimulus(M);                
+    C.addStimulus(A);
     %
     E.addCondition(C);
     %
@@ -137,10 +137,10 @@ function lkDpxGratingAdaptExp
                     V.stepVolt=[3 0 4 0];
                     V.pinNr=lkSettings('MCCPIN');
                     %
-                    C.addStim(V)
-                    C.addStim(M);
-                    C.addStim(A);
-                    C.addStim(T);
+                    C.addStimulus(V)
+                    C.addStimulus(M);
+                    C.addStimulus(A);
+                    C.addStimulus(T);
                     %
                     E.addCondition(C);                
                 end

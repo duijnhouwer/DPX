@@ -26,13 +26,13 @@ function agDpxDDQOblique
                     %
                     S=dpxStimDot;
                     set(S,'name','fix','wDeg',0.5);
-                    C.addStim(S);
+                    C.addStimulus(S);
                     %
                     S=dpxStimDynDotQrt;
                     set(S,'name','ddq','wDeg',wid,'hDeg',hei,'flashSec',.75);
                     set(S,'oriDeg',ori,'onSec',.25,'durSec',1,'antiJump',antiJump);
                     set(S,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
-                    C.addStim(S);
+                    C.addStimulus(S);
                     %
                     R=dpxRespKeyboard;
                     R.name='kb';
@@ -40,11 +40,11 @@ function agDpxDDQOblique
                     R.allowAfterSec=S.onSec+S.durSec+0.200; % only after stim + 200 ms minimal reaction time
                     R.correctEndsTrialAfterSec=0.05;
                     R.correctStimName='respfeedback';
-                    C.addResp(R);
+                    C.addResponse(R);
                     %
                     S=dpxStimDot;
                     set(S,'name','respfeedback','wDeg',.5*sqrt(2),'enabled',0);
-                    C.addStim(S);
+                    C.addStimulus(S);
                     %
                     E.addCondition(C);
                 end

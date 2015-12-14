@@ -17,7 +17,7 @@ function eaDpxExpTest
         LeftCheck.xDeg=-stereoOffsetDeg;
         LeftCheck.wDeg=5;
         LeftCheck.hDeg=5;
-        C.addStim(LeftCheck);
+        C.addStimulus(LeftCheck);
         %    S=dpxStimRect;
         
         S=dpxStimRotCylinder;
@@ -27,7 +27,7 @@ function eaDpxExpTest
             ,'name','fullTargetCyl');
         S.axis='horisphere';
         set(S,'dotRGBA1frac',[1 1 1 1],'dotRGBA2frac',[1 1 1 1]);
-        C.addStim(S);
+        C.addStimulus(S);
         
         RiteCheck=dpxStimCheckerboard;
         RiteCheck.name='checksRight';
@@ -36,7 +36,7 @@ function eaDpxExpTest
         RiteCheck.wDeg=5;
         RiteCheck.hDeg=5;
         RiteCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RiteCheck);
+        C.addStimulus(RiteCheck);
         
         E.addCondition(C);
         

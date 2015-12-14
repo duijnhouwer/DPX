@@ -80,12 +80,12 @@ for m=1:numel(modes)
             % The fixation cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The feedback stimulus for correct responses
             S=dpxStimDot;
             set(S,'wDeg',.3,'enabled',false,'durSec',Inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-            C.addStim(S);
+            C.addStimulus(S);
             % JACOB_DEBUG_NOTE de feedback stimulus' durSec was voorheen
             % .5, ik heb dit naar Inf gezet. De stimulus verdwijnt als de
             % conditie ophoudt. Ik denk dat dit het grootste probleem was
@@ -106,7 +106,7 @@ for m=1:numel(modes)
 % JACOB_DEBUG_NOTE Ik heb de onSec van de Cylinder stimuli op .5 gezet, op
 % deze manier is er een tijdje een van .6 seconde tussen het drukken op de
 % knop en het beginnen van de volgende stim
-            C.addStim(S);
+            C.addStimulus(S);
             
             % The half cylinder stimulus
             % JACOB_DEBUG_NOTE  zelde notes als bij andere cylinder gelden
@@ -133,7 +133,7 @@ for m=1:numel(modes)
                 ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','front' ...
                 ,'onSec',.5,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                 ,'name','halfInducerCyl');
-            C.addStim(S);
+            C.addStimulus(S);
             
             
             % The response object
@@ -143,7 +143,7 @@ for m=1:numel(modes)
             R.correctKbNames='1'; % % JACOB_DEBUG_NOTE  means response is correct with chance of 1, maakt niet uit welke knop 
             set(R,'correctStimName','fbCorrect','correctEndsTrialAfterSec',.1); % JACOB_DEBUG_NOTE  na de response .1 seconde flits, dan einde trial
             %set(R,'wrongStimName','fbCorrect','wrongEndsTrialAfterSec',.1); % JACOB_DEBUG_NOTE  na de response .1 seconde flits, dan einde trial. Deze kan weg omdat het antwoord altijd goed is
-            C.addResp(R);
+            C.addResponse(R);
             
             E.addCondition(C);
         end

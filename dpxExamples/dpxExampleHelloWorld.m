@@ -27,7 +27,7 @@ function dpxExampleHelloWorld
             T.str='World!';
         end
         % Add the stimulus to the condition
-        C.addStim(T);
+        C.addStimulus(T);
         % Add the condition to the experiment
         E.addCondition(C);
     end

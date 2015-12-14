@@ -24,7 +24,7 @@ rep = Ton /(1+Toff);
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = Inf; 
         LeftCheck.onSec = 0; 
-        D.addStim(LeftCheck);
+        D.addStimulus(LeftCheck);
         
         for nRepeats=1:rep
         ML = dpxStimMask;
@@ -37,7 +37,7 @@ rep = Ton /(1+Toff);
         ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.durSec = 1;
         ML.onSec =(Toff + 1)*(nRepeats-1) ;
-        D.addStim(ML);
+        D.addStimulus(ML);
                 
         GL = dpxStimGrating;
         GL.name = sprintf('GratingLeft%d', nRepeats);
@@ -50,7 +50,7 @@ rep = Ton /(1+Toff);
         GL.hDeg= (50)/W.deg2px;
         GL.durSec = 1; 
         GL.onSec = (Toff + 1)*(nRepeats-1) ;
-        D.addStim(GL);
+        D.addStimulus(GL);
         end
         
         Dot = dpxStimDot;
@@ -58,7 +58,7 @@ rep = Ton /(1+Toff);
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
-        D.addStim(Dot);
+        D.addStimulus(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen
@@ -78,7 +78,7 @@ rep = Ton /(1+Toff);
         RightCheck.rndSeed=LeftCheck.rndSeed;
         RightCheck.durSec = Inf; 
         RightCheck.onSec = 0; 
-        D.addStim(RightCheck);
+        D.addStimulus(RightCheck);
         
         for nRepeats =1:rep
         MR = dpxStimMask;
@@ -91,7 +91,7 @@ rep = Ton /(1+Toff);
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec = 1;
         MR.onSec =(Toff + 1)*(nRepeats-1) ;
-        D.addStim(MR);
+        D.addStimulus(MR);
 
         GR = dpxStimGrating;
         GR.name = sprintf('GratingRight%d', nRepeats);
@@ -104,18 +104,18 @@ rep = Ton /(1+Toff);
         GR.hDeg= (50)/W.deg2px;  
         GR.durSec = 1;
         GR.onSec = (Toff + 1)*(nRepeats-1) ;
-        D.addStim(GR);
+        D.addStimulus(GR);
         end
 
         RL = dpxRespContiKeyboard;
         RL.name = 'keyboardl';
         RL.kbName='LeftControl';
-        D.addResp(RL); 
+        D.addResponse(RL); 
         
         RR = dpxRespContiKeyboard;
         RR.name = 'keyboardr'; 
         RR.kbName ='RightControl';
-        D.addResp(RR);
+        D.addResponse(RR);
       
         E.addCondition(D); 
 

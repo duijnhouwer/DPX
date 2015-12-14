@@ -24,7 +24,7 @@ for cont = Ton
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = Inf; 
         LeftCheck.onSec = 0; 
-        C.addStim(LeftCheck);
+        C.addStimulus(LeftCheck);
         
         ML = dpxStimMask;
         ML.grayFrac=.5;
@@ -35,7 +35,7 @@ for cont = Ton
         ML.hDeg = (50*sqrt(2))/W.deg2px; 
         ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.durSec = cont; 
-        C.addStim(ML);
+        C.addStimulus(ML);
     
         GL = dpxStimGrating;
         GL.name = 'gratingLeft'; 
@@ -48,14 +48,14 @@ for cont = Ton
         GL.wDeg=(50)/W.deg2px;
         GL.hDeg=(50)/W.deg2px;    
         GL.durSec = cont; 
-        C.addStim(GL);
+        C.addStimulus(GL);
           
         Dot = dpxStimDot;
         Dot.name = 'Dot';
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
-        C.addStim(Dot);
+        C.addStimulus(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen (left side if mirror is active)
@@ -75,7 +75,7 @@ for cont = Ton
         RightCheck.durSec = Inf; 
         RightCheck.onSec = 0; 
         RightCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RightCheck);
+        C.addStimulus(RightCheck);
         
         MR = dpxStimMask;
         MR.name='MaskRight';
@@ -86,7 +86,7 @@ for cont = Ton
         MR.hDeg = (50*sqrt(2))/W.deg2px;
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec = cont ; 
-        C.addStim(MR);
+        C.addStimulus(MR);
 
         GR = dpxStimGrating;
         GR.name = 'gratingRight';
@@ -98,17 +98,17 @@ for cont = Ton
         GR.wDeg= (50)/W.deg2px;
         GR.hDeg= (50)/W.deg2px;      
         GR.durSec = cont;
-        C.addStim(GR);
+        C.addStimulus(GR);
 
         RL0 = dpxRespContiKeyboard;
         RL0.name='keyboardl';
         RL0.kbName='LeftControl';
-        C.addResp(RL0); 
+        C.addResponse(RL0); 
         
         RR0 = dpxRespContiKeyboard;
         RR0.name='keyboardr';
         RR0.kbName='RightControl';
-        C.addResp(RR0);
+        C.addResponse(RR0);
         
         E.addCondition(C);  
 end

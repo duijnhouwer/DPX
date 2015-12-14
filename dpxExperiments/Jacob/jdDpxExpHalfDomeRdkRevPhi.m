@@ -72,8 +72,8 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
                 S.RGBAfrac1=[0 0 0 1];
                 S.RGBAfrac2=[[lum lum lum]*2 1];
                 %
-                C.addStim(M);
-                C.addStim(S);
+                C.addStimulus(M);
+                C.addStimulus(S);
                 %
                 if IsLinux
                     R1=dpxRespContiMouse;
@@ -83,7 +83,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
                     R1.defaultX=1920;
                     R1.defaultY=1080/2;
                     R1.allowUntilSec=C.durSec;
-                    C.addResp(R1);
+                    C.addResponse(R1);
                     %
                     R2=dpxRespContiMouse;
                     R2.name='mouseSide';
@@ -92,7 +92,7 @@ function jdDpxExpHalfDomeRdkRevPhi(debug)
                     R2.defaultX=1920/2;
                     R2.defaultY=1080/2;
                     R2.allowUntilSec=C.durSec;
-                    C.addResp(R2);
+                    C.addResponse(R2);
                 end
                 %
                 E.addCondition(C);

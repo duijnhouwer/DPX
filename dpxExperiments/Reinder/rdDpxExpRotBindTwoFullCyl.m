@@ -41,16 +41,16 @@ for m=1:numel(modes)
                 % The fixation cross
                 S=dpxStimCross;
                 set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-                C.addStim(S);
+                C.addStimulus(S);
                 
                 % The feedback stimulus for correct responses
                 S=dpxStimDot;
                 set(S,'wDeg',.3,'xDeg',-0.2,'enabled',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrectLeft');
-                C.addStim(S);
+                C.addStimulus(S);
                 
                 S=dpxStimDot;
                 set(S,'wDeg',.3,'xDeg',0.2,'enabled',false,'durSec',inf,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrectRight');
-                C.addStim(S);
+                C.addStimulus(S);
                     
                 % The full cylinder stimulus
                 S=dpxStimRotCylinder;
@@ -58,7 +58,7 @@ for m=1:numel(modes)
                     ,'rotSpeedDeg',rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
                     ,'onSec',0,'durSec',1,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
                     ,'name','fullTargetCyl');
-                C.addStim(S);
+                C.addStimulus(S);
                 
                 % The full inducer cylinder stimulus
                 if strcmpi(modes{m},'mono')
@@ -82,7 +82,7 @@ for m=1:numel(modes)
                     ,'rotSpeedDeg',rotSpeed,'disparityFrac',dispa,'sideToDraw','both' ...
                     ,'onSec',0,'durSec',1,'stereoLumCorr',lumcorr,'fogFrac',dFog,'dotDiamScaleFrac',dScale ...
                     ,'name','fullInducerCyl');
-                C.addStim(S);
+                C.addStimulus(S);
                 
                 % The right hand response object
                 R=dpxRespKeyboard;
@@ -91,7 +91,7 @@ for m=1:numel(modes)
                 set(R,'correctStimName','fbCorrectRight','correctEndsTrialAfterSec',10000);
                 set(R,'name','rightHand');
                 R.correctKbNames='1';
-                C.addResp(R);
+                C.addResponse(R);
                 
                 % The left hand response object
                 R=dpxRespKeyboard;
@@ -100,7 +100,7 @@ for m=1:numel(modes)
                 set(R,'correctStimName','fbCorrectLeft','correctEndsTrialAfterSec',10000);
                 set(R,'name','leftHand');
                 R.correctKbNames='1';
-                C.addResp(R);
+                C.addResponse(R);
                 
                 E.addCondition(C);
             end

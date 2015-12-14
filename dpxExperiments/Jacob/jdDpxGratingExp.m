@@ -52,7 +52,7 @@ function jdDpxGratingExp
                     S.onSec=isiSec/2;
                     S.durSec=stimSec;
                     %
-                    C.addStim(S);
+                    C.addStimulus(S);
                     E.addCondition(C);
                 end
             end

@@ -82,9 +82,9 @@ function dpxExampleExperimentArduinoInOut(testscr)
         PUN.enabled=false; % dpxRespArduinoPulse can turn this on
         %
         % Add the stimuli to the condition
-        C.addStim(PUN); % reward, must be top of the list because it should block out the rest
-        C.addStim(RDK); % random dot kinematogram
-        C.addStim(REW); % reward
+        C.addStimulus(PUN); % reward, must be top of the list because it should block out the rest
+        C.addStimulus(RDK); % random dot kinematogram
+        C.addStimulus(REW); % reward
 
         % Create and add a response object to record the lick detector
         %
@@ -110,7 +110,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
         A.correctEndsTrialAfterSec=.5; % Make that "pin13" stimulus last for .5 seconds, then end the trial
         A.wrongStimName='punishment';
         A.wrongEndsTrialAfterSec=3;
-        C.addResp(A);
+        C.addResponse(A);
  
         % Add a second lickdetector object that listens to the same lickdetector,
         % but that is listening from the very beginning until the response should
@@ -125,7 +125,7 @@ function dpxExampleExperimentArduinoInOut(testscr)
         A.wrongStimName='punishment';
         A.wrongEndsTrialAfterSec=3;
         A.redoTrialIfWrong='sometime'; % a prematurely ended trial need to be re-tried later
-        C.addResp(A);
+        C.addResponse(A);
 
         % Add this condition to the experiment
         E.addCondition(C);

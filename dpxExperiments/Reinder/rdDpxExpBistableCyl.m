@@ -25,23 +25,23 @@ set(C,'durSec',120')
 
 S=dpxStimCross;
 set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-C.addStim(S);
+C.addStimulus(S);
 
 S=dpxStimRotCylinder;
 set(S,'dotsPerSqrDeg',12,'xDeg',0,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
     ,'rotSpeedDeg',120,'disparityFrac',0,'sideToDraw','both' ...
     ,'onSec',0,'durSec',120','name','FullBistableCyl');
-C.addStim(S);
+C.addStimulus(S);
 
 R=dpxRespContiKeyboard;
 set(R,'kbName','UpArrow');
 set(R,'name','UpArrow');
-C.addResp(R);
+C.addResponse(R);
 
 R=dpxRespContiKeyboard;
 set(R,'kbName','DownArrow');
 set(R,'name','DownArrow');
-C.addResp(R);
+C.addResponse(R);
 
 E.addCondition(C);
 

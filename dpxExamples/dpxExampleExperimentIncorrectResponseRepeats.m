@@ -37,8 +37,8 @@ function dpxExampleExperimentIncorrectResponseRepeats(testscr)
         RDK.name='motionStim';
 
         % Add the stimuli to the condition
-        C.addStim(FIX); % first added will be on top
-        C.addStim(RDK);
+        C.addStimulus(FIX); % first added will be on top
+        C.addStimulus(RDK);
         
         
         % Create and add a response object to record the keyboard
@@ -60,7 +60,7 @@ function dpxExampleExperimentIncorrectResponseRepeats(testscr)
         R.allowAfterSec=RDK.onSec+RDK.durSec; % allow the response no sooner than the end of the RDK stim
         R.correctEndsTrialAfterSec=0;
         R.redoTrialIfWrong='sometime';
-        C.addResp(R);
+        C.addResponse(R);
        
         % Add this condition to the experiment
         E.addCondition(C);

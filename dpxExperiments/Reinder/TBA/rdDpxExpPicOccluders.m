@@ -31,12 +31,12 @@ for ePic=1:length(stimList)
             %fix cross
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-            C.addStim(S);
+            C.addStimulus(S);
             
             %feedback stim
             S=dpxStimDot;
             set(S,'wDeg',.3,'enabled',false,'onSec',2.1,'durSec',1.5,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-            C.addStim(S);
+            C.addStimulus(S);
             
             %first pictures, encoding
             S=dpxStimImage;
@@ -48,7 +48,7 @@ for ePic=1:length(stimList)
             set(S,'stimLoc',0);
             set(S,'scale',1.5);
             set(S,'dots',40);
-            C.addStim(S);
+            C.addStimulus(S);
             
             %second pictues, recall
             d=[];
@@ -72,7 +72,7 @@ for ePic=1:length(stimList)
                 set(S,'name',['RecallPic' num2str(t)] );
                 set(S,'scale',1.5);
                 set(S,'dots',40);
-                C.addStim(S);
+                C.addStimulus(S);
             end
             
             % response objects
@@ -83,7 +83,7 @@ for ePic=1:length(stimList)
             set(R,'wrongStimName','fbCorrect','wrongEndsTrialAfterSec',10000);
             set(R,'allowAfterSec',2.1);
             set(R,'allowUntilSec',3.6);
-            C.addResp(R);
+            C.addResponse(R);
             
             E.addCondition(C);
         end

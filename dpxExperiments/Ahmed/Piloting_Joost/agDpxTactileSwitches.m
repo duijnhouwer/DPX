@@ -31,7 +31,7 @@ function agDpxDDQTactileSwitches
         % type get(F) to see a list of parameters you can set
         set(F,'xDeg',0); % set the fix dot 10 deg to the left
         set(F,'name','fix','wDeg',0.5);
-        C.addStim(F);
+        C.addStimulus(F);
         %
         
         TrialCounter=TrialCounter+1;
@@ -52,7 +52,7 @@ function agDpxDDQTactileSwitches
             TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
             TEXT.durSec=0; % stimulus disappears when flip-1 is reached
         end
-        C.addStim(TEXT);
+        C.addStimulus(TEXT);
         TRIG=dpxTriggerKey;
         TRIG.name='startkey';
         TRIG.kbName='UpArrow';
@@ -63,19 +63,19 @@ function agDpxDDQTactileSwitches
         T.tapDurSec=2/60;
         T.tapNote=repmat([0 1 8 9],1,1000);
         T.tapNote=T.tapNote(1:numel(T.tapOnSec));
-        C.addStim(T);
+        C.addStimulus(T);
         
         R=dpxRespContiKeyboard;
         R.name='LeftArrow';
         R.kbName='LeftArrow';
         R.allowAfterSec=0;
-        C.addResp(R);
+        C.addResponse(R);
         %
         R=dpxRespContiKeyboard;
         R.name='DownArrow';
         R.kbName='DownArrow';
         R.allowAfterSec=0;
-        C.addResp(R);
+        C.addResponse(R);
         %
         
         %

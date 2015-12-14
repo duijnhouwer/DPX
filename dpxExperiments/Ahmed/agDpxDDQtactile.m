@@ -32,7 +32,7 @@ function agDpxDDQtactile
                             % type get(F) to see a list of parameters you can set
                             set(F,'xDeg',0); % set the fix dot 10 deg to the left
                             set(F,'name','fix','wDeg',0.5);
-                            C.addStim(F);
+                            C.addStimulus(F);
                             %
                             DDQ=dpxStimDynDotQrt;
                             set(DDQ,'name','ddqRight','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -40,7 +40,7 @@ function agDpxDDQtactile
                             set(DDQ,'diamsDeg',ones(4,1)*dotSize); % diamsDeg is diameter of disks in degrees
                             set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                             set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix);
-                            C.addStim(DDQ);
+                            C.addStimulus(DDQ);
                             %
                             %                           DDQ=dpxStimDynDotQrt;
                             %                     set(DDQ,'name','ddqLeft','wDeg',ddqWid,'hDeg',ddqHei,'flashSec',flashSec);
@@ -48,7 +48,7 @@ function agDpxDDQtactile
                             %                     set(DDQ,'diamsDeg',[1 1 1 1]*2); % diamsDeg is diameter of disks in degrees
                             %                     set(DDQ,'bottomLeftTopRightFirst',bottomLeftTopRightFirst);
                             %                     set(DDQ,'xDeg',-10);
-                            %                     C.addStim(DDQ);
+                            %                     C.addStimulus(DDQ);
                             
                             %
                             R=dpxRespKeyboard;
@@ -57,12 +57,12 @@ function agDpxDDQtactile
                             R.allowAfterSec=0;
                             R.correctEndsTrialAfterSec=0.1;
                             R.correctStimName='respfeedback';
-                            C.addResp(R);
+                            C.addResponse(R);
                             %
                             FB=dpxStimDot;
                             set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                             set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                            C.addStim(FB);
+                            C.addStimulus(FB);
                             %
                             T=dpxStimTactileMIDI;
                             T.onSec=DDQ.onSec;
@@ -80,7 +80,7 @@ tmp2=[];
                             T.tapDurSec=2/60;
                             T.tapNote=repmat([0 1 8 9],1,1000);
                             T.tapNote=T.tapNote(1:numel(T.tapOnSec));
-                            C.addStim(T);
+                            C.addStimulus(T);
                             %
                             E.addCondition(C);
                         end

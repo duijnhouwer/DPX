@@ -28,20 +28,20 @@ for B=1:numel(barConfigs)
             S=dpxStimCross;
             set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name',['fix' num2str(c)]);
             set(S,'durSec',1.5,'onSec',6.6+2.1*(c-1))
-            C.addStim(S);
+            C.addStimulus(S);
         end
         
         %feedback stim
         S=dpxStimDot;
         set(S,'wDeg',.3,'enabled',false,'durSec',0.20,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-        C.addStim(S);
+        C.addStimulus(S);
         
         %first pictures, encoding
         S=dpxStimImage;
         set(S,'mode','Encode','durSec',5,'wDeg',1); %input=PicFolder
         set(S,'name','EncodingPics');
         set(S,'stimsE',Block
-        C.addStim(S);
+        C.addStimulus(S);
         
         %second pictues, recall
         T=(0.6+1.5); %stim duration plus its pause until next
@@ -51,7 +51,7 @@ for B=1:numel(barConfigs)
             set(S,'mode','Occlude','durSec',0.6,'onSec',onSet,'wDeg',1); %input=PicFolder
             set(S,'NrBars',4,'HorDisp',1,'BarConfig',barConfigs{B})
             set(S,'name',['RecallPic' num2str(t)] );
-            C.addStim(S);
+            C.addStimulus(S);
         end
         
         % response objects
@@ -65,7 +65,7 @@ for B=1:numel(barConfigs)
             set(R,'wrongStimName','fbCorrect','wrongEndsTrialAfterSec',10000);
             set(R,'allowAfterSec',respOnSet);
             set(R,'allowUntilSec',respOffSet);
-            C.addResp(R);
+            C.addResponse(R);
         end
         
         E.addCondition(C);

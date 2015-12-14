@@ -47,7 +47,7 @@ function agDpxExpOnlyVisual
                     % type get(F) to see a list of parameters you can set
                     set(F,'xDeg',0); % set the fix dot 10 deg to the left
                     set(F,'name','fix','wDeg',1);
-                    C.addStim(F);
+                    C.addStimulus(F);
                     %
                     DDQ=dpxStimDynDotQrt;
                     set(DDQ,'name','ddq','wDeg',ddqWid,'hDeg',ddqWid*ar,'flashSec',fs);
@@ -55,7 +55,7 @@ function agDpxExpOnlyVisual
                     set(DDQ,'diamsDeg',[1 1 1 1]*dotSize);
                     set(DDQ,'bottomLeftTopRightFirst',b);
                     set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix)
-                    C.addStim(DDQ);
+                    C.addStimulus(DDQ);
                     %
                     if conditionCounter==1
                         % Add  a text stimulus
@@ -77,7 +77,7 @@ function agDpxExpOnlyVisual
                         TEXT.onSec=-1; % stimulus starts on flip-0 (see below)
                         TEXT.durSec=0; % stimulus disappears when flip-1 is reached
                     end
-                    C.addStim(TEXT);
+                    C.addStimulus(TEXT);
                     
                     % Add a trial trigger. The experiment will be stuck in flip-0 until
                     % the trigger is received ('left' for left arrow). All stimuli with
@@ -96,13 +96,13 @@ function agDpxExpOnlyVisual
                     R.name='LeftArrow';
                     R.kbName='LeftArrow';
                     R.allowAfterSec=0;
-                    C.addResp(R);
+                    C.addResponse(R);
                     
                     R=dpxRespContiKeyboard;
                     R.name='DownArrow';
                     R.kbName='DownArrow';
                     R.allowAfterSec=0;
-                    C.addResp(R);
+                    C.addResponse(R);
                     
                     %
                     E.addCondition(C);

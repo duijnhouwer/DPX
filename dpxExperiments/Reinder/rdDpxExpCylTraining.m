@@ -66,30 +66,30 @@ for rotSpeed=[120 -120] % >0 -> up
         % The fixation cross
         S=dpxStimCross;
         set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix');
-        C.addStim(S);
+        C.addStimulus(S);
         
         % The feedback stimulus for correct responses
         S=dpxStimDot;
         set(S,'wDeg',.3,'enabled',false,'durSec',1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-        C.addStim(S);
+        C.addStimulus(S);
         
         % The half cylinder stimulus
         S=dpxStimRotCylinder;
         set(S,'dotsPerSqrDeg',12,'xDeg',0,'wDeg',2+(1*size),'hDeg',2+(1*size),'dotDiamDeg',0.11 ...
             ,'rotSpeedDeg',rotSpeed,'disparityFrac',disp,'sideToDraw','front' ...
             ,'onSec',0,'durSec',1,'name','halfInducerCyl');
-        C.addStim(S);
+        C.addStimulus(S);
         
         % The response objects
         R=dpxRespContiKeyboard;
         set(R,'kbName','UpArrow');
         set(R,'name','Concave');
-        C.addResp(R);
+        C.addResponse(R);
         
         R=dpxRespContiKeyboard;
         set(R,'kbName','DownArrow');
         set(R,'name','Convex');
-        C.addResp(R);
+        C.addResponse(R);
         
         E.addCondition(C);
     end

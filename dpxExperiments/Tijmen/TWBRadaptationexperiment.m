@@ -68,7 +68,7 @@ for Ton=[cont0, adap0];
         LeftCheck.nVert=18;
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = Ton; 
-        C.addStim(LeftCheck);
+        C.addStimulus(LeftCheck);
         
         ML = dpxStimMask;
         ML.grayFrac=.5;
@@ -79,7 +79,7 @@ for Ton=[cont0, adap0];
         ML.hDeg = (50*sqrt(2))/W.deg2px; 
         ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.durSec=Ton; 
-        C.addStim(ML);
+        C.addStimulus(ML);
     
         GL = dpxStimGrating;
         GL.name = 'gratingLeft'; 
@@ -92,14 +92,14 @@ for Ton=[cont0, adap0];
         GL.wDeg=(50)/W.deg2px;
         GL.hDeg=(50)/W.deg2px;    
         GL.durSec=Ton; 
-        C.addStim(GL);
+        C.addStimulus(GL);
           
         Dot = dpxStimDot;
         Dot.name = 'Dot';
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
-        C.addStim(Dot);
+        C.addStimulus(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen (left side if mirror is active)
@@ -117,7 +117,7 @@ for Ton=[cont0, adap0];
         RightCheck.nHoleVert=10;
         RightCheck.sparseness=2/3;
         RightCheck.rndSeed=LeftCheck.rndSeed;
-        C.addStim(RightCheck);
+        C.addStimulus(RightCheck);
         
         MR = dpxStimMask;
         MR.name='MaskRight';
@@ -128,7 +128,7 @@ for Ton=[cont0, adap0];
         MR.hDeg = (50*sqrt(2))/W.deg2px;
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec=Ton; 
-        C.addStim(MR);
+        C.addStimulus(MR);
 
         GR = dpxStimGrating;
         GR.name = 'gratingRight';
@@ -140,17 +140,17 @@ for Ton=[cont0, adap0];
         GR.wDeg= (50)/W.deg2px;
         GR.hDeg= (50)/W.deg2px;      
         GR.durSec=Ton;
-        C.addStim(GR);
+        C.addStimulus(GR);
 
         RL0 = dpxRespContiKeyboard;
         RL0.name='keyboardl';
         RL0.kbName='LeftControl';
-        C.addResp(RL0); 
+        C.addResponse(RL0); 
         
         RR0 = dpxRespContiKeyboard;
         RR0.name='keyboardr';
         RR0.kbName='RightControl';
-        C.addResp(RR0);
+        C.addResponse(RR0);
         
         E.addCondition(C);  
 end
@@ -200,7 +200,7 @@ for i=1:length(Toff)
         LeftCheck.sparseness=2/3;
         LeftCheck.durSec = Inf; 
         LeftCheck.onSec = 0; 
-        D.addStim(LeftCheck);
+        D.addStimulus(LeftCheck);
         
         for nRepeats=1:rep
         ML = dpxStimMask;
@@ -213,7 +213,7 @@ for i=1:length(Toff)
         ML.wDeg = (50*sqrt(2))/W.deg2px;
         ML.durSec = 1;
         ML.onSec =(offTime + 1)*(nRepeats-1) ;
-        D.addStim(ML);
+        D.addStimulus(ML);
                 
         GL = dpxStimGrating;
         GL.name = sprintf('GratingLeft%d', nRepeats);
@@ -226,7 +226,7 @@ for i=1:length(Toff)
         GL.hDeg= (50)/W.deg2px;
         GL.durSec = 1; 
         GL.onSec = (offTime + 1)*(nRepeats-1) ;
-        D.addStim(GL);
+        D.addStimulus(GL);
         end
         
         Dot = dpxStimDot;
@@ -234,7 +234,7 @@ for i=1:length(Toff)
         Dot.xDeg=0; 
         Dot.wDeg=0;
         Dot.hDeg=0;
-        D.addStim(Dot);
+        D.addStimulus(Dot);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % STIMULUS presentation at the right side of the screen
@@ -254,7 +254,7 @@ for i=1:length(Toff)
         RightCheck.rndSeed=LeftCheck.rndSeed;
         RightCheck.durSec = Inf; 
         RightCheck.onSec = 0; 
-        D.addStim(RightCheck);
+        D.addStimulus(RightCheck);
         
         for nRepeats =1:rep
         MR = dpxStimMask;
@@ -267,7 +267,7 @@ for i=1:length(Toff)
         MR.wDeg = (50*sqrt(2))/W.deg2px;
         MR.durSec = 1;
         MR.onSec =(offTime + 1)*(nRepeats-1) ;
-        D.addStim(MR);
+        D.addStimulus(MR);
 
         GR = dpxStimGrating;
         GR.name = sprintf('GratingRight%d', nRepeats);
@@ -280,18 +280,18 @@ for i=1:length(Toff)
         GR.hDeg= (50)/W.deg2px;  
         GR.durSec = 1;
         GR.onSec = (offTime + 1)*(nRepeats-1) ;
-        D.addStim(GR);
+        D.addStimulus(GR);
         end
 
         RL = dpxRespContiKeyboard;
         RL.name = 'keyboardl';
         RL.kbName='LeftControl';
-        D.addResp(RL); 
+        D.addResponse(RL); 
         
         RR = dpxRespContiKeyboard;
         RR.name = 'keyboardr'; 
         RR.kbName ='RightControl';
-        D.addResp(RR);
+        D.addResponse(RR);
         
       E.addCondition(D); 
     end 

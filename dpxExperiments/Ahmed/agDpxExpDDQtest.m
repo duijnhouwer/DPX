@@ -33,7 +33,7 @@ function agDpxExpDDQtest
                 % type get(F) to see a list of parameters you can set
                 set(F,'xDeg',0); % set the fix dot 10 deg to the left
                 set(F,'name','fix','wDeg',0.5);
-                C.addStim(F);
+                C.addStimulus(F);
                 %
                 DDQ=dpxStimDynDotQrtPWM; % PWM = Pulse Width Modulation
                 set(DDQ,'name','ddq','wDeg',ddqWid,'hDeg',ddqWid*ar,'flashSec',fs);
@@ -42,7 +42,7 @@ function agDpxExpDDQtest
                 set(DDQ,'diamsDeg',[1 1 1 1]);
                 set(DDQ,'bottomLeftTopRightFirst',b);
                 set(DDQ,'xDeg',get(F,'xDeg')+ddqRightFromFix);
-                C.addStim(DDQ);
+                C.addStimulus(DDQ);
                 %
                 R=dpxRespKeyboard;
                 R.name='kb';
@@ -50,12 +50,12 @@ function agDpxExpDDQtest
                 R.allowAfterSec=DDQ.onSec+DDQ.durSec;
                 R.correctEndsTrialAfterSec=0.1;
                 R.correctStimName='respfeedback';
-                C.addResp(R);
+                C.addResponse(R);
                 %
                 FB=dpxStimDot;
                 set(FB,'xDeg',F.xDeg,'yDeg',F.yDeg);
                 set(FB,'name','respfeedback','wDeg',1,'enabled',0);
-                C.addStim(FB);
+                C.addStimulus(FB);
                 %
                 E.addCondition(C);
                 end
