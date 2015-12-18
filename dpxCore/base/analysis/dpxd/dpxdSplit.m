@@ -21,7 +21,11 @@ function [C,N]=dpxdSplit(DPXD,params)
     end
     if ischar(params)
         % params is a single fieldname string
-        U=unique(DPXD.(params));
+        try
+            U=unique(DPXD.(params));
+        catch
+            error(['Can''t split along field ' params ' because ''unique'' can''t be called on it. See also: unique']);
+        end
         for i=1:numel(U)
             C{i}=dpxdSubset(DPXD,subFuncEquals(DPXD.(params),U(i)));
             N(i)=C{i}.N;
@@ -36,7 +40,7 @@ function [C,N]=dpxdSplit(DPXD,params)
             end
             C=[TMP{:}];
         end
-        if nargout==2
+        if nargout>1
             N=nans(size(C));
             for i=1:numel(C)
                 N(i)=C{i}.N;

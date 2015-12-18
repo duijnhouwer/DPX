@@ -2,9 +2,9 @@ classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
         paradigm; % a string, changed from expName on 2015-11-29
-        expName; % kept for backward compatibility, will be removed 2016-Feb-29
+        expName; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
         window; % a dpxCoreWindow (or derived) object, changed from 'scr' on 2015-11-30
-        scr; % kept for backward compatibility, will be removed 2016-Feb-29
+        scr; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
         nRepeats;
         conditionSequence;
         conditions;
@@ -39,7 +39,12 @@ classdef dpxCoreExperiment < hgsetget
             % Part of DPX: An experiment preparation system
             % http://duijnhouwer.github.io/DPX/
             % Jacob Duijnhouwer, 2014
-            E.window=dpxCoreWindow;
+            try
+                E.window=dpxCoreWindow;
+            catch me
+                disp(me.message);
+                error('a:b',['An error occured in dpxCoreWindow: ' me.message '\nHas Psychtoolbox-3 been installed? (http://psychtoolbox.org/download/)']);
+            end 
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
             E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
