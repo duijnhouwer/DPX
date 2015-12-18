@@ -39,7 +39,11 @@ function lkDpxGratingExpAddResponse_OpeningFcn(hObject, eventdata, handles, vara
     % varargin   command line arguments to lkDpxGratingExpAddResponse (see VARARGIN)
     % Choose default command line output for lkDpxGratingExpAddResponse
     handles.output = hObject;
-    % Update handles structure
+    % Set the previously used folders, this reduces browsing for file tiems
+    set(handles.stimField,'String',dpxCache('get',[mfilename '_stimField'],''),'ForegroundColor',[0.5 0.5 0.5]);
+    set(handles.respField,'String',dpxCache('get',[mfilename '_respField'],''),'ForegroundColor',[0.5 0.5 0.5]);
+    set(handles.timestampField,'String',dpxCache('get',[mfilename '_timestampField'],''),'ForegroundColor',[0.5 0.5 0.5]);
+    % Update handles structure  
     guidata(hObject, handles);
 end
 
@@ -57,7 +61,7 @@ function browseStimfileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for stimulus file ...');
     try
         currentPath=fileparts(get(handles.stimField,'String'));
-        if isempty(currentPath)
+        if isempty(currentPath) || ~exist(currentPath,'dir')
             currentPath='.';
         end
         [filestr, pathstr]=uigetfile('*.mat','Select a lkDpxGratingExp output file ...',currentPath);
@@ -66,6 +70,7 @@ function browseStimfileButton_Callback(hObject, eventdata, handles)
         end
         stimFullFile=fullfile(pathstr,filestr);
         set(handles.stimField,'String',stimFullFile,'ForegroundColor',[0 0 0]);
+        dpxCache('set',[mfilename '_stimField'],pathstr); % store folder for when UI is opened again, continue where left off
         [~,errstr]=loadStimFile(stimFullFile);
         if ~isempty(errstr)
             set(handles.stimField,'ForegroundColor',[1 0 0])
@@ -83,7 +88,7 @@ function browseResponseFileButton_Callback(hObject, eventdata, handles)
     set(handles.statusBar,'String','Browsing for response file ...');
     try
         currentPath=fileparts(get(handles.respField,'String'));
-        if isempty(currentPath)
+        if isempty(currentPath) || ~exist(currentPath,'dir')
             currentPath='.';
         end
         [filestr, pathstr]=uigetfile('*_ses.mat','Select a MountainPro SES file ...',currentPath);
@@ -92,6 +97,7 @@ function browseResponseFileButton_Callback(hObject, eventdata, handles)
         end
         respFullFile=fullfile(pathstr,filestr);
         set(handles.respField,'String',respFullFile,'ForegroundColor',[0 0 0]);
+        dpxCache('set',[mfilename '_respField'],pathstr); % store folder for when UI is opened again, continue where left off
         [resp,errstr]=loadRespFile(respFullFile);
         if ~isempty(errstr)
             set(handles.respField,'ForegroundColor',[1 0 0])
@@ -110,7 +116,7 @@ function browseTimestampFileButton_Callback(hObject, eventdata, handles)
     drawnow;
     try
         currentPath=fileparts(get(handles.respField,'String'));
-        if isempty(currentPath)
+        if isempty(currentPath) || ~exist(currentPath,'dir')
             currentPath='.';
         end
         [filestr, pathstr]=uigetfile('*_Properties.xml','Select a Las AF timestamp file ...',currentPath);
@@ -121,6 +127,7 @@ function browseTimestampFileButton_Callback(hObject, eventdata, handles)
         set(handles.timestampField,'String',ff,'ForegroundColor',[0 0 0]);
         set(handles.statusBar,'String',['Loading ''' ff '''  ...']);
         drawnow;
+        dpxCache('set',[mfilename '_timestampField'],pathstr); % store folder for when UI is opened again, continue where left off
         [tsList,errstr]=loadTimestamps(ff);
         if ~isempty(errstr)
             set(handles.timestampField,'ForegroundColor',[1 0 0])

@@ -21,6 +21,10 @@ function [out,foundInCache]=dpxCache(setget,propertyName,value)
     
     out=[];
     foundInCache=false;
+    if nargin==0
+        % just show list of all cached values
+        setget='get';
+    end
     if ~ischar(setget) || ~any(strcmpi(setget,{'get','set','clear'}))
         error('First argument must be string ''set'', ''get'', or ''clear''.');
     end
@@ -35,7 +39,7 @@ function [out,foundInCache]=dpxCache(setget,propertyName,value)
     if ~exist(cachefilename,'file')
         % Create a fresh cache
         save(cachefilename,'cachefilename');
-        cachecreationdate=datestr(now);
+        cachecreationdate=datestr(now); %#ok<NASGU>
         save(cachefilename,'cachecreationdate','-append');
     end
     
@@ -44,7 +48,7 @@ function [out,foundInCache]=dpxCache(setget,propertyName,value)
         save(cachefilename,propertyName,'-append');
         out=value; % not really necessary or usefull, but otherwise []
     elseif strcmpi(setget,'get')
-        if nargin==1
+        if nargin==1 || nargin==0
             try
                 out=load(cachefilename);
             catch ME
