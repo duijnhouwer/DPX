@@ -12,7 +12,10 @@ function [C,N]=dpxdSplit(DPXD,params)
     % Jacob 2014-06-02; major update 2015-09-17
     
     if nargin~=2
-        error('Needs two inputs: a dpxd-struct and a fieldname (string) accross which to split the struct. Fieldname can also be a cell array of fieldname-strings.');
+        error('Needs two inputs: a DPXD-struct and a fieldname (string) accross which to split the struct. Fieldname can also be a cell array of fieldname-strings.');
+    end
+    if ~dpxdIs(DPXD,'verbosity',1)
+        error('First argument should be a DPXD-struct');
     end
     C=cell(0);
     N=[];

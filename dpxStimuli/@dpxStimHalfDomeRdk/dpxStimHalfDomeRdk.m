@@ -17,7 +17,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
         invertSteps; % flip RGBAfrac1 and 2 every N dot-steps
     end
     properties (Access=protected)
-        LUT;
+        pLut; % position lookup table
         aziDeg;
         eleDeg;
         dotCol; % 1s and 2s
@@ -61,7 +61,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
     end
     methods (Access=protected)
         function myInit(S)
-            S.LUT=S.loadHalfdomeWarpObject;
+            S.pLut=S.loadHalfdomeWarpObject;
             S.visDotXy=[];
             % create a uniform-density sphere of nClusters dots
             [S.aziDeg, S.eleDeg, S.dotAge]=S.getFreshClusters(S.nClusters,S.nSteps);
@@ -117,7 +117,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             centerAzi=mod(S.aziDeg(:)',360)-180;
             centerEle=S.eleDeg(:)';
             % See which of the centers fall within the panorama
-            [~, vis]=S.LUT.getXYpix(centerAzi,centerEle);
+            [~, vis]=S.pLut.getXYpix(centerAzi,centerEle);
             col=repmat(S.dotCol(vis),S.nDotsPerCluster,1);
             azi=repmat(centerAzi(vis),S.nDotsPerCluster,1);
             ele=repmat(centerEle(vis),S.nDotsPerCluster,1);
@@ -128,11 +128,11 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             dEle=repmat(S.dAdEdeg(2,:),1,numel(vis));
             azi=azi+dAzi(:)';
             ele=ele+dEle(:)';
-            [S.visDotXy, S.visibleDots]=S.LUT.getXYpix(azi,ele);
+            [S.visDotXy, S.visibleDots]=S.pLut.getXYpix(azi,ele);
             S.visDotCol=col(S.visibleDots);
         end
         function myClear(S)
-            S.LUT=[];
+            S.pLut=[];
         end
         function [aziDeg,eleDeg,dotAge]=getFreshClusters(S,N,maxSteps)
             aziDeg=S.RND.rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
