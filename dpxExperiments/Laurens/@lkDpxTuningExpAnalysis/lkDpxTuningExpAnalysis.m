@@ -76,7 +76,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
             A.outputFolder='<<auto>>';
         end
         function createNeuroTodoFile(A)
-            files=dpxUIgetfiles;
+            files=dpxUIgetFiles;
             if isempty(files)
                 return;
             end
@@ -157,9 +157,8 @@ classdef lkDpxTuningExpAnalysis < hgsetget
                     celTel=celTel+1;
                     cmd=[A.calcCommandString '(dpxd,cellNumList(c),A.anaOpts{:});']; % e.g. calcDirectionTuningCurveSfTfContrast(dpxd,cellNumList(c),A.anaOpts{:});
                     output{celTel}=eval(cmd); %#ok<AGROW>
-                    % add filename and cell number to each subset (nr 1 is
-                    % all data, the optional next ones are the individual
-                    % sessions that were merged)
+                    % add filename and cell number to each subset (nr 1 is all data, the
+                    % optional next ones are the individual sessions that were merged)
                     for ss=1:numel(output{celTel})
                         output{celTel}{ss}.file=cellstr(repmat(A.filesToDo{f},output{celTel}{ss}.N,1))';
                         output{celTel}{ss}.cellNumber=repmat(cellNumList(c),1,output{celTel}{ss}.N);

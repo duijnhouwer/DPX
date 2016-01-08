@@ -9,6 +9,8 @@ function h=dpxText(str,varargin)
     % 2015-06-08: aligment of string is now adjusted depending on axis orientation (e.g.
     % flipped when using imagesc, before the string would end up too high)
     %
+    % 2015-12-17: normalized units .........
+    %
     % See also: text
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,8 +18,8 @@ function h=dpxText(str,varargin)
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('str', @(x)ischar(x) || iscell(x) || isnumeric(x));
     p.addParamValue('location','topleft',@(x)any(strcmpi(x,{'topleft','topright','bottomleft','bottomright','free','central'})));
-    p.addParamValue('xgain',.98,@(x)x>=0&&x<=1); % no function when location is 'central'
-    p.addParamValue('ygain',.98,@(x)x>=0&&x<=1); % no function when location is 'central'
+    p.addParamValue('xgain',.98,@isnumeric);%(x)x>=0&&x<=1); % no function when location is 'central'
+    p.addParamValue('ygain',.98,@isnumeric);%(x)x>=0&&x<=1); % no function when location is 'central'
     p.addParamValue('FontSize',8, @(x)x>0); % if smaller than 1, interpreted as proportional to Y-axis, otherwise a points
     p.addParamValue('Color', [0 0 0 1]);
     p.addParamValue('BackGroundColor','none'); % e.g. [1 1 1 .75] or 'none'
@@ -43,53 +45,43 @@ function h=dpxText(str,varargin)
             
     plotwid=jdGetMaxXaxis-jdGetMinXaxis;
     plothei=jdGetMaxYaxis-jdGetMinYaxis;
+    xgain=p.Results.xgain;
+    ygain=p.Results.ygain;
     
     % take care of plots that may have reversed axis orientations (e.g. default imagesc)
     loc=p.Results.location;
     if strcmpi(get(gca,{'XDir'}),'reverse')
-        if strfind(loc,'left')
-            loc=regexprep(loc, 'left', 'right'); % e.g. topleft->topright
-        else
-            loc=regexprep(loc, 'right', 'left');
-        end
+        xgain=-xgain+1;
     end
     if strcmpi(get(gca,{'YDir'}),'reverse')
-        if strfind(loc,'bottom')
-            loc=regexprep(loc, 'bottom', 'top');
-        else
-            loc=regexprep(loc, 'top', 'bottom');
-        end
+        ygain=-ygain+1;
     end
    
     switch lower(loc)
         case 'topleft'
-            x=jdGetMinXaxis+plotwid*(1-p.Results.xgain);
-            y=jdGetMinYaxis+plothei*p.Results.ygain;
+            xgain=1-xgain;
             hAlign='left';
             vAlign='top';
         case 'topright'
-            x=jdGetMinXaxis+plotwid*p.Results.xgain;
-            y=jdGetMinYaxis+plothei*p.Results.ygain;
             hAlign='right';
             vAlign='top';
         case 'bottomleft'
-            x=jdGetMinXaxis+plotwid*(1-p.Results.xgain);
-            y=jdGetMinYaxis+plothei*(1-p.Results.ygain);
+                        xgain=1-xgain;
+            ygain=1-ygain;
             hAlign='left';
             vAlign='bottom';
         case 'bottomright'
-            x=jdGetMinXaxis+plotwid*p.Results.xgain;
-            y=jdGetMinYaxis+plothei*(1-p.Results.ygain);
+
+            ygain=1-ygain;
+
             hAlign='right';
             vAlign='bottom';
         case 'free'
-            x=jdGetMinXaxis+plotwid*p.Results.xgain;
-            y=jdGetMinYaxis+plothei*p.Results.ygain;
             hAlign='center';
             vAlign='middle';
         case 'central'
-            x=jdGetMinXaxis+plotwid*.5;
-            y=jdGetMinYaxis+plothei*.5;
+            xgain=.5;
+            ygain=.5;
             hAlign='center';
             vAlign='middle';
         otherwise
@@ -115,6 +107,6 @@ function h=dpxText(str,varargin)
     else
         fu='normalized';
     end
-    h=text(x,y,str,'FontUnits',fu,'VerticalAlignment',vAlign,'HorizontalAlignment',hAlign,'Color',p.Results.Color,'BackGroundColor',p.Results.BackGroundColor);
+    h=text(xgain,ygain,str,'FontUnits',fu,'VerticalAlignment',vAlign,'HorizontalAlignment',hAlign,'Color',p.Results.Color,'BackGroundColor',p.Results.BackGroundColor,'Units','Normalized');
     set(h,'FontSize',p.Results.FontSize);
 end

@@ -8,7 +8,7 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
     p.addParamValue('plotMean',true,@(x)logical(x) || x==1 || x==0);
     p.addParamValue('plotRayleighP',false,@(x)logical(x) || x==1 || x==0);
     p.addParamValue('rayleighPmax',1,@isnumeric);
-    p.addParamValue('randomize',false,@(x)logical(x) || x==1 || x==0);
+    p.addParamValue('shuffle',false,@(x)logical(x) || x==1 || x==0);
     p.addParamValue('alignTo','PHI',@(x)any(strcmpi(x,{'phi','ihp'})));
     p.parse(DPXD,varargin{:});
     
@@ -61,7 +61,7 @@ function DPXD=alignTuningCurves(DPXD,p)
         degs=PHI.dirDeg{1}; % same for phi and ihp
         phiResp=PHI.meanDFoF{1};
         ihpResp=IHP.meanDFoF{1};
-        if p.Results.randomize
+        if p.Results.shuffle
             phiResp=phiResp(randperm(numel(phiResp)));
             ihpResp=ihpResp(randperm(numel(ihpResp)));
         end

@@ -37,10 +37,24 @@ function tc=getCurve(DPXD,cellNr,varargin)
     % 'ihp'). These will get different levels in the tc output struct (e.g. tc.dirDeg{1}
     % is for the first motion type, tc.dirDeg{2} for the second, etc.)
     % 2015-10-09: There might not be a motType, e.g. if this is a grating
-    % class stimulus. Add a motType field, assume it's PHI
+    % class stimulus. Add a motType field, assume it's GRATING
     if ~isfield(DPXD,'test_motType')
-        DPXD.test_motType=repmat({'phi'},1,DPXD.N);
+        DPXD.test_motType=repmat({'grating'},1,DPXD.N); % changed from 'phi' 2016-07-01
     end
+    % 
+    % Transparent dot motion was defined by giving an offset for the second field in the
+    % imaginary part of the 'test_dirDeg' field. Convert that here to specific motion
+    % types, so that they get split with the same mechanism I used for separating PHI and
+    % IHP motion
+    if ~isreal(DPXD.test_dirDeg)
+        for i=1:DPXD.N
+            DPXD.test_motType{i}=[DPXD.test_motType{i} num2str(round(imag(DPXD.test_dirDeg(i))),'%.3d')];
+        end
+        % Throw away the imaginary part of the directions
+        DPXD.test_dirDeg=real(DPXD.test_dirDeg);
+    end
+    % 
+    % Perform the analysis separately per motion type
     MT=dpxdSplit(DPXD,'test_motType');
     for mti=1:numel(MT)
         % Split the data according to the direction of the grating.
