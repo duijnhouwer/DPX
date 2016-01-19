@@ -1,10 +1,10 @@
 function F=dpxdSubset(DPXD,indices)
     
-    % F=dpxdSubset(D,IDXS
+    % F=dpxdSubset(DPXD,indices)
     %
-    % Of a DPXD D, return the subset F corresponding to D at the
-    % given indices. Note that if indices is [], F will not be
-    % empty but a complete DPXD with the same, but empty, fields as D
+    % Of dpxd DPXD, return the subset F corresponding to DPXD at the
+    % given indices. Note that when indices is [], F will not be
+    % empty but a complete dpxd with the same, but empty, fields as DPXD
     % and F.N=0.
     %
     % EXAMPLE:
@@ -24,17 +24,11 @@ function F=dpxdSubset(DPXD,indices)
         % indexing now. TODO: might be better to do it the other way around because logical
         % indexing is faster...
         indices=find(indices);
+    elseif ~all(dpxIsWholeNumber(indices))
+        error('Indices should be whole numbers or logical');
     end
-    oldn=DPXD.N;
-    if all(islogical(indices))
-        newn=sum(indices);
-    elseif all(dpxIsWholeNumber(indices))
-        newn=numel(indices);
-    else
-        error('Indices should be whole numbers of logical');
-    end
-    if newn>oldn
-        error(['Number of requested indices (' num2str(newn) ') cannot be larger than the available values in DPXD (' num2str(oldn) ').']);
+    if any(indices>DPXD.N)
+        error('Requested indices out of range');
     end
     % Remove the special N field. Will be put back (with an updated value) at the end of this
     % function
@@ -45,5 +39,5 @@ function F=dpxdSubset(DPXD,indices)
         F.(fn{i})=DPXD.(fn{i})(indices);
     end
     % Put the special N field back in place
-    F.N=newn;
+    F.N=numel(indices);
 end
