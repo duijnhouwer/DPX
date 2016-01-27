@@ -43,8 +43,8 @@ function h=dpxText(str,varargin)
     end
            
             
-    plotwid=jdGetMaxXaxis-jdGetMinXaxis;
-    plothei=jdGetMaxYaxis-jdGetMinYaxis;
+    plotwid=max(dpxXaxis)-min(dpxXaxis);
+    plothei=max(dpxYaxis)-min(dpxYaxis);
     xgain=p.Results.xgain;
     ygain=p.Results.ygain;
     

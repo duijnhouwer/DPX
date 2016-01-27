@@ -75,7 +75,7 @@ function labelHandles=dpxSubplotLabels(h,labels,varargin)
     elseif ~ischar(labels)
         error('labels should be char or empty');
     end
-    wids=nans(size(A));
+    wids=nan(size(A));
     for i=1:numel(A)
         if labels(i)==' ';
             continue;
