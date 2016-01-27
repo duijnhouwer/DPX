@@ -44,7 +44,7 @@ function [angleVals,Hz,alignDeg]=dpxTuningCurveAlign(dirDeg,Hz,alignDeg,precissi
         precissionDeg='dontinterpolate';
     end
     xy=[cosd(dirDeg(:)) sind(dirDeg(:))];
-    xy=xy*jdRotationMatrix(alignDeg,'deg');
+    xy=xy*dpxRotationMatrix(alignDeg,'deg');
     angleVals=atan2d(xy(:,2),xy(:,1)); % -180 ... 180
     [angleVals,idx]=sort(angleVals);
     Hz=Hz(idx);

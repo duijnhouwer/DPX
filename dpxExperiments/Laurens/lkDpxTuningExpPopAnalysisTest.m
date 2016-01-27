@@ -1,7 +1,7 @@
 function lkDpxTuningExpPopAnalysisTest
 
    
-    DPXD=dpxdLoad('C:\Users\jacob\Dropbox\lkDpxTuningExpAnalysis_output 20151012xyt02.mat');
+    DPXD=dpxdLoad('F:\Data\Processed\imagingdata\20151102\xyt01\lkDpxTuningExpAnalysis_output.mat');
 
     rayleighPmax=0.6;    
     
