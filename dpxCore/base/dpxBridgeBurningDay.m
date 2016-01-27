@@ -5,6 +5,6 @@ function [num,str]=dpxBridgeBurningDay
     %
     % Jacob, 2015-11-29
     
-    str='29-Feb-2019';
+    str='29-Feb-2016';
     num=datenum(str,'dd-mm-yyyy');
 end

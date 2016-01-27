@@ -118,17 +118,25 @@ classdef (Abstract) dpxAbstractStim < hgsetget
         function demo(S,W)
             if ~exist('W','var') || isempty(W)
                 W=dpxCoreWindow;
+                W.skipSyncTests=true;
+                W.verbosity0min5max=0;
             end
             if ~isa(W,'dpxCoreWindow')
                 error('W is not a dpxCoreWindow object');
             end
-            W.open;
-            C=dpxCoreCondition;
-            C.addStimulus(S,false);
-            C.durSec=S.onSec+S.durSec;
-            C.init(get(W));
-            C.show; % until C.durSec or ESCAPE
-            W.close;
+            try
+                W.open;
+                C=dpxCoreCondition;
+                C.addStimulus(S);
+                C.durSec=S.onSec+S.durSec;
+                C.init(get(W));
+                dpxDispFancy([ 'Running ' class(S) ' demo. Press ESCAPE to quit'],[],[],[],'*Comment')
+                C.show; % until C.durSec or ESCAPE
+                W.close;
+            catch me 
+                sca;
+                rethrow(me);  
+            end
         end
     end
     methods (Access=protected)
