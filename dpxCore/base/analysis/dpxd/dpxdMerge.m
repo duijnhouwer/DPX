@@ -55,7 +55,7 @@ function M=dpxdMerge(T,varargin)
         M=T{1};
         return;
     elseif ~iscell(T) && numel(T)>1
-        num2cell(T); % convert to cell array (num is a minsnomer, works for structs too)
+        T=num2cell(T); % convert to cell array (num is a minsnomer, works for structs too).
     end
     
     bad=[];
