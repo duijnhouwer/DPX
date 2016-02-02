@@ -37,6 +37,13 @@ function M=dpxdMerge(T,varargin)
     %      bb: 2
     %      N: 1
     %
+    %  % 2016-01-30, empty entries are now ignored. Useful for growing a DPXD
+    %  % from scratch as in: 
+    %  T=[];
+    %  for i=1:10
+    %       T=dpxdMerge([T dpxdDummy()]);
+    %  end
+    %
     % See also: dpxdLoad, dpxdSplit, dpxdSubset
 
     
@@ -57,7 +64,7 @@ function M=dpxdMerge(T,varargin)
     elseif ~iscell(T) && numel(T)>1
         T=num2cell(T); % convert to cell array (num is a minsnomer, works for structs too).
     end
-    
+    T=T(~cellfun(@isempty,T)); % 2016-01-30, empty entries are now ignored
     bad=[];
     for f=1:length(T)
         if ~dpxdIs(T{f}, 'verbosity', 1)

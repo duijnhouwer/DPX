@@ -1,8 +1,8 @@
-function [C,N]=dpxdSplit(DPXD,params)
+function [C,N]=dpxdSplit(DPXD,fNames)
     
-    % [C,N]=dpxdSplit(DXPD,params)
+    % [C,N]=dpxdSplit(DXPD,fNames)
     %
-    % Split a DXPD according to the list of fieldnames in 'params'. Params can
+    % Split a DXPD according to the list of fieldnames in 'fNames'. fNames can
     % be a string containing one fieldname, or a cell of multiple fieldnames.
     % The sub-dpxds are returned in cell array C.
     %
@@ -19,27 +19,33 @@ function [C,N]=dpxdSplit(DPXD,params)
     end
     C=cell(0);
     N=[];
-    if iscell(params) && numel(params)==1
-        params=params{1};
+    if iscell(fNames) && numel(fNames)==1
+        fNames=fNames{1};
     end
-    if ischar(params)
-        % params is a single fieldname string
+    if ischar(fNames)
+        % fNames is a single fieldname string
+        if ~isfield(DPXD,fNames)
+             error(['Can''t split along field ''' fNames ''' because no field with that name exists']);
+        end
         try
-            U=unique(DPXD.(params));
+            U=unique(DPXD.(fNames));
         catch
-            error(['Can''t split along field ' params ' because ''unique'' can''t be called on it. See also: unique']);
+            error(['Can''t split along field ''' fNames ''' because ''unique'' can''t be called on it. See also: unique']);
         end
         for i=1:numel(U)
-            C{i}=dpxdSubset(DPXD,subFuncEquals(DPXD.(params),U(i)));
-            N(i)=C{i}.N;
+            C{i}=dpxdSubset(DPXD,subFuncEquals(DPXD.(fNames),U(i)));
+            N(i)=C{i}.N; %#ok<AGROW>
         end
-    elseif iscell(params)
-        % params is a cell array of one or more fieldname strings
+    elseif iscell(fNames)
+        % fNames is a cell array of one or more fieldname strings
+        if ~all(cellfun(@ischar,fNames))
+            error('All elements in the fieldnames cell-array must be strings.');
+        end
         C{1}=DPXD;
-        for i=1:numel(params)
-            TMP={};
+        for i=1:numel(fNames)
+            TMP=cell(1,numel(C));
             for ci=1:numel(C)
-                TMP{end+1}=dpxdSplit(C{ci},params{i}); %#ok<AGROW>
+                TMP{ci}=dpxdSplit(C{ci},fNames{i});
             end
             C=[TMP{:}];
         end
@@ -50,11 +56,11 @@ function [C,N]=dpxdSplit(DPXD,params)
             end
         end
     else
-        error('Params should be a fieldname (string), or a one-dimensional cell array of fieldnames (strings).');
+        error('fNames should be a fieldname (string), or a one-dimensional cell array of fieldnames (strings).');
     end
     
     function I=subFuncEquals(arr,thisval)
-        
+        % Index by numerical, logical, and char arrays, or by cell-arrays of strings
         if isnumeric(thisval) || islogical(thisval)
             I=arr==thisval; % e.g. [123 123]==123;
         elseif ischar(thisval) && ischar(arr)

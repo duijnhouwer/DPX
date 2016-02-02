@@ -23,7 +23,11 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
         return; % can plot EITHER rayleigh p values histogram OR curves
     end
     DPXD=selectTunedCells(DPXD,p.Results.rayleighPmax);
-    DPXD=alignTuningCurves(DPXD,p);
+    if DPXD.N==0
+       	 disp(sprintf('No cells have Rayleigh-P below %.2f for *both* PHI and IHP. Can''t continue',p.Results.rayleighPmax));
+         return;
+    end
+    DPXDalignTuningCurves(DPXD,p);
     M=dpxdSplit(DPXD,'motType');
     for mi=1:numel(M)
         if strcmpi(M{mi}.motType,'PHI')
@@ -98,7 +102,11 @@ function DPXD=selectTunedCells(DPXD,pMax)
         ok(ci)=all(C{ci}.rayleighPValue<=pMax);
     end
     C(~ok)=[];
-    DPXD=dpxdMerge(C);
+    if numel(C)>0
+        DPXD=dpxdMerge(C); 
+    else
+        DPXD=dpxdNull;
+    end
 end
 
 function plotRayleighP(DPXD,pMax)

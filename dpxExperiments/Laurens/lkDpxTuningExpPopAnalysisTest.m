@@ -1,8 +1,8 @@
 function lkDpxTuningExpPopAnalysisTest
 
    
-    DPXD=dpxdLoad('F:\Data\Processed\imagingdata\20151102\xyt01\lkDpxTuningExpAnalysis_output.mat');
-
+%     DPXD=dpxdLoad('F:\Data\Processed\imagingdata\20151102\xyt01\lkDpxTuningExpAnalysis_output.mat');
+    DPXD=dpxdLoad('C:\Users\jacob\Dropbox\2photonlab\1) EXPERIMENT FILES\error 28-01-2016\lkDpxTuningExpAnalysis_output.mat');
     rayleighPmax=0.6;    
     
     % plot tuning curves aligned to phi motion tuning curve (PHI)
