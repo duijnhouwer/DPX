@@ -17,6 +17,15 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
         clf;
     end
     
+    if all(strcmpi('grating',unique(DPXD.motType)))
+        klabDispFancy('Grating experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
+        DPXDphi=DPXD;
+        DPXDphi.motType=repmat({'phi'},1,DPXDphi.N);
+        DPXDihp=DPXD;
+        DPXDihp.motType=repmat({'ihp'},1,DPXDihp.N);
+        DPXD=dpxdMerge([DPXDphi DPXDihp]);
+    end
+    
     DPXD=calcRayleighPValues(DPXD);
     if p.Results.plotRayleighP
         plotRayleighP(DPXD,p.Results.rayleighPmax);
@@ -27,7 +36,7 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
        	 disp(sprintf('No cells have Rayleigh-P below %.2f for *both* PHI and IHP. Can''t continue',p.Results.rayleighPmax));
          return;
     end
-    DPXDalignTuningCurves(DPXD,p);
+    DPXD=alignTuningCurves(DPXD,p);
     M=dpxdSplit(DPXD,'motType');
     for mi=1:numel(M)
         if strcmpi(M{mi}.motType,'PHI')
