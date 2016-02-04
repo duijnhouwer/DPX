@@ -8,8 +8,7 @@ function lkDpxTuningExpPopAnalysisTest
     % plot tuning curves aligned to phi motion tuning curve (PHI)
     dpxFindFig('phi vs reverse-phi');
     subplot(2,3,1);
-    TTT=lkDpxTuningExpPopAnalysis(DPXD,'figName',[],'alignTo','PHI','rayleighPmax',rayleighPmax);
-    keyboard
+    lkDpxTuningExpPopAnalysis(DPXD,'figName',[],'alignTo','PHI','rayleighPmax',rayleighPmax);
     title('Aligned to PHI');
     subplot(2,3,2);
     lkDpxTuningExpPopAnalysis(DPXD,'figName',[],'alignTo','IHP','rayleighPmax',rayleighPmax);
