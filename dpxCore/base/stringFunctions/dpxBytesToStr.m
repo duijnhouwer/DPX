@@ -1,9 +1,8 @@
 function s=dpxBytesToStr(b,forceunit)
-    if nargin==1
-        dyn=true;
-    else
-        dyn=strcmpi(forceunit,'dynamic');
+    if ~exist('forceunit','var') || isempty(forceunit)
+        forceunit='dynamic';
     end
+    dyn=strcmpi(forceunit,'dynamic');
     kilo=1024;
     mega=kilo*kilo;
     giga=kilo*mega;

@@ -52,17 +52,23 @@ function [b,err]=dpxdIs(T,varargin)
     end
     numelArray=zeros(size(fields));
     for i=1:length(fields)
-        numelArray(i)=length(T.(fields{i}));
+        sz=size(T.(fields{i}));
+        numelArray(i)=sz(2);
+        if numel(sz)>9 % Max 9 dimensional
+            b=false;
+            err=explain('Not a DPXD because one data field has more than 9 dimensions'); 
+            return;
+        end    
     end
     if std(numelArray)~=0
         b=false;
-        err=explain('Not a DXPD because not all data fields arrays have equal lengths.',p.Results.verbosity);
+        err=explain('Not a DXPD because not all data fields arrays have equal number of columns.',p.Results.verbosity);
         return;
     end
     % Check that the calculated length of is N
     if numelArray(1)~=T.N
         b=false;
-        err=explain('Not a DPXD because the data field arrays don''t have N elements.',p.Results.verbosity)
+        err=explain('Not a DPXD because the data field arrays don''t have N columns.',p.Results.verbosity);
         return;
     end
 end

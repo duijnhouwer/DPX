@@ -18,7 +18,14 @@ function DPXD=dpxdDummy(N)
     DPXD.d=char(round(rand(1,N)*3)+'A');
     DPXD.e=rand(1,N);
     DPXD.f=repmat({rand(10,20)},1,N);
+    DPXD.d2=rand(2,N);
+    DPXD.d9=rand(2,N,1,2,1,2,1,2,9); % Max 9 dimensions
     DPXD.N=N;
+    
+    [ok,err]=dpxdIs(DPXD);
+    if ~ok
+        error(err);
+    end
     
 end
     

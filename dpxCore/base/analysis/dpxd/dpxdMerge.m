@@ -37,8 +37,8 @@ function M=dpxdMerge(T,varargin)
     %      bb: 2
     %      N: 1
     %
-    %  % 2016-01-30, empty entries are now ignored. Useful for growing a DPXD
-    %  % from scratch as in: 
+    %  2016-01-30, empty entries are now ignored. Useful for growing a DPXD
+    %  from scratch as in: 
     %  T=[];
     %  for i=1:10
     %       T=dpxdMerge([T dpxdDummy()]);
@@ -135,10 +135,13 @@ function M=doIntersection(T,missingfields)
                         error(' ');
                     end;
                 elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname)) || isstruct(thistab.(thisname)) || ischar(thistab.(thisname))
-                    M.(thisname)=[ M.(thisname) thistab.(thisname) ];
-                    % HINT: if you want to have dissimilar structs in a field per
-                    % datum in the DPXD, use a cell-array instead of a
-                    % struct-array
+                    try
+                        M.(thisname)=[ M.(thisname) thistab.(thisname) ];
+                    catch me
+                        disp(me.message);
+                        eStr=['Field ''' thisname ''' could not be merged: ' me.message '\nHint: use cell arrays for incompatible arrays or structs.'];
+                        error('a:b',eStr);
+                    end
                 else
                     error('DPXD fields should be of type numeric, logical, char, struct, cell');
                 end

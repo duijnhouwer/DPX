@@ -19,11 +19,11 @@ function [F,R]=dpxdSubset(DPXD,indices)
     p.addRequired('indices',@(x)isnumeric(x) | islogical(x));
     p.parse(DPXD,indices);
     
-    nargoutchk(1,2);
+    nargoutchk(0,2);
 
     if all(dpxIsWholeNumber(indices))
         if numel(unique(indices))~=numel(indices)
-            % using subset to repeat data, this is kind of side effect that
+            % using subset to repeat data, this is kind of side a effect that
             % dpxdSubset can be used for. 666 document better, in a rush now ...
             if nargout==2
                 error('Can''t use remainder output (2nd output argument) when using dpxdSubset to expand the DPXD by repeating data');
@@ -50,11 +50,11 @@ function [F,R]=dpxdSubset(DPXD,indices)
     % Remove the special N field. Will be put back (with an updated value) at the end of this
     % function
     DPXD=rmfield(DPXD,'N');
-    if nargout==1
+    if nargout==1 || nargout==0
         % Select the subset of DPXD, store in F
         fn=fieldnames(DPXD);
         for i=1:length(fn)
-            F.(fn{i})=DPXD.(fn{i})(indices);
+            F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
         end
         if islogical(indices)
             F.N=sum(indices);
@@ -65,8 +65,8 @@ function [F,R]=dpxdSubset(DPXD,indices)
          % Select the subset of DPXD, store in F, store the remainder in R
         fn=fieldnames(DPXD);
         for i=1:length(fn)
-            F.(fn{i})=DPXD.(fn{i})(indices);
-            R.(fn{i})=DPXD.(fn{i})(~indices);
+            F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
+            R.(fn{i})=DPXD.(fn{i})(:,~indices,:, :,:,:, :,:,:); % Max 9 dimensions
         end
         F.N=sum(indices);
         R.N=sum(~indices);

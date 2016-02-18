@@ -17,6 +17,7 @@ function [C,N]=dpxdSplit(DPXD,fNames)
     if ~dpxdIs(DPXD,'verbosity',1)
         error('First argument should be a DPXD-struct');
     end
+    nargoutchk(0,2);
     C=cell(0);
     N=[];
     if iscell(fNames) && numel(fNames)==1
@@ -27,10 +28,15 @@ function [C,N]=dpxdSplit(DPXD,fNames)
         if ~isfield(DPXD,fNames)
              error(['Can''t split along field ''' fNames ''' because no field with that name exists']);
         end
+        sz=size(DPXD.(fNames));
+        if numel(sz)>2 || sz(1)>1
+            szStr=sprintf('%dx',sz); szStr(end)=[];
+            error(['Can''t split along field ''' fNames ''' because it''s not a row vector (size: ' szStr ').']);
+        end    
         try
             U=unique(DPXD.(fNames));
         catch
-            error(['Can''t split along field ''' fNames ''' because ''unique'' can''t be called on it. See also: unique']);
+            error(['Can''t split along field ''' fNames ''' because ''unique'' can''t be called on it.']);
         end
         for i=1:numel(U)
             C{i}=dpxdSubset(DPXD,subFuncEquals(DPXD.(fNames),U(i)));
@@ -45,7 +51,7 @@ function [C,N]=dpxdSplit(DPXD,fNames)
         for i=1:numel(fNames)
             TMP=cell(1,numel(C));
             for ci=1:numel(C)
-                TMP{ci}=dpxdSplit(C{ci},fNames{i});
+                TMP{ci}=dpxdSplit(C{ci},fNames{i}); % recursion
             end
             C=[TMP{:}];
         end

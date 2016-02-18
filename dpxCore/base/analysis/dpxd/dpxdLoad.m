@@ -18,7 +18,7 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     % variable called 'auxData'. This data will be loaded into output argument auxData. 
     %
     % Optional argument 'compat' determines updates to the DPXD to update it to current
-    % standards. It can be of 'ignore','ramfix', or (default) 'filefix'.
+    % standards. It can be 'ignore','ramfix', or (default) 'filefix'.
     %   'ignore': don't update the DPXD
     %   'ramfix': update the loaded DPXD 
     %   'filefix': update the loaded DPXD and save it to disk (overwrites 'filename')
@@ -27,6 +27,7 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     %    DPXD=dpxdLoad('yourExpDataFile.mat');
     %
     % Jacob Duijnhouwer, 2014-11-25
+    %
     % 2015-12-04: added compat option
     
     if ~exist('compat','var') || isempty('compat')
@@ -38,11 +39,10 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     
     DPXD={};
     auxData=struct;
-    try
+    if exist(filename,'file')
         K=load(filename);
-    catch me
-        disp(me.message);
-        error(['Could not load ' filename '. Is it a DPXD file?']);
+    else
+        error(['No file named ''' filename ''' exists.']);
     end
     flds=fieldnames(K);
     for i=1:numel(flds)
@@ -79,7 +79,7 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
                 else
                     save(filename,'DPXD','auxData','-v7.3');
                 end
-                dpxDispFancy(['Succesfully saved the updated DPXD.'],[],[],0,'*Comment');
+                dpxDispFancy('Succesfully saved the updated DPXD.',[],[],0,'*Comment');
             catch me
                 me.getReport;
                 dpxDispFancy('Could not update the file.',[],[],0,'*Error');
