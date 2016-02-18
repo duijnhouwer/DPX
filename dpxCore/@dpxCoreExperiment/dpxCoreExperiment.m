@@ -94,7 +94,7 @@ classdef dpxCoreExperiment < hgsetget
                     % backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
                         E.showSaveScreen;
-                        E.saveDpxd;
+                        E.saveDpxd('intermediate');
                         E.showIntermissionScreen;
                     end
                     % Initialize this condition, this needs information about the screen. We
@@ -173,7 +173,7 @@ classdef dpxCoreExperiment < hgsetget
                     E.plugins{i}.stop;
                 end
                 E.showFinalSaveScreen;
-                E.saveDpxd;
+                E.saveDpxd('final');
                 E.showEndScreen;
                 E.window.close;
                 r=input('Run dpxToolCommentEditor? [y|N] > ','s');
@@ -208,7 +208,10 @@ classdef dpxCoreExperiment < hgsetget
         end
     end
     methods (Access=protected)
-        function saveDpxd(E)
+        function saveDpxd(E,optStr)
+            if ~any(strcmpi(optStr,{'final','intermediate'}))
+                error(['Unknown option: ''' optStr '''.']);
+            end
             % Convert the data
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'window','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
@@ -294,12 +297,19 @@ classdef dpxCoreExperiment < hgsetget
                 DPXD{t}=dpxStructMakeSingleValued(DPXD{t});
                 DPXD{t}.N=1;
             end
-            DPXD=dpxdMerge(DPXD); %#ok<NASGU>
-            % Save the data
+            DPXD=dpxdMerge(DPXD);
+            % Save the data, and backup if final save and backupfolder is defined
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            save(absFileName,'DPXD','-v7.3');
-            if ~isempty(E.backupFolder)
-                save(fullfile(E.backupFolder,E.outputFileName),'DPXD','-v7.3');
+            if strcmpi(optStr,'final')
+                % Always save final in '-v7.3' format
+                matFileVersion='-v7.3';
+            elseif dpxBytes(DPXD)>=2^30
+                % if possible (<2GB), fast-save intermediate files (no compression)
+                matFileVersion='-v6'; 
+            end
+            save(absFileName,'DPXD',matFileVersion);
+            if ~isempty(E.backupFolder) && ~strcmp(optStr,'intermediate');
+                save(fullfile(E.backupFolder,E.outputFileName),'DPXD',matFileVersion);
             end
             dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');  
         end

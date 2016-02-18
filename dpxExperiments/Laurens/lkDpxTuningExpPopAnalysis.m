@@ -17,14 +17,24 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
         clf;
     end
     
+    hack=true;
     if all(strcmpi('grating',unique(DPXD.motType)))
         klabDispFancy('Grating experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
+    elseif all(strcmpi(unique(DPXD.motType),'phi'))
+        klabDispFancy('Phi-only RDK experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
+    else
+        hack=false;
+    end
+    if hack
         DPXDphi=DPXD;
         DPXDphi.motType=repmat({'phi'},1,DPXDphi.N);
         DPXDihp=DPXD;
         DPXDihp.motType=repmat({'ihp'},1,DPXDihp.N);
         DPXD=dpxdMerge([DPXDphi DPXDihp]);
     end
+    
+   
+
     
     DPXD=calcRayleighPValues(DPXD);
     if p.Results.plotRayleighP
