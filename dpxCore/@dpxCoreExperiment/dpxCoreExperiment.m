@@ -1,24 +1,21 @@
 classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
-        paradigm; % a string, changed from expName on 2015-11-29
+        paradigm@char; % a string, changed from expName on 2015-11-29
         expName; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
-        window; % a dpxCoreWindow (or derived) object, changed from 'scr' on 2015-11-30
+        window@dpxCoreWindow;
         scr; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
         nRepeats;
         conditionSequence;
-        conditions;
-        conduits;
         txtStart;
-        txtPause;
-        txtPauseNrTrials;
-        txtEnd;
-        txtRBGAfrac;
-        breakFixTimeOutSec;
-        outputFolder;
-        backupFolder; % 2015-11-12
-        backupStaleDays; % 2015-11-12
-        plugins;
+        txtPause@char;
+        txtPauseNrTrials@double;
+        txtEnd@char;
+        txtRBGAfrac@double;
+        breakFixTimeOutSec@double;
+        outputFolder@char;
+        backupFolder@char; % 2015-11-12
+        backupStaleDays@double; % 2015-11-12
         startKey;
     end
     properties (Access=protected)
@@ -32,6 +29,9 @@ classdef dpxCoreExperiment < hgsetget
         stopTime;
         trials=struct('condition',[],'startSec',[],'stopSec',[],'resp',[]);
         sysInfo;
+        conditions;
+        plugins;
+        conduits;
     end
     methods (Access=public)
         function E=dpxCoreExperiment
@@ -44,16 +44,16 @@ classdef dpxCoreExperiment < hgsetget
             catch me
                 disp(me.message);
                 error('a:b',['An error occured in dpxCoreWindow: ' me.message '\nHas Psychtoolbox-3 been installed? (http://psychtoolbox.org/download/)']);
-            end 
+            end
             E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
             E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
-            E.nRepeats=2;
+            E.nRepeats=1;
             E.conditionSequence='shufflePerBlock';
-            E.paradigm='dpxCoreExperiment';
+            E.paradigm='unknownParadigm'; %if set to empty ('',[],{}) no IDs will be asked and no data will be saved
             E.subjectId='0';
-            E.startKey='space';
-            E.txtStart='Press and release $STARTKEY to start'; % if txtStart is 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
+            E.startKey='Space';
+            E.txtStart='Press and release $STARTKEY to start\n(Esc to quit at any time)'; % if txtStart is 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
             E.txtPause='I N T E R M I S S I O N';
             E.txtPauseNrTrials=Inf;
             E.txtEnd='[-: The End :-]'; % if 'DAQ-pulse', stop is delayed until stoppulse is detected on DAQ, otherwise txtStart is shown ...
@@ -71,7 +71,10 @@ classdef dpxCoreExperiment < hgsetget
                     dpxDispFancy('No conditions have been defined. Use dpxCoreExperiment''s ''addCondition'' method to include condition objects (typically: dpxCoreCondition).',[],[],[],'Error');
                     return;
                 end
-                commandwindow; % set matlab focus on command window, to prevent accidentally messing up matlab files when in fullscreen mode
+                commandwindow; % set matlab focus on command window, to help prevent accidentally messing up files in the editor when in fullscreen mode
+                if strcmpi(E.paradigm,'unknownParadigm')
+                    dpxDispFancy(['It is recommened you define ''' mfilename '.paradigm''. Defaulting to ''' E.paradigm '''.'],[],[],[],'Comment');
+                end
                 E.startTime=now;
                 E.unifyConditions;
                 E.createConditionSequence;
@@ -82,7 +85,11 @@ classdef dpxCoreExperiment < hgsetget
                 for i=1:numel(E.plugins)
                     E.plugins{i}.start(get(E));
                 end
-                E.showStartScreen;
+                escPressed=E.showStartScreen;
+                if escPressed
+                    E.window.close;
+                    return;
+                end
                 % Set the trial counter to zero
                 tr=0;
                 while tr<numel(E.internalCondSeq) % while, not for. we must be able to change list as we go
@@ -93,8 +100,10 @@ classdef dpxCoreExperiment < hgsetget
                     % Show the intermission screen if appropriate (and make an intermediate
                     % backup save)
                     if E.txtPauseNrTrials>0 && mod(tr,E.txtPauseNrTrials)==0 && tr<numel(E.internalCondSeq)
-                        E.showSaveScreen;
-                        E.saveDpxd('intermediate');
+                        if ~isempty(E.paradigm)
+                            E.showSaveScreen;
+                            E.saveDpxd('intermediate');
+                        end
                         E.showIntermissionScreen;
                     end
                     % Initialize this condition, this needs information about the screen. We
@@ -172,14 +181,18 @@ classdef dpxCoreExperiment < hgsetget
                 for i=1:numel(E.plugins)
                     E.plugins{i}.stop;
                 end
-                E.showFinalSaveScreen;
-                E.saveDpxd('final');
-                E.showEndScreen;
+                if ~isempty(E.paradigm)
+                    E.showFinalSaveScreen;
+                    E.saveDpxd('final');
+                    E.showEndScreen;
+                end
                 E.window.close;
-                r=input('Run dpxToolCommentEditor? [y|N] > ','s');
-                if strcmpi(strtrim(r),'y')
-                    absFileName=fullfile(E.outputFolder,E.outputFileName);
-                    dpxToolCommentEditor('filename',absFileName);
+                if ~isempty(E.paradigm)
+                    r=input('Run dpxToolCommentEditor? [y|N] > ','s');
+                    if strcmpi(strtrim(r),'y')
+                        absFileName=fullfile(E.outputFolder,E.outputFileName);
+                        dpxToolCommentEditor('filename',absFileName);
+                    end
                 end
             catch me
                 sca; % screen reset
@@ -201,10 +214,13 @@ classdef dpxCoreExperiment < hgsetget
         end
         function addPlugin(E,P)
             % note, the dpxPluginComments is loaded by default
-            if ~isobject(P) || strncmp(class(P),'dpxPlugin',numel('dpxPlugin'))==0
+            if ~isobject(value) || strncmp(class(P),'dpxPlugin',numel('dpxPlugin'))==0
                 error('Argument should be an object whose class-name starts with ''dpxPlugin''.');
             end
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
+        end
+        function clearPlugins(E)
+            E.plugins={};
         end
     end
     methods (Access=protected)
@@ -305,24 +321,24 @@ classdef dpxCoreExperiment < hgsetget
                 matFileVersion='-v7.3';
             elseif dpxBytes(DPXD)>=2^30
                 % if possible (<2GB), fast-save intermediate files (no compression)
-                matFileVersion='-v6'; 
+                matFileVersion='-v6';
             end
             save(absFileName,'DPXD',matFileVersion);
             if ~isempty(E.backupFolder) && ~strcmp(optStr,'intermediate');
                 save(fullfile(E.backupFolder,E.outputFileName),'DPXD',matFileVersion);
             end
-            dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');  
+            dpxDispFancy(['Data has been saved to: ''' absFileName ''''],[],[],[],'*Comment');
         end
-        function showStartScreen(E)
+        function esc=showStartScreen(E)
             if strcmpi(E.txtStart,'DAQ-pulse')
                 % magic value for E.txtStart, wait for pulse on DAQ device
                 str=['Waiting for ' E.txtStart ' ... '];
                 dpxDispFancy(str);
-                dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
+                esc=dpxDisplayText(E.window.windowPtr,str,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'forceAfterSec',0,'fadeOutSec',-1);
                 seconds=dpxBlockUntilDaqPulseDetected('delaySeconds',4,'resetCounter',false,'maxWaitSeconds',Inf);
                 E.txtStart=[E.txtStart ' @ ' num2str(seconds,'%12f')];
             else
-                dpxDisplayText(E.window.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'key',E.startKey);
+                esc=dpxDisplayText(E.window.windowPtr,E.txtStart,'rgba',E.txtRBGAfrac,'rgbaback',E.window.backRGBA,'key',E.startKey);
             end
         end
         function showSaveScreen(E)
@@ -382,35 +398,40 @@ classdef dpxCoreExperiment < hgsetget
                 catch me, error([me.message ' mkdir ' E.outputFolder]);
                 end
             end
-            E.subjectId=dpxInputValidId('Subject ID > ');
-            E.experimenterId=dpxInputValidId('Experimenter ID > ');
-            E.outputFileName=[E.paradigm '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
-            % Test if this filename can be saved.
-            testfile=fullfile(E.outputFolder,E.outputFileName);
-            
-            dummydata=666; %#ok<NASGU>
-            if exist(testfile,'file')
-                % Extremely rare/impossible because of date+time in name
-                error(['A file with name ' testfile ' already exists.']);
-            end
-            try % test saving to the file before running the experiment
-                save(testfile,'dummydata','-v7.3');
-                delete(testfile);
-            catch me
-                error([me.message ' : ' testfile]);
-            end
-            if ~isempty(E.backupFolder)
-                testbackupfile=fullfile(E.backupFolder,E.outputFileName);
-                try
-                    if ~exist(E.backupFolder,'dir')
-                        mkdir(E.backupFolder);
-                    end
-                    save(testbackupfile,'dummydata','-v7.3');
-                    delete(testbackupfile);
-                catch me
-                    error([me.message ' : ' testbackupfile]);
+            if isempty(E.paradigm)
+                [E.subjectId,E.experimenterId,E.outputFileName]=deal('x');
+            else
+                E.subjectId=dpxInputValidId('Subject ID > ');
+                E.experimenterId=dpxInputValidId('Experimenter ID > ');
+                E.outputFileName=[E.paradigm '-' E.subjectId '-' datestr(now,'yyyymmddHHMMSS') '.mat'];
+                % Test if this filename can be saved.
+                testfile=fullfile(E.outputFolder,E.outputFileName);
+                dummydata=666; %#ok<NASGU>
+                if exist(testfile,'file')
+                    % Extremely rare/impossible because of date+time in name
+                    error(['A file with name ' testfile ' already exists.']);
                 end
+                try % test saving to the file before running the experiment
+                    save(testfile,'dummydata','-v7.3');
+                    delete(testfile);
+                catch me
+                    error([me.message ' : ' testfile]);
+                end
+                if ~isempty(E.backupFolder)
+                    testbackupfile=fullfile(E.backupFolder,E.outputFileName);
+                    try
+                        if ~exist(E.backupFolder,'dir')
+                            mkdir(E.backupFolder);
+                        end
+                        save(testbackupfile,'dummydata','-v7.3');
+                        delete(testbackupfile);
+                    catch me
+                        error([me.message ' : ' testbackupfile]);
+                    end
+                end
+                
             end
+            
         end
         function cleanOldBackups(E)
             % Check if there are backups in the currently defined backup location
@@ -536,12 +557,13 @@ classdef dpxCoreExperiment < hgsetget
             error('a:b','The property ''scr'' has been renamed to ''window'' since 2015-11-30.\nPlease update your script.');
         end
         function set.paradigm(E,value)
-            if ~ischar(value) || isempty(value)
-                error('The property ''paradigm'' must be a (non-empty) string');
-            elseif any(E.paradigm=='-')
-                error('The ''paradigm'' string can''t contain ''-''');
+            if isempty(value)
+                E.paradigm=''; % use this to not ask for IDs nor save the data
+            elseif any(value=='-')
+                error('Property ''paradigm'' must not contain any hyphens (-)');
                 % DPX uses - to split filesnames into paradigm, subject, and start-time.
             elseif ~all(isstrprop(E.paradigm,'alphanum'))
+                error('Property  ''paradigm'' must contain alphanumerical characters only');
             else
                 E.paradigm=value;
             end
@@ -586,6 +608,12 @@ classdef dpxCoreExperiment < hgsetget
             else
                 error('backupStaleDays must be an integer. Negative values denote delete backups older than (abs(backupStaleDays)) without prompting');
             end
+        end
+        function set.nRepeats(E,value)
+            if numel(value)~=1 || ~dpxIsWholeNumber(value) || value<1
+                error('nRepeats must be a single, positive, non-zero integer');
+            end
+            E.nRepeats=value;
         end
     end
 end

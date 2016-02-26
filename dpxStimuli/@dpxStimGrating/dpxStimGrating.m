@@ -48,7 +48,6 @@ classdef dpxStimGrating < dpxAbstractVisualStim
                 grating(grating>=midgray)=midgray+S.contrastFrac*maxAmplitude;
                 grating(grating<midgray)=midgray-S.contrastFrac*maxAmplitude;
             end
-            
             S.gratingTexture=Screen('MakeTexture', S.scrGets.windowPtr, grating, -S.dirDeg);
             % calculate the rectangle into which the texture will be shown on the
             % screen "destination rectangle"

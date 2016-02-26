@@ -28,12 +28,12 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     p.addParamValue('dxdy',[0 0],@(x)isnumeric(x) && numel(x)==2);
     p.addParamValue('forceAfterSec',Inf,@isnumeric);
     p.addParamValue('commandWindowToo',true,@islogical);
-    p.addParamValue('key','space',@dpxIsKbName);
+    p.addParamValue('key','Space',@dpxIsKbName);
     p.parse(windowPtr,text,varargin{:});
     p=p.Results; % shorter AND now the value can be changed
     % preprocess the string
     % 1. Replace occurance of $STARTKEY with p.key
-    idx=strfind(p.str,'$STARTKEY');
+    idx=strfind(upper(p.str),'$STARTKEY');
     if ~isempty(idx)
         a=p.str(1:idx-1);
         b=p.key;
@@ -60,7 +60,7 @@ function escPressed=dpxDisplayText(windowPtr,text,varargin)
     pause(0.05);
     [~,~,keyCode]=KbCheck(-1);
     while ~keyCode(KbName(p.key)) && ~keyCode(KbName('Escape'));
-        if GetSecs-startSec>p.forceAfterSec
+        if ~isinf(p.forceAfterSec) && GetSecs-startSec>p.forceAfterSec
             keyCode(KbName(p.key))=true; % emulate button press when time is up
         else
             [~,~,keyCode]=KbCheck(-1);
@@ -109,8 +109,6 @@ function escPressed=fadeText(windowPtr,p,how)
         end
     end
 end
-
-
 
 function printText(str,windowPtr,RGBAfore,RGBAback,opacityFrac,dxdy)
     if nargin<4 || isempty(opacityFrac)
