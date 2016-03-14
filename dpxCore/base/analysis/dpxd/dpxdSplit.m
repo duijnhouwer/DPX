@@ -6,6 +6,9 @@ function [C,N]=dpxdSplit(DPXD,fNames)
     % be a string containing one fieldname, or a cell of multiple fieldnames.
     % The sub-dpxds are returned in cell array C.
     %
+    % If fieldnames is field 'N', then DXPD will be split in the maximum number of
+    % subsets, i.e., all subsets having an N of 1.
+    %
     % Optional second output argument N is an array of number of elemements in
     % the corresponding output cell-array of sub-DPXD's
     %
@@ -23,7 +26,23 @@ function [C,N]=dpxdSplit(DPXD,fNames)
     if iscell(fNames) && numel(fNames)==1
         fNames=fNames{1};
     end
-    if ischar(fNames)
+    if ischar(fNames) && strcmp(fNames,'N')
+        % Special option to split in maximum number of subsets, resulting in an N of 1 for
+        % each subset
+        % Step 1: add a field running from 1:DPXD.N, find an available fieldname for that
+        % purpose
+        F=fieldnames(DPXD);
+        F{end+1}='NNN';
+        F=matlab.lang.makeUniqueStrings(F);
+        F=F{end}; % F now is a guaranteed novel fieldname
+        DPXD.(F)=1:DPXD.N;
+        [C,N]=dpxdSplit(DPXD,F);
+        % Remove the temporary field F that we used for splitting
+        C=cellfun(@(x)rmfield(x,F),C,'UniformOutput',false);
+        if ~all(N==1) % internal sanity check, in case the above code gets messed up at some point in the future...
+            error('Internal DPX bug, please report on github.com/duijnhouwer/DPX: N per DPXD in ouput cell array should be 1 per defition but for some reason this is not the case.');
+        end
+    elseif ischar(fNames)
         % fNames is a single fieldname string
         if ~isfield(DPXD,fNames)
              error(['Can''t split along field ''' fNames ''' because no field with that name exists']);

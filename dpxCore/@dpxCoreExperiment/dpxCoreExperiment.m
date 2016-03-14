@@ -45,12 +45,12 @@ classdef dpxCoreExperiment < hgsetget
                 disp(me.message);
                 error('a:b',['An error occured in dpxCoreWindow: ' me.message '\nHas Psychtoolbox-3 been installed? (http://psychtoolbox.org/download/)']);
             end
-            E.plugins={dpxPluginComments}; % "Comments-plugin" is loaded for all experiments, more can be added (e.g., Eyelink, Arduino)
+            E.plugins={dpxPluginComments}; % "Comments-plugin" is added by default, more can be added (e.g., Eyelink, Arduino)
             E.conditions={};
-            E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures
+            E.conduits={}; % a mechanism to transfer information between trials, e.g. for staircase procedures. Not working 2016-02-26
             E.nRepeats=1;
             E.conditionSequence='shufflePerBlock';
-            E.paradigm='unknownParadigm'; %if set to empty ('',[],{}) no IDs will be asked and no data will be saved
+            E.paradigm='unknownParadigm'; % if set to empty ('',[],{}) no IDs will be asked and no data will be saved
             E.subjectId='0';
             E.startKey='Space';
             E.txtStart='Press and release $STARTKEY to start\n(Esc to quit at any time)'; % if txtStart is 'DAQ-pulse', start is delayed until startpulse is detected on DAQ, otherwise txtStart is shown ...
@@ -429,9 +429,7 @@ classdef dpxCoreExperiment < hgsetget
                         error([me.message ' : ' testbackupfile]);
                     end
                 end
-                
             end
-            
         end
         function cleanOldBackups(E)
             % Check if there are backups in the currently defined backup location

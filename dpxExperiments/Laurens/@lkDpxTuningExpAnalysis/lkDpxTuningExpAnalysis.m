@@ -151,6 +151,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
         function output=runPerCell(A)
             celTel=0;
             for f=1:numel(A.filesToDo)
+                fprintf('Working on file %d of %d (%s) ...\n',f,numel(A.filesToDo),A.filesToDo{f});
                 dpxd=dpxdLoad(A.filesToDo{f}); % dpxd is now an DPX-Data structure
                 cellNumList=parseNeuronsToDoList(A.neuronsToDo{f},getNeuronNrs(dpxd)); % cell number list
                 for c=1:numel(cellNumList)
@@ -162,6 +163,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
                     for ss=1:numel(output{celTel})
                         output{celTel}{ss}.file=cellstr(repmat(A.filesToDo{f},output{celTel}{ss}.N,1))';
                         output{celTel}{ss}.cellNumber=repmat(cellNumList(c),1,output{celTel}{ss}.N);
+                        output{celTel}{ss}.fileCellId=repmat(f+1i*cellNumList(c),1,output{celTel}{ss}.N);
                     end
                     if A.doPlot
                         [pad,filen]=fileparts(A.filesToDo{f});
