@@ -21,22 +21,22 @@ function plotDirectionTuningCurveSfTfContrast(TC,varargin)
     TC=rmfield(TC,{'file','cellNumber'});
     
     
-    C=dpxdSplit(TC,'contrast');
-    for c=1:numel(C)
+%     S=dpxdSplit(TC,'SF');
+%     for s=1:numel(S)
         panelNr=0;
-        gray=sqrt(1-c/numel(C));
-        options={varargin{:} , 'color', [gray gray gray]}; %#ok<CCAT>
-        S=dpxdSplit(C{c},'SF');
-        for s=1:numel(S)
-            T=dpxdSplit(S{s},'TF');
+        C=dpxdSplit(TC,'contrast');
+        for c=1:numel(C)
+            gray=sqrt(1-c/numel(C));
+            options={varargin{:} , 'color', [gray gray gray]}; %#ok<CCAT>
+            T=dpxdSplit(C{c},'TF');
             for t=1:numel(T)
                 panelNr=panelNr+1;
-                subplot(numel(S),numel(T),panelNr)
+                subplot(numel(C),numel(T),panelNr)
                 plotOneCurve(T{t},options{:});
-                title(['SF=' num2str(T{t}.SF(1)) ',TF=' num2str(T{t}.TF(1))]);
+%                 title(['contrast=' num2str(T{t}.C(1)) ',TF=' num2str(T{t}.TF(1))]);
             end
         end
-    end
+%     end
     xlabel('Direction (deg)');
     ylabel('mean dFoF');
     %
@@ -72,6 +72,6 @@ function plotOneCurve(TC,varargin)
     %k=axis;
     %axis([-20 380 k(3) k(4)]);
     xlim([-20 380])
-    %'YLim(auto)';
+    'YLim(auto)';
     set(gca,'XTick',X);
 end

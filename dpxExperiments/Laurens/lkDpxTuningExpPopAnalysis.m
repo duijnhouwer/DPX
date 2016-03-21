@@ -31,9 +31,9 @@ function DPXD=lkDpxTuningExpPopAnalysis(DPXD,varargin)
     
     hack=true;
     if all(strcmpi('grating',unique(DPXD.motType)))
-        klabDispFancy('Grating experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
+        dpxDispFancy('Grating experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
     elseif all(strcmpi(unique(DPXD.motType),'phi'))
-        klabDispFancy('Phi-only RDK experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
+        dpxDispFancy('Phi-only RDK experiment detected. Applying hack (double data, call half PHI other half IHP)',' !HACKALERT! ');
     else
         hack=false;
     end
