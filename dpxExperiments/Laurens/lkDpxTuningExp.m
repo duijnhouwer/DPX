@@ -30,7 +30,7 @@ function lkDpxTuningExp(varargin)
     E.window.verbosity0min5max=lkSettings('VERBOSITY');
     E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
-        E.txtStart='DAQ-pulse';
+        E.txtStart='asd DAQ-pulse';
     else
         E.txtStart='asd DAQ-pulse';
     end
@@ -44,7 +44,7 @@ function lkDpxTuningExp(varargin)
         cyclesPerDeg=lkSettings('SFFIX');
         cyclesPerSecond=lkSettings('TFFIX');
         contrastFracs=lkSettings('CONTRASTFIX');
-        E.nRepeats=6;
+        E.nRepeats=10;
     elseif strcmpi(p.Results.mode,'Speed')
         dirDegs=mod([p.Results.dirDeg p.Results.dirDeg+180],360);
         cyclesPerDeg=lkSettings('SFFIX');
@@ -61,7 +61,7 @@ function lkDpxTuningExp(varargin)
     end
     if strcmpi(p.Results.stim,'rdkTrans')
         transSeparationDeg=[nan 0 90 180]; % nan is 1 component, otherwise 2 components with X angular separation
-        E.nRepeats=2; % reduce number of repeats ...
+        E.nRepeats=4; % reduce number of repeats ...
     else
         transSeparationDeg=0;
     end
@@ -88,7 +88,7 @@ function lkDpxTuningExp(varargin)
                             else % rdk or rdkRevPhi
                                 S=dpxStimRdk;
                                 S.speedDps=tf/sf;
-                                S.dotsPerSqrDeg=.09;
+                                S.dotsPerSqrDeg=.12;
                                 S.dotDiamDeg=1/sf/6;
                                 S.dirDeg=direc;
                                 S.motStartSec=isiSec/2; % 2015-10-28
@@ -103,6 +103,9 @@ function lkDpxTuningExp(varargin)
                                     S.nSteps=Inf; % unlimited lifetime
                                 elseif strcmpi(p.Results.stim,'rdkTrans')
                                     S.nSteps=Inf;
+                                    S.dotRBGAfrac1=[1 1 1 1];
+                                    S.dotRBGAfrac2=[1 1 1 1];
+                                    E.window.backRGBA=[0 0 0 1];
                                     if ~isnan(transDeg)
                                         S.dirDeg=S.dirDeg+transDeg*1i; % two components, transDir angular separation
                                     else
@@ -110,7 +113,7 @@ function lkDpxTuningExp(varargin)
                                     end
                                 elseif strcmpi(p.Results.stim,'RdkRevPhi')
                                     S.nSteps=1; % single step dotlife lifetime
-                                    S.freezeFlip=4;
+                                    S.freezeFlip= 6;
                                 else
                                     error(['Unknown stim: ' p.Results.stim]);
                                 end
