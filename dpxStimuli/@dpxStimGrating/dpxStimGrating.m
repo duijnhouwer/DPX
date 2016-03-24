@@ -5,8 +5,9 @@ classdef dpxStimGrating < dpxAbstractVisualStim
         cyclesPerSecond;
         cyclesPerDeg;
         squareWave; % logical
-        contrastFrac; % fraction of max screen contrast [maxBlack..maxWhite] 
+        contrastFrac; % fraction of max screen contrast [maxBlack..maxWhite]
         grayFrac; % point between maxBlack and maxWhite
+        buffer;
     end
     properties (Access=protected)
         visibleSizePx;
@@ -28,8 +29,9 @@ classdef dpxStimGrating < dpxAbstractVisualStim
             S.contrastFrac=1;
             S.wDeg=10;
             S.hDeg=10;
+            S.buffer=[];
         end
-    end  
+    end
     methods (Access=protected)
         function myInit(S)
             D2P=S.scrGets.deg2px; % degrees to pixels deg*D2P=px
@@ -52,13 +54,22 @@ classdef dpxStimGrating < dpxAbstractVisualStim
             % calculate the rectangle into which the texture will be shown on the
             % screen "destination rectangle"
             S.dstRect=[S.xPx-S.wPx/2+S.winCntrXYpx(1) S.yPx-S.hPx/2+S.winCntrXYpx(2)]; % lower left
-            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx]; % add top right 
+            S.dstRect=[S.dstRect S.dstRect(1)+S.wPx  S.dstRect(2)+S.hPx]; % add top right
         end
         function myDraw(S)
             if ~S.visible
                 return;
             end
-            Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+            if strcmp(S.scrGets.stereoMode,'mono')
+                Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+            elseif strcmp(S.scrGets.stereoMode,'mirror')
+                if isempty(S.buffer)
+                    Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+                else
+                    Screen('SelectStereoDrawBuffer', S.scrGets.windowPtr, S.buffer);
+                    Screen('DrawTexture', S.scrGets.windowPtr, S.gratingTexture, S.srcRect, S.dstRect, -S.dirDeg);
+                end
+            end
         end
         function myStep(S)
             % We move the grating by shifting the part we show of the
