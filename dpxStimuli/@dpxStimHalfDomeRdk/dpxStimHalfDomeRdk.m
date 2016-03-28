@@ -52,7 +52,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.RGBAfrac1=[0 0 0 1];
             S.RGBAfrac2=[1 1 1 1];
             S.aziDps=60;
-            S.eleDps=0; % currently only a placeholder!
+            S.eleDps=0;
             S.motStartSec=2; % relative to stimOnSec
             S.motDurSec=4;
             S.freezeFlip=1; % keep the stimulus frozen for N flips, decrease effective framerate
@@ -82,7 +82,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.dotStepsToInversion=S.invertSteps;
         end
         function myDraw(S)
-            if ~S.visible
+            if ~S.visible || S.nClusters==0
                 return;
             end
             cols=S.palette(:,S.visDotCol);
@@ -95,8 +95,15 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             if S.stepCounter>S.motStartFlip && S.stepCounter<=S.motStopFlip
                 if ~frozen
                     S.aziDeg=S.aziDeg+S.aziDegPerFlip*S.freezeFlip;
+                    S.eleDeg=S.eleDeg+S.eleDegPerFlip*S.freezeFlip;
+                    if S.eleDegPerFlip>0
+                        S.eleDeg(S.eleDeg>80)=S.eleDeg(S.eleDeg>80)-160;
+                    elseif S.eleDegPerFlip<0
+                        S.eleDeg(S.eleDeg<-80)=S.eleDeg(S.eleDeg<-80)+160;
+                    end
                 end
             end
+            
             % 2: update lifetime, replace expired points
             if S.nSteps<Inf && ~frozen
                 S.dotAge=S.dotAge+1;
@@ -193,9 +200,9 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.aziDps=value;
         end
         function set.eleDps(S,value)
-            if value~=0
-                error('eleDps can currently only be 0, is a placeholder for future elabotation');
-            end
+           % if value~=0
+           %     error('eleDps can currently only be 0, is a placeholder for future elabotation');
+           % end
             S.eleDps=value;
         end
     end
