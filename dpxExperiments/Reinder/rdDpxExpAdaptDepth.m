@@ -17,7 +17,7 @@ IN.cylOffSec   = 1.5;
 IN.disparities = [-.4 -.2 0 .2 .4];
 IN.cylPosition = 1;
 IN.reps        = 20;
-IN.rotSpeed    = [120];
+IN.rotSpeed    = [120 -120];
 IN.modes       = 'stereo';
 
 IN.iRep=0;
@@ -45,10 +45,12 @@ E.addCondition(adapC);
 %   AFTER 1800 SEC CYLINDER STIMULUS %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for disp = 1:numel(IN.disparities)
+    for speeds = 1:numel(IN.rotSpeed)
     cylC = dpxCoreCondition;
-    cylC = defineCylinderStimulinder(true,cylC,IN.disparities(disp));
+    cylC = defineCylinderStimulinder(true,cylC,IN.disparities(disp),IN.rotSpeed(speeds));
     cylC = defineAdaptationStimulation(E.window,'cyl',cylC);
     E.addCondition(cylC);
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -176,7 +178,7 @@ C.addStimulus(GR);
 end
 end
 
-function C = defineCylinderStimulinder(state,C,disp)
+function C = defineCylinderStimulinder(state,C,disp,speed)
 global IN
 
 if state; visible = 1; C.durSec = IN.cylOnSec+IN.cylOffSec;
@@ -196,7 +198,7 @@ C.addStimulus(S);
 % The full cylinder stimulus
 S=dpxStimRotCylinder;
 set(S,'dotsPerSqrDeg',12,'xDeg',IN.cylPosition*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
-    ,'rotSpeedDeg',IN.rotSpeed,'disparityFrac',0,'sideToDraw','both' ...
+    ,'rotSpeedDeg',speed,'disparityFrac',0,'sideToDraw','both' ...
     ,'onSec',0,'durSec',IN.cylOnSec,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
     ,'name','fullTargetCyl','visible',visible);
 C.addStimulus(S);
@@ -221,9 +223,10 @@ C.addStimulus(S);
 % else
 %     error('what you trying fool!?')
 % end
+
 S=dpxStimRotCylinder;
 set(S,'dotsPerSqrDeg',12,'xDeg',IN.cylPosition*-1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
-    ,'rotSpeedDeg',IN.rotSpeed,'disparityFrac',disp,'sideToDraw','front' ...
+    ,'rotSpeedDeg',speed,'disparityFrac',disp,'sideToDraw','front' ...
     ,'onSec',0,'durSec',IN.cylOnSec,'name','halfInducerCyl','visible',visible);
 C.addStimulus(S);
 
