@@ -1,17 +1,17 @@
 function rdDpxExpAdaptDepth()
+% Displays binoclar rivalry stimulus, and after a set time brings up
+% kinetic depth cylinders.
 
 %%%%%%%%%%%%%%%%%%
 % STIMULUS INPUT %
 %%%%%%%%%%%%%%%%%%
 global IN
 
-% General
-IN.cylRepeats = 20;
-
 % adaptation
 IN.adapSec     = 10;
 
 % cylinders
+IN.cylRepeats  = 20;
 IN.cylOnSec    = 1;
 IN.cylOffSec   = 1.5;
 IN.disparities = [-.4 -.2 0 .2 .4];
@@ -20,8 +20,6 @@ IN.reps        = 20;
 IN.rotSpeed    = [120 -120];
 IN.modes       = 'stereo';
 
-IN.iRep=0;
-
 %%%%%%%%%%%%%%%%%%%%%
 %   START STUFF     %
 %%%%%%%%%%%%%%%%%%%%%
@@ -29,21 +27,21 @@ E=dpxCoreExperiment;
 E.paradigm      = mfilename;
 E.txtStart      = 'intro';
 E.outputFolder  = 'C:\tempdata_PleaseDeleteMeSenpai';
-E.window.set('scrNr',0,'stereoMode','mirror');
-E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1]);
+E.window.set('scrNr',0,'rectPx',[1440 0 1600+1440 1200],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
+E.window.set('distMm',1000,'interEyeMm',65,'widHeiMm',[394 295]);
+E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %   FIRST ADAPTATION    %
 %%%%%%%%%%%%%%%%%%%%%%%%%
-
 adapC=dpxCoreCondition;
 adapC = defineAdaptationStimulation(E.window,'adap',adapC);
-adapC = defineCylinderStimulinder(false,adapC,0);
+adapC = defineCylinderStimulinder(false,adapC,0,0);
 E.addCondition(adapC);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   AFTER 1800 SEC CYLINDER STIMULUS %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   AFTER 1800 SEC CYLINDER STIMULUS  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for disp = 1:numel(IN.disparities)
     for speeds = 1:numel(IN.rotSpeed)
     cylC = dpxCoreCondition;
@@ -76,8 +74,8 @@ C.durSec    = IN.adapSec;
 ML = dpxStimMaskGaussian;
 ML.name='MaskLeft';
 ML.xDeg=0;
-ML.hDeg = (50*sqrt(2))/W.deg2px;
-ML.wDeg = (50*sqrt(2))/W.deg2px;
+ML.hDeg = 3*sqrt(2); %(50*sqrt(2))/W.deg2px;
+ML.wDeg = 3*sqrt(2); %(50*sqrt(2))/W.deg2px;
 ML.sigmaDeg = ML.hDeg/8;
 ML.durSec=IN.adapSec;
 ML.visible=visible;
@@ -91,8 +89,8 @@ GL.contrastFrac=1;
 GL.squareWave=false;
 GL.cyclesPerSecond=0;
 GL.cyclesPerDeg=2.5;
-GL.wDeg=(50)/W.deg2px;
-GL.hDeg=(50)/W.deg2px;
+GL.wDeg= 3; %(50)/W.deg2px;
+GL.hDeg= 3; %(50)/W.deg2px;
 GL.durSec=IN.adapSec;
 GL.buffer=0;
 GL.visible=visible;
@@ -102,8 +100,8 @@ C.addStimulus(GL);
 MR = dpxStimMaskGaussian;
 MR.name='MaskRite';
 MR.xDeg=0;
-MR.hDeg = (50*sqrt(2))/W.deg2px;
-MR.wDeg = (50*sqrt(2))/W.deg2px;
+MR.hDeg = 3*sqrt(2); % (50*sqrt(2))/W.deg2px;
+MR.wDeg = 3*sqrt(2); % (50*sqrt(2))/W.deg2px;
 MR.sigmaDeg = MR.hDeg/8;
 MR.durSec=IN.adapSec;
 MR.visible=visible;
@@ -116,8 +114,8 @@ GR.dirDeg=45;
 GR.squareWave=false;
 GR.cyclesPerSecond=0;
 GR.cyclesPerDeg=2.5;
-GR.wDeg= (50)/W.deg2px;
-GR.hDeg= (50)/W.deg2px;
+GR.wDeg= 3; % (50)/W.deg2px;
+GR.hDeg= 3; % (50)/W.deg2px;
 GR.durSec=IN.adapSec;
 GR.buffer=1;
 GR.visible=visible;
@@ -192,7 +190,7 @@ C.addStimulus(S);
 
 % The feedback stimulus for correct responses
 S=dpxStimDot;
-set(S,'wDeg',.3,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+set(S,'wDeg',.25,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
 C.addStimulus(S);
 
 % The full cylinder stimulus
