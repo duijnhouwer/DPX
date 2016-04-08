@@ -38,6 +38,9 @@ adapC=dpxCoreCondition;
 adapC = defineAdaptationStimulation(E.window,'adap',adapC);
 adapC = defineCylinderStimulinder(false,adapC,0,0);
 E.addCondition(adapC);
+textC = dpxCoreCondition
+textC = dpxStimTextSimple
+textC 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   AFTER 1800 SEC CYLINDER STIMULUS  %
@@ -68,17 +71,21 @@ end
 function C = defineAdaptationStimulation(W,state,C)
 global IN
 
-if strcmp(state,'adap'); visible = 1; 
+if strcmp(state,'adap'); 
+
 C.durSec    = IN.adapSec;
+S=dpxStimCross;
+set(S,'wDeg',.2,'hDeg',.2,'lineWidDeg',.05,'onSec',0,'name','fix','visible',1);
+C.addStimulus(S);
+
 %left stimulus
 ML = dpxStimMaskGaussian;
 ML.name='MaskLeft';
 ML.xDeg=0;
-ML.hDeg = 3*sqrt(2); %(50*sqrt(2))/W.deg2px;
-ML.wDeg = 3*sqrt(2); %(50*sqrt(2))/W.deg2px;
+ML.hDeg = 5*sqrt(2); %(50*sqrt(2))/W.deg2px;
+ML.wDeg = 5*sqrt(2); %(50*sqrt(2))/W.deg2px;
 ML.sigmaDeg = ML.hDeg/8;
 ML.durSec=IN.adapSec;
-ML.visible=visible;
 C.addStimulus(ML);
 
 GL = dpxStimGrating;
@@ -89,22 +96,20 @@ GL.contrastFrac=1;
 GL.squareWave=false;
 GL.cyclesPerSecond=0;
 GL.cyclesPerDeg=2.5;
-GL.wDeg= 3; %(50)/W.deg2px;
-GL.hDeg= 3; %(50)/W.deg2px;
+GL.wDeg= 5; %(50)/W.deg2px;
+GL.hDeg= 5; %(50)/W.deg2px;
 GL.durSec=IN.adapSec;
 GL.buffer=0;
-GL.visible=visible;
 C.addStimulus(GL);
 
 %right stimulus
 MR = dpxStimMaskGaussian;
 MR.name='MaskRite';
 MR.xDeg=0;
-MR.hDeg = 3*sqrt(2); % (50*sqrt(2))/W.deg2px;
-MR.wDeg = 3*sqrt(2); % (50*sqrt(2))/W.deg2px;
+MR.hDeg = 5*sqrt(2); % (50*sqrt(2))/W.deg2px;
+MR.wDeg = 5*sqrt(2); % (50*sqrt(2))/W.deg2px;
 MR.sigmaDeg = MR.hDeg/8;
 MR.durSec=IN.adapSec;
-MR.visible=visible;
 C.addStimulus(MR);
 
 GR = dpxStimGrating;
@@ -114,11 +119,10 @@ GR.dirDeg=45;
 GR.squareWave=false;
 GR.cyclesPerSecond=0;
 GR.cyclesPerDeg=2.5;
-GR.wDeg= 3; % (50)/W.deg2px;
-GR.hDeg= 3; % (50)/W.deg2px;
+GR.wDeg= 5; % (50)/W.deg2px;
+GR.hDeg= 5; % (50)/W.deg2px;
 GR.durSec=IN.adapSec;
 GR.buffer=1;
-GR.visible=visible;
 C.addStimulus(GR);
 
 elseif strcmp(state,'cyl'); 
@@ -127,8 +131,8 @@ C.durSec    = IN.cylOnSec+IN.cylOffSec;
 ML = dpxStimMaskGaussian;
 ML.name='MaskLeft';
 ML.xDeg=0;
-ML.hDeg = (50*sqrt(2))/W.deg2px;
-ML.wDeg = (50*sqrt(2))/W.deg2px;
+ML.hDeg = 5*sqrt(2);
+ML.wDeg = 5*sqrt(2);
 ML.sigmaDeg = ML.hDeg/8;
 ML.onSec=IN.cylOnSec;
 ML.durSec=IN.cylOffSec;
@@ -142,8 +146,8 @@ GL.contrastFrac=1;
 GL.squareWave=false;
 GL.cyclesPerSecond=0;
 GL.cyclesPerDeg=2.5;
-GL.wDeg=(50)/W.deg2px;
-GL.hDeg=(50)/W.deg2px;
+GL.wDeg=5;
+GL.hDeg=5;
 GL.onSec=IN.cylOnSec;
 GL.durSec=IN.cylOffSec;
 GL.buffer=0;
@@ -153,8 +157,8 @@ C.addStimulus(GL);
 MR = dpxStimMaskGaussian;
 MR.name='MaskRite';
 MR.xDeg=0;
-MR.hDeg = (50*sqrt(2))/W.deg2px;
-MR.wDeg = (50*sqrt(2))/W.deg2px;
+MR.hDeg = 5*sqrt(2);
+MR.wDeg = 5*sqrt(2);
 MR.sigmaDeg = MR.hDeg/8;
 MR.onSec=IN.cylOnSec;
 MR.durSec=IN.cylOffSec;
@@ -167,8 +171,8 @@ GR.dirDeg=45;
 GR.squareWave=false;
 GR.cyclesPerSecond=0;
 GR.cyclesPerDeg=2.5;
-GR.wDeg= (50)/W.deg2px;
-GR.hDeg= (50)/W.deg2px;
+GR.wDeg= 5;
+GR.hDeg= 5;
 GR.onSec=IN.cylOnSec;
 GR.durSec=IN.adapSec;
 GR.buffer=1;
@@ -180,13 +184,12 @@ function C = defineCylinderStimulinder(state,C,disp,speed)
 global IN
 
 if state; visible = 1; C.durSec = IN.cylOnSec+IN.cylOffSec;
+    % fixation cross must be on top
+    S=dpxStimCross;
+    set(S,'wDeg',.2,'hDeg',.2,'lineWidDeg',.05,'onSec',0,'name','fix','visible',1);
+    C.addStimulus(S);
 elseif ~state; visible = 0; C.durSec    = IN.adapSec;
 end
-
-% The fixation cross
-S=dpxStimCross;
-set(S,'wDeg',.25,'hDeg',.25,'lineWidDeg',.05,'name','fix','visible',visible);
-C.addStimulus(S);
 
 % The feedback stimulus for correct responses
 S=dpxStimDot;
