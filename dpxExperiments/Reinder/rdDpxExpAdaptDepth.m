@@ -235,7 +235,7 @@ C.addStimulus(S);
 R=dpxRespKeyboard;
 R.name='rightHand';
 if state; R.allowAfterSec=S.onSec+S.durSec;
-elseif ~state R.allowAfterSec=IN.adapSec; end
+elseif ~state; R.allowAfterSec=IN.adapSec; end
 R.kbNames='UpArrow,DownArrow';
 R.correctStimName='fbCorrect';
 R.correctKbNames='1';
