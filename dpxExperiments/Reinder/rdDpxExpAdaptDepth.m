@@ -8,8 +8,8 @@ function rdDpxExpAdaptDepth()
 global IN
 
 % adaptation
-IN.adapSec     = 5;
-IN.warningSec  = 2;
+IN.adapSec     = 600;
+IN.warningSec  = 5;
 
 % cylinders
 IN.cylRepeats  = 20;
@@ -45,8 +45,6 @@ set(textC,'str',sprintf(['Cylinder stimulus starts in %d seconds'],IN.warningSec
 adapC.addStimulus(textC);
 
 E.addCondition(adapC);
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   AFTER 1800 SEC CYLINDER STIMULUS  %
