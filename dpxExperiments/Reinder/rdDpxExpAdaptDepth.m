@@ -8,7 +8,8 @@ function rdDpxExpAdaptDepth()
 global IN
 
 % adaptation
-IN.adapSec     = 10;
+IN.adapSec     = 5;
+IN.warningSec  = 2;
 
 % cylinders
 IN.cylRepeats  = 20;
@@ -27,7 +28,7 @@ E=dpxCoreExperiment;
 E.paradigm      = mfilename;
 E.txtStart      = 'intro';
 E.outputFolder  = 'C:\tempdata_PleaseDeleteMeSenpai';
-E.window.set('scrNr',0,'rectPx',[1440 0 1600+1440 1200],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
+E.window.set('scrNr',1,'rectPx',[],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
 E.window.set('distMm',1000,'interEyeMm',65,'widHeiMm',[394 295]);
 E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
 
@@ -37,10 +38,15 @@ E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
 adapC=dpxCoreCondition;
 adapC = defineAdaptationStimulation(E.window,'adap',adapC);
 adapC = defineCylinderStimulinder(false,adapC,0,0);
+
+textC = dpxStimText;
+set(textC,'str',sprintf(['Cylinder stimulus starts in %d seconds'],IN.warningSec),...
+    'vAlign',1*E.window.deg2px,'onSec',IN.adapSec - IN.warningSec);
+adapC.addStimulus(textC);
+
 E.addCondition(adapC);
-textC = dpxCoreCondition
-textC = dpxStimTextSimple
-textC 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   AFTER 1800 SEC CYLINDER STIMULUS  %
@@ -50,6 +56,7 @@ for disp = 1:numel(IN.disparities)
     cylC = dpxCoreCondition;
     cylC = defineCylinderStimulinder(true,cylC,IN.disparities(disp),IN.rotSpeed(speeds));
     cylC = defineAdaptationStimulation(E.window,'cyl',cylC);
+    textC = dpxStimText; set(textC,'enabled',0'); cylC.addStimulus(textC); %placeholder
     E.addCondition(cylC);
     end
 end
@@ -183,6 +190,11 @@ end
 function C = defineCylinderStimulinder(state,C,disp,speed)
 global IN
 
+% The feedback stimulus for correct responses
+S=dpxStimDot;
+set(S,'wDeg',.25,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
+C.addStimulus(S);
+
 if state; visible = 1; C.durSec = IN.cylOnSec+IN.cylOffSec;
     % fixation cross must be on top
     S=dpxStimCross;
@@ -191,11 +203,6 @@ if state; visible = 1; C.durSec = IN.cylOnSec+IN.cylOffSec;
 elseif ~state; visible = 0; C.durSec    = IN.adapSec;
 end
 
-% The feedback stimulus for correct responses
-S=dpxStimDot;
-set(S,'wDeg',.25,'enabled',false,'durSec',.1,'RGBAfrac',[.75 .75 .75 .75],'name','fbCorrect');
-C.addStimulus(S);
-
 % The full cylinder stimulus
 S=dpxStimRotCylinder;
 set(S,'dotsPerSqrDeg',12,'xDeg',IN.cylPosition*1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
@@ -203,27 +210,6 @@ set(S,'dotsPerSqrDeg',12,'xDeg',IN.cylPosition*1.75,'wDeg',3,'hDeg',3,'dotDiamDe
     ,'onSec',0,'durSec',IN.cylOnSec,'stereoLumCorr',1,'fogFrac',0,'dotDiamScaleFrac',0 ...
     ,'name','fullTargetCyl','visible',visible);
 C.addStimulus(S);
-
-% The half cylinder stimulus
-% % The half cylinder stimulus
-% if strcmpi(IN.modes,'mono')
-%     lumcorr=1;
-%     dFog=dsp;
-%     dScale=IN.disp;
-%     dispa=0;
-% elseif strcmpi(IN.modes,'stereo')
-%     lumcorr=1;
-%     dFog=0;
-%     dScale=0;
-%     dispa=IN.disp;
-% elseif strcmpi(IN.modes,'anti-stereo')
-%     lumcorr=-1;
-%     dFog=0;
-%     dScale=0;
-%     dispa=IN.disp;
-% else
-%     error('what you trying fool!?')
-% end
 
 S=dpxStimRotCylinder;
 set(S,'dotsPerSqrDeg',12,'xDeg',IN.cylPosition*-1.75,'wDeg',3,'hDeg',3,'dotDiamDeg',0.11 ...
@@ -234,7 +220,7 @@ C.addStimulus(S);
 % The response object
 R=dpxRespKeyboard;
 R.name='rightHand';
-if state; R.allowAfterSec=S.onSec+S.durSec;
+if state; R.allowAfterSec=0;
 elseif ~state; R.allowAfterSec=IN.adapSec; end
 R.kbNames='UpArrow,DownArrow';
 R.correctStimName='fbCorrect';
