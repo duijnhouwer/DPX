@@ -316,15 +316,16 @@ classdef dpxCoreExperiment < hgsetget
             DPXD=dpxdMerge(DPXD);
             % Save the data, and backup if final save and backupfolder is defined
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            if strcmpi(optStr,'final')
-                % Always save final in '-v7.3' format
+            if strcmpi(optStr,'final') || dpxBytes(DPXD)>=2^30
+                % Always save '-v7.3' format when this is the final save,
+                % or when the data is >=2GB (earlier version can't save
+                % files of that size)
                 matFileVersion='-v7.3';
-            elseif dpxBytes(DPXD)<=2^30
-                % if possible (<2GB), fast-save intermediate files (no compression)
-                matFileVersion='-v6';
             else
-                % if >2gb, no compression not possible, use '-v7.3' format
-                matFileVersion='-v7.3';
+                % If possible, use -v6 for intermediate files because the
+                % lack of compression makes it MUCH faster (at least on my
+                % ASUS N550jv laptop)
+                matFileVersion='-v6';
             end
             save(absFileName,'DPXD',matFileVersion);
             if ~isempty(E.backupFolder) && ~strcmp(optStr,'intermediate');
