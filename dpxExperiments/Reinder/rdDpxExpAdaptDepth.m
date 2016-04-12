@@ -1,6 +1,11 @@
-function rdDpxExpAdaptDepth()
-% Displays binoclar rivalry stimulus, and after a set time brings up
+function rdDpxExpAdaptDepth(Type)
+% Displays binocular rivalry stimulus, and after a set time brings up
 % kinetic depth cylinders.
+%
+% Input Argument:
+%   Type: 'diep' / 'bind'
+%       respectively depth or binding experiment
+        
 
 %%%%%%%%%%%%%%%%%%
 % STIMULUS INPUT %
@@ -8,29 +13,37 @@ function rdDpxExpAdaptDepth()
 global IN
 
 % adaptation
-IN.adapSec     = 600;
-IN.warningSec  = 5;
+IN.adapSec     = 600;               % time for adaptation
+IN.warningSec  = 5;                 % stimulus warning, seconds before cylinder starts
 
 % cylinders
-IN.cylRepeats  = 20;
-IN.cylOnSec    = 1;
-IN.cylOffSec   = 1.5;
-IN.disparities = [-.4 -.2 0 .2 .4];
-IN.cylPosition = 1;
-IN.reps        = 20;
-IN.rotSpeed    = [120 -120];
-IN.modes       = 'stereo';
+IN.cylRepeats  = 20;                % number of repeats of the cylinder stimulus
+IN.cylOnSec    = 1;                 % Ton for cylinders
+IN.cylOffSec   = 1.5;               % Toff for cylinder, in this case again adaptation
+IN.disparities = [-.4 -.2 0 .2 .4]; % disparities used for the cylinders
+IN.cylPosition = 1;                 % cylinder position, halve left, full right or vise versa
+IN.rotSpeed    = [120 -120];        % speeds used by the cylinder in degree per second
+IN.modes       = 'stereo';          % mode of depth in the stimulus, 'stereo' for disparity
 
 %%%%%%%%%%%%%%%%%%%%%
 %   START STUFF     %
 %%%%%%%%%%%%%%%%%%%%%
 E=dpxCoreExperiment;
 E.paradigm      = mfilename;
-E.txtStart      = 'intro';
-E.outputFolder  = 'C:\tempdata_PleaseDeleteMeSenpai';
 E.window.set('scrNr',1,'rectPx',[],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
 E.window.set('distMm',1000,'interEyeMm',65,'widHeiMm',[394 295]);
 E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
+
+%prepare type specific stuff
+switch lower(Type)
+    case diep
+        E.outputFolder  = 'C:\DPXDTemp\AdaptDiepte\';
+        E.txtStart      = 'Diepte experiment';
+    case bind
+        E.outputFolder  = 'C:\DPXDTemp\AdaptDiepte\';
+        E.txtStart      = 'Binding experiment';
+end
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %   FIRST ADAPTATION    %
