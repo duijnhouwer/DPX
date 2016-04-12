@@ -319,9 +319,12 @@ classdef dpxCoreExperiment < hgsetget
             if strcmpi(optStr,'final')
                 % Always save final in '-v7.3' format
                 matFileVersion='-v7.3';
-            elseif dpxBytes(DPXD)>=2^30
+            elseif dpxBytes(DPXD)<=2^30
                 % if possible (<2GB), fast-save intermediate files (no compression)
                 matFileVersion='-v6';
+            else
+                % if >2gb, no compression not possible, use '-v7.3' format
+                matFileVersion='-v7.3';
             end
             save(absFileName,'DPXD',matFileVersion);
             if ~isempty(E.backupFolder) && ~strcmp(optStr,'intermediate');
