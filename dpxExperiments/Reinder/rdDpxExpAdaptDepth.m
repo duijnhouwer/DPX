@@ -1,4 +1,4 @@
-function rdDpxExpAdaptDepth(Type)
+function rdDpxExpAdaptDepth(varargin)
 % Displays binocular rivalry stimulus, and after a set time brings up
 % kinetic depth cylinders.
 %
@@ -13,8 +13,8 @@ function rdDpxExpAdaptDepth(Type)
 global IN
 
 % adaptation
-IN.adapSec     = 600;               % time for adaptation
-IN.warningSec  = 5;                 % stimulus warning, seconds before cylinder starts
+IN.adapSec     = 5;               % time for adaptation
+IN.warningSec  = 4;                 % stimulus warning, seconds before cylinder starts
 
 % cylinders
 IN.cylRepeats  = 20;                % number of repeats of the cylinder stimulus
@@ -28,6 +28,11 @@ IN.modes       = 'stereo';          % mode of depth in the stimulus, 'stereo' fo
 %%%%%%%%%%%%%%%%%%%%%
 %   START STUFF     %
 %%%%%%%%%%%%%%%%%%%%%
+if nargin~=1
+  warning('wrong input.')
+  disp('Running ''Diep''.\n')
+end  
+
 E=dpxCoreExperiment;
 E.paradigm      = mfilename;
 E.window.set('scrNr',1,'rectPx',[],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
@@ -35,13 +40,13 @@ E.window.set('distMm',1000,'interEyeMm',65,'widHeiMm',[394 295]);
 E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
 
 %prepare type specific stuff
-switch lower(Type)
-    case diep
+switch lower(varargin{1})
+    case 'diep'
         E.outputFolder  = 'C:\DPXDTemp\AdaptDiepte\';
-        E.txtStart      = 'Diepte experiment';
-    case bind
+        E.txtStart      = 'Diepte experiment\n\nStaar naar het kruisje. \nEerst ziet u enkele minuten een adaptatie stimulus, waarna een \ndraaiende cylinder verschijnt\n\nRapporteer diepte van linker cylinder\n\nPijltje omhoog  = Hol\nPijltje omlaag = bol ';
+    case 'bind'
         E.outputFolder  = 'C:\DPXDTemp\AdaptDiepte\';
-        E.txtStart      = 'Binding experiment';
+        E.txtStart      = 'Binding experiment\n\nStaar naar het kruisje. \nEerst ziet u enkele minuten een adaptatie stimulus, waarna een \ndraaiende cylinder verschijnt\n\nRapporteer bewegingsrichting van voorvlak van rechter cylinder\n\nPijltje omhoog = omhoog\nPijltje omlaag = omlaag.';
 end
  
 
@@ -49,23 +54,22 @@ end
 %   FIRST ADAPTATION    %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 adapC=dpxCoreCondition;
-adapC = defineAdaptationStimulation(E.window,'adap',adapC);
-adapC = defineCylinderStimulinder(false,adapC,0,0);
-
 textC = dpxStimText;
-set(textC,'str',sprintf(['Cylinder stimulus starts in %d seconds'],IN.warningSec),...
+set(textC,'str',sprintf('Cylinder stimulus starts in %d seconds',IN.warningSec),...
     'vAlign',1*E.window.deg2px,'onSec',IN.adapSec - IN.warningSec);
 adapC.addStimulus(textC);
+adapC = defineAdaptationStimulation(E.window,'adap',adapC);
+adapC = defineCylinderStimulinder(false,adapC,0,0);
 
 E.addCondition(adapC);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   AFTER 1800 SEC CYLINDER STIMULUS  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for disp = 1:numel(IN.disparities)
+for disparity = 1:numel(IN.disparities)
     for speeds = 1:numel(IN.rotSpeed)
     cylC = dpxCoreCondition;
-    cylC = defineCylinderStimulinder(true,cylC,IN.disparities(disp),IN.rotSpeed(speeds));
+    cylC = defineCylinderStimulinder(true,cylC,IN.disparities(disparity),IN.rotSpeed(speeds));
     cylC = defineAdaptationStimulation(E.window,'cyl',cylC);
     textC = dpxStimText; set(textC,'enabled',0'); cylC.addStimulus(textC); %placeholder
     E.addCondition(cylC);
