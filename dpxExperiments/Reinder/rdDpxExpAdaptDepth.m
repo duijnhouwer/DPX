@@ -13,8 +13,9 @@ function rdDpxExpAdaptDepth(varargin)
 global IN
 
 % adaptation
-IN.adapSec     = 5;               % time for adaptation
+IN.adapSec     = 5;                 % time for adaptation
 IN.warningSec  = 4;                 % stimulus warning, seconds before cylinder starts
+IN.adapSize    = 8;
 
 % cylinders
 IN.cylRepeats  = 20;                % number of repeats of the cylinder stimulus
@@ -104,8 +105,8 @@ C.addStimulus(S);
 ML = dpxStimMaskGaussian;
 ML.name='MaskLeft';
 ML.xDeg=0;
-ML.hDeg = 5*sqrt(2); %(50*sqrt(2))/W.deg2px;
-ML.wDeg = 5*sqrt(2); %(50*sqrt(2))/W.deg2px;
+ML.hDeg = IN.adapSize*sqrt(2); %(50*sqrt(2))/W.deg2px;
+ML.wDeg = IN.adapSize*sqrt(2); %(50*sqrt(2))/W.deg2px;
 ML.sigmaDeg = ML.hDeg/8;
 ML.durSec=IN.adapSec;
 C.addStimulus(ML);
@@ -118,8 +119,8 @@ GL.contrastFrac=1;
 GL.squareWave=false;
 GL.cyclesPerSecond=0;
 GL.cyclesPerDeg=2.5;
-GL.wDeg= 5; %(50)/W.deg2px;
-GL.hDeg= 5; %(50)/W.deg2px;
+GL.wDeg= IN.adapSize; %(50)/W.deg2px;
+GL.hDeg= IN.adapSize; %(50)/W.deg2px;
 GL.durSec=IN.adapSec;
 GL.buffer=0;
 C.addStimulus(GL);
@@ -128,8 +129,8 @@ C.addStimulus(GL);
 MR = dpxStimMaskGaussian;
 MR.name='MaskRite';
 MR.xDeg=0;
-MR.hDeg = 5*sqrt(2); % (50*sqrt(2))/W.deg2px;
-MR.wDeg = 5*sqrt(2); % (50*sqrt(2))/W.deg2px;
+MR.hDeg = IN.adapSize*sqrt(2); % (50*sqrt(2))/W.deg2px;
+MR.wDeg = IN.adapSize*sqrt(2); % (50*sqrt(2))/W.deg2px;
 MR.sigmaDeg = MR.hDeg/8;
 MR.durSec=IN.adapSec;
 C.addStimulus(MR);
@@ -141,8 +142,8 @@ GR.dirDeg=45;
 GR.squareWave=false;
 GR.cyclesPerSecond=0;
 GR.cyclesPerDeg=2.5;
-GR.wDeg= 5; % (50)/W.deg2px;
-GR.hDeg= 5; % (50)/W.deg2px;
+GR.wDeg= IN.adapSize; % (50)/W.deg2px;
+GR.hDeg= IN.adapSize; % (50)/W.deg2px;
 GR.durSec=IN.adapSec;
 GR.buffer=1;
 C.addStimulus(GR);
@@ -153,8 +154,8 @@ C.durSec    = IN.cylOnSec+IN.cylOffSec;
 ML = dpxStimMaskGaussian;
 ML.name='MaskLeft';
 ML.xDeg=0;
-ML.hDeg = 5*sqrt(2);
-ML.wDeg = 5*sqrt(2);
+ML.hDeg = IN.adapSize*sqrt(2);
+ML.wDeg = IN.adapSize*sqrt(2);
 ML.sigmaDeg = ML.hDeg/8;
 ML.onSec=IN.cylOnSec;
 ML.durSec=IN.cylOffSec;
@@ -168,8 +169,8 @@ GL.contrastFrac=1;
 GL.squareWave=false;
 GL.cyclesPerSecond=0;
 GL.cyclesPerDeg=2.5;
-GL.wDeg=5;
-GL.hDeg=5;
+GL.wDeg=IN.adapSize;
+GL.hDeg=IN.adapSize;
 GL.onSec=IN.cylOnSec;
 GL.durSec=IN.cylOffSec;
 GL.buffer=0;
@@ -179,8 +180,8 @@ C.addStimulus(GL);
 MR = dpxStimMaskGaussian;
 MR.name='MaskRite';
 MR.xDeg=0;
-MR.hDeg = 5*sqrt(2);
-MR.wDeg = 5*sqrt(2);
+MR.hDeg = IN.adapSize*sqrt(2);
+MR.wDeg = IN.adapSize*sqrt(2);
 MR.sigmaDeg = MR.hDeg/8;
 MR.onSec=IN.cylOnSec;
 MR.durSec=IN.cylOffSec;
@@ -193,8 +194,8 @@ GR.dirDeg=45;
 GR.squareWave=false;
 GR.cyclesPerSecond=0;
 GR.cyclesPerDeg=2.5;
-GR.wDeg= 5;
-GR.hDeg= 5;
+GR.wDeg= IN.adapSize;
+GR.hDeg= IN.adapSize;
 GR.onSec=IN.cylOnSec;
 GR.durSec=IN.adapSec;
 GR.buffer=1;
