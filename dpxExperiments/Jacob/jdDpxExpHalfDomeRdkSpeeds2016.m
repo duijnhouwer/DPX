@@ -13,11 +13,11 @@ function jdDpxExpHalfDomeRdk
         E.window.rectPx=[20 20 800 600];
         E.window.gamma=1;
     end
-    E.nRepeats=15;
+    E.nRepeats=10;
     
     motSec=2;
     for startSec=[1 2]
-        for dps=[-120 -40 -10 0 10 40 120]
+        for dps=[-72 -63 -54 -45 -36 -24 -18 -9 0 9 18 24 36 45 54 63 72]
             
             C=dpxCoreCondition;
             C.durSec=startSec+motSec+1;
