@@ -47,6 +47,26 @@ function plotDirectionTuningCurve(TC,varargin)
             else
                 h(mti)=errorbar(X+xoffset,Y,E,'Marker',marker,'LineStyle',lStyle,'Color',color,'MarkerFaceColor','none','LineWidth',LW);
                 hold on
+                if ss==1 % all data, not a subset
+                    if numel(X)==2 % a two-dir only experiemnt, do a t-test
+                        yy=TC{ss}.allDFoF{mti};
+                        [~,pValue,~,stats] = ttest(yy(:,1),yy(:,2));
+                        tStr=['T = ' num2str(stats.tstat,'%.2f')];
+                        dfStr=['df = ' num2str(stats.df,'%d')];
+                        pStr=['p = ' num2str(pValue,'%.2f')];
+                        if pValue<0.05
+                            pStr=[pStr ' *'];
+                        end
+                        if mti==1
+                            xPos=.25; yPos=.75;
+                        elseif mti==2
+                            xPos=.75; yPos=.25;
+                        else
+                            error('mti out of exptected range');
+                        end
+                        dpxText({tStr,dfStr,pStr},'location','free','xgain',xPos,'ygain',yPos,'Color',color,'FontSize',10)
+                    end
+                end
                 if ss>1 && numel(TC)>1
                     text(X(end)+xoffset+3,Y(end),num2str(ss-1),'Color',color);
                 end

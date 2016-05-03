@@ -52,10 +52,19 @@ function [F,R]=dpxdSubset(DPXD,indices)
     DPXD=rmfield(DPXD,'N');
     if nargout==1 || nargout==0
         % Select the subset of DPXD, store in F
-        fn=fieldnames(DPXD);
+        fn=fieldnames(DPXD); % FieldNames
         for i=1:length(fn)
             F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
         end
+        % Jaoob 20160329: I tried to optimize the above by replacing the
+        % forloop with the following, but that turned out to be marginally
+        % SLOWER, so keep the for loop (tested with Matlab 2015B). Maybe if
+        % you'd get beyond a certain number of fieldnames the cellfun would
+        % outperform the for loop, could test on that and choose the best
+        % method depending on numel(fn) ... TODO 666
+        % dv=struct2cell(DPXD); % DataValues
+        % dv=cellfun(@(x)x(:,indices,:, :,:,:, :,:,:),dv,'UniformOutput',false);
+        % F=cell2struct(dv,fn);
         if islogical(indices)
             F.N=sum(indices);
         else
