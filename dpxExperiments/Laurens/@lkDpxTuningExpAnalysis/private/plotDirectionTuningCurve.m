@@ -64,7 +64,7 @@ function plotDirectionTuningCurve(TC,varargin)
                         else
                             error('mti out of exptected range');
                         end
-                        dpxText({tStr,dfStr,pStr},'location','free','xgain',xPos,'ygain',yPos,'Color',color,'FontSize',10)
+                        dpxText({tStr,dfStr,pStr},'location','free','xgain',xPos,'ygain',yPos,'Color',color,'FontSize',10);
                     end
                 end
                 if ss>1 && numel(TC)>1
