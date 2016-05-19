@@ -1,18 +1,19 @@
 function [F,R]=dpxdSubset(DPXD,indices)
     
-    % [F,R]=dpxdSubset(DPXD,indices)
+    %dpxdSubset	Return a data-subset of a DPXD
     %
-    % Of dpxd DPXD, return the subset F corresponding to DPXD at the
-    % given indices. Note that when indices is [], F will not be
-    % empty but a complete dpxd with the same, but empty, fields as DPXD
-    % and F.N=0.
+    % F = dpxdSubset(D,IDX) return the subset F corresponding to the DPXD D
+    % at the given indices. Note that when indices is [], F will not be
+    % empty but a complete dpxd with the same, but empty, fields as D and
+    % F.N=0.
     %
-    % R: Optional second output arguments receives remainder (2016-01-31)
+    % [F,R] = dpxdSubset(...) also returns the remainder (2016-01-31)
     % 
-    % EXAMPLE:
-    %      F=dpxdSubset(D,strcmpi(D.subject,'MO'));
+    % EXAMPLES:
+    %   D=dpxdDummy;
+    %   [F,R]=dpxdSubset(D,strcmpi(D.s,'Hello'));
     %
-    % See also: dpxdSplit, dpxdMerge, dpxdIs, dpxdMergeGUI ...
+    % See also: dpxdSplit, dpxdMerge, dpxdIs, dpxdMergeGUI, dpxdDummy ...
  
     p = inputParser;   % Create an instance of the inputParser class.
     p.addRequired('DPXD', @dpxdIs);
@@ -54,7 +55,11 @@ function [F,R]=dpxdSubset(DPXD,indices)
         % Select the subset of DPXD, store in F
         fn=fieldnames(DPXD); % FieldNames
         for i=1:length(fn)
-            F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
+            if ~issparse(DPXD.(fn{i}))
+                F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
+            else
+                F.(fn{i})=DPXD.(fn{i})(:,indices); % sparse only for 2D
+            end
         end
         % Jaoob 20160329: I tried to optimize the above by replacing the
         % forloop with the following, but that turned out to be marginally
@@ -71,11 +76,16 @@ function [F,R]=dpxdSubset(DPXD,indices)
             F.N=numel(indices);
         end
     elseif nargout==2
-         % Select the subset of DPXD, store in F, store the remainder in R
+        % Select the subset of DPXD, store in F, store the remainder in R
         fn=fieldnames(DPXD);
         for i=1:length(fn)
-            F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
-            R.(fn{i})=DPXD.(fn{i})(:,~indices,:, :,:,:, :,:,:); % Max 9 dimensions
+            if ~issparse(DPXD.(fn{i}))
+                F.(fn{i})=DPXD.(fn{i})(:,indices,:, :,:,:, :,:,:); % Max 9 dimensions
+                R.(fn{i})=DPXD.(fn{i})(:,~indices,:, :,:,:, :,:,:); % Max 9 dimensions
+            else
+                F.(fn{i})=DPXD.(fn{i})(:,indices); % sparse only for 2D
+                R.(fn{i})=DPXD.(fn{i})(:,~indices); % sparse only for 2D
+            end
         end
         F.N=sum(indices);
         R.N=sum(~indices);
