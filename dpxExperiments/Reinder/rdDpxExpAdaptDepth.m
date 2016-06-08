@@ -36,7 +36,7 @@ end
 
 E=dpxCoreExperiment;
 E.paradigm      = mfilename;
-E.window.set('scrNr',1,'rectPx',[],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
+E.window.set('scrNr',0,'rectPx',[],'stereoMode','mirror'); % 'rectPx',[1440 0 1600+1440 1200]
 E.window.set('distMm',1000,'interEyeMm',65,'widHeiMm',[394 295]);
 E.window.set('gamma',0.49,'backRGBA',[.5 .5 .5 1],'skipSyncTests',1);
 
