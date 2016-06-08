@@ -2,9 +2,7 @@ classdef dpxCoreExperiment < hgsetget
     
     properties (Access=public)
         paradigm@char; % a string, changed from expName on 2015-11-29
-        expName; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
-        window@dpxCoreWindow;
-        scr; % kept for backward compatibility, will be removed on dpxBridgeBurningDay
+        window@dpxCoreWindow; % used to be called scr
         nRepeats;
         conditionSequence;
         txtStart;
@@ -231,25 +229,7 @@ classdef dpxCoreExperiment < hgsetget
             % Convert the data
             D.exp=get(E);
             D.exp=rmfield(D.exp,{'window','conditions','plugins','outputFileName','outputFolder','backupFolder','backupStaleDays','trials'});
-            if isfield(D.exp,'expName')
-                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
-                    warning('Property ''expName'' should be removed from dpxCoreExperiment class');
-                end
-                D.exp=rmfield(D.exp,'expName');
-            end
-            if isfield(D.exp,'scr')
-                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
-                    warning('Property ''scr'' should be removed from dpxCoreExperiment class');
-                end
-                D.exp=rmfield(D.exp,'scr');
-            end
             D.window=dpxGetSetables(E.window);
-            if isfield(D.window,'winRectPx')
-                if now>dpxBridgeBurningDay && strcmpi(dpxGetUserName,'jacob')
-                    warning('Property ''winRectPx'' should be removed from dpxCoreWindow class');
-                end
-                D.window=rmfield(D.window,'winRectPx');
-            end
             D.window.measuredFrameRate=E.window.measuredFrameRate;
             D=dpxFlattenStruct(D);
             % Format the conditions
@@ -546,18 +526,6 @@ classdef dpxCoreExperiment < hgsetget
         end
     end
     methods
-        function set.expName(E,value)
-            daysleft=floor(dpxBridgeBurningDay-now)-10;
-            if daysleft>=0
-                warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nYou should update your script within ' num2str(daysleft) ' days or this warning will turn into an error']);
-            else
-                warning('a:b',['The property ''expName'' has been renamed to ''paradigm''.\nPlease update your script.']);
-            end
-            E.paradigm=value; %#ok<MCSUP>
-        end
-        function set.scr(E,value) %#ok<INUSD>
-            error('a:b','The property ''scr'' has been renamed to ''window'' since 2015-11-30.\nPlease update your script.');
-        end
         function set.paradigm(E,value)
             if isempty(value)
                 E.paradigm=''; % use this to not ask for IDs nor save the data

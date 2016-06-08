@@ -7,7 +7,6 @@ classdef dpxCoreWindow < hgsetget
         % "dependent" attribute to see if this can be done in a more
         % elegant way
         rectPx=[0 0 640 480]+20; % renamed from winRectPx on 2015-11-30
-        winRectPx; % keep for backward compatibility unitl dpxBridgeBurningDay
         widHeiMm=[]; % leave [] for auto-detect (does not work so well on all systems, and different between win osx lnx
         pixelBits=32;
         distMm=600;
@@ -135,12 +134,6 @@ classdef dpxCoreWindow < hgsetget
         end
     end
     methods
-          function set.winRectPx(W,value)
-            if now>dpxBridgeBurningDay
-                warning('a:b',['The property ''winRectPx'' has been renamed to ''rectPx''.\nPlease update your script.']);
-            end
-            W.rectPx=value; %#ok<MCSUP>
-        end
         function set.rectPx(W,value)
             if ~isempty(value) && ~(isnumeric(value) && numel(value)==4)
                 error('rectPx needs to be empty ([]) or have 4 numerical values ([topleft.x topleft.y lowerright.x lowerright.y])');

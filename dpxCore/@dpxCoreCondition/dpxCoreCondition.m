@@ -247,16 +247,7 @@ classdef dpxCoreCondition < hgsetget
             % The trial is now complete, clear all stim and resp objects
             cellfun(@(x)clear(x),C.stims);
             cellfun(@(x)clear(x),C.resps);
-        end
-        function addStim(C,S)
-            [num,str]=dpxBridgeBurningDay;
-            if now>num
-                error('The dpxCoreCondition method ''addStim'' has been renamed to ''addStimulus'', update your experiment file.');
-            else
-                warning('a:b',['The dpxCoreCondition method ''addStim'' has been renamed to ''addStimulus'', update your experiment file.\nThis warning will turn into an error on ' str '.']);
-                C.addStimulus(S);
-            end
-        end    
+        end  
         function addStimulus(C,S)
             % Add a stimulus object to the condition
             % Check that S is a response object
@@ -280,15 +271,6 @@ classdef dpxCoreCondition < hgsetget
             % check properties that only visual have
             if isprop(S,'visible')
                 C.visualStimIndices(end+1)=numel(C.stims);
-            end
-        end
-        function addResp(C,R)
-            [num,str]=dpxBridgeBurningDay;
-            if now>num
-                error('The dpxCoreCondition method ''addResp'' has been renamed to ''addResponse'', update your experiment file.');
-            else
-                warning('a:b',['The dpxCoreCondition method ''addResp'' has been renamed to ''addResponse'', update your experiment file.\nThis warning will turn into an error on ' str '.']);
-                C.addResponse(R);
             end
         end
         function addResponse(C,R)
