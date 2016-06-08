@@ -11,7 +11,7 @@ if IsWin %disable laptop lid-button
 end
 
 E=dpxCoreExperiment;
-E.txtPauseNrTrials=120;
+E.txtPauseNrTrials=1;
 E.nRepeats=20;
 fullWhite=false;
 dispShift=false;
