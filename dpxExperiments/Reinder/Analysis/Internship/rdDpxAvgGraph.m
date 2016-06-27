@@ -4,7 +4,7 @@ if nargin==0
     D=[];
 end
 if nargin==1 || isempty(D)
-    fnames=dpxUIgetfiles;
+    fnames=dpxUIgetFiles;
     for f=1:numel(fnames)
         load(fnames{f});
         D{f}=data;
