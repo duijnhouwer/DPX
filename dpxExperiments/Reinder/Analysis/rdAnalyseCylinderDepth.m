@@ -1,6 +1,6 @@
 function  rdAnalyseCylinderDepth(varargin)
-% rdAnalyseCylinder(varargin)
-%   basic analysis function for the adaptation experiments.
+% rdAnalyseCylinderDepth(varargin)
+%   basic analysis function for the cylinder experiments.
 %
 % INPUT
 %   Input is given in pairwise form, first the identifier for the type of
@@ -78,7 +78,7 @@ Data = dpxdSubset(Data,Data.halfInducerCyl_stereoLumCorr==1);
 % should already be cleared by the Discard lack of response part.
 Data = dpxdSubset(Data,Data.halfInducerCyl_rotSpeedDeg~=0);
 
-%% process Data
+%% Process Data
 subjects = unique(Data.exp_subjectId);
 Data = dpxdSplit(Data,'exp_subjectId');
 x=[];
@@ -94,7 +94,7 @@ for s = 1:numel(subjects)
             y{s}(iDisp) = mean(iData.resp_rightHand_keyNr == 2); % down arrow
         end
         
-    elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind')
+    elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBindingCylLeft')
         %%% ANALYZE BINDING DATA
         
         totalDisparities    = unique(Data{s}.halfInducerCyl_disparityFrac);
@@ -104,38 +104,38 @@ for s = 1:numel(subjects)
         x(s,:) = [min(totalDisparities) max(totalDisparities)];
         
         for iSpeed = 1:numel(speeds);
-            for iDisp = 1:numel(totalDisparities)
+            for iDisp = 1:numel(x(s,:))
                 
                 if speeds(iSpeed)<0;                 % motion is going down
-                    if totalDisparities(iDisp)<0;       % disparity is concave
+                    if x(s,iDisp)<0;       % disparity is concave
                         curCor = 1; % up arrow
-                    elseif totalDisparities(iDisp)>0;   % disparity is convex
+                    elseif x(s,iDisp)>0;   % disparity is convex
                         curCor = 2; % down arrow
                     end
                 elseif speeds(iSpeed)>0;             % motion is going up
-                    if totalDisparities(iDisp)<0;       % disparity is concave
+                    if x(s,iDisp)<0;       % disparity is concave
                         curCor = 2; 
-                    elseif totalDisparities(iDisp)>0;   % disparity is convex
+                    elseif x(s,iDisp)>0;   % disparity is convex
                         curCor = 1; 
                     end
                 end
                 
-                iData = dpxdSubset(Data{s},Data{s}.halfInducerCyl_disparityFrac==totalDisparities(iDisp) & Data{s}.halfInducerCyl_rotSpeedDeg==speeds(iSpeed));
+                iData = dpxdSubset(Data{s},Data{s}.halfInducerCyl_disparityFrac==x(s,iDisp) & Data{s}.halfInducerCyl_rotSpeedDeg==speeds(iSpeed));
                 
-                y{s}(iDisp) = mean(iData.resp_rightHand_keyNr == curCor);
+                y(s,iDisp) = mean(iData.resp_rightHand_keyNr == curCor);
                 
             end
         end
     end
 end
 
-if any(diff(cellfun(@numel,x))~=0) && P.average
+if iscell(x) && any(diff(cellfun(@numel,x))~=0) && P.average
     warning('Uneven disparities between subjects. Interpolating for averaging');
     xInt = -1:.2:1;
     for s = 1:numel(subjects)
         yInt(s,:) = interp1(x{s},y{s},xInt);
     end
-elseif any(diff(cellfun(@numel,x))~=0)
+elseif iscell(x) && any(diff(cellfun(@numel,x))~=0)
     warning('Uneven disparities between subjects.')
     maxDisps = unique(max(cellfun(@numel,x)));
 else
@@ -184,7 +184,7 @@ if strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_diep') || strcmp(Data{s}.e
     xlabel('Disparities');
     ylabel('Percentage Convex');
     
-elseif strcmp(Data{s}.exp_paradigm,'rdDpxExpAdaptDepth_bind') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBaseLineCylLeft');
+elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBindingCylLeft');
     tit         = ['Visual Binding' avgStr];
     h = LF_makeFig(tit);
     if P.average
