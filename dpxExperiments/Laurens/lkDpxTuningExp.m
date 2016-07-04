@@ -94,7 +94,7 @@ function lkDpxTuningExp(varargin)
                                 else % rdk or rdkRevPhi
                                     S=dpxStimRdk;
                                     S.speedDps=tf/sf;
-                                    S.dotsPerSqrDeg=0.072*dotdiam; %0.12 when 1/sf/6
+                                    S.dotsPerSqrDeg=0.072.*(S.dotDiamDeg); %0.12 when 1/sf/6 
                                     S.dotDiamDeg=dotdiam;
                                     S.dirDeg=direc;
                                     S.motStartSec=isiSec/2; % 2015-10-28
@@ -122,6 +122,9 @@ function lkDpxTuningExp(varargin)
                                         S.freezeFlip= 6;
                                     elseif strcmpi(p.Results.stim,'dotDiam')
                                         S.dotDiamDeg=dotdiam;
+                                        S.dotRBGAfrac1=[1 1 1 1];
+                                        S.dotRBGAfrac2=[1 1 1 1];
+                                        E.window.backRGBA=[0 0 0 1];
                                     else
                                         error(['Unknown stim: ' p.Results.stim]);
                                     end
