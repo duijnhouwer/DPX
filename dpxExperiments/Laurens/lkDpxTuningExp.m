@@ -13,10 +13,13 @@ function lkDpxTuningExp(varargin)
     %       lkDpxTuningExp('stim','rdkRevPhi', 'mode','dir');
     %   Random dots with 0, 90, 180 deg transparency (and 1 component control)
     %       lkDpxTuningExp('stim','rdkTrans')
+    %   Random dots speed tuning curve with different dot diameters vert.
+    %       lkDpxTuningExp('stim','dotDiam', 'mode','Speed', 'dirdeg', 90)
+    %       
     
     p=inputParser;
     p.addParamValue('mode','dir',@(x)any(strcmpi(x,{'dir','speed'})));
-    p.addParamValue('stim','grat',@(x)any(strcmpi(x,{'grat','rdk','rdkRevPhi','rdkTrans'})));
+    p.addParamValue('stim','grat',@(x)any(strcmpi(x,{'grat','rdk','rdkRevPhi','rdkTrans', 'dotDiam'})));
     p.addParamValue('dirDeg',0,@(x)isnumeric(x)&&numel(x)==1);
     p.parse(varargin{:});
     
@@ -30,7 +33,7 @@ function lkDpxTuningExp(varargin)
     E.window.verbosity0min5max=lkSettings('VERBOSITY');
     E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
-        E.txtStart='asd DAQ-pulse';
+        E.txtStart='DAQ-pulse';
     else
         E.txtStart='asd DAQ-pulse';
     end
@@ -44,13 +47,15 @@ function lkDpxTuningExp(varargin)
         cyclesPerDeg=lkSettings('SFFIX');
         cyclesPerSecond=lkSettings('TFFIX');
         contrastFracs=lkSettings('CONTRASTFIX');
+        dotDiamdeg=lkSettings('DOTDIAMFIX');
         E.nRepeats=10;
     elseif strcmpi(p.Results.mode,'Speed')
         dirDegs=mod([p.Results.dirDeg p.Results.dirDeg+180],360);
         cyclesPerDeg=lkSettings('SFFIX');
         cyclesPerSecond=lkSettings('TFRANGE');
-        contrastFracs=lkSettings('CONTRASTRANGE');
-        E.nRepeats=3;
+        contrastFracs=lkSettings('CONTRASTFIX'); %(CONTRASTFIX)fix if dotdiam measured
+        dotDiamdeg=lkSettings('DOTDIAMRANGE'); %(DOTDIAMFIX) fix if contrasts measured
+        E.nRepeats=5;
     end
     stimSec=lkSettings('STIMSEC');
     isiSec=lkSettings('ISISEC');
@@ -72,86 +77,90 @@ function lkDpxTuningExp(varargin)
                 for tf=cyclesPerSecond(:)'
                     for mt=1:numel(motTypes)
                         for transDeg=transSeparationDeg(:)'
-                            C=dpxCoreCondition;
-                            C.durSec=stimSec+isiSec;
-                            %
-                            if strcmpi(p.Results.stim,'Grat')
-                                S=dpxStimGrating;
-                                S.cyclesPerSecond=tf;
-                                S.cyclesPerDeg=sf;
-                                S.contrastFrac=cont;
-                                S.grayFrac=E.window.backRGBA(1);
-                                S.squareWave=false;
-                                S.dirDeg=direc;
-                                S.onSec=isiSec/2;
-                                S.durSec=stimSec;
-                            else % rdk or rdkRevPhi
-                                S=dpxStimRdk;
-                                S.speedDps=tf/sf;
-                                S.dotsPerSqrDeg=.12;
-                                S.dotDiamDeg=1/sf/6;
-                                S.dirDeg=direc;
-                                S.motStartSec=isiSec/2; % 2015-10-28
-                                S.motDurSec=stimSec; % 2015-10-28
-                                % calculate the luminance based on the backRGBA and the contrast values
-                                bright=E.window.backRGBA(1)+E.window.backRGBA(1)*cont; % single value between [0..1]
-                                dark=E.window.backRGBA(1)-E.window.backRGBA(1)*cont; % single value between [0..1]
-                                S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
-                                S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
-                                S.motType=motTypes{mt};
-                                if strcmpi(p.Results.stim,'Rdk')
-                                    S.nSteps=Inf; % unlimited lifetime
-                                elseif strcmpi(p.Results.stim,'rdkTrans')
-                                    S.nSteps=Inf;
-                                    S.dotRBGAfrac1=[1 1 1 1];
-                                    S.dotRBGAfrac2=[1 1 1 1];
-                                    E.window.backRGBA=[0 0 0 1];
-                                    if ~isnan(transDeg)
-                                        S.dirDeg=S.dirDeg+transDeg*1i; % two components, transDir angular separation
+                            for dotdiam=dotDiamdeg(:)'
+                                C=dpxCoreCondition;
+                                C.durSec=stimSec+isiSec;
+                                %
+                                if strcmpi(p.Results.stim,'Grat')
+                                    S=dpxStimGrating;
+                                    S.cyclesPerSecond=tf;
+                                    S.cyclesPerDeg=sf;
+                                    S.contrastFrac=cont;
+                                    S.grayFrac=E.window.backRGBA(1);
+                                    S.squareWave=false;
+                                    S.dirDeg=direc;
+                                    S.onSec=isiSec/2;
+                                    S.durSec=stimSec;
+                                else % rdk or rdkRevPhi
+                                    S=dpxStimRdk;
+                                    S.speedDps=tf/sf;
+                                    S.dotsPerSqrDeg=0.072*dotdiam; %0.12 when 1/sf/6
+                                    S.dotDiamDeg=dotdiam;
+                                    S.dirDeg=direc;
+                                    S.motStartSec=isiSec/2; % 2015-10-28
+                                    S.motDurSec=stimSec; % 2015-10-28
+                                    % calculate the luminance based on the backRGBA and the contrast values
+                                    bright=E.window.backRGBA(1)+E.window.backRGBA(1)*cont; % single value between [0..1]
+                                    dark=E.window.backRGBA(1)-E.window.backRGBA(1)*cont; % single value between [0..1]
+                                    S.dotRBGAfrac1=[bright bright bright 1]; % witte stippen
+                                    S.dotRBGAfrac2=[dark dark dark 1]; % zwarte stippen
+                                    S.motType=motTypes{mt};
+                                    if strcmpi(p.Results.stim,'Rdk')
+                                        S.nSteps=Inf; % unlimited lifetime
+                                    elseif strcmpi(p.Results.stim,'rdkTrans')
+                                        S.nSteps=Inf;
+                                        S.dotRBGAfrac1=[1 1 1 1];
+                                        S.dotRBGAfrac2=[1 1 1 1];
+                                        E.window.backRGBA=[0 0 0 1];
+                                        if ~isnan(transDeg)
+                                            S.dirDeg=S.dirDeg+transDeg*1i; % two components, transDir angular separation
+                                        else
+                                            S.dotsPerSqrDeg=S.dotsPerSqrDeg/2; % single component, use half the dots
+                                        end
+                                    elseif strcmpi(p.Results.stim,'RdkRevPhi')
+                                        S.nSteps=1; % single step dotlife lifetime
+                                        S.freezeFlip= 6;
+                                    elseif strcmpi(p.Results.stim,'dotDiam')
+                                        S.dotDiamDeg=dotdiam;
                                     else
-                                        S.dotsPerSqrDeg=S.dotsPerSqrDeg/2; % single component, use half the dots
+                                        error(['Unknown stim: ' p.Results.stim]);
                                     end
-                                elseif strcmpi(p.Results.stim,'RdkRevPhi')
-                                    S.nSteps=1; % single step dotlife lifetime
-                                    S.freezeFlip= 6;
-                                else
-                                    error(['Unknown stim: ' p.Results.stim]);
                                 end
+                                S.name='test';
+                                S.wDeg=lkSettings('STIMDIAM');
+                                S.hDeg=S.wDeg;
+
+                                %
+                                M=dpxStimMaskCircle;
+                                M.name='mask';
+                                M.wDeg=S.wDeg*sqrt(2)+1;
+                                M.hDeg=S.wDeg*sqrt(2)+1;
+                                M.outerDiamDeg=S.wDeg;
+                                M.innerDiamDeg=S.wDeg-5;
+                                M.RGBAfrac=E.window.backRGBA;
+                                %
+                                V=dpxStimMccAnalogOut;
+                                V.name='mcc';
+                                V.onSec=0;
+                                V.durSec=C.durSec;
+                                V.initVolt=0;
+                                V.stepSec=[S.onSec S.onSec+S.durSec];
+                                V.stepVolt=[4 0];
+                                V.pinNr=lkSettings('MCCPIN');
+                                %
+                                MCC=dpxRespMccCounter;
+                                MCC.name='mcc';
+                                MCC.allowUntilSec=C.durSec;
+                                %
+                                C.addStimulus(M);
+                                C.addStimulus(S);
+                                if IsLinux % lab computer is linux, only use MCC there
+                                    C.addStimulus(V);
+                                    C.addResponse(MCC);
+                                end
+                                %
+                                E.addCondition(C);
                             end
-                            S.name='test';
-                            S.wDeg=lkSettings('STIMDIAM');
-                            S.hDeg=S.wDeg;
-   
-                            %
-                            M=dpxStimMaskCircle;
-                            M.name='mask';
-                            M.wDeg=S.wDeg*sqrt(2)+1;
-                            M.hDeg=S.wDeg*sqrt(2)+1;
-                            M.outerDiamDeg=S.wDeg;
-                            M.innerDiamDeg=S.wDeg-5;
-                            M.RGBAfrac=E.window.backRGBA;
-                            %
-                            V=dpxStimMccAnalogOut;
-                            V.name='mcc';
-                            V.onSec=0;
-                            V.durSec=C.durSec;
-                            V.initVolt=0;
-                            V.stepSec=[S.onSec S.onSec+S.durSec];
-                            V.stepVolt=[4 0];
-                            V.pinNr=lkSettings('MCCPIN');
-                            %
-                            MCC=dpxRespMccCounter;
-                            MCC.name='mcc';
-                            MCC.allowUntilSec=C.durSec;
-                            %
-                            C.addStimulus(M);
-                            C.addStimulus(S);
-                            if IsLinux % lab computer is linux, only use MCC there
-                                C.addStimulus(V);
-                                C.addResponse(MCC);
-                            end
-                            %
-                            E.addCondition(C);
                         end
                     end
                 end

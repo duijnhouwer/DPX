@@ -40,6 +40,10 @@ function val=lkSettings(str,when)
             val=[0.25 0.5 1 2 4 ];
         case 'TFFIX'
             val=1;
+        case 'DOTDIAMRANGE'
+            val=[2.5/6 5/6 10/6 20/6 40/6]; %10/6 = 1/sf/6 with sf = 0.1
+        case 'DOTDIAMFIX'
+            val=10/6;%1/sf/6 with sf = 0.1
         case 'SCRWIDHEIMM'
             val=[531 298]; % BENQ XL2420Z nagemeten d.d. XXXXXXX
         case 'BACKRGBA'
