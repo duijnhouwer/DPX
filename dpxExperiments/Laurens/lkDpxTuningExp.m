@@ -94,7 +94,7 @@ function lkDpxTuningExp(varargin)
                                 else % rdk or rdkRevPhi
                                     S=dpxStimRdk;
                                     S.speedDps=tf/sf;
-                                    S.dotsPerSqrDeg=0.072.*(S.dotDiamDeg); %0.12 when 1/sf/6 
+                                    S.dotsPerSqrDeg=0.2618./((0.5.*S.dotDiamDeg).^2); %0.12 when 1/sf/6 %%0.2618=0.12*pi(0.5*(10/6))^2
                                     S.dotDiamDeg=dotdiam;
                                     S.dirDeg=direc;
                                     S.motStartSec=isiSec/2; % 2015-10-28
