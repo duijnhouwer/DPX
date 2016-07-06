@@ -36,7 +36,7 @@ function jdDpxExpHalfDomeRdkLum
             S=dpxStimHalfDomeRdk;
             S.name='rdk';
             S.lutFileName='HalfDomeWarpLut20141030.mat';
-            S.nClusters=1000;
+            S.nClusters=750;
             S.clusterRadiusDeg=1;
             S.dotDiamPx=7;
             S.aziDps=dps;

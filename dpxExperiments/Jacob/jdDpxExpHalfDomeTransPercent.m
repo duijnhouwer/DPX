@@ -74,8 +74,8 @@ function jdDpxExpHalfDomeTransPercent(debug)
                 %
                 % Set the directions of S1 and S2 and relative number
                 % of dots
-                S1.nClusters = round(1000*prop);
-                S2.nClusters = round(1000*(1-prop));
+                S1.nClusters = round(750*prop);
+                S2.nClusters = round(750*(1-prop));
                 if dir1=='r'
                     S1.aziDps = degPerSec;
                     S2.aziDps = -degPerSec;

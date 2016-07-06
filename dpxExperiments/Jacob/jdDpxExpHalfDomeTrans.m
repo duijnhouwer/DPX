@@ -49,7 +49,7 @@ function jdDpxExpHalfDomeTrans(debug)
                     S1=dpxStimHalfDomeRdk;
                     S1.name='rdk1';
                     S1.lutFileName='HalfDomeWarpLut20141030.mat';
-                    S1.nClusters=1000;
+                    S1.nClusters=750;
                     S1.clusterRadiusDeg=1;
                     S1.dotDiamPx=7;
                     S1.invertSteps=Inf; % never invert: phi

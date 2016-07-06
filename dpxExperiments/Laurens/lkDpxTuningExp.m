@@ -57,7 +57,7 @@ function lkDpxTuningExp(varargin)
         dotDiamdeg=lkSettings('DOTDIAMRANGE'); %(DOTDIAMFIX) fix if contrasts measured
         E.nRepeats=5;
     end
-    stimSec=lkSettings('STIMSEC');
+    stimSec=lkSettings('STIMSEC')
     isiSec=lkSettings('ISISEC');
     if strcmpi(p.Results.stim,'rdkRevPhi')
         motTypes={'phi','ihp'}; % rdkRevPhi exp has regular AND reverse phi

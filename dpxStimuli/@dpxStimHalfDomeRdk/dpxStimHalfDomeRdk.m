@@ -86,7 +86,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
                 return;
             end
             cols=S.palette(:,S.visDotCol);
-            Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],2);
+            Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],1,1);
         end
         function myStep(S)
             % 0: is this a frozen frame (framerate reduction)
@@ -94,11 +94,18 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             % 1: if in motion interval update the positions            
             if S.stepCounter>S.motStartFlip && S.stepCounter<=S.motStopFlip
                 if ~frozen
-                    S.aziDeg=S.aziDeg+S.aziDegPerFlip*S.freezeFlip;
-                    S.eleDeg=S.eleDeg+S.eleDegPerFlip*S.freezeFlip;
+                    if S.aziDegPerFlip>0
+                        S.aziDeg=S.aziDeg+S.aziDegPerFlip*S.freezeFlip;
+                        S.aziDeg(S.aziDeg>135)=S.aziDeg(S.aziDeg>135)-270;
+                    elseif S.aziDegPerFlip<0
+                        S.aziDeg=S.aziDeg+S.aziDegPerFlip*S.freezeFlip;
+                        S.aziDeg(S.aziDeg<-135)=S.aziDeg(S.aziDeg<-135)+270;
+                    end
                     if S.eleDegPerFlip>0
+                        S.eleDeg=S.eleDeg+S.eleDegPerFlip*S.freezeFlip;
                         S.eleDeg(S.eleDeg>80)=S.eleDeg(S.eleDeg>80)-160;
                     elseif S.eleDegPerFlip<0
+                        S.eleDeg=S.eleDeg+S.eleDegPerFlip*S.freezeFlip;
                         S.eleDeg(S.eleDeg<-80)=S.eleDeg(S.eleDeg<-80)+160;
                     end
                 end
@@ -121,7 +128,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             end     
             % 4: convert azi-ele deg to x-y pix
             % format the ele and azi coordinates lists of all clusters
-            centerAzi=mod(S.aziDeg(:)',360)-180;
+            centerAzi=S.aziDeg(:)'; %mod(S.aziDeg(:)',360);
             centerEle=S.eleDeg(:)';
             % See which of the centers fall within the panorama
             [~, vis]=S.pLut.getXYpix(centerAzi,centerEle);
@@ -142,8 +149,8 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.pLut=[];
         end
         function [aziDeg,eleDeg,dotAge]=getFreshClusters(S,N,maxSteps)
-            aziDeg=S.RND.rand(1,N)*360; % angle in cross-section plane orthogonal to vertical axis
-            eleDeg=acosd(S.RND.rand(1,N)*2-1)-90; % angle of origin-point vector with vertical axis, -90 to make equator at 0 elevation
+            aziDeg=S.RND.rand(1,N)*270-135; % angle in cross-section plane orthogonal to vertical axis, leave out back quadrant to save computations (20160706)
+            eleDeg=acosd(S.RND.rand(1,N)*2-1)-90; % angle of cluster center point vector with vertical axis, -90 to make equator at 0 elevation
             if nargout>2
                 dotAge=floor(S.RND.rand(1,N)*maxSteps+1);
             end
@@ -200,10 +207,16 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.aziDps=value;
         end
         function set.eleDps(S,value)
-           % if value~=0
-           %     error('eleDps can currently only be 0, is a placeholder for future elabotation');
-           % end
+            if value~=0
+                error('eleDps is just a placeholder, must be zero. email Jacob if you need vertical motion.');
+            end
             S.eleDps=value;
+        end
+        function set.dotDiamPx(S,value)
+            if ~isnumeric(value) || value<=0
+                error('dotDiamPx must be a positive number');
+            end
+            S.dotDiamPx=value;
         end
     end
 end
