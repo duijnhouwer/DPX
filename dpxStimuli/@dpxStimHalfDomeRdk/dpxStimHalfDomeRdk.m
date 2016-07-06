@@ -207,9 +207,9 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             S.aziDps=value;
         end
         function set.eleDps(S,value)
-            if value~=0
-                error('eleDps is just a placeholder, must be zero. email Jacob if you need vertical motion.');
-            end
+            %if value~=0
+            %    error('eleDps is just a placeholder, must be zero. email Jacob if you need vertical motion.');
+            %end
             S.eleDps=value;
         end
         function set.dotDiamPx(S,value)
