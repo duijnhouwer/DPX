@@ -1,5 +1,4 @@
 function lkDpxTuningExp(varargin)
-    
     % lkDpxTuningExp(varargin)
     %
     % EXAMPLES
@@ -9,17 +8,20 @@ function lkDpxTuningExp(varargin)
     %        lkDpxTuningExp('mode','Speed', 'stim','Grat', 'dirdeg',90)
     %   Random dots speed tuning curve with different contrasts horizontal
     %        lkDpxTuningExp('stim','Rdk', 'mode','Speed')
+    %   Random dots speed tuning curve with different contrasts diagona/
+    %        lkDpxTuningExp('stim','Rdk', 'mode','Speed','dirDeg',45)
     %   Random dots direction tuning curve with phi and reverse-phi dots
     %       lkDpxTuningExp('stim','rdkRevPhi', 'mode','dir');
     %   Random dots with 0, 90, 180 deg transparency (and 1 component control)
     %       lkDpxTuningExp('stim','rdkTrans')
-    %   Random dots speed tuning curve with different dot diameters vert.
-    %       lkDpxTuningExp('stim','dotDiam', 'mode','Speed', 'dirdeg', 90)
-    %       
+    %   Random dots speed tuning curve with different DotDiam horizontal
+    %        lkDpxTuningExp('stim','Rdk', 'mode','speedDotDiam')
+    %   Random dots speed tuning curve with different DotDiam diagona\
+    %        lkDpxTuningExp('stim','Rdk', 'mode','speedDotDiam','dirDeg',135)
     
     p=inputParser;
-    p.addParamValue('mode','dir',@(x)any(strcmpi(x,{'dir','speed'})));
-    p.addParamValue('stim','grat',@(x)any(strcmpi(x,{'grat','rdk','rdkRevPhi','rdkTrans', 'dotDiam'})));
+    p.addParamValue('mode','dir',@(x)any(strcmpi(x,{'dir','speed','speedDotDiam','speedContrast'})));
+    p.addParamValue('stim','grat',@(x)any(strcmpi(x,{'grat','rdk','rdkRevPhi','rdkTrans'})));
     p.addParamValue('dirDeg',0,@(x)isnumeric(x)&&numel(x)==1);
     p.parse(varargin{:});
     
@@ -33,7 +35,7 @@ function lkDpxTuningExp(varargin)
     E.window.verbosity0min5max=lkSettings('VERBOSITY');
     E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
-        E.txtStart='DAQ-pulse';
+        E.txtStart='asd DAQ-pulse';
     else
         E.txtStart='asd DAQ-pulse';
     end
@@ -47,17 +49,26 @@ function lkDpxTuningExp(varargin)
         cyclesPerDeg=lkSettings('SFFIX');
         cyclesPerSecond=lkSettings('TFFIX');
         contrastFracs=lkSettings('CONTRASTFIX');
-        dotDiamdeg=lkSettings('DOTDIAMFIX');
+        dotDiamFactor=1;
         E.nRepeats=10;
     elseif strcmpi(p.Results.mode,'Speed')
         dirDegs=mod([p.Results.dirDeg p.Results.dirDeg+180],360);
         cyclesPerDeg=lkSettings('SFFIX');
         cyclesPerSecond=lkSettings('TFRANGE');
-        contrastFracs=lkSettings('CONTRASTFIX'); %(CONTRASTFIX)fix if dotdiam measured
-        dotDiamdeg=lkSettings('DOTDIAMRANGE'); %(DOTDIAMFIX) fix if contrasts measured
-        E.nRepeats=5;
+        contrastFracs=lkSettings('CONTRASTRANGE');
+        dotDiamFactor=1;
+        E.nRepeats=3;
+    elseif strcmpi(p.Results.mode,'speedDotDiam')
+        if isempty(strfind(lower(p.Results.stim),'rdk'))
+            error('speedDotDiam can only be used with rdk-stim')
+        end
+        dirDegs=mod([p.Results.dirDeg p.Results.dirDeg+180],360);
+        cyclesPerDeg=lkSettings('SFFIX');
+        cyclesPerSecond=lkSettings('TFRANGE4DOTS');
+        contrastFracs=lkSettings('CONTRASTFIX');
+        dotDiamFactor=lkSettings('DOTDIAMFACTOR');
     end
-    stimSec=lkSettings('STIMSEC')
+    stimSec=lkSettings('STIMSEC');
     isiSec=lkSettings('ISISEC');
     if strcmpi(p.Results.stim,'rdkRevPhi')
         motTypes={'phi','ihp'}; % rdkRevPhi exp has regular AND reverse phi
@@ -77,7 +88,7 @@ function lkDpxTuningExp(varargin)
                 for tf=cyclesPerSecond(:)'
                     for mt=1:numel(motTypes)
                         for transDeg=transSeparationDeg(:)'
-                            for dotdiam=dotDiamdeg(:)'
+                            for ddFactor=dotDiamFactor(:)'
                                 C=dpxCoreCondition;
                                 C.durSec=stimSec+isiSec;
                                 %
@@ -91,11 +102,15 @@ function lkDpxTuningExp(varargin)
                                     S.dirDeg=direc;
                                     S.onSec=isiSec/2;
                                     S.durSec=stimSec;
-                                else % rdk or rdkRevPhi
+                                else % rdk, rdkTrans, or rdkRevPhi
                                     S=dpxStimRdk;
                                     S.speedDps=tf/sf;
-                                    S.dotsPerSqrDeg=0.2618./((0.5.*S.dotDiamDeg).^2); %0.12 when 1/sf/6 %%0.2618=0.12*pi(0.5*(10/6))^2
-                                    S.dotDiamDeg=dotdiam;
+                                    S.dotsPerSqrDeg=.12;
+                                    S.dotDiamDeg=1/sf/6*ddFactor;
+                                    if ddFactor~=1
+                                        % adjust the dotsPerSqrDeg to maintain equal number of dot pixels drawn
+                                        S.dotsPerSqrDeg=S.dotsPerSqrDeg/ddFactor^2;
+                                    end
                                     S.dirDeg=direc;
                                     S.motStartSec=isiSec/2; % 2015-10-28
                                     S.motDurSec=stimSec; % 2015-10-28
@@ -120,19 +135,18 @@ function lkDpxTuningExp(varargin)
                                     elseif strcmpi(p.Results.stim,'RdkRevPhi')
                                         S.nSteps=1; % single step dotlife lifetime
                                         S.freezeFlip= 6;
-                                    elseif strcmpi(p.Results.stim,'dotDiam')
-                                        S.dotDiamDeg=dotdiam;
-                                        S.dotRBGAfrac1=[1 1 1 1];
-                                        S.dotRBGAfrac2=[1 1 1 1];
-                                        E.window.backRGBA=[0 0 0 1];
                                     else
                                         error(['Unknown stim: ' p.Results.stim]);
+                                    end
+                                    if strcmpi(p.Results.mode,'speedDotDiam')
+                                        % force single color dots in speedDotDiam mode (not Black/White)
+                                        S.dotRBGAfrac1=[cont cont cont 1];
+                                        S.dotRBGAfrac2=[cont cont cont 1];
                                     end
                                 end
                                 S.name='test';
                                 S.wDeg=lkSettings('STIMDIAM');
                                 S.hDeg=S.wDeg;
-
                                 %
                                 M=dpxStimMaskCircle;
                                 M.name='mask';
@@ -169,9 +183,8 @@ function lkDpxTuningExp(varargin)
                 end
             end
         end
+        nrTrials=numel(E.conditions) * E.nRepeats;
+        xtr=lkSettings('2PHOTONEXTRASECS');
+        dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
+        E.run;
     end
-    nrTrials=numel(E.conditions) * E.nRepeats;
-    xtr=lkSettings('2PHOTONEXTRASECS');
-    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
-    E.run;
-end

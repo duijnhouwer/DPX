@@ -23,12 +23,10 @@ function val=lkSettings(str,when)
     
     switch(upper(str))
         case 'CONTRASTRANGE'
-            if when<datenum('24-Nov-2011 11:49:39')
-                val='Just and example to illustrate lkSetting''s ''when'' option.';
-            elseif when>=datenum('24-Nov-2011 11:49:39') && when<datenum('31-Jan-2012')
-                val='Another example to illustrate lkSetting''s ''when'' option.';
-            else
+            if when<datenum('6-Jul-2016')
                 val=[0.0625 0.125 0.25 .5 1];
+            else
+                val=[0.125 0.25 .5 1];
             end
         case 'CONTRASTFIX'
             val=1;
@@ -37,11 +35,13 @@ function val=lkSettings(str,when)
         case 'SFFIX'
             val=0.1;
         case 'TFRANGE'
-            val=[0.25 0.5 1 2 4 ];
+            val=[0.25 0.5 1 2 4];
+        case 'TFRANGE4DOTS'
+            val=[0.9 1.8 3.6 5.4 7.2]; % 2016-07-06
         case 'TFFIX'
             val=1;
-        case 'DOTDIAMRANGE'
-            val=[2.5/6 5/6 10/6 20/6 40/6]; %10/6 = 1/sf/6 with sf = 0.1
+        case 'DOTDIAMFACTOR'
+            val=[0.25 0.5 1 2 4];
         case 'DOTDIAMFIX'
             val=10/6;%1/sf/6 with sf = 0.1
         case 'SCRWIDHEIMM'
