@@ -86,7 +86,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
                 return;
             end
             cols=S.palette(:,S.visDotCol);
-            Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],1,1);
+            Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],1);
         end
         function myStep(S)
             % 0: is this a frozen frame (framerate reduction)
