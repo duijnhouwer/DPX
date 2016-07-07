@@ -103,7 +103,11 @@ function lkDpxTuningExp(varargin)
                                     S.onSec=isiSec/2;
                                     S.durSec=stimSec;
                                 else % rdk, rdkTrans, or rdkRevPhi
-                                    S=dpxStimRdk;
+                                    if ~strcmpi(p.Results.mode,'speedDotDiam')
+                                        S=dpxStimRdk; % draws dot primites (max diam ~20 pix or so)
+                                    else
+                                        S=dpxStimRdkHuge; % draws oval of any size
+                                    end
                                     S.speedDps=tf/sf;
                                     S.dotsPerSqrDeg=.12;
                                     S.dotDiamDeg=1/sf/6*ddFactor;
@@ -188,3 +192,4 @@ function lkDpxTuningExp(varargin)
         dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
         E.run;
     end
+end

@@ -89,7 +89,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 ok=applyTheAperture(S);
                 if ~any(ok), return; end
                 xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-                Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+                Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2,1);
             end
         end
         function myStep(S)
@@ -154,6 +154,18 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             end
         end
     end
+    methods (Access=protected)
+        function ok=applyTheAperture(S)
+            if strcmpi(S.apert,'CIRCLE')
+                r=min(S.wPx,S.hPx)/2;
+                ok=hypot(S.dotXPx,S.dotYPx)<r;
+            elseif strcmpi(S.apert,'RECT')
+                % no need to do anythingSC
+            else
+                error(['Unknown apert option: ' S.apert ]);
+            end
+        end
+    end
     methods
         function set.motType(S,value)
             if ~any(strcmpi(value,{'phi','ihp'}))
@@ -172,19 +184,4 @@ classdef dpxStimRdk < dpxAbstractVisualStim
     end
 end
 
-
-% --- HELP FUNCTION ------------------------------------------------------
-
-function ok=applyTheAperture(S)
-    % Note (20150909) This is outdated use. In future stimili rather use a separate
-    % aperture object such as dpxStimMask
-    if strcmpi(S.apert,'CIRCLE')
-        r=min(S.wPx,S.hPx)/2;
-        ok=hypot(S.dotXPx,S.dotYPx)<r;
-    elseif strcmpi(S.apert,'RECT')
-        % no need to do anythingSC
-    else
-        error(['Unknown apert option: ' S.apert ]);
-    end
-end
 
