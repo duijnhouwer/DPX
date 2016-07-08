@@ -150,7 +150,13 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
         end
         function [aziDeg,eleDeg,dotAge]=getFreshClusters(S,N,maxSteps)
             aziDeg=S.RND.rand(1,N)*270-135; % angle in cross-section plane orthogonal to vertical axis, leave out back quadrant to save computations (20160706)
-            eleDeg=acosd(S.RND.rand(1,N)*2-1)-90; % angle of cluster center point vector with vertical axis, -90 to make equator at 0 elevation
+            eleDeg=acosd(S.RND.rand(1,N)*1.5-1)-90; % angle of cluster center point vector with vertical axis, -90 to make equator at 0 elevation
+            % Before 2016-07-08 the entire elevation angle was used. Like
+            % this: 
+            %   eleDeg=acosd(S.RND.rand(1,N)*2-1)-90;
+            % Now, the bottom 25% is left out. This allows to reduce the
+            % nClusters by another factor 0.75 to optimize the stimulus
+            % without changing what it looks like in our halfdome at all.
             if nargout>2
                 dotAge=floor(S.RND.rand(1,N)*maxSteps+1);
             end

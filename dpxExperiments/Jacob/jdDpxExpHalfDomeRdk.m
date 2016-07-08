@@ -10,7 +10,7 @@ function jdDpxExpHalfDomeRdk
         E.window.rectPx=[1920 0 1920+1920 1080];
         E.window.gamma=0.25;
     else
-        E.window.rectPx=[20 20 800 600];
+        E.window.rectPx=[0 0 1920 1080];% [20 20 800 600]; % [0 0 1920 1080];
         E.window.gamma=1;
     end
     E.nRepeats=15;
