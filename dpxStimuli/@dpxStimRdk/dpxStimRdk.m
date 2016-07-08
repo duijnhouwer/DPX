@@ -118,10 +118,24 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                     x(~expired)=x(~expired)+dx;
                     y(~expired)=y(~expired)+dy;
                     % Wrap the dots around if they cross the stimulus edge
-                    x(x>=w/2)=x(x>=w/2)-w;
-                    x(x<-w/2)=x(x<-w/2)+w;
-                    y(y>=h/2)=y(y>=h/2)-h;
-                    y(y<-h/2)=y(y<-h/2)+h;
+                    tooRight=x>=w/2;
+                    tooLeft=x<-w/2;
+                    tooHigh=y>=h/2;
+                    tooLow=y<-h/2;
+                    x(tooRight)=x(tooRight)-w;
+                    x(tooLeft)=x(tooLeft)+w;
+                    y(tooHigh)=y(tooHigh)-h;
+                    y(tooLow)=y(tooLow)+h;
+                    if S.nSteps~=1
+                        % if not single step lifetime, give dots that went
+                        % over an hori (verti) edge a new verti (hori)
+                        % position to prevent the same pattern from
+                        % repeating
+                        needNewX=tooHigh|tooLow;
+                        x(needNewX)=S.RND.rand(1,sum(needNewX))*S.wPx-S.wPx/2;
+                        needNewY=tooRight|tooLeft;
+                        y(needNewY)=S.RND.rand(1,sum(needNewY))*S.hPx-S.hPx/2;
+                    end
                 end
                 % Copy shorthand into member variables
                 S.dotXPx=x;

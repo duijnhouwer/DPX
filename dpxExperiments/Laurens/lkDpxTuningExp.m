@@ -103,6 +103,7 @@ function lkDpxTuningExp(varargin)
                                     S.dirDeg=direc;
                                     S.onSec=isiSec/2;
                                     S.durSec=stimSec;
+                                    S.wDeg=lkSettings('STIMDIAM');
                                 else % rdk, rdkTrans, or rdkRevPhi
                                     if ~strcmpi(p.Results.mode,'speedDotDiam')
                                         S=dpxStimRdk; % draws dot primites (max diam ~20 pix or so)
@@ -149,18 +150,27 @@ function lkDpxTuningExp(varargin)
                                         S.dotRBGAfrac2=[cont cont cont 1];
                                         E.window.backRGBA=[0 0 0 1];
                                     end
+                                    % Give the stimulus (but NOT the occulusing mask) to accomodate the dot
+                                    % diameter.  a dot is refreshed when its center is out of the stimulus
+                                    % width or height. With big dots, this will result in a sudden
+                                    % disappearance of the dot. This size "should" be the radius of the dots.
+                                    % However, because the scaling from degrees to pixels is assumed linear,
+                                    % this doesn't work for large angle displays (like in the 2photon).
+                                    % Therefore, just add 2 times the radius to be safe (this will incur a
+                                    % penalty on the performance (larger stim is more dots) so if you get
+                                    % framedrops look at this setting first.
+                                    S.wDeg=lkSettings('STIMDIAM')+S.dotDiamDeg;
                                 end
-                                S.name='test';
-                                S.wDeg=lkSettings('STIMDIAM');
                                 S.hDeg=S.wDeg;
+                                S.name='test';
                                 %
-                                M=dpxStimMaskCircle;
-                                M.name='mask';
-                                M.wDeg=S.wDeg*sqrt(2)+1;
-                                M.hDeg=S.wDeg*sqrt(2)+1;
-                                M.outerDiamDeg=S.wDeg;
-                                M.innerDiamDeg=S.wDeg-5;
-                                M.RGBAfrac=E.window.backRGBA;
+                                MASK=dpxStimMaskCircle;
+                                MASK.name='mask';
+                                MASK.wDeg=S.wDeg*sqrt(2)+1;
+                                MASK.hDeg=S.wDeg*sqrt(2)+1;
+                                MASK.outerDiamDeg=lkSettings('STIMDIAM');
+                                MASK.innerDiamDeg=lkSettings('STIMDIAM')-5;
+                                MASK.RGBAfrac=E.window.backRGBA;
                                 %
                                 V=dpxStimMccAnalogOut;
                                 V.name='mcc';
@@ -175,7 +185,7 @@ function lkDpxTuningExp(varargin)
                                 MCC.name='mcc';
                                 MCC.allowUntilSec=C.durSec;
                                 %
-                                C.addStimulus(M);
+                                C.addStimulus(MASK);
                                 C.addStimulus(S);
                                 if IsLinux % lab computer is linux, only use MCC there
                                     C.addStimulus(V);
