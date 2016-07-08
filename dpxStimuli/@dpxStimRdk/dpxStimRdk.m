@@ -70,12 +70,9 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             S.dotDirRads(S.noiseDots)=noiseDirRads(S.noiseDots);
             if S.cohereFrac<0
                 S.dotDirRads=S.dotDirRads+pi; % negative coherence flips directions
-            end 
-            [S.dotDiamPx,wasoutofrange]=dpxClip(S.dotDiamDeg*S.scrGets.deg2px,S.scrGets.limits.GL_ALIASED_POINT_SIZE_RANGE);
-            if wasoutofrange
-                S.dotDiamDeg=S.dotDiamPx/S.scrGets.deg2px;
-                warning(['S.dotDiamDeg was out of range for this computer, capped at the limit of ' num2str(S.dotDiamDeg) ' degrees.']);
             end
+            S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
+            S.checkDotsize(S.dotDiamPx);
             S.dotAge=floor(S.RND.rand(1,N) * (S.nSteps + 1));
             S.pxPerFlip=S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
             S.dotPolarity=S.RND.rand(1,N)<.5;
@@ -153,8 +150,15 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 end
             end
         end
-    end
-    methods (Access=protected)
+        function checkDotsize(S,px)
+            % This can't be done in a set methbod because
+            % GL_ALIASED_POINT_SIZE_RANGE is only available after the
+            % presentation window has opened.
+            hardwareLimit=S.scrGets.limits.GL_ALIASED_POINT_SIZE_RANGE;
+            if px>max(hardwareLimit) || px<min(hardwareLimit)
+                error(['[' mfilename '] dotDiamDeg results in a diameter of ' num2str(px) ' pixels, which is outside the graphics card''s range of ' num2str(min(hardwareLimit)) '--'  num2str(max(hardwareLimit)) ' pixels.']);
+            end
+        end
         function ok=applyTheAperture(S)
             if strcmpi(S.apert,'CIRCLE')
                 r=min(S.wPx,S.hPx)/2;

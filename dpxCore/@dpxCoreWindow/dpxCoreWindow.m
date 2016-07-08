@@ -82,8 +82,11 @@ classdef dpxCoreWindow < hgsetget
                 rethrow(me);
             end
             W.limits.GL_ALIASED_POINT_SIZE_RANGE=glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE);
-            % Load GetSecs' MEX into memory by calling it once so the first real call will be more accurate.
-            GetSecs;
+            % Load GetSecs' MEX into memory by calling it once so the first
+            % real call will be more accurate. Do something with the
+            % results perhaps otherwise a smart (future) interpreter might
+            % skip it
+            if GetSecs<0, disp(' '); end % GetSec is always positive ...
             WaitSecs(0);
             % Bump the priority of the matlab process
             maxPri=MaxPriority(W.windowPtr); % max priority value for this system

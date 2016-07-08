@@ -16,5 +16,9 @@ classdef dpxStimRdkHuge < dpxStimRdk
                 Screen('FillOval',S.scrGets.windowPtr,S.dotsRGBA(:,ok),rectArray(:,ok),S.dotDiamPx*1.1);
             end
         end
+        function checkDotsize(S,px)
+            % no need for when drawing with FillOval instead of DrawDots,
+            % so this empty function simply overrides the one in dpxStimRdk
+        end
     end
 end
