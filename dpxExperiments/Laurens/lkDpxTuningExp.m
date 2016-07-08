@@ -35,7 +35,7 @@ function lkDpxTuningExp(varargin)
     E.window.verbosity0min5max=lkSettings('VERBOSITY');
     E.window.skipSyncTests=lkSettings('SKIPSYNCTEST');
     if IsLinux
-        E.txtStart='asd DAQ-pulse';
+        E.txtStart='DAQ-pulse';
     else
         E.txtStart='asd DAQ-pulse';
     end
@@ -67,6 +67,7 @@ function lkDpxTuningExp(varargin)
         cyclesPerSecond=lkSettings('TFRANGE4DOTS');
         contrastFracs=lkSettings('CONTRASTFIX');
         dotDiamFactor=lkSettings('DOTDIAMFACTOR');
+        E.nRepeats=10;
     end
     stimSec=lkSettings('STIMSEC');
     isiSec=lkSettings('ISISEC');
@@ -146,6 +147,7 @@ function lkDpxTuningExp(varargin)
                                         % force single color dots in speedDotDiam mode (not Black/White)
                                         S.dotRBGAfrac1=[cont cont cont 1];
                                         S.dotRBGAfrac2=[cont cont cont 1];
+                                        E.window.backRGBA=[0 0 0 1];
                                     end
                                 end
                                 S.name='test';

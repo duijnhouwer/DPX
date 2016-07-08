@@ -39,7 +39,7 @@ function val=lkSettings(str,when)
         case 'TFRANGE4DOTS'
             val=[0.9 1.8 3.6 5.4 7.2]; % 2016-07-06
         case 'TFFIX'
-            val=1;
+            val=1; %3.6 for dots
         case 'DOTDIAMFACTOR'
             val=[0.25 0.5 1 2 4];
         case 'DOTDIAMFIX'
