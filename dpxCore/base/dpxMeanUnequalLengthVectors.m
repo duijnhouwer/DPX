@@ -1,24 +1,25 @@
 function [m,n,s,md]=dpxMeanUnequalLengthVectors(c,varargin)
     
-    % function [m,n,s,md]=dpxMeanUnequalLengthVectors(c,weights) get the mean 1D vector
-    % of a bunch of 1D numerical vectors in cell array c. They can be of unequal
-    % length (that's the purpose of this function). Another useful feature over
-    % normal mean and std is that of parts in the vectors filled with NaN are
-    % ignored.
+    % function [m,n,s,md]=dpxMeanUnequalLengthVectors(c,weights) get the
+    % mean 1D vector of a bunch of 1D numerical vectors in cell array c.
+    % They can be of unequal length (that's the purpose of this function).
+    % Another useful feature over normal mean and std is that of parts in
+    % the vectors filled with NaN are ignored.
     %
-    % As of 20090818, the standard deviation is also calculated. is pretty time
-    % consuming so only done when the output argument list requires this
-    % (>=four output arguments)
+    % As of 20090818, the standard deviation is also calculated. is pretty
+    % time consuming so only done when the output argument list requires
+    % this (>=four output arguments)
     %
-    % outputs: m, the vector of means; n, the number of observations per element in
-    % m; md, the vector of medians; s, the standard deviation vector m and n and s
-    % will have the same length as the longest vector in c
+    % outputs: m, the vector of means; n, the number of non-nan
+    % observations per element in m; md, the vector of medians; s, the
+    % standard deviation vector m and n and s will have the same length as
+    % the longest vector in c
     %
-    % Use the prioritize switch ([memory],speed) to be efficient with either
-    % RAM or the CPU.
+    % Use the prioritize switch ([memory],speed) to be efficient with
+    % either RAM or the CPU.
     %
-    % Adapted from jdMeanUnequalLengthVectors and added to DPX on 2014-12-09.
-    % Jacob
+    % Adapted from jdMeanUnequalLengthVectors and added to DPX on
+    % 2014-12-09. Jacob
     %
     % 2015-02-03: added calculation of median
       
