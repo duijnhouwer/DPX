@@ -199,9 +199,9 @@ function lkDpxTuningExp(varargin)
                 end
             end
         end
-        nrTrials=numel(E.conditions) * E.nRepeats;
-        xtr=lkSettings('2PHOTONEXTRASECS');
-        dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
-        E.run;
     end
+    nrTrials=numel(E.conditions) * E.nRepeats;
+    xtr=lkSettings('2PHOTONEXTRASECS');
+    dpxDispFancy(['Please set-up a ' num2str(ceil(nrTrials*(isiSec+stimSec)+xtr)) ' s recording pattern in LasAF (' num2str(nrTrials) ' trials of ' num2str(stimSec+isiSec) ' s + ' num2str(xtr) ' s)']);
+    E.run;
 end
