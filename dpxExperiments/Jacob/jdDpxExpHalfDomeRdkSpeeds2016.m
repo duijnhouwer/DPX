@@ -34,9 +34,10 @@ function jdDpxExpHalfDomeRdkSpeeds2016
             S=dpxStimHalfDomeRdk;
             S.name='rdk';
             S.lutFileName='HalfDomeWarpLut20141030.mat';
-            S.nClusters=750;
-            S.clusterRadiusDeg=1;
-            S.dotDiamPx=4;
+            S.nClusters=560;
+            S.clusterRadiusDeg=.9;
+            S.dAdEdeg=[ sind(90:90:360)*.5 sind(30:30:360) ;  cosd(90:90:360)*.5 cosd(30:30:360)];
+            S.dotDiamPx=6;
             S.aziDps=dps;
             S.nSteps=Inf;
             S.motStartSec=startSec;
