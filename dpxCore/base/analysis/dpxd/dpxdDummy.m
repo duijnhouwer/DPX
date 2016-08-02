@@ -18,6 +18,7 @@ function DPXD=dpxdDummy(N)
     DPXD.d=char(round(rand(1,N)*3)+'A');
     DPXD.e=rand(1,N);
     DPXD.f=repmat({rand(10,20)},1,N);
+    DPXD.g=randperm(N,N);
     DPXD.s=cell(1,N);
     DPXD.s(1:2:N)={'hello'};
     DPXD.s(2:2:N)={'world'};

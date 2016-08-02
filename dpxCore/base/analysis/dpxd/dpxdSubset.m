@@ -11,7 +11,21 @@ function [F,R]=dpxdSubset(DPXD,indices)
     % 
     % EXAMPLES:
     %   D=dpxdDummy;
-    %   [F,R]=dpxdSubset(D,strcmpi(D.s,'Hello'));
+    %
+    %   % Subset D according to cell of strings D.s that reads 'Hello'
+    %   F=dpxdSubset(D,strcmpi(D.s,'Hello'));
+    %
+    %   % Same, but store the remainder too
+    %   [F,S]=dpxdSubset(D,strcmpi(D.s,'Hello'));
+    %
+    %   % Sort D along field 'i'
+    %   [~,idx] = sort(D.i);
+    %   D = dpxdSubset(D,idx);
+    %
+    %   % Duplicate data
+    %   D = dpxdDummy(3)
+    %   D = dpxdSubset(D,[1 1 2 2 3 3])
+    %   
     %
     % See also: dpxdSplit, dpxdMerge, dpxdIs, dpxdMergeGUI, dpxdDummy ...
  
@@ -23,29 +37,36 @@ function [F,R]=dpxdSubset(DPXD,indices)
     nargoutchk(0,2);
 
     if all(dpxIsWholeNumber(indices))
-        if numel(unique(indices))~=numel(indices)
+        if any(indices>DPXD.N)
+            error('Requested integer indices out of range');
+        end
+        if numel(unique(indices))<numel(indices)
             % using subset to repeat data, this is kind of side a effect that
-            % dpxdSubset can be used for. 666 document better, in a rush now ...
+            % dpxdSubset can be used for. TODO 666 document better, in a rush now ...
             if nargout==2
                 error('Can''t use remainder output (2nd output argument) when using dpxdSubset to expand the DPXD by repeating data');
             end
             % keep integer indices
         else
-            % convert to logical
-            if any(indices>DPXD.N)
-                error('Requested integer indices out of range');
+            if numel(unique(indices))==DPXD.N && any(diff(indices)~=1)
+                % all indices are selected, might be used to sort the DPXD,
+                % so don't convert to logicals. Unless monotonic increasing
+                % with steps of one (any(diff(indices)~=1)
+            else
+                % convert subset to logical for speed
+                tmp=false(1,DPXD.N);
+                tmp(indices)=true;
+                indices=tmp;
+                clear tmp;
             end
-            tmp=false(1,DPXD.N);
-            tmp(indices)=true;
-            indices=tmp;
-            clear tmp;
         end
-    elseif ~all(islogical(indices))
+    elseif all(islogical(indices))
         if numel(indices)~=DPXD.N
             error('Requested logical indices out of range');
         end
-        error('Indices should be whole numbers or logical');
         % keep logical indices
+    else
+        error('Indices should be whole numbers or logical');
     end
 
     % Remove the special N field. Will be put back (with an updated value) at the end of this

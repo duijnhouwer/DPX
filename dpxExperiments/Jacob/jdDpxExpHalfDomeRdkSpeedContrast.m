@@ -1,4 +1,4 @@
-function jdDpxExpHalfDomeRdk
+function jdDpxExpHalfDomeRdkSpeedContrast
     E=dpxCoreExperiment;
     E.paradigm='jdDpxExpHalfDomeRdkSpeedContrast';
     E.outputFolder='/data/vanwezeldata/dpxData';
