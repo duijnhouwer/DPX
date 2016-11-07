@@ -20,7 +20,7 @@ function h=dpxText(str,varargin)
     p.addParamValue('location','topleft',@(x)any(strcmpi(x,{'topleft','topright','bottomleft','bottomright','free','central'})));
     p.addParamValue('xgain',.98,@isnumeric);%(x)x>=0&&x<=1); % no function when location is 'central'
     p.addParamValue('ygain',.98,@isnumeric);%(x)x>=0&&x<=1); % no function when location is 'central'
-    p.addParamValue('FontSize',8, @(x)x>0); % if smaller than 1, interpreted as proportional to Y-axis, otherwise a points
+    p.addParamValue('FontSize',3, @(x)x>0); % if smaller than 1, interpreted as proportional to Y-axis, otherwise a points
     p.addParamValue('Color', [0 0 0 1]);
     p.addParamValue('BackGroundColor','none'); % e.g. [1 1 1 .75] or 'none'
     p.addParamValue('maxStrLen',200,@(x)dpxIsWholeNumber(x) && numel(x)>=numel('...[truncated]'));

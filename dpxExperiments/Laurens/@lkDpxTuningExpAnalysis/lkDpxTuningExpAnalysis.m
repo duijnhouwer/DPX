@@ -181,7 +181,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
                             end
                             
                         end
-                        close(figHandle);
+%                         close(figHandle);
                     end
                     % Now that the plotting of the complete and the
                     % sub-sets has been done, only maintain the complete

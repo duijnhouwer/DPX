@@ -1,6 +1,6 @@
 function files=jdDpxExpHalfDomeRdkRevPhiAnalysis_COPY(files)
 if nargin==0
-    files = rdDpxFileInput;
+    files = dpxUIgetFiles;
     if isempty(files) || isempty(files{1})
         return;
     end
@@ -24,12 +24,7 @@ end
 % Merge all datafiles that we collected in cell array
 E=dpxdMerge(E); % E is now a DPXD
 
-% for flip=[1 2 3 4 5 6 7];
-flip=1:7;
-% E=dpxdSubset(EE,EE.rdk_freezeFlip==flip);
-% infinite lifetime control
-%     analyze(dpxdSubset(E,E.rdk_nSteps==Inf),'; Unlimited lifetime');
-% PHI and IHP
+flip=5;
 PHI  = dpxdSubset(E,E.rdk_nSteps==1 & E.rdk_invertSteps==Inf);
 Cphi = analyze(PHI,['; Phi, flip: ' num2str(flip)]);
 IHP  = dpxdSubset(E,E.rdk_nSteps==1 & E.rdk_invertSteps==1);
@@ -248,13 +243,13 @@ end
 
 % Reinder: step 7, remove trials in which mice are not moving enough,
 % i.e. if any of the axis is below threshold 1
-% D = RemoveStaticMouse(D,2,{'resp_mouseBack_dyPx','resp_mouseBack_dxPx',...
-%     'resp_mouseSide_dyPx','resp_mouseSide_dxPx'});
-% if D.N==0
-%     suspect=true;
-%     str='Zero trials left after static mouse check, removing file !!!';
-%     return;
-% end
+D = RemoveStaticMouse(D,2,{'resp_mouseBack_dyPx','resp_mouseBack_dxPx',...
+    'resp_mouseSide_dyPx','resp_mouseSide_dxPx'});
+if D.N==0
+    suspect=true;
+    str='Zero trials left after static mouse check, removing file !!!';
+    return;
+end
 end
 
 function C=getMeanYawTracesPerMouse(C)

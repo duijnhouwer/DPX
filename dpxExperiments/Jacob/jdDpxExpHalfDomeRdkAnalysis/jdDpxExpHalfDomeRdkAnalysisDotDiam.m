@@ -9,7 +9,7 @@ function jdDpxExpHalfDomeRdkAnalysisSpeed(files)
     E={};
     for i=1:numel(files)
         D=dpxdLoad(files{i});
-        maxFrDropsPerSec=2;
+        maxFrDropsPerSec=20;
         [D,percentBadTrials] = removeTrialWithTooManyFramedrops(D,maxFrDropsPerSec/D.window_measuredFrameRate(1)*100);
         disp(['File #' num2str(i,'%.3d') ': ' num2str(round(percentBadTrials)) '% of trials had more than ' num2str(maxFrDropsPerSec) ' video-frame drops per second']);
         if percentBadTrials>95
@@ -555,10 +555,12 @@ function plotSpeedYawCurves(A)
             yawSem(vi) = mean(V.yawSEM{1}(idx));
         end
         
+        %%%%% Change parula input number %%%%%
         colmap = flipud(colormap('parula')); % flip so that highest contrast has highest contrast color (black)
         % select the color for this line from the colmap
         colidx = round(size(colmap,1)*(0.2+0.8*contrasts(i))); % use only 80% of colmap (white/yellow is too bright)
         colidx = max(colidx,1); % prevent 0-index
+        colidx = min(colidx,64);
         col = colmap(colidx,:); % the line color
         wid = 0.5 + contrasts(i)*2;
         markers = 'osdv^<>ph';

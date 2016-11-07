@@ -1,6 +1,6 @@
-function jdDpxExpHalfDomeRdkSpeedDotdiam
+function jdDpxExpHalfDomeRdkSpeedContrast
     E=dpxCoreExperiment;
-    E.paradigm='jdDpxExpHalfDomeRdkSpeedDotdiam';
+    E.paradigm='jdDpxExpHalfDomeRdkSpeedContrast';
     E.outputFolder='/data/vanwezeldata/dpxData';
     E.window.skipSyncTests=0;
     E.window.verbosity0min5max=1;
@@ -18,7 +18,7 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
     motSec=2;
     for startSec=[1 2]
         for dps=[-72 -54 -36 -18 0 18 36 54 72]
-           for  clusterRadiusDeg=[0.5 sqrt(0.5) 1 sqrt(2) 2]
+           for luminance = [.05 .1 .2 .5 1]
             C=dpxCoreCondition;
             C.durSec=startSec+motSec+1;
             %
@@ -34,12 +34,10 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
             S=dpxStimHalfDomeRdk;
             S.name='rdk';
             S.lutFileName='HalfDomeWarpLut20141030.mat';
-            S.clusterRadiusDeg=clusterRadiusDeg;
-            S.nClusters=round(560./(S.clusterRadiusDeg).^2);
-            S.dotDiamPx=round(6.*(S.clusterRadiusDeg).^2);
+            S.clusterRadiusDeg=.9;
+            S.nClusters=560;
             S.dAdEdeg=[ sind(90:90:360)*.5 sind(30:30:360) ;  cosd(90:90:360)*.5 cosd(30:30:360)];
-            S.RGBAfrac1=[1 1 1 1];
-            S.RGBAfrac2=[1 1 1 1];
+            S.dotDiamPx=6;
             S.aziDps=dps;
             S.nSteps=Inf;
             S.motStartSec=startSec;
@@ -60,7 +58,7 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
                 R1=dpxRespContiMouse;
                 R1.name='mouseBack';
                 R1.doReset=false;
-                R1.mouseId=13;
+                R1.mouseId=9;
                 R1.defaultX=1920;
                 R1.defaultY=1080/2;
                 R1.allowUntilSec=C.durSec;
@@ -69,7 +67,7 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
                 R2=dpxRespContiMouse;
                 R2.name='mouseSide';
                 R2.doReset=true;
-                R2.mouseId=11;
+                R2.mouseId=12;
                 R2.defaultX=1920;
                 R2.defaultY=1080/2;
                 R2.allowUntilSec=C.durSec;

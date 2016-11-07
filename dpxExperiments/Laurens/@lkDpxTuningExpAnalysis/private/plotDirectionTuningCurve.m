@@ -4,7 +4,7 @@ function plotDirectionTuningCurve(TC,varargin)
     p.addParamValue('bayesfit',false,@islogical);
     p.parse(varargin{:});
     %
-    colors={[0 0 1],[1 0 0],[0 1 0],[1 0 1],[1 1 0],[0 1 1]};
+    colors={[1 0 0],[0 0 1],[0 1 0],[1 0 1],[1 1 0],[0 1 1]};
     for ss=[2:numel(TC) 1] % SubSets of the data, 1 is always all data, plot that last (--> on top, and legend correct)
         for mti=1:TC{ss}.N  
             color=colors{mod(mti-1,numel(colors))+1};
@@ -79,6 +79,6 @@ function plotDirectionTuningCurve(TC,varargin)
     set(gca,'XTick',X);
     legend(h,TC{ss}.motType);
     [~,fname]=fileparts(TC{1}.file{1}); % drop path, too long
-    titStr=[fname ' c' num2str(TC{1}.cellNumber(1),'%.3d')];
-    title(titStr,'Interpreter','none');
+%     titStr=[fname ' c' num2str(TC{1}.cellNumber(1),'%.3d')];
+%     title(titStr,'Interpreter','none');
 end
