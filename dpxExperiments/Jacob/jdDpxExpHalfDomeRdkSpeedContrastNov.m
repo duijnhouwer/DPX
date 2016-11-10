@@ -38,6 +38,8 @@ function jdDpxExpHalfDomeRdkSpeedContrast
             S.nClusters=560;
             S.dAdEdeg=[ sind(90:90:360)*.5 sind(30:30:360) ;  cosd(90:90:360)*.5 cosd(30:30:360)];
             S.dotDiamPx=6;
+            S.RGBAfrac1=[luminance luminance luminance 1];
+            S.RGBAfrac2=[luminance luminance luminance 1];
             S.aziDps=dps;
             S.nSteps=Inf;
             S.motStartSec=startSec;
@@ -58,7 +60,7 @@ function jdDpxExpHalfDomeRdkSpeedContrast
                 R1=dpxRespContiMouse;
                 R1.name='mouseBack';
                 R1.doReset=false;
-                R1.mouseId=9;
+                R1.mouseId=12;
                 R1.defaultX=1920;
                 R1.defaultY=1080/2;
                 R1.allowUntilSec=C.durSec;
@@ -67,7 +69,7 @@ function jdDpxExpHalfDomeRdkSpeedContrast
                 R2=dpxRespContiMouse;
                 R2.name='mouseSide';
                 R2.doReset=true;
-                R2.mouseId=12;
+                R2.mouseId=10;
                 R2.defaultX=1920;
                 R2.defaultY=1080/2;
                 R2.allowUntilSec=C.durSec;

@@ -38,6 +38,8 @@ function jdDpxExpHalfDomeRdkSpeedContrast
             S.nClusters=560;
             S.dAdEdeg=[ sind(90:90:360)*.5 sind(30:30:360) ;  cosd(90:90:360)*.5 cosd(30:30:360)];
             S.dotDiamPx=6;
+            S.RGBAfrac1=[luminance luminance luminance 1];
+            S.RGBAfrac2=[luminance luminance luminance 1];
             S.aziDps=dps;
             S.nSteps=Inf;
             S.motStartSec=startSec;

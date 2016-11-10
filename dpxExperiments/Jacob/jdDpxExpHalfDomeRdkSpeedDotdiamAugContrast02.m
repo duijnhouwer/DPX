@@ -63,7 +63,7 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
                 R1.mouseId=9;
                 R1.defaultX=1920;
                 R1.defaultY=1080/2;
-                R 1.allowUntilSec=C.durSec;
+                R1.allowUntilSec=C.durSec;
                 C.addResponse(R1);
                 %
                 R2=dpxRespContiMouse;
