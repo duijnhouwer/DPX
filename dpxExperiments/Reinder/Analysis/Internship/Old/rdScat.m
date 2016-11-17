@@ -1,7 +1,7 @@
-function [dispX,dispY]=rdScat(varargin)
+function [dispX,dispY]=rdScat(whichSet)
 % Scatterplog of all the data in specified folder
 
-whichSet = 'random'; % 'random' or 'blocked'
+% whichSet = 'random'; % 'random' or 'blocked'
 
 supdir=uigetdir('D:\Users\Reinder\Documents\School\Masterstage Stereoblind\DATA processing\Scatterplot\baselines','Select baseline folder');
 subdir{1}='\scoop'; subdir{2}='\blind';
@@ -38,12 +38,9 @@ for s=[1 2];
     figure(1)
     plotScat(X,Y,plotStyles{s}); hold on;
     title(['binding vs depth differentiation, ' whichSet])        
-    xlabel('depth perception strength: modelled far - near'); ylabel('binding strength (%): far - near');
+    xlabel('depth perception strength: interpolated far - near'); ylabel('binding strength (%): far - near');
     ylim([-0.6 0.6])
     xlim([-1.1 0.3])
-    
-    keyboard;
-
         
     % figure(6)
     % plotScat(X,Ynear,'bx')
@@ -63,11 +60,7 @@ for s=[1 2];
 end
 hold off;
 
-keyboard
-
 legend('stereoscopic','stereoblind');
-
-nicePlot;
 
 end
 

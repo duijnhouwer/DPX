@@ -1,4 +1,4 @@
-function  rdAnalyseCylinderDepth(varargin)
+function  data = rdAnalyseCylinderDepth(varargin)
 % rdAnalyseCylinderDepth(varargin)
 %   basic analysis function for the cylinder experiments.
 %
@@ -29,6 +29,10 @@ function  rdAnalyseCylinderDepth(varargin)
 %           manipulation, you can use this input to define the plotted
 %           disparities.
 %
+%       AntiStereo ('antiStereo',1)
+%           plotting anti-stereo conditions. Logical input, 1 = yes, plot
+%           anti-stereo, 0 = no, plot the normal data.
+%
 % OUTPUT
 %   N.A., only figures.
 %
@@ -45,6 +49,7 @@ P=parsePairs(varargin);
 checkField(P,'data',[]);
 checkField(P,'average',1);
 checkField(P,'disps',[]); % INSERT TO PICK A SPECIFIC DISP
+checkField(P,'antiStereo',0);
 
 
 %% Loading and checking
@@ -84,12 +89,17 @@ for d=1:numel(Data)
         Data{d}=[];
     end
 end
+for d=1:numel(Data)
+    % round disparity values to avoid discrepancies later.
+    % why are they not rounded anyway? because machines
+    Data{d}.halfInducerCyl_disparityFrac = round(Data{d}.halfInducerCyl_disparityFrac,1);
+end
 
 if ~isempty(P.disps)
     fprintf('Selected disparities : %s\n',num2str([P.disps])');
     for d=1:numel(Data)
         % check for availability of chosen disparities.
-        if ~all(ismember(P.disps,Data{d}.halfInducerCyl_disparityFrac))
+        if sum(ismember(P.disps,unique(Data{d}.halfInducerCyl_disparityFrac)))~=numel(P.disps)
             warning(['Removing file with non-corresponding disparity values: ' fnames{d}]);
             fprintf('\t Disparities in data: %s\n',num2str(unique(Data{d}.halfInducerCyl_disparityFrac)));
             Data{d}=[];
@@ -102,7 +112,8 @@ oldN=Data.N;
 Data = dpxdSubset(Data,Data.resp_rightHand_keyNr>0);
 fprintf('Discarded %d out of %d trials for lack of response\n',oldN-Data.N,oldN); % only take stereo, no anti-stereo this time
 
-Data = dpxdSubset(Data,Data.halfInducerCyl_stereoLumCorr==1); 
+if P.antiStereo; lumCorr=-1; else lumCorr=1; end
+Data = dpxdSubset(Data,Data.halfInducerCyl_stereoLumCorr==lumCorr); 
 
 % Check first trial is removed, the adaptation trial.
 % Should already be cleared by the Discard lack of response part.
@@ -143,7 +154,7 @@ for s = 1:numel(subjects)
         totalDisparities(totalDisparities==0)=[]; 
         % zero disparity makes no sense in binding, removed.
         
-        x(s,:) = [min(totalDisparities) max(totalDisparities)];
+        x(s,:) = [min(totalDisparities) max(totalDisparities)]; %#ok
         
         for iSpeed = 1:numel(speeds);
             for iDisp = 1:numel(x(s,:))
@@ -164,11 +175,12 @@ for s = 1:numel(subjects)
                 
                 iData = dpxdSubset(Data{s},Data{s}.halfInducerCyl_disparityFrac==x(s,iDisp) & Data{s}.halfInducerCyl_rotSpeedDeg==speeds(iSpeed));
                 
-                y(s,iDisp) = mean(iData.resp_rightHand_keyNr == curCor);
+                currY(iSpeed,iDisp) = mean(iData.resp_rightHand_keyNr == curCor);
                 
             end
         end
     end
+    y(s,:) = mean(currY);
 end
 
 if iscell(x) && any(diff(cellfun(@numel,x))~=0) && P.average
@@ -181,29 +193,34 @@ if iscell(x) && any(diff(cellfun(@numel,x))~=0) && P.average
         yInt(s,:) = interp1(x{s},y{s},xInt);
     end
     x = xInt;
-    y = yInt;
-    yAvg = nanmean(yInt,1);
-    yStd = nanstd(yInt,0,1);
+    y = yInt.*100;
+    yAvg = nanmean(yInt,1).*100;
+    yStd = nanstd(yInt,0,1).*100;
 elseif iscell(x) && any(diff(cellfun(@numel,x))~=0)
     warning('Uneven disparities between subjects.')
     maxDisps = unique(max(cellfun(@numel,x)));
 elseif iscell(x)
     x = cell2mat(x');
     y = cell2mat(y');
-    yStd = std(y,0,1);
-    yAvg = mean(y,1);
+    yStd = std(y,0,1).*100;
+    yAvg = mean(y,1).*100;
 else
-    yStd = std(y,0,1);
-    yAvg = mean(y,1);
+    yStd = std(y,0,1).*100;
+    yAvg = mean(y,1).*100;
 end
 
-
+data.y = y;
+data.x = x;
 
 %% STATISTICS
-% paired t-test because simply estimate differences between means of two
+% On binding: paired t-test because simply estimate differences between means of two
 % experiments on the same subjects
-
-[H,p] = ttest(y(:,1),y(:,2));
+% On baseline: ANOVA
+if strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_diep') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBaseLineCylLeft');
+    anova1(y);
+elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBindingCylLeft');
+    [H,p] = ttest(y(:,1),y(:,2));
+end
 
 %% DISPLAY
 if P.average % average or loose plots?
@@ -223,20 +240,21 @@ if strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_diep') || strcmp(Data{s}.e
     tit         = ['Depth Perception' avgStr];
     h = LF_makeFig(tit);
     if P.average;
-        errorbar(x',y',yStd'./nSubjects);
+        errorbar(x',y',yStd'./sqrt(nSubjects),'LineWidth',2);
     else
-        plot(x',y')
+        plot(x',y','LineWidth',2)
     end
     hold on;
     if ~isempty(lgnd) legend(lgnd); end
     title(tit);
     
-    plot(get(gca,'XLim'),[.5 .5],'--','Color',[.5 .5 .5]);
-    plot([0 0],[0 1],'--','Color',[.5 .5 .5]);
-    ylim([0 1.1]);
-    
-    xlabel('Disparity fractions');
-    ylabel('Percentage Convex');
+    plot(get(gca,'XLim'),[.5.*100 .5.*100],'k--','LineWidth',0.5);
+    plot([0 0],[0 1.1.*100],'k--','LineWidth',0.5);
+    ylim([0 1.1.*100]);
+    xlim([-1.1 1.1]);
+        
+    xlabel('Fraction of full disparity bias');
+    ylabel('% Percentage Convex');
     
 elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind') || strcmp(Data{s}.exp_paradigm{1},'rdDpxExpBindingCylLeft');
     tit         = ['Visual Binding' avgStr];
@@ -246,19 +264,19 @@ elseif strcmp(Data{s}.exp_paradigm{1},'rdDpxExpAdaptDepth_bind') || strcmp(Data{
         hold on;
         title(tit);
         
-        plot(get(gca,'XLim'),[.5 .5],'--','Color',[.5 .5 .5]);
-        plot([0 0],[0 1],'--','Color',[.5 .5 .5]);
+        plot(get(gca,'XLim'),[.5.*100 .5.*100],'--','Color',[.5 .5 .5]);
+        plot([0 0],[0 1.*100],'--','Color',[.5 .5 .5]);
         set(gca,'XTick',totalDisparities);
-        ylim([0 1.1]);
+        ylim([0 1.1.*100]);
     else
         for s = 1:nSubjects;
             subplot(ceil(nSubjects/4),4,s),
             bar(x(s,:),y(s,:),'b')
             hold on;
             
-            plot(get(gca,'XLim'),[.5 .5],'--','Color',[.5 .5 .5]);
-            plot([0 0],[0 1],'--','Color',[.5 .5 .5]);
-            ylim([0 1]);
+            plot(get(gca,'XLim'),[.5.*100 .5.*100],'--','Color',[.5 .5 .5]);
+            plot([0 0],[0 1.*100],'--','Color',[.5 .5 .5]);
+            ylim([0 1.*100]);
             
         end
         
