@@ -57,7 +57,6 @@ classdef lkDpxTuningExpAnalysis < hgsetget
             %    that will include additional instruction (how to select
             %    cells and exclude files etc.)
             %
-            %
             % OUTPUT:
             % A dpxd struct with N being the number of cells. The format of
             % this struct will depend on the calcXXX.m function that was

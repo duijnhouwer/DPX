@@ -76,12 +76,19 @@ function tc=getCurve(DPXD,cellNr,varargin)
                 tSeries=Ds{i}.(dfofField){t};
                 % Get the corresponding time axis
                 tAxis=Ds{i}.(timeField){t};
-                % Use tAxit to limit trace to the time the stim was on
+                % Find the interval stimTime where the motion was on
+                from=Ds{i}.test_motStartSec(t);
+                to=from+Ds{i}.test_motDurSec(t);
+                % alternatively, use the following to take until end of
+                % trial (GCaMP is slow so might be more signal used)
+                % to=Inf;
+                stimTime=tAxis>=from & tAxis<to;
+                % Get the interval before the stim was on as a baseline
                 from=Ds{i}.test_onSec(t);
-                to=from+Ds{i}.test_durSec(t);
-                tSeries=tSeries(tAxis>=from & tAxis<to);
+                to=Ds{i}.test_motStartSec(t);
+                baseTime=tAxis>=from & tAxis<to;
                 % Store the mean of this segment, i.e., reduce trail's response to a single value
-                dfof(t,i)=nanmean(tSeries); % nanmean because it ignores NaN's
+                dfof(t,i)=nanmean(tSeries(stimTime))-nanmean(tSeries(baseTime));
             end
         end
         % put the values in the output struct
