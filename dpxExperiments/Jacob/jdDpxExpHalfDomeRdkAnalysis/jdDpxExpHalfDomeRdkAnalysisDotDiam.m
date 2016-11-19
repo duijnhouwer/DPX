@@ -546,7 +546,7 @@ function plotSpeedYawCurves(A)
             V = dpxdSubset(D,D.speed==thisSpeed);
           
            
-            % Choose alinewidth (faster->bolder)
+            % Choose a linewidth (faster->bolder)
             % wid = abs(0.5 + fade*3);
             %
             
