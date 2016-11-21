@@ -74,7 +74,12 @@ function lkDpxTuningExp(varargin)
     if strcmpi(p.Results.stim,'rdkRevPhi')
         motTypes={'phi','ihp'}; % rdkRevPhi exp has regular AND reverse phi
     else
-        motTypes={'phi','phi'}; % twice so we keep the same number of trials per block
+        motTypes={'phi','phi'}; % twice so we keep the same number of trials per block. 
+        % 2016-11-18: to make it double was a mistake, because now the
+        % exact same stimulus configuration ended up with two different
+        % nominal condition numbers. Leave as is in here for backward
+        % compatibility. It just means that for example the GLM analysis
+        % will be less straightforward and generic than it could have been.
     end
     if strcmpi(p.Results.stim,'rdkTrans')
         transSeparationDeg=[nan 0 90 180]; % nan is 1 component, otherwise 2 components with X angular separation

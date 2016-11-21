@@ -36,7 +36,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
             %    the calculations of your analysis and the visualization of
             %    your data as separate as possible. At the time of writing
             %    (2014-12-1) there's only one anaFunc
-            %    "DirectionTuningCurve". We will make more as needed.
+            %    "DirectionTuningCurveGlm". We will make more as needed.
             %  anaOpts = cell array of options that are passed to
             %    calcXXX.m if XXX is your anaFunc
             %    "calcDirectionTuningCurve" doesnt do anything with those
@@ -61,8 +61,8 @@ classdef lkDpxTuningExpAnalysis < hgsetget
             % A dpxd struct with N being the number of cells. The format of
             % this struct will depend on the calcXXX.m function that was
             % used, but N will always be the number of cells analysed. So
-            % for "DirectionTuningCurve" this will contain, among other
-            % things, a DirectionTuningCurve for each cell.
+            % for "DirectionTuningCurveGlm" this will contain, among other
+            % things, a DirectionTuningCurveGlm for each cell.
             %
             
             if nargin==0
@@ -70,7 +70,7 @@ classdef lkDpxTuningExpAnalysis < hgsetget
             end
             A.doPlot=true;
             A.todoListFileName=neurotodoFile; % note: this calls the function "set.todoListFileName"
-            A.anaFunc='DirectionTuningCurve';
+            A.anaFunc='DirectionTuningCurveGlm';
             A.anaOpts={};
             A.outputFolder='<<auto>>';
         end
@@ -173,14 +173,16 @@ classdef lkDpxTuningExpAnalysis < hgsetget
                         drawnow;
                         if ~isempty(A.outputFolder)
                             try
-                                print(figHandle,figName,'-dpng'); % save the figure to file
+                                %savefig(figHandle,figName,'compact'); % FIG file
+                                print(figHandle,figName,'-dpng'); % PNG file (quick look)
+                                %disp(['Saved Figure ''' figName '''.']);
                             catch me
                                 warning(['Could not print ''' figName ''':']);
                                 warning(me.message);
                             end
                             
                         end
-%                         close(figHandle);
+                        close(figHandle);
                     end
                     % Now that the plotting of the complete and the
                     % sub-sets has been done, only maintain the complete
