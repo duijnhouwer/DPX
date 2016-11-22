@@ -35,8 +35,8 @@ function jdDpxExpHalfDomeRdkSpeedDotdiam
             S.name='rdk';
             S.lutFileName='HalfDomeWarpLut20141030.mat';
             S.clusterRadiusDeg=clusterRadiusDeg;
-            S.nClusters=round(560./(S.clusterRadiusDeg).^2);
-            S.dotDiamPx=round(6.*(S.clusterRadiusDeg).^2);
+            S.nClusters=round(560./(S.clusterRadiusDeg).^2); %changed from 1000 to 560 because of framedrops (for radius 0.5)
+            S.dotDiamPx=round(6.*(S.clusterRadiusDeg).^2); %changed from 4 to 6 because of framedrops (for radius 0.5)
 %             S.dAdEdeg=[ sind(90:90:360)*.5 sind(30:30:360) ;  cosd(90:90:360)*.5 cosd(30:30:360)];
             S.RGBAfrac1=[.2 .2 .2 1];
             S.RGBAfrac2=[.2 .2 .2 1];
