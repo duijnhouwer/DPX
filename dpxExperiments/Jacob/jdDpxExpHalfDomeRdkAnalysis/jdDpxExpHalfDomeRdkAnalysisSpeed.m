@@ -9,12 +9,12 @@ function jdDpxExpHalfDomeRdkAnalysisSpeed(files)
     E={};
     for i=1:numel(files)
         D=dpxdLoad(files{i});
-        maxFrDropsPerSec=2;
+        maxFrDropsPerSec=3;
         [D,percentBadTrials] = removeTrialWithTooManyFramedrops(D,maxFrDropsPerSec/D.window_measuredFrameRate(1)*100);
         disp(['File #' num2str(i,'%.3d') ': ' num2str(round(percentBadTrials)) '% of trials had more than ' num2str(maxFrDropsPerSec) ' video-frame drops per second']);
         if percentBadTrials>95
             fprintf(' ---> skipping file : %s\n', files{i} );
-            continue;
+            continue
         end
         %
         [D,str,suspect,maxCorr]=clarifyAndCheck(D);
@@ -550,7 +550,7 @@ function plotSpeedYawCurves(A)
             % wid = abs(0.5 + fade*3);
             %
             
-            idx = V.time{1}>1.25 & V.time{1}<1.75;
+            idx = V.time{1}>1.0 & V.time{1}<2.0; %interval from which the average is taken
             yaw(vi) = mean(V.yawMean{1}(idx));
             yawSem(vi) = mean(V.yawSEM{1}(idx));
         end
