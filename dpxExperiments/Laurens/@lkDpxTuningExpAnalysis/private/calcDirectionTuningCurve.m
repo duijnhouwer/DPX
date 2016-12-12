@@ -77,8 +77,13 @@ function tc=getCurve(DPXD,cellNr,varargin)
                 % Get the corresponding time axis
                 tAxis=Ds{i}.(timeField){t};
                 % Find the interval stimTime where the motion was on
-                from=Ds{i}.test_motStartSec(t);
-                to=from+Ds{i}.test_motDurSec(t);
+                if strcmpi(Ds{i}.test_className{1},'dpxStimGrating') 
+                    from=Ds{i}.test_onSec(t);
+                    to=from+Ds{i}.test_durSec(t);
+                else
+                    from=Ds{i}.test_motStartSec(t);
+                    to=from+Ds{i}.test_motDurSec(t);
+                end
                 % alternatively, use the following to take until end of
                 % trial (GCaMP is slow so might be more signal used)
                 % to=Inf;
