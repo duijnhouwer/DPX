@@ -89,8 +89,13 @@ function tc=getCurve(DPXD,cellNr,varargin)
                 % to=Inf;
                 stimTime=tAxis>=from & tAxis<to;
                 % Get the interval before the stim was on as a baseline
-                from=Ds{i}.test_onSec(t);
-                to=Ds{i}.test_motStartSec(t);
+                if strcmpi(Ds{i}.test_className{1},'dpxStimGrating')
+                    from=0;
+                    to=Ds{i}.test_onSec(t);
+                else
+                    from=Ds{i}.test_onSec(t);
+                    to=Ds{i}.test_motStartSec(t);
+                end
                 baseTime=tAxis>=from & tAxis<to;
                 % Store the mean of this segment, i.e., reduce trail's response to a single value
                 dfof(t,i)=nanmean(tSeries(stimTime))-nanmean(tSeries(baseTime));
