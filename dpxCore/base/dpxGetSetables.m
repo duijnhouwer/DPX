@@ -10,25 +10,19 @@ end
 % --- HELP FUNCTIONS ------------------------------------------------------
 
 function setFields=dpxWhichSetFields(obj)
-    % SETFIELDS=dpxWhichSetFields(OBJ)
-    % SETFIELDS contains the names of fields in OBJ that can be set.
-    % Jacob 20140528
+    % SETFIELDS=dpxWhichSetFields(OBJ) SETFIELDS contains the names of
+    % fields in OBJ that can be set. Jacob 20140528 Major overhaul
+    % 20161221. Before, i would try setting the property and conclude it
+    % was not-settable in case an error was thrown. Now explicitily testing
+    % if the property is public. This is also different in that the
+    % potentially overridden set functions of properties no longer gets
+    % called again.
     
     allFields=fieldnames(obj);
     okToSet=true(numel(allFields),1);
     for i=1:numel(allFields)
-        try
-            % Try setting this field, if it has protected setting, this
-            % will cause an error that we will catch. This is actually an
-            % ugly way to to this, depending on errors to happen always is.
-            % Practically it's inconvenient because dbstop if all error
-            % will stop here. Think of a better method someday ... 666
-            obj.(allFields{i})=obj.(allFields{i});
-         catch me
-            if strcmpi(me.identifier,'MATLAB:class:SetProhibited')
-                okToSet(i)=false;
-            end
-        end
+        prp=findprop(obj,allFields{i});
+        okToSet(i)=strcmp(prp.SetAccess,'public');
     end
     setFields=allFields(okToSet);
 end
