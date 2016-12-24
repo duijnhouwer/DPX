@@ -223,6 +223,10 @@ classdef dpxCoreExperiment < hgsetget
     end
     methods (Access=protected)
         function saveDpxd(E,optStr)
+            if isempty(E.trials(1).condition)
+                % not a single trial finished, do not save anything
+                return; 
+            end
             if ~any(strcmpi(optStr,{'final','intermediate'}))
                 error(['Unknown option: ''' optStr '''.']);
             end
@@ -252,9 +256,9 @@ classdef dpxCoreExperiment < hgsetget
                     % insert in preallocated array
                     C(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                 end
+                clear TMP;
             end
             % Format the conduits
-            clear TMP;
             if numel(E.conduits)==0
                 CNDT=struct; % empty struct
             else
@@ -270,10 +274,10 @@ classdef dpxCoreExperiment < hgsetget
                         % insert in preallocated array
                         CNDT(c)=dpxFlattenStruct(TMP); %#ok<AGROW>
                     end
+                    clear TMP;
                 end
             end
             % Format the plugins
-            clear TMP;
             if numel(E.plugins)==0
                 P=struct; % empty struct
             else
@@ -296,10 +300,10 @@ classdef dpxCoreExperiment < hgsetget
             DPXD=dpxdMerge(DPXD);
             % Save the data, and backup if final save and backupfolder is defined
             absFileName=fullfile(E.outputFolder,E.outputFileName);
-            if strcmpi(optStr,'final') || dpxBytes(DPXD)>=2^30
+            if strcmpi(optStr,'final') || dpxBytes(DPXD)>=2^30-2^20
                 % Always save '-v7.3' format when this is the final save,
-                % or when the data is >=2GB (earlier version can't save
-                % files of that size)
+                % or when the data is >=2GB-1MB (earlier version can't save
+                % files of that size) -1MB is a safety margin
                 matFileVersion='-v7.3';
             else
                 % If possible, use -v6 for intermediate files because the
