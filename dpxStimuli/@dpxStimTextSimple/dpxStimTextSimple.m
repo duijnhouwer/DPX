@@ -72,6 +72,6 @@ classdef dpxStimTextSimple < dpxAbstractVisualStim
                 error('str should be a string');
             end
             S.str=value;
-        end      
+        end  
     end
 end

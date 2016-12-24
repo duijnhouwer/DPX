@@ -38,7 +38,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             S.dotDiamDeg=.1;
             S.dotRBGAfrac1=[0 0 0 1];
             S.dotRBGAfrac2=[1 1 1 1];
-            S.nSteps=1; % single step is default, use Inf for unlimited
+            S.nSteps=1; % single step is default, use Inf for unlimited, negative to show only show first and last instance of dot
             S.cohereFrac=1; % negative coherence flips directions
             S.apert='circle';
             S.wDeg=10;
@@ -73,7 +73,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             end
             S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
             S.checkDotsize(S.dotDiamPx);
-            S.dotAge=floor(S.RND.rand(1,N) * (S.nSteps + 1));
+            S.dotAge=floor(S.RND.rand(1,N) * (abs(S.nSteps) + 1));
             S.pxPerFlip=S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
             S.dotPolarity=S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,S.dotPolarity)=repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
@@ -84,6 +84,10 @@ classdef dpxStimRdk < dpxAbstractVisualStim
         function myDraw(S)
             if S.visible
                 ok=applyTheAperture(S);
+                if S.nSteps<0
+                    % only show the first and last instance of a dot
+                    ok=ok & (S.dotAge==0|S.dotAge==abs(S.nSteps));
+                end
                 if ~any(ok), return; end
                 xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
                 Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
@@ -102,7 +106,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 h=S.hPx;
                 % Update dot lifetime
                 S.dotAge=S.dotAge+1;
-                expired=S.dotAge>S.nSteps;
+                expired=S.dotAge>abs(S.nSteps);
                 % give new position if expired
                 x(expired)=S.RND.rand(1,sum(expired))*w-w/2;
                 y(expired)=S.RND.rand(1,sum(expired))*h-h/2;
@@ -126,7 +130,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                     x(tooLeft)=x(tooLeft)+w;
                     y(tooHigh)=y(tooHigh)-h;
                     y(tooLow)=y(tooLow)+h;
-                    if S.nSteps~=1
+                    if abs(S.nSteps)~=1
                         % if not single step lifetime, give dots that went
                         % over an hori (verti) edge a new verti (hori)
                         % position to prevent the same pattern from
@@ -178,7 +182,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 r=min(S.wPx,S.hPx)/2;
                 ok=hypot(S.dotXPx,S.dotYPx)<r;
             elseif strcmpi(S.apert,'RECT')
-                % no need to do anythingSC
+                ok=true(size(S.dotXPx));
             else
                 error(['Unknown apert option: ' S.apert ]);
             end
