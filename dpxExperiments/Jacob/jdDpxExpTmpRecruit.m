@@ -13,12 +13,16 @@ function jdDpxExpTmpRecruit
     E.window.backRGBA=[0.25 0.25 0.25 1];
     E.window.skipSyncTests=1;
     E.paradigm=mfilename;
-    E.outputFolder='U:\Project Temporal Recruitment\data';
+    try
+        E.outputFolder='U:\Project Temporal Recruitment\data';
+    catch
+        E.outputFolder=fullfile(tempdir,'DPX',mfilename);
+    end
     
     dotdens=5;
     nSteps=1:5;
     treatments='rm'; % regular, mixed dot motion
-    motOn=.5;
+    motOn=0%.5;
     motDur=.5;
     
     maxNumelStepLen=size(nchoosek(1:max(nSteps)+1,2),1);
@@ -30,9 +34,9 @@ function jdDpxExpTmpRecruit
                 % define only for one of the two.
                 continue;
             end
-            for coherence=-1:.5:1 %-1:.125:1
+            for coherence=-1:1:1 %-1:.125:1
                 C=dpxCoreCondition;
-                C.durSec=Inf;
+                C.durSec=.5;%Inf;
                 %
                 FIX=dpxStimCross;
                 FIX.name='fixcross';
@@ -49,7 +53,7 @@ function jdDpxExpTmpRecruit
                 C.addStimulus(T);
                 
                 for s=1:maxNumelStepLen
-                    RDK=dpxStimRdk;
+                    RDK=dpxStimRdkStore;
                     RDK.name=['component' num2str(s,'%.2d')];
                     if s>numel(stepLen)
                         RDK.visible=false;
@@ -63,8 +67,8 @@ function jdDpxExpTmpRecruit
                         RDK.hDeg=10;
                         RDK.cohereFrac=coherence;
                         RDK.apert='rect';
-                        RDK.onSec=.5;
-                        RDK.durSec=.5;
+                        RDK.onSec=0%.5;
+                        RDK.durSec=.5%;
                         %
                         if treatments(t)=='m'
                             RDK.nSteps=-stepLen(s);
@@ -91,13 +95,13 @@ function jdDpxExpTmpRecruit
                 RSP.kbNames='LeftArrow,RightArrow';
                 RSP.allowAfterSec=motOn+motDur; % allow the response no sooner than the end of the RDK motion pulse
                 RSP.correctEndsTrialAfterSec=0;
-                C.addResponse(RSP);
+              %  C.addResponse(RSP);
                 %
                 E.addCondition(C);
             end
         end
     end
-    E.nRepeats=4;
+    E.nRepeats=1;
     dpxDispFancy([ mfilename ' (' num2str(numel(E.conditions) * E.nRepeats) ' trials)']);
     E.run;
 end
