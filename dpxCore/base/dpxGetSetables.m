@@ -14,9 +14,9 @@ function setFields=dpxWhichSetFields(obj)
     % fields in OBJ that can be set. Jacob 20140528 Major overhaul
     % 20161221. Before, i would try setting the property and conclude it
     % was not-settable in case an error was thrown. Now explicitily testing
-    % if the property is public. This is also different in that the
-    % potentially overridden set functions of properties no longer gets
-    % called again.
+    % if the property is public. This is obviously much more elegant, but
+    % it is also different in that any set functions that may be defined
+    % for a property no longer gets called this way.
     
     allFields=fieldnames(obj);
     okToSet=true(numel(allFields),1);

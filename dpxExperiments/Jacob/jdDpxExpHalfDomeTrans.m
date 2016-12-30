@@ -26,7 +26,7 @@ function jdDpxExpHalfDomeTrans(debug)
     
     motSec=2;
     lum=.15;
-    degPerSec=18;
+    degPerSec=36;
     for dir1='udlr'
         for dir2='udlr0'
             for startSec=[1 2]

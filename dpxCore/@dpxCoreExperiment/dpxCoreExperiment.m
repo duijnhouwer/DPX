@@ -214,7 +214,7 @@ classdef dpxCoreExperiment < hgsetget
             % note, the dpxPluginComments is loaded by default
             if ~isobject(value) || strncmp(class(P),'dpxPlugin',numel('dpxPlugin'))==0
                 error('Argument should be an object whose class-name starts with ''dpxPlugin''.');
-            end
+            end 
             E.plugins{end+1}=P; % e.g. dpxPluginEyelink
         end
         function clearPlugins(E)

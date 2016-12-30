@@ -34,7 +34,7 @@ classdef dpxStimCross < dpxAbstractVisualStim
             y=S.yPx;
             xy=[0 0 x-w x+w; y-h y+h 0 0];
             if strcmpi(S.scrGets.stereoMode,'mono')
-                Screen('DrawLines',wPtr,xy,S.lPx,S.RGBA(:),S.winCntrXYpx,1,1);
+                Screen('DrawLines',wPtr,xy,S.lPx,S.RGBA(:),S.winCntrXYpx,1);
             elseif strcmpi(S.scrGets.stereoMode,'mirror')
                 for buffer=0:1
                     Screen('SelectStereoDrawBuffer', wPtr, buffer);
