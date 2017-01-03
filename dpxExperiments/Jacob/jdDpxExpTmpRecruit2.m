@@ -24,11 +24,11 @@ function jdDpxExpTmpRecruit2
     nSteps=3;%1:5;
     motTypes={'shuffle','straightMatch2Shuff'};
     motOn=.5;
-    motDur=.5;
+    motDur=1;
     
     for t=1:numel(motTypes)
         for nsi=1:numel(nSteps)
-            for coherence=-1:1:1 %-1:.125:1
+            for coherence=0%-1:1:1
                 C=dpxCoreCondition;
                 C.durSec=Inf;
                 %
