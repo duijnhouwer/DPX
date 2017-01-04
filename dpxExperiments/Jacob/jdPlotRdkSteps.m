@@ -30,19 +30,22 @@ function jdPlotRdkSteps(DPXD,maxDtFrames,zoom)
     xyt(cellfun(@isempty,xyt))=[];
     plotVisibleDotsPerFrame(xyt);
 
-    %xyt=removeOverlap(xyt,1);
+    % xyt=removeOverlap(xyt,1);
     dxdydt=getSteps(xyt,maxDtFrames);
+    % percentage of conform the set speed
+    P=getPercentageConformSetSpeed(dxdydt,DPXD.rdk_pxPerFrame);
+    %
     ttl=[DPXD.treatment_str{1} ' ' num2str(DPXD.rdk_cohereFrac*100) '% coherence'];
     cpsFindFig(ttl);
     if zoom==0
         limits=getMinMaxSteps(dxdydt);
-        plotDxDyDt(dxdydt,limits,100,50);
+        plotDxDyDt(dxdydt,limits,100,50,P);
     else
         limits.maxDx=zoom(1)/2;
         limits.minDx=-zoom(1)/2;
         limits.maxDy=zoom(end)/2;
         limits.minDy=-zoom(end)/2;
-        plotDxDyDt(dxdydt,limits,100,100);
+        plotDxDyDt(dxdydt,limits,100,100,P);
     end
     title(ttl);
 end
@@ -84,7 +87,8 @@ function dxdydt=getSteps(xyt,maxDtFrames)
     for dt=1:maxDtFrames
         dx=[];
         dy=[];
-        for startT=1:maxDtFrames-1
+        tel=0;
+        for startT=1:dt
             frame1=xyt{startT};
             for f=startT+dt:dt:numel(xyt)
                 frame2=xyt{f};
@@ -92,8 +96,10 @@ function dxdydt=getSteps(xyt,maxDtFrames)
                 dx=[dx newdx];
                 dy=[dy newdy];
                 frame1=frame2;
+                tel=tel+1;
             end
         end
+        disp(['dt total comparisons: ' num2str(tel)]);
         dxdydt{dt}=[dx;dy];
     end
 end
@@ -132,7 +138,22 @@ function L=getMinMaxSteps(dxdydt)
     end
 end
 
-function plotDxDyDt(dxdydt,L,hBins,vBins)
+function  P=getPercentageConformSetSpeed(dxdydt,pxPerFrame)
+    % only works for rightward motion
+    P=zeros(numel(dxdydt),3);
+    margin=0.0001;
+    for idt=1:numel(dxdydt)
+        xStep=idt*pxPerFrame;
+        x=dxdydt{idt}(1,:);
+        y=dxdydt{idt}(2,:);
+        inbin=y<margin & y>-margin & x<xStep+margin & x>xStep-margin;
+        P(idt,1)=sum(inbin);
+        P(idt,2)=numel(inbin);
+        P(idt,3)=jdProp(inbin)*100;
+    end
+end
+
+function plotDxDyDt(dxdydt,L,hBins,vBins,P)
     edges{1}=linspace(L.minDx,L.maxDx,hBins);
     edges{2}=linspace(L.minDy,L.maxDy,vBins);
     nSteps=numel(dxdydt);
@@ -149,7 +170,12 @@ function plotDxDyDt(dxdydt,L,hBins,vBins)
         colorbar
         set(gca,'YDir','Normal')
         set(gca,'TickDir','out');
-        cpsText({['dt = ' num2str(i) ' (fr)'],['N = ' num2str(sum(n(:)))]},'Color','m');
+        str={};
+        str{1}=['dt = ' num2str(i) ' (fr)'];
+        str{end+1}=['N = ' num2str(sum(n(:)))];
+        str{end+1}=['peak = ' num2str(max(n(:)))];
+        str{end+1}=num2str(P(i,3));
+        cpsText(str,'Color','m');
         if L.maxDx-L.minDx == L.maxDy-L.minDy
             axis square;
             cpsRefLine('+','m--');

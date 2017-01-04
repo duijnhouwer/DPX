@@ -24,7 +24,7 @@ classdef dpxCoreCondition < hgsetget
         % Structure that will hold copies of the getable values in window
         winGets=struct;
         % Counter for breakfixation grace period
-        flipsSinceBreakFix;
+        graceFlipsRemaining;
         breakFixGraceFlips;
         % indices of visual stimuli, some things need to be done for visual stimuli only
         visualStimIndices;
@@ -64,7 +64,7 @@ classdef dpxCoreCondition < hgsetget
             % Initiatilize counters related to breakfixation (see eyelink plugin). This
             % should perhaps be moved to the eye link plugin somehow, not all
             % experiments require fixation, or even involve eyes...
-            C.flipsSinceBreakFix=[];
+            C.graceFlipsRemaining=[];
             C.breakFixGraceFlips=round(C.breakFixGraceSec*C.winGets.measuredFrameRate);
         end
         function [completionStatus,timingStruct,respStruct,nrMissedFlips]=show(C)
@@ -144,18 +144,18 @@ classdef dpxCoreCondition < hgsetget
                 else
                     % Fixation is required, check if the stimulus that needs fixation is indeed
                     % being looked at
-                    [ok,str]=C.stims{stimNumberToFixate}.fixationStatus;
-                    if ~ok
+                    [fixating,str]=C.stims{stimNumberToFixate}.fixationStatus;
+                    if ~fixating
                         % Stimulus is not being looked at
                         if f==0
                             % there has been no fixation yet this trial, just keep waiting
-                        elseif isempty(C.flipsSinceBreakFix)
+                        elseif isempty(C.graceFlipsRemaining)
                             % fixation interrupted, enter grace period
-                            C.flipsSinceBreakFix=C.breakFixGraceFlips;
+                            C.graceFlipsRemaining=C.breakFixGraceFlips;
                         else
-                            C.flipsSinceBreakFix=C.flipsSinceBreakFix-1;
-                            if C.flipsSinceBreakFix<0
-                                % fixation NOT restored in within the grace period window, stop the trial
+                            C.graceFlipsRemaining=C.graceFlipsRemaining-1;
+                            if C.graceFlipsRemaining<0
+                                % fixation NOT restored within the grace period window, stop the trial
                                 completionStatus=str;
                                 break;
                             end
@@ -171,7 +171,7 @@ classdef dpxCoreCondition < hgsetget
                                 Eyelink('Message', 'STARTTRIAL'); % set a time-stamp in the EDF file on the Eyelink computer (this function takes ~0.000091 seconds on a 2008 iMac)
                             end
                             % fixation was restored within the graceperiod
-                            C.flipsSinceBreakFix=[];
+                            C.graceFlipsRemaining=[];
                         end
                     end
                 end

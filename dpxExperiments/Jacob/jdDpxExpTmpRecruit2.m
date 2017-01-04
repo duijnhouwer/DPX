@@ -4,7 +4,7 @@ function jdDpxExpTmpRecruit2
         scrSize=[0 0 1920 1080]
     else
         scrSize=[20 20 711 400];
-          scrSize=[0 0 1920 1080]
+        %  scrSize=[0 0 1920 1080]
     end
     
     E=dpxCoreExperiment;
@@ -20,15 +20,14 @@ function jdDpxExpTmpRecruit2
         E.outputFolder=fullfile(tempdir,'DPX',mfilename);
     end
     
-    dotdens=5;
-    nSteps=3;%1:5;
-    motTypes={'shuffle','straightMatch2Shuff'};
+    nSteps=5;%1:5;
+    motTypes={'shuffle','straight','straightMatch2Shuff'};%straightMatch2Shuff shuffle straight
     motOn=.5;
-    motDur=1;
+    motDur=3.5;
     
     for t=1:numel(motTypes)
         for nsi=1:numel(nSteps)
-            for coherence=0%-1:1:1
+            for coherence=1;%-1:.125:1
                 C=dpxCoreCondition;
                 C.durSec=Inf;
                 %
@@ -46,8 +45,8 @@ function jdDpxExpTmpRecruit2
                 T.visible=1;
                 C.addStimulus(T);
                 %
-                RDK=dpxStimRdkStore;% ;
-                %RDK=dpxStimRdkShuffleStep;
+                %RDK=dpxStimRdkStore;% ;
+                RDK=dpxStimRdkShuffleStep;
                 RDK.name='rdk';
                 RDK.speedDps=15;
                 RDK.dotsPerSqrDeg=5;
@@ -60,7 +59,7 @@ function jdDpxExpTmpRecruit2
                 RDK.cohereFrac=coherence;
                 RDK.apert='rect';
                 RDK.onSec=.5;
-                RDK.durSec=.5;
+                RDK.durSec=motDur;
                 C.addStimulus(RDK);
                 
                 % Create and add a response object to record the keyboard presses.
@@ -75,7 +74,7 @@ function jdDpxExpTmpRecruit2
             end
         end
     end
-    E.nRepeats=1;
+    E.nRepeats=10;
     dpxDispFancy([ mfilename ' (' num2str(numel(E.conditions) * E.nRepeats) ' trials)']);
     E.run;
 end

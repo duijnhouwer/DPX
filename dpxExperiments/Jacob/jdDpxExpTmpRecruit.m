@@ -20,7 +20,7 @@ function jdDpxExpTmpRecruit
     end
     
     dotdens=5;
-    nSteps=1:5;
+    nSteps=2;
     treatments='rm'; % regular, mixed dot motion
     motOn=0%.5;
     motDur=.5;
@@ -34,7 +34,7 @@ function jdDpxExpTmpRecruit
                 % define only for one of the two.
                 continue;
             end
-            for coherence=-1:1:1 %-1:.125:1
+            for coherence=0;%-1:1:1 %-1:.125:1
                 C=dpxCoreCondition;
                 C.durSec=.5;%Inf;
                 %
@@ -67,12 +67,14 @@ function jdDpxExpTmpRecruit
                         RDK.hDeg=10;
                         RDK.cohereFrac=coherence;
                         RDK.apert='rect';
-                        RDK.onSec=0%.5;
-                        RDK.durSec=.5%;
+                        RDK.onSec=0;%.5;
+                        RDK.durSec=.5;%;
                         %
                         if treatments(t)=='m'
                             RDK.nSteps=-stepLen(s);
-                            RDK.dotsPerSqrDeg=dotdens/numel(stepLen);
+                            RDK.dotsPerSqrDeg=dotdens; % note, will be corrected to keep number of visible dots the same as in regular motion
+                            RDK.dotsPerSqrDeg=RDK.dotsPerSqrDeg/numel(stepLen); % correct for number of components that make up the iSSDL
+                            RDK.dotsPerSqrDeg=RDK.dotsPerSqrDeg/(2/(stepLen(s)+1)); % correct for reduced visibility, only first+last=2 instances of dot trajectory shown
                         elseif treatments(t)=='r'
                             if stepLen(s)==nSteps(nsi)
                                 RDK.nSteps=nSteps(nsi);
@@ -80,6 +82,7 @@ function jdDpxExpTmpRecruit
                             else
                                 RDK.visible=false;
                                 RDK.cohereFrac=coherence;
+                                RDK.dotsPerSqrDeg=0;
                                 RDK.nSteps=nan;
                             end
                         else

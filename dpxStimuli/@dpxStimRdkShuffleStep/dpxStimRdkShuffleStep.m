@@ -28,7 +28,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
         dotPolarity;
         motStartFlip;
         motStopFlip;
-        nStepsArray; % 2016-12-29. To make shuffle step possible
+        flash2ndTime; % 2016-12-29. To make shuffle step possible
         revphiBool;
         shuffleBool;
     end
@@ -63,16 +63,16 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 S.nDots=S.compensateVisibleShuffleDots();
             end
             N=S.nDots; % shorthand for readability
-            S.nStepsArray=S.makeStepArray(N,S.nSteps,S.shuffleBool);
+            S.flash2ndTime=S.makeSecondFlashArray(N,S.nSteps,S.shuffleBool);
             if ~S.shuffleBool && ~isempty(strfind(upper(S.motType),'MATCH2SHUFF'))
-                S.nStepsArray=S.matchNStepsArrayToShuffle();
+                S.nSteps=S.matchToShuffle();
             end
             S.dotXPx=S.RND.rand(1,N)*S.wPx-S.wPx/2;
             S.dotYPx=S.RND.rand(1,N)*S.hPx-S.hPx/2;
             S.dotDirRads=ones(1,N)*real(S.dirDeg)/180*pi;
             if ~isreal(S.dirDeg)
                 % imaginary component of S.dirDeg can be used to make half the dots move in
-                % a direction imag(S.dirDeg) away from real(S.dirDeg)
+                % a direction imag(S.dirDeg) AWAY from real(S.dirDeg)
                 S.dotDirRads(1:2:end)=S.dotDirRads(1:2:end)+imag(S.dirDeg)/180*pi;
             end
             nNoiseDots=max(0,min(N,round(N * (1-abs(S.cohereFrac)))));
@@ -85,7 +85,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
             end
             S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
             S.checkDotsize(S.dotDiamPx);
-            S.dotAge=floor(S.RND.rand(1,N) .* (abs(S.nStepsArray) + 1));
+            S.dotAge=makeDotStartAgeArray(S);%floor(S.RND.rand(1,N) .* S.nSteps + 1);
             S.pxPerFlip=S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
             S.dotPolarity=S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,S.dotPolarity)=repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
@@ -97,8 +97,8 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
             if S.visible
                 ok=applyTheAperture(S);
                 if S.shuffleBool
-                    % only show the first and last instance of a dot
-                    ok=ok & (S.dotAge==0|S.dotAge==S.nStepsArray);
+                    % show only 2 instances of the dot
+                    ok=ok & (S.dotAge==0|S.dotAge==S.flash2ndTime);
                 end
                 if ~any(ok), return; end
                 xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
@@ -121,7 +121,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 h=S.hPx;
                 % Update dot lifetime
                 S.dotAge=S.dotAge+1;
-                expired=S.dotAge>S.nStepsArray;
+                expired=S.dotAge>S.nSteps;
                 % give new position if expired
                 x(expired)=S.RND.rand(1,sum(expired))*w-w/2;
                 y(expired)=S.RND.rand(1,sum(expired))*h-h/2;
@@ -200,60 +200,80 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 error(['Unknown apert option: ' S.apert ]);
             end
         end
-        function nStepsArray=makeStepArray(S,nDots,nSteps,shuffleStep)
-            if ~shuffleStep
-                if numel(nSteps)==1
-                    nStepsArray=nSteps;
-                else
-                    nStepsArray=repmat(nSteps(:)',1,ceil(nDots/nSteps));
-                    nStepsArray=nStepsArray(1:nDots);
-                end
-            else
-                if numel(nSteps)==1
-                    nSteps=1:nSteps+1;
-                end
-                stepLen=diff(nchoosek(nSteps,2),[],2);
-                stepLen=stepLen(S.RND.randperm(numel(stepLen)));
-                nStepsArray=repmat(stepLen(:)',1,ceil(nDots/numel(stepLen)));
-                nStepsArray=nStepsArray(1:nDots);
+        function out=calcShuffleStepInfo(S)
+            % calculate info over shuffle step stimuli, aids matching the
+            % straight stimulus to it. N = number of dots, K= number of
+            % correlations
+            out.nSteps=S.nSteps;
+            out.Npfr=S.nSteps;
+            out.Kconform=nchoosek(S.nSteps+1,2);
+            out.Ntot=out.Kconform*2;
+            out.nFr=S.nSteps+1;
+            out.Ktot=0;
+            for i=1:out.nFr
+                out.Ktot=out.Ktot+out.Npfr*(out.Ntot-i*out.Npfr);
             end
-            nStepsArray=nStepsArray(S.RND.randperm(numel(nStepsArray))); % decorrelate with other parameretes (e.g. RGBA)
+            out.Kspurious=out.Ktot-out.Kconform;
         end
-        function nStepsArray=matchNStepsArrayToShuffle(S)
+        function stepSize=makeSecondFlashArray(S,nDots,nSteps,shuffleStep)
+            if ~shuffleStep
+                stepSize='notUsed';
+                return;
+            end
+            if numel(nSteps)~=1
+                error('shuffle only been defined for 1:nSteps ranges');
+            end
+            stepSize=diff(nchoosek(1:nSteps+1,2),[],2);
+            stepSize=repmat(stepSize,1,ceil(nDots/numel(stepSize)));
+            stepSize=stepSize(S.RND.randperm(numel(stepSize))); % decorrelate with other parameretes (e.g. RGBA)
+            stepSize=stepSize(1:nDots); % trim to exact number
+        end
+        function nStepsArray=matchToShuffle(S)
             % Special case in which the signal strength of straight
-            % limited lifetime motion is matched to that of shuffle
-            % motion with the same limited lifetime
+            % (regular) limited lifetime motion is matched to that of
+            % shuffle motion with the same limited lifetime
             if numel(S.nSteps)~=1
                 error('Matching straight motion to shuffle step motion only works with a single nStep');
             end
-            % K is the number of correlations between dots from one
-            % frame to the next
-            % Ksignal=nchoosek(S.nSteps+1,2);
-            % Kall=S.nSteps*nchoosek(2*S.nSteps,2);
+            %info=calcShuffleStepInfo(S);
+            % fopRate=info.Kspurious/info.Ktot;
             fopRate=(S.nSteps-1)/S.nSteps;
             nFop=round(fopRate*S.nDots);
-            fop=[false(1,nFop) true(1,S.nDots-nFop)];
+            fop=[true(1,nFop) false(1,S.nDots-nFop)];
             fop=fop(S.RND.randperm(numel(fop)));
             fop=fop(1:S.nDots);
             nStepsArray=repmat(S.nSteps,1,S.nDots); % expand the scalar nSteps to an array
-            nStepsArray(fop)=0; % so we can set the fop-dots to not step
+            nStepsArray(fop)=0; % so we can set the fop-dots to zero-step lifetime
         end
         function nDots=compensateVisibleShuffleDots(S)
-            % because of the shuffle-step dots only the first and
-            % last instance over their lifetime are visible, the total
-            % number of dots needs to be increased to achieve the requested
-            % dots per square degree value
-            if numel(S.nSteps)==1
-                stepLen=diff(nchoosek(1:S.nSteps+1,2),[],2);
-            else
-                stepLen=diff(nchoosek(S.nSteps,2),[],2);
-            end
-            nVisible=2*numel(stepLen);
-            nSimulated=sum(stepLen+1);
-            nInvisible=nSimulated-nVisible;
-            factor=1+nInvisible/nSimulated;
+            % because of the shuffle-step dots only two instances of each
+            % dot are visible, we need to increase the number of dots if we
+            % want to keep the density equal to a regular limited lifetime
+            % motion.
+            factor=(S.nSteps+1)/2;
             nDots=round(S.nDots*factor);
         end
+        function ages=makeDotStartAgeArray(S)
+            % Todo: could make more guaranteed evenness by shuffling equal
+            % sized group of each lifetime. may in particular help reduced
+            % nDots fluctuations in shuffleStep motion
+            if ~S.shuffleBool && numel(S.nSteps)==1 % can work for nstep-arrays to, for loop over different values
+                nSubset=ceil(S.nDots/S.nSteps);
+                ages=nan(1,nSubset*S.nSteps); % may be a bit larger than nDots
+                
+                for i=1:S.nSteps
+                    idx=(i-1)*nSubset+1;
+                    ages(idx:idx+nSubset-1)=i;
+                end
+                ages=ages(S.RND.randperm(numel(ages)));
+                ages=ages(1:S.nDots); % trim to nDots
+            else
+                % this is where balancing the ages could make the biggest
+                % difference but i don't have time to program it now
+                % TODO 666
+                ages=floor(S.RND.rand(1,S.nDots) .* S.nSteps + 1);
+            end
+        end;
     end
     methods
         function set.motType(S,value)
@@ -279,5 +299,8 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
         end
     end
 end
+
+
+
 
 

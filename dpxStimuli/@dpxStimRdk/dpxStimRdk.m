@@ -62,7 +62,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 % imaginary component of S.dirDeg can be used to make half the dots move in
                 % a direction imag(S.dirDeg) away from real(S.dirDeg)
                 S.dotDirRads(1:2:end)=S.dotDirRads(1:2:end)+imag(S.dirDeg)/180*pi;
-            end  
+            end
             nNoiseDots=max(0,min(N,round(N * (1-abs(S.cohereFrac)))));
             S.noiseDots=[true(1,nNoiseDots) false(1,N-nNoiseDots)];
             S.noiseDots=S.noiseDots(S.RND.randperm(numel(S.noiseDots)));
@@ -73,25 +73,13 @@ classdef dpxStimRdk < dpxAbstractVisualStim
             end
             S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
             S.checkDotsize(S.dotDiamPx);
-            S.dotAge=floor(S.RND.rand(1,N) * (abs(S.nSteps) + 1));
+            S.dotAge=floor(S.RND.rand(1,N) * (abs(S.nSteps)) + 1);
             S.pxPerFlip=S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
             S.dotPolarity=S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,S.dotPolarity)=repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
             S.dotsRGBA(:,~S.dotPolarity)=repmat(S.dotRBGAfrac2(:)*S.scrGets.whiteIdx,1,sum(~S.dotPolarity));
             S.motStartFlip=round(S.motStartSec*S.scrGets.measuredFrameRate);
             S.motStopFlip=S.motStartFlip+S.motDurSec*S.scrGets.measuredFrameRate;
-        end
-        function myDraw(S)
-            if S.visible
-                ok=applyTheAperture(S);
-                if S.nSteps<0
-                    % only show the first and last instance of a dot
-                    ok=ok & (S.dotAge==0|S.dotAge==abs(S.nSteps));
-                end
-                if ~any(ok), return; end
-                xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
-                Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
-            end
         end
         function myStep(S)
             if S.nDots==0
@@ -168,6 +156,18 @@ classdef dpxStimRdk < dpxAbstractVisualStim
                 end
             end
         end
+        function myDraw(S)
+            if S.visible
+                ok=applyTheAperture(S);
+                if S.nSteps<0
+                    % Negative nSteps means only show the first and last instance of a dot
+                    ok=ok & (S.dotAge==0|S.dotAge==abs(S.nSteps));
+                end
+                if ~any(ok), return; end
+                xy=[S.dotXPx(:)+S.xPx S.dotYPx(:)+S.yPx]';
+                Screen('DrawDots',S.scrGets.windowPtr,xy(:,ok),S.dotDiamPx,S.dotsRGBA(:,ok),S.winCntrXYpx,2);
+            end
+        end
         function checkDotsize(S,px)
             % This can't be done in a set methbod because
             % GL_ALIASED_POINT_SIZE_RANGE is only available after the
@@ -191,7 +191,7 @@ classdef dpxStimRdk < dpxAbstractVisualStim
     methods
         function set.motType(S,value)
             if ~any(strcmpi(value,{'phi','ihp'}))
-                error('motType should be PHI or IHP (case IN-sensitive)');
+                error('motType should be PHI or IHP (case insensitive)');
             else
                 S.motType=value;
             end
