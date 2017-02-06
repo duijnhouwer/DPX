@@ -1,19 +1,20 @@
-function dpxExampleExperiment(testscr)
+function dpxExample2afc(testscr)
     
-    % dpxExampleExperiment
+    %dpxExample2afc     How-to create a simple 2AFC experiment in DPX
     %
-    % Tutorial on creating experiments using the DPX toolkit.
+    %   This example is a simple 2AFC experiment of left-right motion
+    %   discrimination with different levels of coherence (fraction of
+    %   motion-signal embedded in motion-noise).
     %
-    % This example is a simple 2AFC experiment of left-right motion
-    % discrimination with different levels of coherence (fraction of
-    % motion-signal embedded in motion-noise).
+    %   The code additionally explains how to enable an Eyelink for
+    %   fixation control.
     %
-    % Sections between [] explain some of the ideas and intended advantages of
-    % the object oriented design of DPX.
+    %   Sections between [] explain some of the ideas and intended
+    %   advantages of the object oriented design of DPX.
     %
-    % See also: dpxExampleExperimentAnalyse
+    %   See also: dpxExample2afcAnalysis
     %
-    % Jacob Duijnhouwer, 2014-09-05
+    %   Jacob Duijnhouwer, 2014-09-05
     
     % At the basis of each experiment is the Experiment class. This class,
     % called dpxCoreExperiment has functionality for most psychophysical and
@@ -165,11 +166,11 @@ function dpxExampleExperiment(testscr)
         E.addCondition(C);
     end
     % Set the number of repeats of each condition, aka blocks.
-    E.nRepeats=2;
+    E.nRepeats=5;
     % Start the experiment. It will run until all trials are finished, or until
     % Escape is pressed. If the program crashes for whatever reason and the
     % window remains visible (obscuring the matlab environment), type the
-    % shorthand 'cf' and press Enter.
+    % shorthand 'sca' and press Enter.
     E.run;
     %
     dpxDispFancy('TIP: use dpxExampleExperimentAnalysis to analyse this data');

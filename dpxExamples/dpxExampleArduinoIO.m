@@ -1,25 +1,25 @@
-function dpxExampleExperimentArduinoInOut(testscr)
+function dpxExampleArduinoIO(testscr)
     
-    % dpxExampleExperimentArduinoInOut
+    %dpxExampleArduinoIO   Arduino input/output example
     %
-    % Example experiment that uses input and output pulses from the Arduino
-    % It can be used to have a rat do a discrimination task with liquid
-    % reward (now set-up for 2AFC, but can be simplified to go-nogo if
-    % desired)
+    %   Example experiment that uses input and output pulses from the
+    %   Arduino It can be used to have a rat do a discrimination task with
+    %   liquid reward (now set-up for 2AFC, but can be simplified to
+    %   go-nogo if desired)
     %
-    % TODO: Make a time-out punishment (brighter screen?) for when
-    % incorrect response is given.
+    %   TODO: Make a time-out punishment (brighter screen?) for when
+    %   incorrect response is given.
     %
-    % See also: dpxExampleExperiment, dpxExampleExperimentArduinoOut
+    %   See also: dpxExampleExperiment, dpxExampleExperimentArduinoOut
     %
-    % Jacob Duijnhouwer, 2015-03-16, update 2014-03-24
+    %   Jacob Duijnhouwer, 2015-03-16, update 2014-03-24
     
   
     if nargin==0
-        testscr=[20 20 800 600];
+        testscr=[20 20 640 480];
     end
     E=dpxCoreExperiment;
-    E.paradigm='dpxExampleExperimentArduinoOut';
+    E.paradigm=mfilename;
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
         'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);

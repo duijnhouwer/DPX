@@ -1,19 +1,23 @@
-function dpxExampleExperimentIncorrectResponseRepeats(testscr)
+function dpxExampleBadRespRepeat(testscr)
     
-    % dpxExampleExperimentIncorrectResponseRepeats
+    %dpxExampleBadRespRepeat    Trial repeat example
     %
-    % See also: dpxExampleExperiment
+    %   Similar to dpxExample2afc but demonstrates how to repeat a trial
+    %   that was incorrect. (In this case, answered outside the allowed
+    %   time interval.)
     %
-    % Jacob Duijnhouwer, 2015-05-02
+    %   See also: dpxExample2afc
+    %
+    %   Jacob Duijnhouwer, 2015-05-02
     
     if nargin==0
-        testscr=[20 20 800 600];
+        testscr=[20 20 640 480];
     end
     E=dpxCoreExperiment;
-    E.paradigm='dpxExampleExperimentIncorrectResponseRepeats';
+    E.paradigm=mfilename;
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
+        'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     
     cohFrac=[-1 1];
     conditionCounter=0;

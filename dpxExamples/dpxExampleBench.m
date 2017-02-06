@@ -6,8 +6,10 @@ function dpxExampleBench(testscr)
     %   tests enabled. Use it to compare the performance of different
     %   set-ups. 
     %
-    %   dpxExampleBench([10 10 640 480]) runs the test in a 640 x 480 pixel
-    %   window
+    %   dpxExampleBench without an argument, or dpxExampleBench([20 20 640
+    %   480]) runs the test in the default 640 x 480 pixel window.
+    %
+    %   Use dpxExampleBench([]) to run the demo in full screen mode.
     %
     %   After the experiment, check the number of flips that were missed in
     %   the output on the command window.
@@ -15,7 +17,7 @@ function dpxExampleBench(testscr)
     %   See also: dpxExampleHelloWorld, dpxExampleExperiment
    
     if nargin==0
-        testscr=[];
+        testscr=[20 20 640 480];
     end
     
     % Make an object E of the class dpxCoreExperiment now ...
