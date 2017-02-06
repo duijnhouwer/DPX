@@ -85,7 +85,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
             end
             S.dotDiamPx=S.dotDiamDeg*S.scrGets.deg2px;
             S.checkDotsize(S.dotDiamPx);
-            S.dotAge=makeDotStartAgeArray(S);%floor(S.RND.rand(1,N) .* S.nSteps + 1);
+            S.dotAge=makeDotStartAgeArray(S);
             S.pxPerFlip=S.speedDps * S.scrGets.deg2px / S.scrGets.measuredFrameRate;
             S.dotPolarity=S.RND.rand(1,N)<.5;
             S.dotsRGBA(:,S.dotPolarity)=repmat(S.dotRBGAfrac1(:)*S.scrGets.whiteIdx,1,sum(S.dotPolarity));
@@ -157,26 +157,18 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 % Copy shorthand back into the member variables
                 S.dotXPx=x;
                 S.dotYPx=y;
-                % Flip the contrasts in case of reverse-phi motion
                 if S.revphiBool
-                    % Flip rgba1 and rgba2
-                    rgba1=S.dotRBGAfrac1(:)*S.scrGets.whiteIdx;
-                    rgba2=S.dotRBGAfrac2(:)*S.scrGets.whiteIdx;
-                    firstTrue=find(S.dotPolarity==true,1);
-                    if isempty(firstTrue)
-                        % rare case if all dots are the same off-color
-                        if all(S.dotsRGBA(:,1)-rgba1<eps)
-                            S.dotsRGBA=repmat(rgba2,1,S.nDots);
-                        else
-                            S.dotsRGBA=repmat(rgba1,1,S.nDots);
-                        end
-                    end
-                    if all(S.dotsRGBA(:,firstTrue)-rgba1==0)
-                        S.dotsRGBA(:,S.dotPolarity) = repmat(rgba2,1,sum(S.dotPolarity));
-                        S.dotsRGBA(:,~S.dotPolarity) = repmat(rgba1,1,sum(~S.dotPolarity));
+                    % Flip the contrasts in case of reverse-phi motion...
+                    if ~S.shuffleBool
+                        % ... unless this is shuffle-step motion because
+                        % then the color should only be swapped once when
+                        % the second instance of the dot is about to be
+                        % shown
+                        S.swapColors;
                     else
-                        S.dotsRGBA(:,S.dotPolarity) = repmat(rgba1,1,sum(S.dotPolarity));
-                        S.dotsRGBA(:,~S.dotPolarity) = repmat(rgba2,1,sum(~S.dotPolarity));
+                        % Swap only the subset of dots that are about to
+                        % make their second appearance
+                        S.swapColors(S.dotAge==S.flash2ndTime);
                     end
                 end
             end
@@ -217,7 +209,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
         end
         function stepSize=makeSecondFlashArray(S,nDots,nSteps,shuffleStep)
             if ~shuffleStep
-                stepSize='notUsed';
+                stepSize='only used for shuffle step stimuli';
                 return;
             end
             if numel(nSteps)~=1
@@ -236,14 +228,14 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 error('Matching straight motion to shuffle step motion only works with a single nStep');
             end
             %info=calcShuffleStepInfo(S);
-            % fopRate=info.Kspurious/info.Ktot;
-            fopRate=(S.nSteps-1)/S.nSteps;
-            nFop=round(fopRate*S.nDots);
-            fop=[true(1,nFop) false(1,S.nDots-nFop)];
-            fop=fop(S.RND.randperm(numel(fop)));
-            fop=fop(1:S.nDots);
+            % fakeRate=info.Kspurious/info.Ktot;
+            fakeRate=(S.nSteps-1)/S.nSteps;
+            nFake=round(fakeRate*S.nDots);
+            fakeIdx=[true(1,nFake) false(1,S.nDots-nFake)];
+            fakeIdx=fakeIdx(S.RND.randperm(numel(fakeIdx)));
+            fakeIdx=fakeIdx(1:S.nDots);
             nStepsArray=repmat(S.nSteps,1,S.nDots); % expand the scalar nSteps to an array
-            nStepsArray(fop)=0; % so we can set the fop-dots to zero-step lifetime
+            nStepsArray(fakeIdx)=0; % so we can set the fake-dots to zero-step lifetime
         end
         function nDots=compensateVisibleShuffleDots(S)
             % because of the shuffle-step dots only two instances of each
@@ -260,7 +252,6 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
             if ~S.shuffleBool && numel(S.nSteps)==1 % can work for nstep-arrays to, for loop over different values
                 nSubset=ceil(S.nDots/S.nSteps);
                 ages=nan(1,nSubset*S.nSteps); % may be a bit larger than nDots
-                
                 for i=1:S.nSteps
                     idx=(i-1)*nSubset+1;
                     ages(idx:idx+nSubset-1)=i;
@@ -273,7 +264,31 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
                 % TODO 666
                 ages=floor(S.RND.rand(1,S.nDots) .* S.nSteps + 1);
             end
-        end;
+        end
+        function swapColors(S,subset)
+            if nargin==1
+                subset=true(1,S.nDots);
+            end
+            rgba1=S.dotRBGAfrac1(:)*S.scrGets.whiteIdx;
+            rgba2=S.dotRBGAfrac2(:)*S.scrGets.whiteIdx;
+            firstTrue=find(S.dotPolarity==true,1);
+            if isempty(firstTrue)
+                % rare case if all dots are the same OFF-color
+                if all(S.dotsRGBA(:,1)-rgba1<eps)
+                    S.dotsRGBA=repmat(rgba2,1,S.nDots);
+                else
+                    S.dotsRGBA=repmat(rgba1,1,S.nDots);
+                end
+            end
+            ON=S.dotPolarity&subset;
+            if all(S.dotsRGBA(:,firstTrue)-rgba1==0) % RGBA1 is the ON-color
+                S.dotsRGBA(:,S.dotPolarity & subset) = repmat(rgba2,1,sum(S.dotPolarity & subset));
+                S.dotsRGBA(:,~S.dotPolarity & subset) = repmat(rgba1,1,sum(~S.dotPolarity & subset));
+            else % RGBA2 is the ON-color
+                S.dotsRGBA(:,S.dotPolarity & subset) = repmat(rgba1,1,sum(S.dotPolarity & subset));
+                S.dotsRGBA(:,~S.dotPolarity & subset) = repmat(rgba2,1,sum(~S.dotPolarity & subset));
+            end
+        end
     end
     methods
         function set.motType(S,value)
@@ -290,7 +305,7 @@ classdef dpxStimRdkShuffleStep < dpxAbstractVisualStim
             end
             S.freezeFlip=value;
         end
-         function set.nSteps(S,value)
+        function set.nSteps(S,value)
             [b,str]=dpxIsWholeNumber(value);
             if ~b
                 error(['nSteps should be ' str ]);

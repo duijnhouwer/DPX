@@ -44,18 +44,19 @@ function dpxExampleExperiment(testscr)
     % dpxCoreWindow object. This object gets instantiated automatically when
     % dpxCoreExperiment object is made. The settings of window can be viewed by
     % typing get(E.window) and set by typing, for example,
-    % set(E.window,'distMm',1000) or E.window.distMm=1000 to set the viewing distance
-    % to a meter. Note that not all properties of E.window that are displayed when
-    % calling get(E.window) can also be set using set, some properties are
-    % read-only. A convenient way to set your window properties, visualize, and
-    % test them is through the amazing GUI I created. Evoke this by typing:
+    % set(E.window,'distMm',1000) or E.window.distMm=1000 to set the
+    % viewing distance to a meter. Note that not all properties of E.window
+    % that are displayed when calling get(E.window) can also be set using
+    % set, some properties are read-only. An alternative convenient way to
+    % set your window properties, visualize, and test them is through the
+    % GUI that can be evoke by typing:
     %   E.window.gui
     % The "disp" button in this GUI generates a set-string to your command
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
         'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
+        'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'rectPx' (i.e., []), triggers full
     % screen display, regardless what resolution the screen is set to.
@@ -119,12 +120,8 @@ function dpxExampleExperiment(testscr)
         % Set the diameter of the RDK
         RDK.wDeg=20;
         RDK.hDeg=20;
-        % We want the stimulus to go on immediately at the start of the trial. The
-        % motion pulse (lasting 1 second) will start after 1 second
-        RDK.onSec=0;
-        RDK.durSec=Inf;
-        RDK.motStartSec=1;
-        RDK.motDurSec=1;
+        RDK.onSec=1;
+        RDK.durSec=1;
         % Provide a name for this stimulus, this is how the stimulus will be called
         % in the data-file. If no name is provided, the name will default to the
         % class-name (dpxStimRdk). In an experiment, no two stimuli can have the
@@ -141,8 +138,14 @@ function dpxExampleExperiment(testscr)
         MASK.wDeg=RDK.wDeg+RDK.dotDiamDeg;      
         MASK.hDeg=RDK.hDeg+RDK.dotDiamDeg; 
         
+        % Add a text stimulus with instructions
+        TXT=dpxStimTextSimple;
+        TXT.str='Indicate the motion direction with\nthe left and right arrow keys.\n(ESC to quit)';
+        TXT.yDeg=-RDK.wDeg/2;
+        
         % Add the stimuli to the condition
         C.addStimulus(FIX); % first added will be on top
+        C.addStimulus(TXT);
         C.addStimulus(MASK);
         C.addStimulus(RDK);  
         
@@ -154,7 +157,7 @@ function dpxExampleExperiment(testscr)
         % and press Enter. Then, type 'KbName' followed by Enter and, after a
         % second, press the key you want to use.
         R.kbNames='LeftArrow,RightArrow';
-        R.allowAfterSec=RDK.motStartSec+RDK.motDurSec; % allow the response no sooner than the end of the RDK motion pulse
+        R.allowAfterSec=RDK.onSec+RDK.durSec; % allow the response no sooner than the end of the RDK motion pulse
         R.correctEndsTrialAfterSec=0;
         C.addResponse(R);
         

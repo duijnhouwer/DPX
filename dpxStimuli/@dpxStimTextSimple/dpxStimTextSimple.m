@@ -9,6 +9,7 @@ classdef dpxStimTextSimple < dpxAbstractVisualStim
         RGBA;
         oldFontName;
         oldTextSize;
+        rectPx;
     end
     methods (Access=public)
         function S=dpxStimTextSimple
@@ -40,10 +41,13 @@ classdef dpxStimTextSimple < dpxAbstractVisualStim
             S.RGBA=S.RGBAfrac*S.scrGets.whiteIdx;
             S.oldFontName=Screen('Textfont',S.scrGets.windowPtr,S.fontname);
             S.oldTextSize=Screen('TextSize',S.scrGets.windowPtr,S.fontsize);
+            S.rectPx=S.scrGets.rectPx;
+            S.rectPx(1)=S.rectPx(1)+S.xPx*2; % 2017-02-2, not sure why ...
+            S.rectPx(2)=S.rectPx(2)-S.yPx*2; % .. the *2 seems needed
         end
         function myDraw(S)
             if S.visible
-                DrawFormattedText(S.scrGets.windowPtr,S.str,'center','center',S.RGBA,[],0,0,1.5,0,[]);
+                DrawFormattedText(S.scrGets.windowPtr,S.str,'center','center',S.RGBA,[],0,0,1.5,0,S.rectPx);
             end
         end
         function myClear(S)
