@@ -56,8 +56,8 @@ function dpxExample2afc(testscr)
     % window that you can copy/paste into your experiment, as I've done for
     % this experiment here:
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
-        'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',1,'verbosity0min5max',3);
+        'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
+        'skipSyncTests',1,'verbosity0min5max',3);
     % Note (1) that i've manually cut the line using elipses (...) for
     % legibility; and (2) that an empty 'rectPx' (i.e., []), triggers full
     % screen display, regardless what resolution the screen is set to.

@@ -5,6 +5,10 @@ function dpxExampleTrialTrigger(testscr)
     %   Similar to dpxExample2afc but demonstrates a simple use of the
     %   trial-trigger funtionality, in this case providing a random start
     %   delay.
+    %   
+    %   Other examples of trial-triggers could also be use, to hold the
+    %   trial until the subject fixates a fixation point using for example
+    %   an Eyelink.
     %
     %   See also: dpxExample2afc
     %
@@ -12,14 +16,14 @@ function dpxExampleTrialTrigger(testscr)
 
     
     if nargin==0
-        testscr=[20 20 800 600];
+        testscr=[20 20 640 480];
     end
     
     E=dpxCoreExperiment;
     E.paradigm=mfilename;
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',500, ... 
-        'interEyeMm',65,'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
-        'stereoMode','mono','skipSyncTests',   1    ,'verbosity0min5max',3);
+        'gamma',1,'backRGBA',[0.5 0.5 0.5 1], ...
+        'skipSyncTests',1,'verbosity0min5max',3);
 
     cohFrac=-1:.5:1;
     conditionCounter=0;

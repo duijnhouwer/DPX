@@ -11,6 +11,10 @@ function dpxExampleRevPhi(testscr)
     %   640 480]) runs the test in the default 640 x 480 pixel window.
     %
     %   Use dpxExampleRevPhi([]) to run the demo in full screen mode.
+    %
+    %   See also: dpxExample2afc, dpxExampleHelloWorld, dpxExample...
+    %
+    %   Jacob Duijnhouwer, 2017-02-06
     
     if nargin==0
         testscr=[20 20 640 480];

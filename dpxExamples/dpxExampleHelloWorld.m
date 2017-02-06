@@ -1,8 +1,10 @@
 function dpxExampleHelloWorld
     
-    % function dpxExampleHelloWorld
-    % Example Hello World experiment in a small window.
-    % Jacob Duijnhouwer, 2015-10-19
+    %dpxExampleHelloWorld   Hello World!
+    % 
+    %   Example Hello World experiment in a small window.
+    %
+    %   Jacob Duijnhouwer, 2015-10-19
 
     % Instantiate the experiment object E
     E=dpxCoreExperiment;
