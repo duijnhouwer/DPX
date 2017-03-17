@@ -62,7 +62,7 @@ function [b,err]=dpxdIs(T,varargin)
     end
     if std(numelArray)~=0
         b=false;
-        err=explain('Not a DXPD because not all data fields arrays have equal number of columns.',p.Results.verbosity);
+        err=explain('Not a DXPD because not all data fields have an equal number of columns.',p.Results.verbosity);
         return;
     end
     % Check that the calculated length of is N

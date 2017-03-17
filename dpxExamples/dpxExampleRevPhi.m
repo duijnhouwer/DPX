@@ -1,6 +1,6 @@
 function dpxExampleRevPhi(testscr)
     
-    %dpxExampleRevPhi    Phi and reverse phi random dot motion
+    %dpxExampleRevPhi   Phi and reverse phi random dot motion
     %
     %   This function demonstrates the use of the dpxStimRdk class to
     %   present single step random dot motion in regular phi mode, and in
@@ -26,7 +26,7 @@ function dpxExampleRevPhi(testscr)
     % Set the parameters of the display
     E.window.set('rectPx',testscr,'widHeiMm',[508 318],'distMm',600 ...
         ,'gamma',1,'backRGBA',[0.5 0.5 0.5 1] ...
-        ,'skipSyncTests',1,'verbosity0min5max',3);
+        ,'skipSyncTests',0,'verbosity0min5max',3);
     
     % Create two conditions, a phi and a reverse phi one
     for i=1:2

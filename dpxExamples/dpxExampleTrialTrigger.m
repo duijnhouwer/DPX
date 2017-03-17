@@ -1,6 +1,6 @@
 function dpxExampleTrialTrigger(testscr)
     
-    %dpxExampleTrialTrigger    Trial trigger example
+    %dpxExampleTrialTrigger     Trial trigger example
     %
     %   Similar to dpxExample2afc but demonstrates a simple use of the
     %   trial-trigger funtionality, in this case providing a random start
