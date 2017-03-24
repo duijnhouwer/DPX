@@ -29,9 +29,9 @@ function [IN,OUT]=dpxdToolSplitByTime(D,varargin)
     else
         D={D};
     end
+    IN=cell(size(D));
+    OUT=cell(size(D));
     for i=1:numel(D)
-        IN=cell(size(D));
-        OUT=cell(size(D));
         if strcmpi(p.Results.scope,'withinruns')
             IN{i}=dpxdSplit(D{i},'exp_startTime'); % split into runs
             OUT{i}=cell(size(IN{i}));
