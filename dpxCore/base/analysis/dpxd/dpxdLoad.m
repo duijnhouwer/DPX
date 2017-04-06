@@ -1,6 +1,6 @@
-function [DPXD,auxData]=dpxdLoad(filename,compat)
+function [DPXD,auxData]=dpxdLoad(filename,varargin)
 
-    % [dpxd,theRest]=dpxdLoad(filename,compat) 
+    % [dpxd,theRest]=dpxdLoad(filename,varargin) 
     % Load a DPX-data file.
     %
     % DPXD files are simply MAT files, so they can be loaded with
@@ -17,11 +17,15 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     % A DPXD file may contain addiotional information which has to be stored in a separate
     % variable called 'auxData'. This data will be loaded into output argument auxData. 
     %
-    % Optional argument 'compat' determines updates to the DPXD to update it to current
-    % standards. It can be 'ignore','ramfix', or (default) 'filefix'.
+    % Optionally, provide one (and only one) of the following strings to
+    % determines updates to the DPXD to update it to current
+    % standards:'ignore','ramfix', or (default) 'filefix'.
     %   'ignore': don't update the DPXD
     %   'ramfix': update the loaded DPXD 
     %   'filefix': update the loaded DPXD and save it to disk (overwrites 'filename')
+    %
+    % Provide the optional
+    % 
     %
     % EXAMPLE
     %    DPXD=dpxdLoad('yourExpDataFile.mat');
@@ -29,6 +33,24 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     % Jacob Duijnhouwer, 2014-11-25
     %
     % 2015-12-04: added compat option
+    % 2017-03-29: changed compat to varargin option to be able to also
+    %   provide "verbose" option
+    
+    
+    if ~isempty(varargin)
+        compat=intersect(varargin,{'ignore','ramfix','filefix'});
+        if isempty(compat)
+            compat='filefix';
+        elseif numel(compat)>1
+            error(['Only one compat option is allowed, but you provided: ' sprintf('''%s'',',compat{:})]);
+        else
+            compat=compat{1}; % turn cell into string
+        end
+        verbose=~isempty(intersect(varargin,'verbose'));
+    else
+        compat='filefix';
+        verbose=false;
+    end
     
     if ~exist('compat','var') || isempty('compat')
         compat='filefix';
@@ -40,6 +62,9 @@ function [DPXD,auxData]=dpxdLoad(filename,compat)
     DPXD={};
     auxData=struct;
     if exist(filename,'file')
+        if verbose
+            disp(['[' mfilename '] Loading ''' filename '''...']);
+        end
         K=load(filename);
     else
         error(['No file named ''' filename ''' exists.']);

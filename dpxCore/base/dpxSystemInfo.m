@@ -6,7 +6,7 @@ function info=dpxSystemInfo
     % See also: dpxVersion
     
     ogl=opengl('data');
-    ptb=Screen('version');
+    ptb=Screen('version');    
     info.os=computer;
     info.matlab=version;
     info.opengl=ogl.Version;
