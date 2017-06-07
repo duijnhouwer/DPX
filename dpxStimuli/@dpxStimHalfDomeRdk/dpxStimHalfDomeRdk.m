@@ -89,7 +89,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
             Screen('DrawDots',S.scrGets.windowPtr,S.visDotXy,S.dotDiamPx,cols,[0 0],1);
         end
         function myStep(S)
-            % 0: is this a frozen frame (framerate reduction)
+            % 0: is this a frozen frame? (for framerate reduction)
             frozen=mod(S.stepCounter-S.motStartFlip,S.freezeFlip)>0;
             % 1: if in motion interval update the positions            
             if S.stepCounter>S.motStartFlip && S.stepCounter<=S.motStopFlip
@@ -109,8 +109,7 @@ classdef dpxStimHalfDomeRdk < dpxAbstractVisualStim
                         S.eleDeg(S.eleDeg<-80)=S.eleDeg(S.eleDeg<-80)+160;
                     end
                 end
-            end
-            
+            end     
             % 2: update lifetime, replace expired points
             if S.nSteps<Inf && ~frozen
                 S.dotAge=S.dotAge+1;

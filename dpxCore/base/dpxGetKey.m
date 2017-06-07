@@ -7,7 +7,7 @@ function idx=dpxGetKey(names)
     %
     % Alternatively, NAMES is a cell array of strings, e.g.,
     % {'Escape','Pause'}. In that case IDX will be 1 if Escape is pressed,
-    % 2 if Pause is pressed, i.e., the number of their respective
+    % 2 if Pause is pressed, i.e., the index of their respective
     % cell-element.
     %
     % Otherwise, IDX is 0.

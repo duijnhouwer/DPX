@@ -81,7 +81,7 @@ function bayesphys=dpxBayesPhysV1(varargin)
     if winidx>0 && winidx<=numel(S)
         bayesphys.bestCurveY{1}=getBestCurvesForPlotting(S{winidx},winstr,x1);
     else
-        bayesphys.bestCurveY{1}=nans(size(x1));
+        bayesphys.bestCurveY{1}=nan(size(x1));
     end
 end
 
