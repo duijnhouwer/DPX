@@ -5,7 +5,7 @@ function foldernames=dpxGetFolders(folder,walktree)
     % If no folder is provided, the current folder is used (pwd)
     % Jacob 20060929
     % updated 2015-07-21
-    %       - added option to includesubfolders (true or 'includesubfolders') 
+    %       - added option to include subfolders (true or 'walktree') 
     %       - output is now a cell array of full-path folder names
     
     if nargin==0 || isempty(folder)
