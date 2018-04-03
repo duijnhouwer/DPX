@@ -28,7 +28,7 @@ function varargout = dpxUIgetFiles(varargin)
     else
         gui_mainfcn(gui_State, varargin{:});
     end
-    % End initialization code - DO NOT EDIT
+   % End initialization code - DO NOT EDIT
 end
 
 
@@ -41,20 +41,20 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin) %#ok<*I
     % varargin   command line arguments to dpxUIgetFiles (see VARARGIN)
     
     % Choose default command line output for dpxUIgetFiles
-    handles.output = {};
+    handles.output.filenames = {};
     %
     % Handle the vargin input
     p = inputParser;   % Create an instance of the inputParser class.
-    p.addParamValue('folder',dpxCache('get',[mfilename '_workdir'],pwd),@ischar) % the start folder to look in
+    p.addParamValue('rootfolder',dpxCache('get',[mfilename '_workdir'],pwd),@ischar) % the start folder to look in
     p.addParamValue('title',mfilename,@ischar);
-    p.addParamValue('extensions',{'*.*','*.mat','*.m'},@(x)iscell(x)||ischar(x));
+    p.addParamValue('extensions',{'*.mat','*.m'},@(x)iscell(x)||ischar(x)); % *.* will always be added
     p.parse(varargin{:});
     %
     set(handles.traverseSubfolderCheckBox,'Value',dpxCache('get',[mfilename '_traverseSubfolderCheckBox'],false));
     %
-    set(handles.extensionPopupmenu,'String',p.Results.extensions);
+    set(handles.extensionPopupmenu,'String',[cellstr(p.Results.extensions), '*.*']);
     set(handles.figure1,'Name',p.Results.title);
-    set(handles.folderEditText,'String',p.Results.folder);
+    set(handles.folderEditText,'String',p.Results.rootfolder);
     setInputList(hObject, handles);
     % Update handles structure
     guidata(hObject, handles);
@@ -72,7 +72,8 @@ end
 
 function varargout = dpxUIgetFiles_OutputFcn(hObject, eventdata, handles)
     if isstruct(handles) && isfield(handles,'output')
-        varargout{1}=handles.output;
+        varargout{1}=handles.output.filenames;
+        varargout{2}=handles.folderEditText.String;
         delete(hObject);
         drawnow;
     else
@@ -82,13 +83,18 @@ function varargout = dpxUIgetFiles_OutputFcn(hObject, eventdata, handles)
 end
 
 
-function folderEditText_Callback(hObject, eventdata, handles)
+function folderEditText_Callback(hObject, folder, handles)
     % Hints: get(hObject,'String') returns contents of folderEditText as text
     %        str2double(get(hObject,'String')) returns contents of folderEditText as a double
-    folder=get(hObject,'String');
+    if ischar(folder) % comes from select folder button
+        set(hObject,'String',folder);
+    else
+        folder=get(hObject,'String');
+    end
     if ~exist(folder,'file')
         errordlg(['Folder ' folder ' does not exist']);
     else
+        guidata(hObject, handles);
         setInputList(hObject, handles);
     end
 end
@@ -104,38 +110,28 @@ end
 function browseFolderButton_Callback(hObject, eventdata, handles)
     folder=get(handles.folderEditText,'String');
     folder=uigetdir(folder, 'Select a folder');
-    if folder~=0
-        set(handles.folderEditText,'String',folder);
-        setInputList(hObject, handles);
+    if folder==0 % 0 if pressed cancel
+        return;
     end
+    %  folderEditText_Callback(hObject, folder, handles)
+    set(handles.folderEditText,'String',folder);
+    setInputList(hObject, handles);
 end
 
 function inputListBox_Callback(hObject, eventdata, handles)
-    % Hints: contents = cellstr(get(hObject,'String')) returns inputListBox contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from inputListBox
 end
 
 function inputListBox_CreateFcn(hObject, eventdata, handles)
-    % Hint: listbox controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
 end
 
 function extensionPopupmenu_Callback(hObject, eventdata, handles)
-    % Hints: contents = cellstr(get(hObject,'String')) returns extensionPopupmenu contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from extensionPopupmenu
     setInputList(hObject, handles);
 end
 
 function extensionPopupmenu_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to extensionPopupmenu (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    empty - handles not created until after all CreateFcns called
-    
-    % Hint: popupmenu controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
@@ -206,13 +202,13 @@ function okButton_Callback(hObject, eventdata, handles)
     % Store the selected folder as the starting folder for next time
     dpxCache('set',[mfilename '_workdir'],get(handles.folderEditText,'String'));
     dpxCache('set',[mfilename '_traverseSubfolderCheckBox'],get(handles.traverseSubfolderCheckBox,'Value'));
-    handles.output=cellstr(get(handles.outputListBox,'String'));
-    if numel(handles.output)==1 && strcmp(handles.output,'')
+    handles.output.filenames=cellstr(get(handles.outputListBox,'String'));
+    if numel(handles.output.filenames)==1 && strcmp(handles.output.filenames,'')
         % OK must have been pressed on an empty selection. Make output identical to
         % output obtained with cancel or "close-window cross".
-        handles.output={}; % instead of {''}
+        handles.output.filenames={}; % instead of {''}
     end
-    guidata(hObject, handles)
+    guidata(hObject, handles);
     uiresume();
 end
 

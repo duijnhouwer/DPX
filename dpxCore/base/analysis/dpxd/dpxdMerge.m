@@ -113,12 +113,13 @@ function M=doIntersection(T,missingfields)
         thistab=T{t};
         for f=1:numel(F)
             thisname=F{f};
-            if strcmp(thisname,'N')
+            if thisname=='N'
                 M.N=M.N+thistab.N;
             else
-                if iscell(thistab.(thisname))
+                X=thistab.(thisname);
+                if iscell(X)
                     try
-                        M.(thisname)=[M.(thisname) thistab.(thisname)];
+                        M.(thisname)=[M.(thisname) X];
                     catch me
                         sca;
                         disp('An error occured in dpxdMerge, please contact Jacob with the following information:');
@@ -133,17 +134,17 @@ function M=doIntersection(T,missingfields)
                         disp('Sorry for the inconvenience!');
                         % keyboard%
                         error(' ');
-                    end;
-                elseif isnumeric(thistab.(thisname)) || islogical(thistab.(thisname)) || isstruct(thistab.(thisname)) || ischar(thistab.(thisname))
+                    end
+                elseif isnumeric(X) || islogical(X) || isstruct(X) || ischar(X) || isa(X,'nominal') || iscategorical(X)
                     try
-                        M.(thisname)=[ M.(thisname) thistab.(thisname) ];
+                        M.(thisname)=[ M.(thisname) X ];
                     catch me
                         disp(me.message);
                         eStr=['Field ''' thisname ''' could not be merged: ' me.message '\nHint: use cell arrays for incompatible arrays or structs.'];
                         error('a:b',eStr);
                     end
                 else
-                    error('DPXD fields should be of type numeric, logical, char, struct, cell');
+                    error('DPXD fields should be of type numeric, logical, char, struct, cell, nominal, categorical');
                 end
             end
         end

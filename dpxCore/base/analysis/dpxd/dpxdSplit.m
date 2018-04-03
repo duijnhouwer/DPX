@@ -86,7 +86,7 @@ function [C,N]=dpxdSplit(DPXD,fNames)
     
     function I=subFuncEquals(arr,thisval)
         % Index by numerical, logical, and char arrays, or by cell-arrays of strings
-        if isnumeric(thisval) || islogical(thisval)
+        if isnumeric(thisval) || islogical(thisval) || iscategorical(thisval)
             I=arr==thisval; % e.g. [123 123]==123;
         elseif ischar(thisval) && ischar(arr)
             I=arr==thisval; % e.g. 'abcabc'=='a'

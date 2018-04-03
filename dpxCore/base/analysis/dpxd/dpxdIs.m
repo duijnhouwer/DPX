@@ -1,12 +1,23 @@
 function [b,err]=dpxdIs(T,varargin)
     
-    % b=dpxdIs(T,varargin)
-    % Checks whether input T is a DPXD.
-    % DPXD is a structure whose members have equal numbers of elements except
+    % [b,err]=dpxdIs(T,varargin)
+    %
+    % Returns boolean B to indicate if T is a DPXD.
+    %
+    % Optional output argument err contains a string that explains why T is
+    % not a DPXD.
+    %
+    % A DPXD is a structure whose members have equal numbers of elements except
     % for the special and required field 'N' which contains that number.
-    % Arguments:
-    % p.addRequired('T');
-    % p.addOptional('verbosity',0,@isnumeric);
+    %
+    % Required argument:
+    % 	T, the variable to test.
+    % Optional name-value pair:
+    % 	'verbosity'
+    %       0, Suppress command line output (default).
+    %       1, If T is not a DPXD, issue a warning.
+    %
+    % Jacob (updated 2017-11-20)
     
     if nargin==0
         error('Not enough input arguments.');
@@ -76,9 +87,6 @@ end
 function str=explain(str,verbo)
     if verbo>=1
         warning(str);
-        if verbo>=2
-            keyboard;
-        end
     end
 end
 

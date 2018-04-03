@@ -26,14 +26,18 @@ function foldernames=dpxGetFolders(folder,walktree)
     foldernames={};
     foldernames=getThisLevel(folder,walktree);
     foldernames=foldernames(:); % make a list
-
+    
     function foldernames=getThisLevel(folder,walktree)
         global foldernames
         list=dir(folder);
-        list=list(3:end); % remove . and ..
         if ~isempty(list)
             list=list([list.isdir]);
         end
+        % remove the  . and .. folders in a robust manner (folder starting with ' will
+        % precede the . and .. folder, they are not necessarily the first!
+        list(strcmp('.',{list.name}))=[];
+        list(strcmp('..',{list.name}))=[];   
+
        % foldernames=cell(size(list));
         for i=1:numel(list)
             foldernames{end+1}=fullfile(folder,list(i).name);
