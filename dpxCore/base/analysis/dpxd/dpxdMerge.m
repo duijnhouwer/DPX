@@ -121,7 +121,10 @@ function M=doIntersection(T,missingfields)
                     try
                         M.(thisname)=[M.(thisname) X];
                     catch me
-                        sca;
+                        try
+                            sca;
+                        catch
+                        end
                         disp('An error occured in dpxdMerge, please contact Jacob with the following information:');
                         disp('- - -   C U T   H E R E   - - - ');
                         disp(['Date = ' datestr(now)]);

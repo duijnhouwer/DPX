@@ -109,7 +109,16 @@ end
 
 function browseFolderButton_Callback(hObject, eventdata, handles)
     folder=get(handles.folderEditText,'String');
-    folder=uigetdir(folder, 'Select a folder');
+    if exist(folder,'file')
+        try
+        folder=uigetdir(folder, 'Select a folder');
+        catch me
+            disp([me.message ': ' folder]);
+             folder=uigetdir(pwd, 'Select a folder');
+        end
+    else
+        folder=uigetdir(pwd, 'Select a folder');
+    end
     if folder==0 % 0 if pressed cancel
         return;
     end
@@ -233,10 +242,13 @@ end
 %--- This function populates the current selection listbox
 function setInputList(hObject, handles)
     startfolder=get(handles.folderEditText,'String');
+    if ~exist('startfolder','file')
+        startfolder=pwd;
+    end
     oldPointer=get(gcf,'Pointer');
     set(gcf,'Pointer','watch'); drawnow;
     if get(handles.traverseSubfolderCheckBox,'Value')
-        folders=dpxGetFolders(startfolder,'walktree');
+        folders=dpxGetFolders(startfolder,'recursive','includeroot');
     else
         folders={startfolder};
     end

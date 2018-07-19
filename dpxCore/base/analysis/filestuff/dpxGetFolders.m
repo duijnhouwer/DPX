@@ -1,51 +1,60 @@
-function foldernames=dpxGetFolders(folder,walktree)
+function foldernames=dpxGetFolders(varargin)
     
     % dpxGetFolders(folder), returns all folders present in folder 'folder', excluding the
     % folders named . and ..
-    % If no folder is provided, the current folder is used (pwd)
-    % Jacob 20060929
-    % updated 2015-07-21
-    %       - added option to include subfolders (true or 'walktree') 
-    %       - output is now a cell array of full-path folder names
+    %
+    %   EXAMPLES
+    %   dpxGetFolders(pwd)
+    %   dpxGetFolders(___,'recursive') optional flag to include all
+    %       subfolders recursively
+    %   dpxGetFolders(___,'includeroot') optional flag to include the
+    %       rootfolder in the output list
     
-    if nargin==0 || isempty(folder)
-        folder=pwd;
-    elseif nargin==1
-        walktree=false;
+    
+    % Parse the input arguments, they can be in any given order
+    idx=cellfun(@(x)exist(x,'file')==7,varargin);
+    if ~any(idx)
+        error('No or no existing folder name provided');
+    end
+    startfolder=varargin{idx};
+    varargin(idx)=[];
+    
+    idx=cellfun(@(x)strcmpi(x,'recursive'),varargin);
+    doRecurse=any(idx);
+    varargin(idx)=[];
+    
+    idx=cellfun(@(x)strcmpi(x,'includeroot'),varargin);
+    doIncludeRoot=any(idx);
+    varargin(idx)=[];
+    
+    % all known options are now exhausted
+    if numel(varargin)>0
+        error('There were unknown inputs to dpxGetFolders');
     end
     
-    if ischar(walktree)
-        if strcmpi(walktree,'walktree')
-            walktree=true;
-        else
-            error(['Unknown option '  walktree  ', should be true or ''walktree''']);
-        end
+    % use dir to get all files and folders below startfolder
+    if doRecurse
+        FF=dir(fullfile(startfolder,'**'));
+    else
+        FF=dir(startfolder);
     end
     
-    global foldernames
-    foldernames={};
-    foldernames=getThisLevel(folder,walktree);
-    foldernames=foldernames(:); % make a list
+    % keep only folders
+    FF=FF([FF.isdir]);
     
-    function foldernames=getThisLevel(folder,walktree)
-        global foldernames
-        list=dir(folder);
-        if ~isempty(list)
-            list=list([list.isdir]);
-        end
-        % remove the  . and .. folders in a robust manner (folder starting with ' will
-        % precede the . and .. folder, they are not necessarily the first!
-        list(strcmp('.',{list.name}))=[];
-        list(strcmp('..',{list.name}))=[];   
-
-       % foldernames=cell(size(list));
-        for i=1:numel(list)
-            foldernames{end+1}=fullfile(folder,list(i).name);
-            if walktree
-                % include subdirectories by making this function recursive
-                getThisLevel(foldernames{end},walktree);
-            end
-        end
+    % remove . and .. folders
+    FF=FF(~strcmp('.',{FF.name}) & ~strcmp('..',{FF.name}));
+    
+    % convert to list of full-path names
+    foldernames=fullfile({FF.folder},{FF.name});
+    
+    % make it a column vector
+    foldernames=foldernames(:);
+    
+    % stick the startfolder at the top of the list if so desired
+    if doIncludeRoot
+        foldernames=[{startfolder}; foldernames];
     end
 end
+   
 
