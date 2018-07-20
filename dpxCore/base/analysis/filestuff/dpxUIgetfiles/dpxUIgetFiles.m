@@ -3,13 +3,14 @@ function varargout = dpxUIgetFiles(varargin)
     % dpxUIgetFiles
     %
     % GUI to select multiple files from multiple directories. It is possible to select
-    % files from folder including subfolder, filter on extention, and use simplified and
-    % full blown regexp filtering on filenames.
-    %
-    % TODO: implement regexp filtering
+    % files from folder including subfolder, filter on extention, and use
+    % simple inclusion and exclusion filtering on filenames.
     %
     % EXAMPLE:
     % dpxUIgetFiles('folder',pwd,'title','Select files...','extensions',{'*.txt','*.*'});
+    
+   % TODO: implement regexp filtering
+        
     
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -241,23 +242,22 @@ end
 
 %--- This function populates the current selection listbox
 function setInputList(hObject, handles)
-    startfolder=get(handles.folderEditText,'String');
-    if ~exist('startfolder','file')
-        startfolder=pwd;
+    if ~exist(handles.folderEditText.String,'file')
+        handles.folderEditText.String=uigetdir(pwd,'Pick a folder ...');   
     end
     oldPointer=get(gcf,'Pointer');
     set(gcf,'Pointer','watch'); drawnow;
     if get(handles.traverseSubfolderCheckBox,'Value')
-        folders=dpxGetFolders(startfolder,'recursive','includeroot');
+        folders=dpxGetFolders(handles.folderEditText.String,'recursive','includeroot');
     else
-        folders={startfolder};
+        folders={handles.folderEditText.String};
     end
     fileNames={};
     ext=get(handles.extensionPopupmenu,'String');
     if iscell(ext)
         ext=ext{get(handles.extensionPopupmenu,'Value')}; % e.g. '*.mat'
     end
-    exclStrCell=regexp(get(handles.excludeStringEdit,'String'),':','split');
+    exclStrCell=regexp(get(handles.excludeStringEdit,'String'),':','split'); % ':' is fine because it's an illegal character in filenames (at least in windows)
     inclStrCell=regexp(get(handles.includeStringEdit,'String'),':','split');
     exclStrCell(cellfun(@isempty,exclStrCell))=[]; % remove '' from cell array that would...
     inclStrCell(cellfun(@isempty,inclStrCell))=[]; % ... typically occur when field is empty
