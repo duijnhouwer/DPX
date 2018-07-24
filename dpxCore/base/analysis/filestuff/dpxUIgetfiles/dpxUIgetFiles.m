@@ -51,7 +51,8 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin) %#ok<*I
     p.addParamValue('extensions',{'*.mat','*.m'},@(x)iscell(x)||ischar(x)); % *.* will always be added
     p.parse(varargin{:});
     %
-    set(handles.traverseSubfolderCheckBox,'Value',dpxCache('get',[mfilename '_traverseSubfolderCheckBox'],false));
+    %set(handles.traverseSubfolderCheckBox,'Value',dpxCache('get',[mfilename '_traverseSubfolderCheckBox'],false));
+    set(handles.traverseSubfolderCheckBox,'Value',false); % always set false because can take forever in case rootfolder is deep
     %
     set(handles.extensionPopupmenu,'String',[cellstr(p.Results.extensions), '*.*']);
     set(handles.figure1,'Name',p.Results.title);
@@ -93,20 +94,15 @@ function folderEditText_Callback(hObject, folder, handles)
         folder=get(hObject,'String');
     end
     if ~exist(folder,'file')
-        errordlg(['Folder ' folder ' does not exist']);
+        msg=['Folder ''' folder ''' does not exist'];
+        uiwait(errordlg(msg,mfilename,'modal'));
+        return
     else
         guidata(hObject, handles);
         setInputList(hObject, handles);
     end
 end
 
-
-% --- Executes during object creation, after setting all properties.
-function folderEditText_CreateFcn(hObject, eventdata, handles)
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-end
 
 function browseFolderButton_Callback(hObject, eventdata, handles)
     folder=get(handles.folderEditText,'String');
@@ -128,39 +124,6 @@ function browseFolderButton_Callback(hObject, eventdata, handles)
     setInputList(hObject, handles);
 end
 
-function inputListBox_Callback(hObject, eventdata, handles)
-end
-
-function inputListBox_CreateFcn(hObject, eventdata, handles)
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-end
-
-function extensionPopupmenu_Callback(hObject, eventdata, handles)
-    setInputList(hObject, handles);
-end
-
-function extensionPopupmenu_CreateFcn(hObject, eventdata, handles)
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-end
-
-% --- Executes on selection change in outputListBox.
-function outputListBox_Callback(hObject, eventdata, handles)
-    
-    % Hints: contents = cellstr(get(hObject,'String')) returns outputListBox contents as cell array
-    %        contents{get(hObject,'Value')} returns selected item from outputListBox
-end
-
-function outputListBox_CreateFcn(hObject, eventdata, handles)
-    % Hint: listbox controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-end
 
 function addToOutputButton_Callback(hObject, eventdata, handles) % >>
     additional=cellstr(get(handles.inputListBox,'String')); % returns complete list in currentSelectionListBox
@@ -187,14 +150,6 @@ function removeFromOutput_Callback(hObject, eventdata, handles) % []<
     end
 end
 
-
-% --- Executes on button press in selectAllButton.
-function selectAllButton_Callback(hObject, eventdata, handles)
-end
-
-% --- Executes on button press in selectNoneButton.
-function selectNoneButton_Callback(hObject, eventdata, handles)
-end
 
 % --- Executes on button press in traverseSubfolderCheckBox.
 function traverseSubfolderCheckBox_Callback(hObject, eventdata, handles)
@@ -264,7 +219,9 @@ function setInputList(hObject, handles)
     I=intersect(exclStrCell,inclStrCell);
     if ~isempty(I)
         set(gcf,'Pointer','arrow'); drawnow;
-        errordlg({'Require string(s) and Exclude string(s) both contain:', sprintf('      %s\n',I{:})});
+        msg={'Require string(s) and Exclude string(s) both contain:', sprintf('      %s\n',I{:})};
+        uiwait(errordlg(msg,mfilename,'modal'));
+        return
     else
         for i=1:numel(folders)
             stringsToAddCell = dir(fullfile(folders{i},ext));
@@ -273,10 +230,10 @@ function setInputList(hObject, handles)
                     continue;
                 else
                     thisFileName=fullfile(folders{i},stringsToAddCell(a).name);
-                    if ~isempty(exclStrCell) && dpxStrfindCell(thisFileName,exclStrCell,true)
+                    if ~isempty(exclStrCell) && ~contains(thisFileName,exclStrCell)
                         continue;
                     end
-                    if ~isempty(inclStrCell) && ~dpxStrfindCell(thisFileName,inclStrCell,true)
+                    if ~isempty(inclStrCell) && ~contains(thisFileName,inclStrCell)
                         continue;
                     end
                     fileNames{end+1}=thisFileName; %#ok<AGROW>
@@ -291,35 +248,17 @@ function setInputList(hObject, handles)
 end
 
 
-
-
-
 function includeStringEdit_Callback(hObject, eventdata, handles)
     % Hints: get(hObject,'String') returns contents of includeStringEdit as text
     %        str2double(get(hObject,'String')) returns contents of includeStringEdit as a double
     setInputList(hObject, handles);
 end
 
-function includeStringEdit_CreateFcn(hObject, eventdata, handles)
-    % Hint: edit controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
-end
-
-
 function excludeStringEdit_Callback(hObject, eventdata, handles)
-    % Hints: get(hObject,'String') returns contents of excludeStringEdit as text
-    %        str2double(get(hObject,'String')) returns contents of excludeStringEdit as a double
     setInputList(hObject, handles);
 end
 
-function excludeStringEdit_CreateFcn(hObject, eventdata, handles)
-    
-    % Hint: edit controls usually have a white background on Windows.
-    %       See ISPC and COMPUTER.
-    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-        set(hObject,'BackgroundColor','white');
-    end
+
+% --- Executes on button press in cbIncludePath.
+function cbIncludePath_Callback(hObject, eventdata, handles)
 end
