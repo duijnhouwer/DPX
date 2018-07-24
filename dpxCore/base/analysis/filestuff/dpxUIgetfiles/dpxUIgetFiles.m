@@ -58,6 +58,10 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin) %#ok<*I
     set(handles.figure1,'Name',p.Results.title);
     set(handles.folderEditText,'String',p.Results.rootfolder);
     setInputList(hObject, handles);
+    % in case the path is excluded from search and hidden (nice for
+    % clarity) keep a shadow list for use when copying the files into the
+    % output list (which always shows the paths)
+    handles.shadowPathList={};
     % Update handles structure
     guidata(hObject, handles);
     % Make the figure wait until resume() is called somewhere. At the time of writing this
@@ -126,16 +130,25 @@ end
 
 
 function addToOutputButton_Callback(hObject, eventdata, handles) % >>
-    additional=cellstr(get(handles.inputListBox,'String')); % returns complete list in currentSelectionListBox
-    hilited=get(handles.inputListBox,'Value');
-    additional={additional{hilited}}; % limit to selection
-    outputList=cellstr(get(handles.outputListBox,'String'));
-    outputList=[additional(:); outputList(:)];
+    
+    allfiles=handles.inputListBox.String; % cell of strings
+    if isempty(allfiles)
+        return;
+    end
+    if ~handles.includePathCheckBox.Value
+        allfiles=fullfile(handles.shadowPathList(:),allfiles(:));
+    end
+    selectedfiles=allfiles(handles.inputListBox.Value); % limit to selection
+      if isempty(selectedfiles)
+        return;
+    end
+    outputList=cellstr(handles.outputListBox.String); % current outputlist
+    outputList=[selectedfiles(:); outputList(:)]; % add the selected files to the output list
     outputList=unique(outputList); % remove duplicates
     outputList=outputList(~cellfun(@isempty,outputList)); % remove empty strings
-    set(handles.outputListBox,'String',outputList);
-    set(handles.outputListBox,'Value',1:numel(outputList));
-    updateOutputInfoText(hObject, eventdata, handles);
+    handles.outputListBox.String=outputList;
+    handles.outputListBox.Value=1:numel(outputList);
+    updateOutputInfoText(hObject, eventdata, handles);                          
 end
 
 
@@ -208,6 +221,7 @@ function setInputList(hObject, handles)
         folders={handles.folderEditText.String};
     end
     fileNames={};
+    handles.shadowPathList={};
     ext=get(handles.extensionPopupmenu,'String');
     if iscell(ext)
         ext=ext{get(handles.extensionPopupmenu,'Value')}; % e.g. '*.mat'
@@ -223,20 +237,27 @@ function setInputList(hObject, handles)
         uiwait(errordlg(msg,mfilename,'modal'));
         return
     else
+        nTotalFiles=0; % nr of files included hidden-by-filtering ones
         for i=1:numel(folders)
             stringsToAddCell = dir(fullfile(folders{i},ext));
             for a=1:numel(stringsToAddCell)
                 if stringsToAddCell(a).isdir
                     continue;
                 else
-                    thisFileName=fullfile(folders{i},stringsToAddCell(a).name);
-                    if ~isempty(exclStrCell) && ~contains(thisFileName,exclStrCell)
+                    if handles.includePathCheckBox.Value
+                        thisFileName=fullfile(folders{i},stringsToAddCell(a).name);
+                    else
+                        thisFileName=stringsToAddCell(a).name;
+                    end
+                    nTotalFiles=nTotalFiles+1;
+                    if ~isempty(exclStrCell) && contains(thisFileName,exclStrCell)
                         continue;
                     end
                     if ~isempty(inclStrCell) && ~contains(thisFileName,inclStrCell)
                         continue;
                     end
                     fileNames{end+1}=thisFileName; %#ok<AGROW>
+                    handles.shadowPathList{end+1}=folders{i};
                 end
             end
         end
@@ -245,6 +266,14 @@ function setInputList(hObject, handles)
         set(handles.inputListBox,'String',fileNames);
     end
     set(gcf,'Pointer',oldPointer);
+    guidata(hObject, handles); % to update (at least) handles.shadowPathList
+    %
+    % update the inputInfoText field
+    EXT=upper(ext(3:end)); % remove *. 
+    handles.inputInfoText.String=sprintf('Showing %d %s-file%s in %d folder%s (%d filtered out)',numel(fileNames),EXT,pops(numel(fileNames)),numel(folders),pops(numel(folders)),nTotalFiles-numel(fileNames));
+    function s=pops(n)
+        s='s'; if n==1, s=''; end
+    end
 end
 
 
@@ -259,6 +288,13 @@ function excludeStringEdit_Callback(hObject, eventdata, handles)
 end
 
 
-% --- Executes on button press in cbIncludePath.
-function cbIncludePath_Callback(hObject, eventdata, handles)
+% --- Executes on button press in includePathCheckBox.
+function includePathCheckBox_Callback(hObject, eventdata, handles)
+    setInputList(hObject, handles);
+end
+
+
+% --- Executes on selection change in extensionPopupmenu.
+function extensionPopupmenu_Callback(hObject, eventdata, handles)
+    setInputList(hObject, handles);
 end
