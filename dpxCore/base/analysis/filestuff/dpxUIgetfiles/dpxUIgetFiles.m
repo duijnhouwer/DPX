@@ -57,11 +57,11 @@ function dpxUIgetFiles_OpeningFcn(hObject, eventdata, handles, varargin) %#ok<*I
     set(handles.extensionPopupmenu,'String',[cellstr(p.Results.extensions), '*.*']);
     set(handles.figure1,'Name',p.Results.title);
     set(handles.folderEditText,'String',p.Results.rootfolder);
-    setInputList(hObject, handles);
-    % in case the path is excluded from search and hidden (nice for
+        % in case the path is excluded from search and hidden (nice for
     % clarity) keep a shadow list for use when copying the files into the
     % output list (which always shows the paths)
     handles.shadowPathList={};
+    handles = setInputList(hObject, handles); % 20180724 now returns handles so that shadowPathList is updated
     % Update handles structure
     guidata(hObject, handles);
     % Make the figure wait until resume() is called somewhere. At the time of writing this
@@ -139,7 +139,7 @@ function addToOutputButton_Callback(hObject, eventdata, handles) % >>
         allfiles=fullfile(handles.shadowPathList(:),allfiles(:));
     end
     selectedfiles=allfiles(handles.inputListBox.Value); % limit to selection
-      if isempty(selectedfiles)
+    if isempty(selectedfiles)
         return;
     end
     outputList=cellstr(handles.outputListBox.String); % current outputlist
@@ -209,7 +209,7 @@ end
 
 
 %--- This function populates the current selection listbox
-function setInputList(hObject, handles)
+function handles=setInputList(hObject, handles)
     if ~exist(handles.folderEditText.String,'file')
         handles.folderEditText.String=uigetdir(pwd,'Pick a folder ...');   
     end
