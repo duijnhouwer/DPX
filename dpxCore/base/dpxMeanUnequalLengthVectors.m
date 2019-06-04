@@ -28,6 +28,16 @@ function [m,n,s,md]=dpxMeanUnequalLengthVectors(c,varargin)
     p.addOptional('prioritize','memory',@(x)any(strcmpi(x,{'memory','speed'})));
     p.parse(varargin{:});
     
+    if ~iscell(c)
+        error('first argument must be a cell array');
+    end
+    for i=1:numel(c)
+        if ~isnumeric(c{i}) || ~isvector(c{i})
+            error('each element of cell array c must be a 1d numerical vector.');
+        end
+        if size(c{i},1)>size(c{i},2), c{i}=c{i}'; end % make row format
+    end
+     
     if nargout>2
         if strcmpi(p.Results.prioritize,'memory')
             [m,n,s,md]=doitlean(c,p);
@@ -48,16 +58,6 @@ function [m,n,s,md]=dpxMeanUnequalLengthVectors(c,varargin)
 end
 
 function [m,n,s,md]=doitlean(c,p)
-    if ~iscell(c), error('Input should be cell'); end
-    for i=1:numel(c)
-        if ~isnumeric(c{i})
-            error('Each element of cell array c should be a 1D numerical vector.');
-        end
-        if ~dpxIsVector(c{i})
-            error('Each element of cell array c should be a 1D numerical vector.');
-        end
-        if size(c{i},1)>size(c{i},2), c{i}=c{i}'; end % make row format
-    end
     % Which is the longest vector in c?
     mx=0;
     for i=1:numel(c)

@@ -7,7 +7,7 @@ function varargout = dpxUIgetFiles(varargin)
     % simple inclusion and exclusion filtering on filenames.
     %
     % EXAMPLE:
-    % dpxUIgetFiles('folder',pwd,'title','Select files...','extensions',{'*.txt','*.*'});
+    % dpxUIgetFiles('rootfolder',pwd,'title','Select files...','extensions',{'*.txt','*.*'});
     
    % TODO: implement regexp filtering
         
